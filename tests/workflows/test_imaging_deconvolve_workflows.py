@@ -13,9 +13,9 @@ from astropy.coordinates import SkyCoord
 
 from data_models.polarisation import PolarisationFrame
 
-from processing_components.imaging.imaging_components import invert_component, deconvolve_component, \
-    residual_component, restore_component
-from libs.execution_support.arlexecute import arlexecute
+from workflows.arlexecute.imaging.imaging_workflows import invert_workflow, deconvolve_workflow, \
+    residual_workflow, restore_workflow
+from workflows.arlexecute.execution_support.arlexecute import arlexecute
 from processing_components.image.operations import export_image_to_fits, smooth_image
 from processing_components.imaging.base import predict_skycomponent_visibility
 from processing_components.skycomponent.operations import insert_skycomponent
@@ -114,10 +114,10 @@ class TestImagingDeconvolveGraph(unittest.TestCase):
     
     def test_deconvolve_spectral(self):
         self.actualSetUp(add_errors=True)
-        dirty_imagelist = invert_component(self.vis_list, self.model_imagelist,
+        dirty_imagelist = invert_workflow(self.vis_list, self.model_imagelist,
                                            context='2d',
                                            dopsf=False, normalize=True)
-        psf_imagelist = invert_component(self.vis_list, self.model_imagelist,
+        psf_imagelist = invert_workflow(self.vis_list, self.model_imagelist,
                                          context='2d',
                                          dopsf=True, normalize=True)
         deconvolved, _ = deconvolve_component(dirty_imagelist, psf_imagelist, self.model_imagelist, niter=1000,
@@ -130,9 +130,9 @@ class TestImagingDeconvolveGraph(unittest.TestCase):
     
     def test_deconvolve_and_restore_cube_mmclean(self):
         self.actualSetUp(add_errors=True)
-        dirty_imagelist = invert_component(self.vis_list, self.model_imagelist, context='2d',
+        dirty_imagelist = invert_workflow(self.vis_list, self.model_imagelist, context='2d',
                                            dopsf=False, normalize=True)
-        psf_imagelist = invert_component(self.vis_list, self.model_imagelist, context='2d',
+        psf_imagelist = invert_workflow(self.vis_list, self.model_imagelist, context='2d',
                                          dopsf=True, normalize=True)
         dec_imagelist, _ = deconvolve_component(dirty_imagelist, psf_imagelist, self.model_imagelist, niter=1000,
                                                 fractional_threshold=0.01, scales=[0, 3, 10],
@@ -150,9 +150,9 @@ class TestImagingDeconvolveGraph(unittest.TestCase):
     
     def test_deconvolve_and_restore_cube_mmclean_facets(self):
         self.actualSetUp(add_errors=True)
-        dirty_imagelist = invert_component(self.vis_list, self.model_imagelist,
+        dirty_imagelist = invert_workflow(self.vis_list, self.model_imagelist,
                                            context='2d', dopsf=False, normalize=True)
-        psf_imagelist = invert_component(self.vis_list, self.model_imagelist,
+        psf_imagelist = invert_workflow(self.vis_list, self.model_imagelist,
                                          context='2d', dopsf=True, normalize=True)
         dec_imagelist, _ = deconvolve_component(dirty_imagelist, psf_imagelist, self.model_imagelist, niter=1000,
                                                 fractional_threshold=0.1, scales=[0, 3, 10],

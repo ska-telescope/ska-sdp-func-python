@@ -24,8 +24,8 @@ from processing_components.simulation.testing_support import create_named_config
 from processing_components.visibility.base import copy_visibility, create_blockvisibility
 from processing_components.visibility.coalesce import convert_blockvisibility_to_visibility
 
-from libs.execution_support.arlexecute import arlexecute
-from processing_components.calibration.calskymodel_components import calskymodel_solve_component
+from workflows.arlexecute.processing_component_interface.execution_helper import arlexecute
+from workflows.arlexecute.calibration.calskymodel_workflows import calskymodel_solve_workflow
 
 log = logging.getLogger(__name__)
 
@@ -110,14 +110,14 @@ class TestCalibrationSkyModelcal(unittest.TestCase):
         
         self.skymodels = [SkyModel(components=[cm], fixed=fixed) for cm in self.components]
     
-    def test_calskymodel_solve_component(self):
+    def test_calskymodel_solve_workflow(self):
         
         self.actualSetup(doiso=True)
         
         self.skymodel_list = [arlexecute.execute(SkyModel, nout=1)(components=[cm])
                               for cm in self.components]
         
-        calskymodel_list = calskymodel_solve_component(self.vis, skymodel_list=self.skymodel_list, niter=30,
+        calskymodel_list = calskymodel_solve_workflow(self.vis, skymodel_list=self.skymodel_list, niter=30,
                                                        gain=0.25)
         skymodel, residual_vis = arlexecute.compute(calskymodel_list, sync=True)
         
