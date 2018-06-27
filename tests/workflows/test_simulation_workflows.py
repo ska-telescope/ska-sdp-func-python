@@ -10,9 +10,9 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 
 from data_models.memory_data_models import BlockVisibility
-from libs.execution_support.arlexecute import arlexecute
+from workflows.arlexecute.execution_support.arlexecute import arlexecute
 
-from processing_components.simulation.simulation_components import simulate_component
+from workflows.arlexecute.simulation.simulation_workflows import simulate_workflow
 
 log = logging.getLogger(__name__)
 
@@ -31,9 +31,9 @@ class TestTestingDaskGraphSupport(unittest.TestCase):
     def tearDown(self):
         arlexecute.close()
 
-    def test_create_simulate_vis_graph(self):
-        arlexecute.set_client(use_dask=True)
-        vis_list = simulate_component(frequency=self.frequency, channel_bandwidth=self.channel_bandwidth)
+    def test_create_simulate_vis_list(self):
+        arlexecute.set_client(use_dask=False)
+        vis_list = simulate_workflow(frequency=self.frequency, channel_bandwidth=self.channel_bandwidth)
         assert len(vis_list) == len(self.frequency)
         vt = vis_list[0].compute()
         assert isinstance(vt, BlockVisibility)
