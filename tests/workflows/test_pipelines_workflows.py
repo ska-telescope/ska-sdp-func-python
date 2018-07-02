@@ -14,12 +14,12 @@ from astropy.coordinates import SkyCoord
 from data_models.polarisation import PolarisationFrame
 
 from processing_components.calibration.calibration_control import create_calibration_controls
-from processing_components.component_support.arlexecute import arlexecute
-from processing_components.pipelines.pipeline_components import ical_component, continuum_imaging_component
+from workflows.arlexecute.execution_support.arlexecute import arlexecute
+from workflows.arlexecute.pipelines.pipeline_workflows import ical_workflow, continuum_imaging_workflow
 from processing_components.image.operations import export_image_to_fits, qa_image, smooth_image
 from processing_components.imaging.base import predict_skycomponent_visibility
 from processing_components.skycomponent.operations import insert_skycomponent
-from processing_components.util.testing_support import create_named_configuration, ingest_unittest_visibility, \
+from processing_components.simulation.testing_support import create_named_configuration, ingest_unittest_visibility, \
     create_unittest_model, \
     create_unittest_components, insert_unittest_errors
 
@@ -128,7 +128,7 @@ class TestPipelineGraphs(unittest.TestCase):
     def test_continuum_imaging_pipeline(self):
         self.actualSetUp(add_errors=False, block=True)
         continuum_imaging_list = \
-            continuum_imaging_component(self.vis_list, model_imagelist=self.model_imagelist, context='2d',
+            continuum_imaging_workflow(self.vis_list, model_imagelist=self.model_imagelist, context='2d',
                                         algorithm='mmclean', facets=1,
                                         scales=[0, 3, 10],
                                         niter=1000, fractional_threshold=0.1,
@@ -163,7 +163,7 @@ class TestPipelineGraphs(unittest.TestCase):
         controls['B']['timescale'] = 1e5
         
         ical_list = \
-            ical_component(self.vis_list, model_imagelist=self.model_imagelist, context='2d',
+            ical_workflow(self.vis_list, model_imagelist=self.model_imagelist, context='2d',
                            calibration_context='T', controls=controls, do_selfcal=True,
                            global_solution=False,
                            algorithm='mmclean',

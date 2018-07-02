@@ -6,10 +6,10 @@ import os
 import unittest
 
 from data_models.parameters import arl_path
-from processing_components.external_interface.processing_component_interface import component_wrapper
+from workflows.arlexecute.processing_component_interface.processing_component_interface import component_wrapper
 
 
-class TestComponentWrappers(unittest.TestCase):
+class TestProcessingComponentInterface(unittest.TestCase):
     
     def test_run_components(self):
         files = ["test_results/test_pipeline.log",
@@ -26,10 +26,10 @@ class TestComponentWrappers(unittest.TestCase):
         except FileNotFoundError:
             pass
         
-        config_files = ["tests/processing_components/test_create_vislist.json",
-                        "tests/processing_components/test_create_skymodel.json",
-                        "tests/processing_components/test_predict_vislist.json",
-                        "tests/processing_components/test_continuum_imaging.json"]
+        config_files = ["tests/workflows/test_create_vislist.json",
+                        "tests/workflows/test_create_skymodel.json",
+                        "tests/workflows/test_predict_vislist.json",
+                        "tests/workflows/test_continuum_imaging.json"]
         
         for config_file in config_files:
             component_wrapper(arl_path(config_file))
