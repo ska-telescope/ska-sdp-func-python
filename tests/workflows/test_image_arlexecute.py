@@ -12,17 +12,22 @@ from astropy.coordinates import SkyCoord
 
 from data_models.polarisation import PolarisationFrame
 
-from processing_components.image.operations import export_image_to_fits
 from processing_components.imaging.base import create_image_from_visibility
-from processing_components.imaging.primary_beams import create_pb, create_vp
+from processing_components.imaging.primary_beams import create_pb
 from processing_components.simulation.configurations import create_named_configuration
 from processing_components.visibility.base import create_visibility
+
+from workflows.arlexecute.image.image_arlexecute import image_arlexecute_map_workflow
+from wrappers.arlexecute.image.operations import export_image_to_fits
+from tests.workflows import ARLExecuteTestCase
+from wrappers.arlexecute.execution_support.arlexecute import arlexecute
 
 log = logging.getLogger(__name__)
 
 
-class TestPrimaryBeams(unittest.TestCase):
+class TestImageGraph(ARLExecuteTestCase, unittest.TestCase):
     def setUp(self):
+        super(TestImageGraph, self).setUp()
         from data_models.parameters import arl_path
         self.dir = arl_path('test_results')
         
@@ -45,18 +50,12 @@ class TestPrimaryBeams(unittest.TestCase):
                                      phasecentre=self.phasecentre, weight=1.0,
                                      polarisation_frame=PolarisationFrame('stokesI'))
 
-    def test_create_primary_beams(self):
+    def test_map_create_pb(self):
         self.createVis(config='LOWBD2', rmax=1000.0)
-        for telescope in ['VLA', 'ASKAP', 'MID', 'LOW']:
-            model = create_image_from_visibility(self.vis, cellsize=0.001, override_cellsize=False)
-            beam=create_pb(model, telescope=telescope)
-            assert numpy.max(beam.data) > 0.0
-            export_image_to_fits(beam, "%s/test_primary_beam_%s.fits" % (self.dir, telescope))
+        model = create_image_from_visibility(self.vis, cellsize=0.001, override_cellsize=False)
+        beam = image_arlexecute_map_workflow(model, create_pb, facets=4, pointingcentre=self.phasecentre,
+                                             telescope='MID')
+        beam = arlexecute.compute(beam, sync=True)
+        assert numpy.max(beam.data) > 0.0
+        export_image_to_fits(beam, "%s/test_image_arlexecute_scatter_gather.fits" % (self.dir))
             
-    def test_create_voltage_patterns(self):
-        self.createVis(config='LOWBD2', rmax=1000.0)
-        for telescope in ['VLA', 'ASKAP', 'MID', 'LOW']:
-            model = create_image_from_visibility(self.vis, cellsize=0.001, override_cellsize=False)
-            beam=create_vp(model, telescope=telescope)
-            assert numpy.max(numpy.abs(beam.data.real)) > 0.0
-            assert numpy.max(numpy.abs(beam.data.imag)) < 1e-15
