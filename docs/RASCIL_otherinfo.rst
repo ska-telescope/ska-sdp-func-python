@@ -7,12 +7,12 @@ Other information
 .. toctree::
    :maxdepth: 2
 
-   ARL_background
-   ARL_developing
-   ARL_documenting
-   ARL_dask
-   ARL_Fourier_processing
-   ARL_SDP
+   RASCIL_background
+   RASCIL_developing
+   RASCIL_documenting
+   RASCIL_dask
+   RASCIL_Fourier_processing
+   RASCIL_SDP
 
 * :ref:`genindex`
 * :ref:`modindex`

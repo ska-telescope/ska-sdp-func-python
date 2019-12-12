@@ -117,16 +117,16 @@ PYTHONPATH should look like::
     $ echo $PYTHONPATH
     /home/hpccorn1/Code/algorithm-reference-library:/home/hpccorn1/arlenv/lib/python3.5/site-packages
 
-You can start a scheduler and workers by hand. Set the environment variable ARL_DASK_SCHEDULER appropriately::
+You can start a scheduler and workers by hand. Set the environment variable RASCIL_DASK_SCHEDULER appropriately::
 
-    export ARL_DASK_SCHEDULER=192.168.2.10:8786
+    export RASCIL_DASK_SCHEDULER=192.168.2.10:8786
 
 If you do this, remember to start the workers as well. dask-ssh is useful for this::
 
     c=get_dask_Client(timeout=30)
     c.scheduler_info()
 
-get_dask_Client will look for a scheduler via the environment variable ARL_DASK_SCHEDULER. It that does not exist, it
+get_dask_Client will look for a scheduler via the environment variable RASCIL_DASK_SCHEDULER. It that does not exist, it
  will start a Client using the default Dask approach.
 
 On darwin, each node has 16 cores, and each core has 4GB. Usually this is insufficient for ARL and so some cores must be
@@ -237,7 +237,7 @@ On darwin, each node has 16 cores, and each core has 4GB. Usually this is insuff
     #! We need to tell dask Client (inside python) where the scheduler is running
     scheduler="`hostname`:8786"
     echo "Scheduler is running at ${scheduler}"
-    export ARL_DASK_SCHEDULER=${scheduler}
+    export RASCIL_DASK_SCHEDULER=${scheduler}
 
     echo "About to execute $CMD"
 

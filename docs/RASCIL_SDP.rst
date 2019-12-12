@@ -9,7 +9,7 @@ documentation <http://ska-sdp.org/publications/sdp-cdr-closeout-documentation>`_
 
 The ARL structure maps that used in the SDP processing architecture:
 
-.. image:: ./ARL_Module_View.png
+.. image:: ./RASCIL_Module_View.png
    :scale: 100 %
 
 For clarity, not all connections are shown in this diagram.
