@@ -1,4 +1,4 @@
-""" Unit tests for pipelines expressed via arlexecute
+""" Unit tests for pipelines expressed via rsexecute
 """
 
 import logging
@@ -13,13 +13,13 @@ from rascil.data_models.polarisation import PolarisationFrame
 from rascil.data_models.memory_data_models import BlockVisibility
 from rascil.processing_components.griddata import apply_bounding_box_convolutionfunction
 from rascil.processing_components.griddata.kernels import create_awterm_convolutionfunction
-from rascil.workflows.arlexecute.imaging.imaging_arlexecute import zero_list_arlexecute_workflow, \
-    predict_list_arlexecute_workflow, invert_list_arlexecute_workflow, subtract_list_arlexecute_workflow, \
-    weight_list_arlexecute_workflow, residual_list_arlexecute_workflow, sum_invert_results_arlexecute, \
-    restore_list_arlexecute_workflow
+from rascil.workflows.rsexecute.imaging.imaging_rsexecute import zero_list_rsexecute_workflow, \
+    predict_list_rsexecute_workflow, invert_list_rsexecute_workflow, subtract_list_rsexecute_workflow, \
+    weight_list_rsexecute_workflow, residual_list_rsexecute_workflow, sum_invert_results_rsexecute, \
+    restore_list_rsexecute_workflow
 from rascil.workflows.shared.imaging.imaging_shared import sum_invert_results
-from rascil.wrappers.arlexecute.execution_support import ARLExecuteBase
-from rascil.wrappers.arlexecute.execution_support import get_dask_Client
+from rascil.wrappers.rsexecute.execution_support import rsexecuteBase
+from rascil.wrappers.rsexecute.execution_support import get_dask_Client
 
 from rascil.processing_components.image.operations import export_image_to_fits, smooth_image, qa_image
 from rascil.processing_components.imaging.base import predict_skycomponent_visibility
@@ -42,9 +42,9 @@ class TestImaging(unittest.TestCase):
     def setUp(self):
         
         client = get_dask_Client(memory_limit=4 * 1024 * 1024 * 1024, n_workers=4, dashboard_address=None)
-        global arlexecute
-        arlexecute = ARLExecuteBase(use_dask=True)
-        arlexecute.set_client(client, verbose=False)
+        global rsexecute
+        rsexecute = rsexecuteBase(use_dask=True)
+        rsexecute.set_client(client, verbose=False)
 
         from rascil.data_models.parameters import rascil_path
         self.dir = rascil_path('test_results')
@@ -52,9 +52,9 @@ class TestImaging(unittest.TestCase):
         self.persist = False
     
     def tearDown(self):
-        global arlexecute
-        arlexecute.close()
-        del arlexecute
+        global rsexecute
+        rsexecute.close()
+        del rsexecute
 
     def actualSetUp(self, add_errors=False, freqwin=3, block=False, dospectral=True, dopol=False, zerow=False,
                     makegcfcf=False):
@@ -92,7 +92,7 @@ class TestImaging(unittest.TestCase):
             flux = numpy.array([f])
         
         self.phasecentre = SkyCoord(ra=+180.0 * u.deg, dec=-60.0 * u.deg, frame='icrs', equinox='J2000')
-        self.bvis_list = [arlexecute.execute(ingest_unittest_visibility)(self.low,
+        self.bvis_list = [rsexecute.execute(ingest_unittest_visibility)(self.low,
                                                                         [self.frequency[freqwin]],
                                                                         [self.channelwidth[freqwin]],
                                                                         self.times,
@@ -100,28 +100,28 @@ class TestImaging(unittest.TestCase):
                                                                         self.phasecentre, block=True,
                                                                         zerow=zerow)
                          for freqwin, _ in enumerate(self.frequency)]
-        self.vis_list = [arlexecute.execute(convert_blockvisibility_to_visibility)(bvis) for bvis in self.bvis_list]
+        self.vis_list = [rsexecute.execute(convert_blockvisibility_to_visibility)(bvis) for bvis in self.bvis_list]
         
-        self.model_list = [arlexecute.execute(create_unittest_model, nout=freqwin)(self.vis_list[freqwin],
+        self.model_list = [rsexecute.execute(create_unittest_model, nout=freqwin)(self.vis_list[freqwin],
                                                                                    self.image_pol,
                                                                                    cellsize=self.cellsize,
                                                                                    npixel=self.npixel)
                            for freqwin, _ in enumerate(self.frequency)]
         
-        self.components_list = [arlexecute.execute(create_unittest_components)(self.model_list[freqwin],
+        self.components_list = [rsexecute.execute(create_unittest_components)(self.model_list[freqwin],
                                                                                flux[freqwin, :][numpy.newaxis, :],
                                                                                single=True)
                                 for freqwin, _ in enumerate(self.frequency)]
         
-        self.components_list = arlexecute.compute(self.components_list, sync=True)
+        self.components_list = rsexecute.compute(self.components_list, sync=True)
         
-        self.model_list = [arlexecute.execute(insert_skycomponent, nout=1)(self.model_list[freqwin],
+        self.model_list = [rsexecute.execute(insert_skycomponent, nout=1)(self.model_list[freqwin],
                                                                            self.components_list[freqwin])
                            for freqwin, _ in enumerate(self.frequency)]
         
-        self.model_list = arlexecute.compute(self.model_list, sync=True)
+        self.model_list = rsexecute.compute(self.model_list, sync=True)
         
-        self.vis_list = [arlexecute.execute(predict_skycomponent_visibility)(self.vis_list[freqwin],
+        self.vis_list = [rsexecute.execute(predict_skycomponent_visibility)(self.vis_list[freqwin],
                                                                              self.components_list[freqwin])
                          for freqwin, _ in enumerate(self.frequency)]
         centre = self.freqwin // 2
@@ -133,7 +133,7 @@ class TestImaging(unittest.TestCase):
         if self.persist: export_image_to_fits(self.cmodel, '%s/test_imaging_cmodel.fits' % self.dir)
         
         if add_errors and block:
-            self.vis_list = [arlexecute.execute(insert_unittest_errors)(self.vis_list[i])
+            self.vis_list = [rsexecute.execute(insert_unittest_errors)(self.vis_list[i])
                              for i, _ in enumerate(self.frequency)]
         
         self.components = self.components_list[centre]
@@ -175,20 +175,20 @@ class TestImaging(unittest.TestCase):
                       gcfcf=None, **kwargs):
         centre = self.freqwin // 2
         
-        vis_list = zero_list_arlexecute_workflow(self.vis_list)
-        vis_list = predict_list_arlexecute_workflow(vis_list, self.model_list, context=context,
+        vis_list = zero_list_rsexecute_workflow(self.vis_list)
+        vis_list = predict_list_rsexecute_workflow(vis_list, self.model_list, context=context,
                                                     vis_slices=vis_slices, facets=facets,
                                                     gcfcf=gcfcf, **kwargs)
-        vis_list = subtract_list_arlexecute_workflow(self.vis_list, vis_list)
-        vis_list = arlexecute.compute(vis_list, sync=True)
+        vis_list = subtract_list_rsexecute_workflow(self.vis_list, vis_list)
+        vis_list = rsexecute.compute(vis_list, sync=True)
         
-        dirty = invert_list_arlexecute_workflow(vis_list, self.model_list, context=context, dopsf=False,
+        dirty = invert_list_rsexecute_workflow(vis_list, self.model_list, context=context, dopsf=False,
                                                 gcfcf=gcfcf, normalize=True, vis_slices=vis_slices)
-        dirty = arlexecute.compute(dirty, sync=True)[centre]
+        dirty = rsexecute.compute(dirty, sync=True)[centre]
         
         assert numpy.max(numpy.abs(dirty[0].data)), "Residual image is empty"
         if self.persist: export_image_to_fits(dirty[0], '%s/test_imaging_predict_%s%s_%s_dirty.fits' %
-                             (self.dir, context, extra, arlexecute.type()))
+                             (self.dir, context, extra, rsexecute.type()))
         
         maxabs = numpy.max(numpy.abs(dirty[0].data))
         assert maxabs < fluxthreshold, "Error %.3f greater than fluxthreshold %.3f " % (maxabs, fluxthreshold)
@@ -197,14 +197,14 @@ class TestImaging(unittest.TestCase):
                      facets=1, vis_slices=1, gcfcf=None, **kwargs):
         
         centre = self.freqwin // 2
-        dirty = invert_list_arlexecute_workflow(self.vis_list, self.model_list, context=context,
+        dirty = invert_list_rsexecute_workflow(self.vis_list, self.model_list, context=context,
                                                 dopsf=False, normalize=True, facets=facets, vis_slices=vis_slices,
                                                 gcfcf=gcfcf, **kwargs)
-        dirty = arlexecute.compute(dirty, sync=True)[centre]
+        dirty = rsexecute.compute(dirty, sync=True)[centre]
         
         print(dirty)
         if self.persist: export_image_to_fits(dirty[0], '%s/test_imaging_invert_%s%s_%s_dirty.fits' %
-                             (self.dir, context, extra, arlexecute.type()))
+                             (self.dir, context, extra, rsexecute.type()))
         
         assert numpy.max(numpy.abs(dirty[0].data)), "Image is empty"
         
@@ -283,20 +283,20 @@ class TestImaging(unittest.TestCase):
 
     def test_invert_2d_uniform(self):
         self.actualSetUp(zerow=True, makegcfcf=True)
-        self.vis_list = weight_list_arlexecute_workflow(self.vis_list, self.model_list, gcfcf=self.gcfcf,
+        self.vis_list = weight_list_rsexecute_workflow(self.vis_list, self.model_list, gcfcf=self.gcfcf,
                                                         weighting='uniform')
         self._invert_base(context='2d', extra='_uniform', positionthreshold=2.0, check_components=False)
 
     def test_invert_2d_uniform_block(self):
         self.actualSetUp(zerow=True, makegcfcf=True, block=True)
-        self.bvis_list = weight_list_arlexecute_workflow(self.bvis_list, self.model_list, gcfcf=self.gcfcf,
+        self.bvis_list = weight_list_rsexecute_workflow(self.bvis_list, self.model_list, gcfcf=self.gcfcf,
                                                         weighting='uniform')
-        self.bvis_list = arlexecute.compute(self.bvis_list, sync=True)
+        self.bvis_list = rsexecute.compute(self.bvis_list, sync=True)
         assert isinstance(self.bvis_list[0], BlockVisibility)
 
     def test_invert_2d_uniform_nogcfcf(self):
         self.actualSetUp(zerow=True)
-        self.vis_list = weight_list_arlexecute_workflow(self.vis_list, self.model_list)
+        self.vis_list = weight_list_rsexecute_workflow(self.vis_list, self.model_list)
         self._invert_base(context='2d', extra='_uniform', positionthreshold=2.0, check_components=False)
     
     @unittest.skip("Facets need overlap")
@@ -365,20 +365,20 @@ class TestImaging(unittest.TestCase):
         self.actualSetUp()
         
         centre = self.freqwin // 2
-        vis_list = zero_list_arlexecute_workflow(self.vis_list)
-        vis_list = arlexecute.compute(vis_list, sync=True)
+        vis_list = zero_list_rsexecute_workflow(self.vis_list)
+        vis_list = rsexecute.compute(vis_list, sync=True)
         
         assert numpy.max(numpy.abs(vis_list[centre].vis)) < 1e-15, numpy.max(numpy.abs(vis_list[centre].vis))
         
-        predicted_vis_list = [arlexecute.execute(predict_skycomponent_visibility)(vis_list[freqwin],
+        predicted_vis_list = [rsexecute.execute(predict_skycomponent_visibility)(vis_list[freqwin],
                                                                                   self.components_list[freqwin])
                               for freqwin, _ in enumerate(self.frequency)]
-        predicted_vis_list = arlexecute.compute(predicted_vis_list, sync=True)
+        predicted_vis_list = rsexecute.compute(predicted_vis_list, sync=True)
         assert numpy.max(numpy.abs(predicted_vis_list[centre].vis)) > 0.0, \
             numpy.max(numpy.abs(predicted_vis_list[centre].vis))
         
-        diff_vis_list = subtract_list_arlexecute_workflow(self.vis_list, predicted_vis_list)
-        diff_vis_list = arlexecute.compute(diff_vis_list, sync=True)
+        diff_vis_list = subtract_list_rsexecute_workflow(self.vis_list, predicted_vis_list)
+        diff_vis_list = rsexecute.compute(diff_vis_list, sync=True)
         
         assert numpy.max(numpy.abs(diff_vis_list[centre].vis)) < 1e-15, numpy.max(numpy.abs(diff_vis_list[centre].vis))
 
@@ -386,8 +386,8 @@ class TestImaging(unittest.TestCase):
         self.actualSetUp(zerow=True)
     
         centre = self.freqwin // 2
-        residual_image_list = residual_list_arlexecute_workflow(self.vis_list, self.model_list, context='2d')
-        residual_image_list = arlexecute.compute(residual_image_list, sync=True)
+        residual_image_list = residual_list_rsexecute_workflow(self.vis_list, self.model_list, context='2d')
+        residual_image_list = rsexecute.compute(residual_image_list, sync=True)
         qa = qa_image(residual_image_list[centre][0])
         assert numpy.abs(qa.data['max'] - 0.35139716991480785) < 1.0, str(qa)
         assert numpy.abs(qa.data['min'] + 0.7681701460717593) < 1.0, str(qa)
@@ -396,13 +396,13 @@ class TestImaging(unittest.TestCase):
         self.actualSetUp(zerow=True)
         
         centre = self.freqwin // 2
-        psf_image_list = invert_list_arlexecute_workflow(self.vis_list, self.model_list, context='2d', dopsf=True)
-        residual_image_list = residual_list_arlexecute_workflow(self.vis_list, self.model_list, context='2d')
-        restored_image_list = restore_list_arlexecute_workflow(self.model_list, psf_image_list, residual_image_list,
+        psf_image_list = invert_list_rsexecute_workflow(self.vis_list, self.model_list, context='2d', dopsf=True)
+        residual_image_list = residual_list_rsexecute_workflow(self.vis_list, self.model_list, context='2d')
+        restored_image_list = restore_list_rsexecute_workflow(self.model_list, psf_image_list, residual_image_list,
                                                                psfwidth=1.0)
-        restored_image_list = arlexecute.compute(restored_image_list, sync=True)
+        restored_image_list = rsexecute.compute(restored_image_list, sync=True)
         if self.persist: export_image_to_fits(restored_image_list[centre], '%s/test_imaging_invert_%s_restored.fits' %
-                                              (self.dir, arlexecute.type()))
+                                              (self.dir, rsexecute.type()))
         
         qa = qa_image(restored_image_list[centre])
         assert numpy.abs(qa.data['max'] - 99.43438263927834) < 1e-7, str(qa)
@@ -412,12 +412,12 @@ class TestImaging(unittest.TestCase):
         self.actualSetUp(zerow=True)
         
         centre = self.freqwin // 2
-        psf_image_list = invert_list_arlexecute_workflow(self.vis_list, self.model_list, context='2d', dopsf=True)
-        restored_image_list = restore_list_arlexecute_workflow(self.model_list, psf_image_list, psfwidth=1.0)
-        restored_image_list = arlexecute.compute(restored_image_list, sync=True)
+        psf_image_list = invert_list_rsexecute_workflow(self.vis_list, self.model_list, context='2d', dopsf=True)
+        restored_image_list = restore_list_rsexecute_workflow(self.model_list, psf_image_list, psfwidth=1.0)
+        restored_image_list = rsexecute.compute(restored_image_list, sync=True)
         if self.persist: export_image_to_fits(restored_image_list[centre],
                                               '%s/test_imaging_invert_%s_restored_noresidual.fits' %
-                                              (self.dir, arlexecute.type()))
+                                              (self.dir, rsexecute.type()))
         
         qa = qa_image(restored_image_list[centre])
         assert numpy.abs(qa.data['max'] - 100.0) < 1e-7, str(qa)
@@ -427,21 +427,21 @@ class TestImaging(unittest.TestCase):
         self.actualSetUp(zerow=True)
         
         centre = self.freqwin // 2
-        psf_image_list = invert_list_arlexecute_workflow(self.vis_list, self.model_list, context='2d', dopsf=True)
-        residual_image_list = residual_list_arlexecute_workflow(self.vis_list, self.model_list, context='2d')
-        restored_4facets_image_list = restore_list_arlexecute_workflow(self.model_list, psf_image_list,
+        psf_image_list = invert_list_rsexecute_workflow(self.vis_list, self.model_list, context='2d', dopsf=True)
+        residual_image_list = residual_list_rsexecute_workflow(self.vis_list, self.model_list, context='2d')
+        restored_4facets_image_list = restore_list_rsexecute_workflow(self.model_list, psf_image_list,
                                                                        residual_image_list,
                                                                        restore_facets=4, psfwidth=1.0)
-        restored_4facets_image_list = arlexecute.compute(restored_4facets_image_list, sync=True)
+        restored_4facets_image_list = rsexecute.compute(restored_4facets_image_list, sync=True)
         
-        restored_1facets_image_list = restore_list_arlexecute_workflow(self.model_list, psf_image_list,
+        restored_1facets_image_list = restore_list_rsexecute_workflow(self.model_list, psf_image_list,
                                                                        residual_image_list,
                                                                        restore_facets=1, psfwidth=1.0)
-        restored_1facets_image_list = arlexecute.compute(restored_1facets_image_list, sync=True)
+        restored_1facets_image_list = rsexecute.compute(restored_1facets_image_list, sync=True)
         
         if self.persist: export_image_to_fits(restored_4facets_image_list[0],
                                               '%s/test_imaging_invert_%s_restored_4facets.fits' %
-                                              (self.dir, arlexecute.type()))
+                                              (self.dir, rsexecute.type()))
         
         qa = qa_image(restored_4facets_image_list[centre])
         assert numpy.abs(qa.data['max'] - 99.43438263927833) < 1e-7, str(qa)
@@ -450,18 +450,18 @@ class TestImaging(unittest.TestCase):
         restored_4facets_image_list[centre].data -= restored_1facets_image_list[centre].data
         if self.persist: export_image_to_fits(restored_4facets_image_list[centre],
                                               '%s/test_imaging_invert_%s_restored_4facets_error.fits' %
-                                              (self.dir, arlexecute.type()))
+                                              (self.dir, rsexecute.type()))
         qa = qa_image(restored_4facets_image_list[centre])
         assert numpy.abs(qa.data['max']) < 1e-10, str(qa)
     
     def test_sum_invert_list(self):
         self.actualSetUp(zerow=True)
     
-        residual_image_list = residual_list_arlexecute_workflow(self.vis_list, self.model_list, context='2d')
-        residual_image_list = arlexecute.compute(residual_image_list, sync=True)
+        residual_image_list = residual_list_rsexecute_workflow(self.vis_list, self.model_list, context='2d')
+        residual_image_list = rsexecute.compute(residual_image_list, sync=True)
         route2 = sum_invert_results(residual_image_list)
-        route1 = sum_invert_results_arlexecute(residual_image_list)
-        route1 = arlexecute.compute(route1, sync=True)
+        route1 = sum_invert_results_rsexecute(residual_image_list)
+        route1 = rsexecute.compute(route1, sync=True)
         for r in route1, route2:
             assert len(r) == 2
             qa = qa_image(r[0])

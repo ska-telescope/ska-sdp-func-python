@@ -30,12 +30,12 @@ from rascil.processing_components.imaging.base import create_image_from_visibili
 from rascil.processing_components.simulation.simulation_helpers import find_pb_width_null, create_simulation_components
 from rascil.processing_components.visibility.coalesce import convert_blockvisibility_to_visibility
 
-from rascil.workflows.arlexecute.imaging.imaging_arlexecute import sum_invert_results_arlexecute
-from rascil.workflows.arlexecute.simulation.simulation_arlexecute import \
-    calculate_residual_from_gaintables_arlexecute_workflow, create_surface_errors_gaintable_arlexecute_workflow, \
-    create_pointing_errors_gaintable_arlexecute_workflow, create_standard_mid_simulation_arlexecute_workflow
+from rascil.workflows.rsexecute.imaging.imaging_rsexecute import sum_invert_results_rsexecute
+from rascil.workflows.rsexecute.simulation.simulation_rsexecute import \
+    calculate_residual_from_gaintables_rsexecute_workflow, create_surface_errors_gaintable_rsexecute_workflow, \
+    create_pointing_errors_gaintable_rsexecute_workflow, create_standard_mid_simulation_rsexecute_workflow
 
-from rascil.wrappers.arlexecute.execution_support import arlexecute
+from rascil.wrappers.rsexecute.execution_support import rsexecute
 
 import logging
 
@@ -75,7 +75,7 @@ class TestPointingSimulation(unittest.TestCase):
         
         # client = get_dask_Client()
         use_dask = False
-        arlexecute.set_client(use_dask=use_dask)
+        rsexecute.set_client(use_dask=use_dask)
         
         # Set up details of simulated observation
         nfreqwin = 1
@@ -90,12 +90,12 @@ class TestPointingSimulation(unittest.TestCase):
         
         phasecentre = SkyCoord(ra=ra * u.deg, dec=declination * u.deg, frame='icrs', equinox='J2000')
         
-        bvis_graph = create_standard_mid_simulation_arlexecute_workflow(band, rmax, phasecentre, time_range, time_chunk,
+        bvis_graph = create_standard_mid_simulation_rsexecute_workflow(band, rmax, phasecentre, time_range, time_chunk,
                                                                         integration_time,
                                                                         shared_directory)
-        future_bvis_list = arlexecute.persist(bvis_graph)
-        vis_graph = [arlexecute.execute(convert_blockvisibility_to_visibility)(bv) for bv in future_bvis_list]
-        future_vis_list = arlexecute.persist(vis_graph, sync=True)
+        future_bvis_list = rsexecute.persist(bvis_graph)
+        vis_graph = [rsexecute.execute(convert_blockvisibility_to_visibility)(bv) for bv in future_bvis_list]
+        future_vis_list = rsexecute.persist(vis_graph, sync=True)
         
         # We need the HWHM of the primary beam, and the location of the nulls
         HWHM_deg, null_az_deg, null_el_deg = find_pb_width_null(pbtype, frequency)
@@ -104,9 +104,9 @@ class TestPointingSimulation(unittest.TestCase):
         
         FOV_deg = 8.0 * 1.36e9 / frequency[0]
         
-        advice_list = arlexecute.execute(advise_wide_field)(future_vis_list[0], guard_band_image=1.0, delA=0.02,
+        advice_list = rsexecute.execute(advise_wide_field)(future_vis_list[0], guard_band_image=1.0, delA=0.02,
                                                             verbose=False)
-        advice = arlexecute.compute(advice_list, sync=True)
+        advice = rsexecute.compute(advice_list, sync=True)
         pb_npixel = 1024
         d2r = numpy.pi / 180.0
         pb_cellsize = d2r * FOV_deg / pb_npixel
@@ -117,16 +117,16 @@ class TestPointingSimulation(unittest.TestCase):
                                                                              pbtype, offset_dir, flux_limit,
                                                                              pbradius * HWHM, pb_npixel, pb_cellsize)
         
-        vp_list = [arlexecute.execute(create_image_from_visibility)(bv, npixel=pb_npixel, frequency=frequency,
+        vp_list = [rsexecute.execute(create_image_from_visibility)(bv, npixel=pb_npixel, frequency=frequency,
                                                                     nchan=nfreqwin, cellsize=pb_cellsize,
                                                                     phasecentre=phasecentre,
                                                                     override_cellsize=False) for bv in future_bvis_list]
-        vp_list = [arlexecute.execute(create_vp)(vp, pbtype, pointingcentre=phasecentre, use_local=not use_radec)
+        vp_list = [rsexecute.execute(create_vp)(vp, pbtype, pointingcentre=phasecentre, use_local=not use_radec)
                    for vp in vp_list]
-        future_vp_list = arlexecute.persist(vp_list)
+        future_vp_list = rsexecute.persist(vp_list)
         
         # Make one image per component
-        future_model_list = [arlexecute.execute(create_image_from_visibility)(future_vis_list[0], npixel=npixel,
+        future_model_list = [rsexecute.execute(create_image_from_visibility)(future_vis_list[0], npixel=npixel,
                                                                               frequency=frequency,
                                                                               nchan=nfreqwin, cellsize=cellsize,
                                                                               phasecentre=offset_direction,
@@ -144,7 +144,7 @@ class TestPointingSimulation(unittest.TestCase):
             pointing_error = dynamic_pe
             
             no_error_gtl, error_gtl = \
-                create_pointing_errors_gaintable_arlexecute_workflow(future_bvis_list, original_components,
+                create_pointing_errors_gaintable_rsexecute_workflow(future_bvis_list, original_components,
                                                                      sub_vp_list=future_vp_list,
                                                                      use_radec=use_radec,
                                                                      pointing_error=a2r * pointing_error,
@@ -156,7 +156,7 @@ class TestPointingSimulation(unittest.TestCase):
         elif time_series == 'wind':
             
             no_error_gtl, error_gtl = \
-                create_pointing_errors_gaintable_arlexecute_workflow(future_bvis_list, original_components,
+                create_pointing_errors_gaintable_rsexecute_workflow(future_bvis_list, original_components,
                                                                      sub_vp_list=future_vp_list,
                                                                      use_radec=use_radec,
                                                                      time_series=time_series,
@@ -165,7 +165,7 @@ class TestPointingSimulation(unittest.TestCase):
                                                                      show=False, basename=basename)
         elif time_series == 'gravity':
             no_error_gtl, error_gtl = \
-                create_surface_errors_gaintable_arlexecute_workflow(band, future_bvis_list, original_components,
+                create_surface_errors_gaintable_rsexecute_workflow(band, future_bvis_list, original_components,
                                                                     vp_directory=vp_directory, use_radec=use_radec,
                                                                     show=False, basename=basename)
         else:
@@ -174,15 +174,15 @@ class TestPointingSimulation(unittest.TestCase):
 
         # Now make all the residual images
         vis_comp_chunk_dirty_list = \
-            calculate_residual_from_gaintables_arlexecute_workflow(future_bvis_list, original_components,
+            calculate_residual_from_gaintables_rsexecute_workflow(future_bvis_list, original_components,
                                                                    future_model_list,
                                                                    no_error_gtl, error_gtl)
         
         # Add the resulting images
-        error_dirty_list = sum_invert_results_arlexecute(vis_comp_chunk_dirty_list)
+        error_dirty_list = sum_invert_results_rsexecute(vis_comp_chunk_dirty_list)
         
         # Actually compute the graph assembled above
-        error_dirty, sumwt = arlexecute.compute(error_dirty_list, sync=True)
+        error_dirty, sumwt = rsexecute.compute(error_dirty_list, sync=True)
         
         return error_dirty, sumwt
     

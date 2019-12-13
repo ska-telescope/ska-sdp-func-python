@@ -1,4 +1,4 @@
-""" Unit tests for pipelines expressed via arlexecute
+""" Unit tests for pipelines expressed via rsexecute
 """
 
 import logging
@@ -12,9 +12,9 @@ from astropy.coordinates import SkyCoord
 from rascil.data_models.memory_data_models import Image
 from rascil.data_models.memory_data_models import Skycomponent
 from rascil.data_models.polarisation import PolarisationFrame
-from rascil.workflows.arlexecute.skymodel.skymodel_arlexecute import predict_skymodel_list_arlexecute_workflow
-from rascil.wrappers.arlexecute.execution_support import ARLExecuteBase
-from rascil.wrappers.arlexecute.execution_support import get_dask_Client
+from rascil.workflows.rsexecute.skymodel.skymodel_rsexecute import predict_skymodel_list_rsexecute_workflow
+from rascil.wrappers.rsexecute.execution_support import rsexecuteBase
+from rascil.wrappers.rsexecute.execution_support import get_dask_Client
 from rascil.processing_components.simulation import ingest_unittest_visibility, \
     create_low_test_skymodel_from_gleam
 from rascil.processing_components.simulation import create_named_configuration
@@ -30,9 +30,9 @@ class TestSkyModel(unittest.TestCase):
     def setUp(self):
         
         client = get_dask_Client(memory_limit=4 * 1024 * 1024 * 1024, n_workers=4, dashboard_address=None)
-        global arlexecute
-        arlexecute = ARLExecuteBase(use_dask=True)
-        arlexecute.set_client(client, verbose=False)
+        global rsexecute
+        rsexecute = rsexecuteBase(use_dask=True)
+        rsexecute.set_client(client, verbose=False)
         
         from rascil.data_models.parameters import rascil_path
         self.dir = rascil_path('test_results')
@@ -40,9 +40,9 @@ class TestSkyModel(unittest.TestCase):
         self.persist = False
         
     def tearDown(self):
-        global arlexecute
-        arlexecute.close()
-        del arlexecute
+        global rsexecute
+        rsexecute.close()
+        del rsexecute
 
     
     def actualSetUp(self, freqwin=1, block=False, dopol=False, zerow=False):
@@ -75,7 +75,7 @@ class TestSkyModel(unittest.TestCase):
             f = numpy.array([100.0])
         
         self.phasecentre = SkyCoord(ra=+30.0 * u.deg, dec=-60.0 * u.deg, frame='icrs', equinox='J2000')
-        self.vis_list = [arlexecute.execute(ingest_unittest_visibility)(self.low,
+        self.vis_list = [rsexecute.execute(ingest_unittest_visibility)(self.low,
                                                                         [self.frequency[freqwin]],
                                                                         [self.channelwidth[freqwin]],
                                                                         self.times,
@@ -83,7 +83,7 @@ class TestSkyModel(unittest.TestCase):
                                                                         self.phasecentre, block=block,
                                                                         zerow=zerow)
                          for freqwin, _ in enumerate(self.frequency)]
-        self.vis_list = arlexecute.compute(self.vis_list)
+        self.vis_list = rsexecute.compute(self.vis_list)
     
     def test_time_setup(self):
         self.actualSetUp()
@@ -91,7 +91,7 @@ class TestSkyModel(unittest.TestCase):
     def test_predict(self):
         self.actualSetUp(zerow=True)
 
-        self.skymodel_list = [arlexecute.execute(create_low_test_skymodel_from_gleam)
+        self.skymodel_list = [rsexecute.execute(create_low_test_skymodel_from_gleam)
                               (npixel=self.npixel, cellsize=self.cellsize, frequency=[self.frequency[f]],
                                phasecentre=self.phasecentre,
                                polarisation_frame=PolarisationFrame("stokesI"),
@@ -99,23 +99,23 @@ class TestSkyModel(unittest.TestCase):
                                flux_threshold=1.0,
                                flux_max=5.0) for f, freq in enumerate(self.frequency)]
 
-        self.skymodel_list = arlexecute.compute(self.skymodel_list, sync=True)
+        self.skymodel_list = rsexecute.compute(self.skymodel_list, sync=True)
         assert isinstance(self.skymodel_list[0].image, Image), self.skymodel_list[0].image
         assert isinstance(self.skymodel_list[0].components[0], Skycomponent), self.skymodel_list[0].components[0]
         assert len(self.skymodel_list[0].components) == 25, len(self.skymodel_list[0].components)
         assert numpy.max(numpy.abs(self.skymodel_list[0].image.data)) > 0.0, "Image is empty"
 
-        self.skymodel_list = arlexecute.scatter(self.skymodel_list)
-        skymodel_vislist = predict_skymodel_list_arlexecute_workflow(self.vis_list[0],
+        self.skymodel_list = rsexecute.scatter(self.skymodel_list)
+        skymodel_vislist = predict_skymodel_list_rsexecute_workflow(self.vis_list[0],
                                                                      self.skymodel_list, context='2d')
-        skymodel_vislist = arlexecute.compute(skymodel_vislist, sync=True)
+        skymodel_vislist = rsexecute.compute(skymodel_vislist, sync=True)
         assert numpy.max(numpy.abs(skymodel_vislist[0].vis)) > 0.0
 
 
     def test_predict_nocomponents(self):
         self.actualSetUp(zerow=True)
 
-        self.skymodel_list = [arlexecute.execute(create_low_test_skymodel_from_gleam)
+        self.skymodel_list = [rsexecute.execute(create_low_test_skymodel_from_gleam)
                               (npixel=self.npixel, cellsize=self.cellsize, frequency=[self.frequency[f]],
                                phasecentre=self.phasecentre,
                                polarisation_frame=PolarisationFrame("stokesI"),
@@ -123,7 +123,7 @@ class TestSkyModel(unittest.TestCase):
                                flux_threshold=1.0,
                                flux_max=5.0) for f, freq in enumerate(self.frequency)]
 
-        self.skymodel_list = arlexecute.compute(self.skymodel_list, sync=True)
+        self.skymodel_list = rsexecute.compute(self.skymodel_list, sync=True)
         
         for i, sm in enumerate(self.skymodel_list):
             sm.components = []
@@ -131,16 +131,16 @@ class TestSkyModel(unittest.TestCase):
         assert isinstance(self.skymodel_list[0].image, Image), self.skymodel_list[0].image
         assert numpy.max(numpy.abs(self.skymodel_list[0].image.data)) > 0.0, "Image is empty"
 
-        self.skymodel_list = arlexecute.scatter(self.skymodel_list)
-        skymodel_vislist = predict_skymodel_list_arlexecute_workflow(self.vis_list[0], self.skymodel_list, context='2d')
-        skymodel_vislist = arlexecute.compute(skymodel_vislist, sync=True)
+        self.skymodel_list = rsexecute.scatter(self.skymodel_list)
+        skymodel_vislist = predict_skymodel_list_rsexecute_workflow(self.vis_list[0], self.skymodel_list, context='2d')
+        skymodel_vislist = rsexecute.compute(skymodel_vislist, sync=True)
         assert numpy.max(numpy.abs(skymodel_vislist[0].vis)) > 0.0
 
 
     def test_predict_noimage(self):
         self.actualSetUp(zerow=True)
 
-        self.skymodel_list = [arlexecute.execute(create_low_test_skymodel_from_gleam)
+        self.skymodel_list = [rsexecute.execute(create_low_test_skymodel_from_gleam)
                               (npixel=self.npixel, cellsize=self.cellsize, frequency=[self.frequency[f]],
                                phasecentre=self.phasecentre,
                                polarisation_frame=PolarisationFrame("stokesI"),
@@ -148,16 +148,16 @@ class TestSkyModel(unittest.TestCase):
                                flux_threshold=1.0,
                                flux_max=5.0) for f, freq in enumerate(self.frequency)]
 
-        self.skymodel_list = arlexecute.compute(self.skymodel_list, sync=True)
+        self.skymodel_list = rsexecute.compute(self.skymodel_list, sync=True)
         for i, sm in enumerate(self.skymodel_list):
             sm.image= None
             
         assert isinstance(self.skymodel_list[0].components[0], Skycomponent), self.skymodel_list[0].components[0]
         assert len(self.skymodel_list[0].components) == 25, len(self.skymodel_list[0].components)
 
-        self.skymodel_list = arlexecute.scatter(self.skymodel_list)
-        skymodel_vislist = predict_skymodel_list_arlexecute_workflow(self.vis_list[0], self.skymodel_list, context='2d')
-        skymodel_vislist = arlexecute.compute(skymodel_vislist, sync=True)
+        self.skymodel_list = rsexecute.scatter(self.skymodel_list)
+        skymodel_vislist = predict_skymodel_list_rsexecute_workflow(self.vis_list[0], self.skymodel_list, context='2d')
+        skymodel_vislist = rsexecute.compute(skymodel_vislist, sync=True)
         assert numpy.max(numpy.abs(skymodel_vislist[0].vis)) > 0.0
 
 

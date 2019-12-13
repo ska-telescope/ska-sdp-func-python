@@ -17,10 +17,10 @@ from rascil.processing_components.imaging.primary_beams import create_pb
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import create_visibility
 
-from rascil.workflows.arlexecute.image.image_arlexecute import image_arlexecute_map_workflow
+from rascil.workflows.rsexecute.image.image_rsexecute import image_rsexecute_map_workflow
 from rascil.processing_components.image.operations import export_image_to_fits
-from rascil.wrappers.arlexecute.execution_support import get_dask_Client
-from rascil.wrappers.arlexecute.execution_support import ARLExecuteBase
+from rascil.wrappers.rsexecute.execution_support import get_dask_Client
+from rascil.wrappers.rsexecute.execution_support import rsexecuteBase
 
 log = logging.getLogger(__name__)
 
@@ -28,9 +28,9 @@ log = logging.getLogger(__name__)
 class TestImageGraph(unittest.TestCase):
     def setUp(self):
         client = get_dask_Client(memory_limit=4 * 1024 * 1024 * 1024, n_workers=4, dashboard_address=None)
-        global arlexecute
-        arlexecute = ARLExecuteBase(use_dask=True)
-        arlexecute.set_client(client, verbose=False)
+        global rsexecute
+        rsexecute = rsexecuteBase(use_dask=True)
+        rsexecute.set_client(client, verbose=False)
 
         from rascil.data_models.parameters import rascil_path
         self.dir = rascil_path('test_results')
@@ -49,9 +49,9 @@ class TestImageGraph(unittest.TestCase):
         self.persist = False
 
     def tearDown(self):
-        global arlexecute
-        arlexecute.close()
-        del arlexecute
+        global rsexecute
+        rsexecute.close()
+        del rsexecute
 
     def createVis(self, config, dec=-35.0, rmax=None):
         self.config = create_named_configuration(config, rmax=rmax)
@@ -64,9 +64,9 @@ class TestImageGraph(unittest.TestCase):
     def test_map_create_pb(self):
         self.createVis(config='LOWBD2', rmax=1000.0)
         model = create_image_from_visibility(self.vis, cellsize=0.001, override_cellsize=False)
-        beam = image_arlexecute_map_workflow(model, create_pb, facets=4, pointingcentre=self.phasecentre,
+        beam = image_rsexecute_map_workflow(model, create_pb, facets=4, pointingcentre=self.phasecentre,
                                              telescope='MID')
-        beam = arlexecute.compute(beam, sync=True)
+        beam = rsexecute.compute(beam, sync=True)
         assert numpy.max(beam.data) > 0.0
-        if self.persist: export_image_to_fits(beam, "%s/test_image_arlexecute_scatter_gather.fits" % (self.dir))
+        if self.persist: export_image_to_fits(beam, "%s/test_image_rsexecute_scatter_gather.fits" % (self.dir))
             

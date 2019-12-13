@@ -14,11 +14,11 @@ from astropy.coordinates import SkyCoord
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.data_models.data_model_helpers import export_gaintable_to_hdf5
 
-from rascil.workflows.arlexecute.pipelines.pipeline_arlexecute import ical_list_arlexecute_workflow, \
-    continuum_imaging_list_arlexecute_workflow
+from rascil.workflows.rsexecute.pipelines.pipeline_rsexecute import ical_list_rsexecute_workflow, \
+    continuum_imaging_list_rsexecute_workflow
 from rascil.processing_components.calibration import  create_calibration_controls
-from rascil.wrappers.arlexecute.execution_support import ARLExecuteBase
-from rascil.wrappers.arlexecute.execution_support import get_dask_Client
+from rascil.wrappers.rsexecute.execution_support import rsexecuteBase
+from rascil.wrappers.rsexecute.execution_support import get_dask_Client
 from rascil.processing_components.image.operations import export_image_to_fits, qa_image, smooth_image
 from rascil.processing_components.imaging.base import predict_skycomponent_visibility
 from rascil.processing_components.simulation import ingest_unittest_visibility, \
@@ -40,15 +40,15 @@ class TestPipelineGraphs(unittest.TestCase):
     
     def setUp(self):
         client = get_dask_Client(memory_limit=4 * 1024 * 1024 * 1024, n_workers=4, dashboard_address=None)
-        global arlexecute
-        arlexecute = ARLExecuteBase(use_dask=True)
-        arlexecute.set_client(client, verbose=False)
+        global rsexecute
+        rsexecute = rsexecuteBase(use_dask=True)
+        rsexecute.set_client(client, verbose=False)
         from rascil.data_models.parameters import rascil_path
         self.dir = rascil_path('test_results')
         self.persist = True
     
     def tearDown(self):
-        arlexecute.close()
+        rsexecute.close()
 
     def actualSetUp(self, add_errors=False, nfreqwin=7, dospectral=True, dopol=False, zerow=True):
         
@@ -80,7 +80,7 @@ class TestPipelineGraphs(unittest.TestCase):
             flux = numpy.array([f])
         
         self.phasecentre = SkyCoord(ra=+180.0 * u.deg, dec=-60.0 * u.deg, frame='icrs', equinox='J2000')
-        self.blockvis_list = [arlexecute.execute(ingest_unittest_visibility, nout=1)(self.low,
+        self.blockvis_list = [rsexecute.execute(ingest_unittest_visibility, nout=1)(self.low,
                                                                                      [self.frequency[i]],
                                                                                      [self.channelwidth[i]],
                                                                                      self.times,
@@ -88,61 +88,61 @@ class TestPipelineGraphs(unittest.TestCase):
                                                                                      self.phasecentre, block=True,
                                                                                      zerow=zerow)
                               for i in range(nfreqwin)]
-        self.blockvis_list = arlexecute.compute(self.blockvis_list, sync=True)
-        self.blockvis_list = arlexecute.scatter(self.blockvis_list)
+        self.blockvis_list = rsexecute.compute(self.blockvis_list, sync=True)
+        self.blockvis_list = rsexecute.scatter(self.blockvis_list)
         
-        self.vis_list = [arlexecute.execute(convert_blockvisibility_to_visibility, nout=1)(bv) for bv in
+        self.vis_list = [rsexecute.execute(convert_blockvisibility_to_visibility, nout=1)(bv) for bv in
                          self.blockvis_list]
-        self.vis_list = arlexecute.compute(self.vis_list, sync=True)
-        self.vis_list = arlexecute.scatter(self.vis_list)
+        self.vis_list = rsexecute.compute(self.vis_list, sync=True)
+        self.vis_list = rsexecute.scatter(self.vis_list)
         
-        self.model_imagelist = [arlexecute.execute(create_unittest_model, nout=1)
+        self.model_imagelist = [rsexecute.execute(create_unittest_model, nout=1)
                                 (self.vis_list[i], self.image_pol, npixel=self.npixel, cellsize=0.0005)
                                 for i in range(nfreqwin)]
-        self.model_imagelist = arlexecute.compute(self.model_imagelist, sync=True)
-        self.model_imagelist = arlexecute.scatter(self.model_imagelist)
+        self.model_imagelist = rsexecute.compute(self.model_imagelist, sync=True)
+        self.model_imagelist = rsexecute.scatter(self.model_imagelist)
         
-        self.components_list = [arlexecute.execute(create_unittest_components)
+        self.components_list = [rsexecute.execute(create_unittest_components)
                                 (self.model_imagelist[freqwin], flux[freqwin, :][numpy.newaxis, :])
                                 for freqwin, m in enumerate(self.model_imagelist)]
-        self.components_list = arlexecute.compute(self.components_list, sync=True)
-        self.components_list = arlexecute.scatter(self.components_list)
+        self.components_list = rsexecute.compute(self.components_list, sync=True)
+        self.components_list = rsexecute.scatter(self.components_list)
         
-        self.blockvis_list = [arlexecute.execute(predict_skycomponent_visibility)
+        self.blockvis_list = [rsexecute.execute(predict_skycomponent_visibility)
                               (self.blockvis_list[freqwin], self.components_list[freqwin])
                               for freqwin, _ in enumerate(self.blockvis_list)]
-        self.blockvis_list = arlexecute.compute(self.blockvis_list, sync=True)
+        self.blockvis_list = rsexecute.compute(self.blockvis_list, sync=True)
         self.vis = self.blockvis_list[0]
-        self.blockvis_list = arlexecute.scatter(self.blockvis_list)
+        self.blockvis_list = rsexecute.scatter(self.blockvis_list)
         
-        self.model_imagelist = [arlexecute.execute(insert_skycomponent, nout=1)
+        self.model_imagelist = [rsexecute.execute(insert_skycomponent, nout=1)
                                 (self.model_imagelist[freqwin], self.components_list[freqwin])
                                 for freqwin in range(nfreqwin)]
-        self.model_imagelist = arlexecute.compute(self.model_imagelist, sync=True)
+        self.model_imagelist = rsexecute.compute(self.model_imagelist, sync=True)
         model = self.model_imagelist[0]
         self.cmodel = smooth_image(model)
         if self.persist:
-            export_image_to_fits(model, '%s/test_pipelines_arlexecute_model.fits' % self.dir)
-            export_image_to_fits(self.cmodel, '%s/test_pipelines_arlexecute_cmodel.fits' % self.dir)
+            export_image_to_fits(model, '%s/test_pipelines_rsexecute_model.fits' % self.dir)
+            export_image_to_fits(self.cmodel, '%s/test_pipelines_rsexecute_cmodel.fits' % self.dir)
         
         if add_errors:
             gt = create_gaintable_from_blockvisibility(self.vis)
             gt = simulate_gaintable(gt, phase_error=0.1, amplitude_error=0.0, smooth_channels=1, leakage=0.0)
-            self.blockvis_list = [arlexecute.execute(apply_gaintable, nout=1)
+            self.blockvis_list = [rsexecute.execute(apply_gaintable, nout=1)
                                   (self.blockvis_list[i], gt)
                                   for i in range(self.freqwin)]
-            self.blockvis_list = arlexecute.compute(self.blockvis_list, sync=True)
-            self.blockvis_list = arlexecute.scatter(self.blockvis_list)
+            self.blockvis_list = rsexecute.compute(self.blockvis_list, sync=True)
+            self.blockvis_list = rsexecute.scatter(self.blockvis_list)
         
-        self.vis_list = [arlexecute.execute(convert_blockvisibility_to_visibility)(bv) for bv in self.blockvis_list]
-        self.vis_list = arlexecute.compute(self.vis_list, sync=True)
-        self.vis_list = arlexecute.scatter(self.vis_list)
+        self.vis_list = [rsexecute.execute(convert_blockvisibility_to_visibility)(bv) for bv in self.blockvis_list]
+        self.vis_list = rsexecute.compute(self.vis_list, sync=True)
+        self.vis_list = rsexecute.scatter(self.vis_list)
         
-        self.model_imagelist = [arlexecute.execute(create_unittest_model, nout=1)
+        self.model_imagelist = [rsexecute.execute(create_unittest_model, nout=1)
                                 (self.vis_list[i], self.image_pol, npixel=self.npixel, cellsize=0.0005)
                                 for i in range(nfreqwin)]
-        self.model_imagelist = arlexecute.compute(self.model_imagelist, sync=True)
-        self.model_imagelist = arlexecute.scatter(self.model_imagelist)
+        self.model_imagelist = rsexecute.compute(self.model_imagelist, sync=True)
+        self.model_imagelist = rsexecute.scatter(self.model_imagelist)
     
     def test_time_setup(self):
         self.actualSetUp(add_errors=True)
@@ -150,7 +150,7 @@ class TestPipelineGraphs(unittest.TestCase):
     def test_continuum_imaging_pipeline(self):
         self.actualSetUp(add_errors=False, zerow=True)
         continuum_imaging_list = \
-            continuum_imaging_list_arlexecute_workflow(self.vis_list,
+            continuum_imaging_list_rsexecute_workflow(self.vis_list,
                                                        model_imagelist=self.model_imagelist,
                                                        context='2d',
                                                        algorithm='mmclean', facets=1,
@@ -161,15 +161,15 @@ class TestPipelineGraphs(unittest.TestCase):
                                                        deconvolve_facets=4, deconvolve_overlap=32,
                                                        deconvolve_taper='tukey', psf_support=64,
                                                        restore_facets=4, psfwidth=1.0)
-        clean, residual, restored = arlexecute.compute(continuum_imaging_list, sync=True)
+        clean, residual, restored = rsexecute.compute(continuum_imaging_list, sync=True)
         centre = len(clean) // 2
         if self.persist:
-            export_image_to_fits(clean[centre], '%s/test_pipelines_continuum_imaging_pipeline_arlexecute_clean.fits' %
+            export_image_to_fits(clean[centre], '%s/test_pipelines_continuum_imaging_pipeline_rsexecute_clean.fits' %
                                  self.dir)
             export_image_to_fits(residual[centre][0],
-                                 '%s/test_pipelines_continuum_imaging_pipeline_arlexecute_residual.fits' % self.dir)
+                                 '%s/test_pipelines_continuum_imaging_pipeline_rsexecute_residual.fits' % self.dir)
             export_image_to_fits(restored[centre],
-                                 '%s/test_pipelines_continuum_imaging_pipeline_arlexecute_restored.fits' % self.dir)
+                                 '%s/test_pipelines_continuum_imaging_pipeline_rsexecute_restored.fits' % self.dir)
     
         qa = qa_image(restored[centre])
         assert numpy.abs(qa.data['max'] - 100.13762476849081) < 1.0, str(qa)
@@ -178,7 +178,7 @@ class TestPipelineGraphs(unittest.TestCase):
     def test_continuum_imaging_pipeline_serialclean(self):
         self.actualSetUp(add_errors=False, zerow=True)
         continuum_imaging_list = \
-            continuum_imaging_list_arlexecute_workflow(self.vis_list,
+            continuum_imaging_list_rsexecute_workflow(self.vis_list,
                                                        model_imagelist=self.model_imagelist,
                                                        context='2d',
                                                        algorithm='mmclean', facets=1,
@@ -189,15 +189,15 @@ class TestPipelineGraphs(unittest.TestCase):
                                                        deconvolve_facets=4, deconvolve_overlap=32,
                                                        deconvolve_taper='tukey', psf_support=64,
                                                        use_serial_clean=True, restore_facets=4, psfwidth=1.0)
-        clean, residual, restored = arlexecute.compute(continuum_imaging_list, sync=True)
+        clean, residual, restored = rsexecute.compute(continuum_imaging_list, sync=True)
         centre = len(clean) // 2
         if self.persist:
-            export_image_to_fits(clean[centre], '%s/test_pipelines_continuum_imaging_pipeline_arlexecute_clean.fits' %
+            export_image_to_fits(clean[centre], '%s/test_pipelines_continuum_imaging_pipeline_rsexecute_clean.fits' %
                                  self.dir)
             export_image_to_fits(residual[centre][0],
-                                 '%s/test_pipelines_continuum_imaging_pipeline_arlexecute_residual.fits' % self.dir)
+                                 '%s/test_pipelines_continuum_imaging_pipeline_rsexecute_residual.fits' % self.dir)
             export_image_to_fits(restored[centre],
-                                 '%s/test_pipelines_continuum_imaging_pipeline_arlexecute_restored.fits' % self.dir)
+                                 '%s/test_pipelines_continuum_imaging_pipeline_rsexecute_restored.fits' % self.dir)
     
         qa = qa_image(restored[centre])
         assert numpy.abs(qa.data['max'] - 100.13762476849081) < 1.0, str(qa)
@@ -210,7 +210,7 @@ class TestPipelineGraphs(unittest.TestCase):
         controls['T']['timeslice'] = 'auto'
         
         ical_list = \
-            ical_list_arlexecute_workflow(self.vis_list,
+            ical_list_rsexecute_workflow(self.vis_list,
                                           model_imagelist=self.model_imagelist,
                                           context='2d',
                                           algorithm='mmclean', facets=1,
@@ -223,13 +223,13 @@ class TestPipelineGraphs(unittest.TestCase):
                                           restore_facets=4, psfwidth=1.0,
                                           calibration_context='T', controls=controls, do_selfcal=True,
                                           global_solution=False)
-        clean, residual, restored, gt_list = arlexecute.compute(ical_list, sync=True)
+        clean, residual, restored, gt_list = rsexecute.compute(ical_list, sync=True)
         centre = len(clean) // 2
         if self.persist:
-            export_image_to_fits(clean[centre], '%s/test_pipelines_ical_pipeline_arlexecute_clean.fits' % self.dir)
-            export_image_to_fits(residual[centre][0], '%s/test_pipelines_ical_pipeline_arlexecute_residual.fits' % self.dir)
-            export_image_to_fits(restored[centre], '%s/test_pipelines_ical_pipeline_arlexecute_restored.fits' % self.dir)
-            export_gaintable_to_hdf5(gt_list[centre]['T'], '%s/test_pipelines_ical_pipeline_arlexecute_gaintable.hdf5' %
+            export_image_to_fits(clean[centre], '%s/test_pipelines_ical_pipeline_rsexecute_clean.fits' % self.dir)
+            export_image_to_fits(residual[centre][0], '%s/test_pipelines_ical_pipeline_rsexecute_residual.fits' % self.dir)
+            export_image_to_fits(restored[centre], '%s/test_pipelines_ical_pipeline_rsexecute_restored.fits' % self.dir)
+            export_gaintable_to_hdf5(gt_list[centre]['T'], '%s/test_pipelines_ical_pipeline_rsexecute_gaintable.hdf5' %
                                      self.dir)
         
         qa = qa_image(restored[centre])
@@ -243,7 +243,7 @@ class TestPipelineGraphs(unittest.TestCase):
         controls['T']['timeslice'] = 'auto'
         
         ical_list = \
-            ical_list_arlexecute_workflow(self.vis_list,
+            ical_list_rsexecute_workflow(self.vis_list,
                                           model_imagelist=self.model_imagelist,
                                           context='2d',
                                           algorithm='mmclean', facets=1,
@@ -256,14 +256,14 @@ class TestPipelineGraphs(unittest.TestCase):
                                           restore_facets=4, psfwidth=1.0,
                                           calibration_context='T', controls=controls, do_selfcal=True,
                                           global_solution=True)
-        clean, residual, restored, gt_list = arlexecute.compute(ical_list, sync=True)
+        clean, residual, restored, gt_list = rsexecute.compute(ical_list, sync=True)
         centre = len(clean) // 2
         if self.persist:
-            export_image_to_fits(clean[centre], '%s/test_pipelines_ical_global_pipeline_arlexecute_clean.fits' % self.dir)
-            export_image_to_fits(residual[centre][0], '%s/test_pipelines_ical_global_pipeline_arlexecute_residual.fits' % self.dir)
-            export_image_to_fits(restored[centre], '%s/test_pipelines_ical_global_pipeline_arlexecute_restored.fits' % self.dir)
+            export_image_to_fits(clean[centre], '%s/test_pipelines_ical_global_pipeline_rsexecute_clean.fits' % self.dir)
+            export_image_to_fits(residual[centre][0], '%s/test_pipelines_ical_global_pipeline_rsexecute_residual.fits' % self.dir)
+            export_image_to_fits(restored[centre], '%s/test_pipelines_ical_global_pipeline_rsexecute_restored.fits' % self.dir)
             export_gaintable_to_hdf5(gt_list[0]['T'],
-                                     '%s/test_pipelines_ical_global_pipeline_arlexecute_gaintable.hdf5' %
+                                     '%s/test_pipelines_ical_global_pipeline_rsexecute_gaintable.hdf5' %
                                      self.dir)
 
         qa = qa_image(restored[centre])

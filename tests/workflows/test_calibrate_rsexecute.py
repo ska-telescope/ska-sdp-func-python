@@ -12,11 +12,11 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 
 from rascil.data_models.polarisation import PolarisationFrame
-from rascil.workflows.arlexecute.calibration.calibration_arlexecute import calibrate_list_arlexecute_workflow
+from rascil.workflows.rsexecute.calibration.calibration_rsexecute import calibrate_list_rsexecute_workflow
 from rascil.processing_components.calibration import  create_calibration_controls
 from rascil.processing_components.calibration.operations import create_gaintable_from_blockvisibility, apply_gaintable
-from rascil.wrappers.arlexecute.execution_support import ARLExecuteBase
-from rascil.wrappers.arlexecute.execution_support import get_dask_Client
+from rascil.wrappers.rsexecute.execution_support import rsexecuteBase
+from rascil.wrappers.rsexecute.execution_support import get_dask_Client
 from rascil.processing_components.simulation import ingest_unittest_visibility
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import simulate_gaintable
@@ -33,9 +33,9 @@ class TestCalibrateGraphs(unittest.TestCase):
     
     def setUp(self):
         client = get_dask_Client(memory_limit=4 * 1024 * 1024 * 1024, n_workers=4, dashboard_address=None)
-        global arlexecute
-        arlexecute = ARLExecuteBase(use_dask=True)
-        arlexecute.set_client(client, verbose=False)
+        global rsexecute
+        rsexecute = rsexecuteBase(use_dask=True)
+        rsexecute.set_client(client, verbose=False)
     
         from rascil.data_models.parameters import rascil_path
         self.dir = rascil_path('test_results')
@@ -43,9 +43,9 @@ class TestCalibrateGraphs(unittest.TestCase):
         self.persist = False
     
     def tearDown(self):
-        global arlexecute
-        arlexecute.close()
-        del arlexecute
+        global rsexecute
+        rsexecute.close()
+        del rsexecute
         
     def actualSetUp(self, nfreqwin=3, dospectral=True, dopol=False,
                     amp_errors=None, phase_errors=None, zerow=True):
@@ -83,7 +83,7 @@ class TestCalibrateGraphs(unittest.TestCase):
             flux = numpy.array([f])
         
         self.phasecentre = SkyCoord(ra=+180.0 * u.deg, dec=-60.0 * u.deg, frame='icrs', equinox='J2000')
-        self.blockvis_list = [arlexecute.execute(ingest_unittest_visibility, nout=1)(self.low,
+        self.blockvis_list = [rsexecute.execute(ingest_unittest_visibility, nout=1)(self.low,
                                                                                      [self.frequency[i]],
                                                                                      [self.channelwidth[i]],
                                                                                      self.times,
@@ -91,26 +91,26 @@ class TestCalibrateGraphs(unittest.TestCase):
                                                                                      self.phasecentre, block=True,
                                                                                      zerow=zerow)
                               for i in range(nfreqwin)]
-        self.blockvis_list = arlexecute.compute(self.blockvis_list, sync=True)
+        self.blockvis_list = rsexecute.compute(self.blockvis_list, sync=True)
         
         for v in self.blockvis_list:
             v.data['vis'][...] = 1.0 + 0.0j
         
-        self.error_blockvis_list = [arlexecute.execute(copy_visibility(v)) for v in self.blockvis_list]
-        gt = arlexecute.execute(create_gaintable_from_blockvisibility)(self.blockvis_list[0])
-        gt = arlexecute.execute(simulate_gaintable)(gt, phase_error=0.1, amplitude_error=0.0, smooth_channels=1,
+        self.error_blockvis_list = [rsexecute.execute(copy_visibility(v)) for v in self.blockvis_list]
+        gt = rsexecute.execute(create_gaintable_from_blockvisibility)(self.blockvis_list[0])
+        gt = rsexecute.execute(simulate_gaintable)(gt, phase_error=0.1, amplitude_error=0.0, smooth_channels=1,
                                                     leakage=0.0, seed=180555)
-        self.error_blockvis_list = [arlexecute.execute(apply_gaintable)(self.error_blockvis_list[i], gt)
+        self.error_blockvis_list = [rsexecute.execute(apply_gaintable)(self.error_blockvis_list[i], gt)
                                     for i in range(self.freqwin)]
         
-        self.error_blockvis_list = arlexecute.compute(self.error_blockvis_list, sync=True)
+        self.error_blockvis_list = rsexecute.compute(self.error_blockvis_list, sync=True)
     
         assert numpy.max(numpy.abs(self.error_blockvis_list[0].vis - self.blockvis_list[0].vis)) > 0.0
     
     def test_time_setup(self):
         self.actualSetUp()
 
-    def test_calibrate_arlexecute(self):
+    def test_calibrate_rsexecute(self):
         amp_errors = {'T': 0.0, 'G': 0.0}
         phase_errors = {'T': 1.0, 'G': 0.0}
         self.actualSetUp(amp_errors=amp_errors, phase_errors=phase_errors)
@@ -120,16 +120,16 @@ class TestCalibrateGraphs(unittest.TestCase):
         controls['T']['timeslice'] = 'auto'
     
         calibrate_list = \
-            calibrate_list_arlexecute_workflow(self.error_blockvis_list, self.blockvis_list,
+            calibrate_list_rsexecute_workflow(self.error_blockvis_list, self.blockvis_list,
                                                calibration_context='T', controls=controls, do_selfcal=True,
                                                global_solution=False)
-        calibrate_list = arlexecute.compute(calibrate_list, sync=True)
+        calibrate_list = rsexecute.compute(calibrate_list, sync=True)
     
         assert len(calibrate_list) == 2
         assert numpy.max(calibrate_list[1][0]['T'].residual) < 7e-6, numpy.max(calibrate_list[1][0]['T'].residual)
         assert numpy.max(numpy.abs(calibrate_list[0][0].vis - self.blockvis_list[0].vis)) < 2e-6
 
-    def test_calibrate_arlexecute_empty(self):
+    def test_calibrate_rsexecute_empty(self):
         amp_errors = {'T': 0.0, 'G': 0.0}
         phase_errors = {'T': 1.0, 'G': 0.0}
         self.actualSetUp(amp_errors=amp_errors, phase_errors=phase_errors)
@@ -142,13 +142,13 @@ class TestCalibrateGraphs(unittest.TestCase):
         controls['T']['timeslice'] = 'auto'
 
         calibrate_list = \
-            calibrate_list_arlexecute_workflow(self.error_blockvis_list, self.blockvis_list,
+            calibrate_list_rsexecute_workflow(self.error_blockvis_list, self.blockvis_list,
                                                calibration_context='T', controls=controls, do_selfcal=True,
                                                global_solution=False)
-        calibrate_list = arlexecute.compute(calibrate_list, sync=True)
+        calibrate_list = rsexecute.compute(calibrate_list, sync=True)
         assert len(calibrate_list[1][0]) > 0
 
-    def test_calibrate_arlexecute_global(self):
+    def test_calibrate_rsexecute_global(self):
         amp_errors = {'T': 0.0, 'G': 0.0}
         phase_errors = {'T': 1.0, 'G': 0.0}
         self.actualSetUp(amp_errors=amp_errors, phase_errors=phase_errors)
@@ -158,18 +158,18 @@ class TestCalibrateGraphs(unittest.TestCase):
         controls['T']['timeslice'] = 'auto'
         
         calibrate_list = \
-            calibrate_list_arlexecute_workflow(self.error_blockvis_list, self.blockvis_list,
+            calibrate_list_rsexecute_workflow(self.error_blockvis_list, self.blockvis_list,
                                                calibration_context='T', controls=controls, do_selfcal=True,
                                                global_solution=True)
 
-        calibrate_list = arlexecute.compute(calibrate_list, sync=True)
+        calibrate_list = rsexecute.compute(calibrate_list, sync=True)
 
         assert len(calibrate_list) == 2
         assert numpy.max(calibrate_list[1][0]['T'].residual) < 7e-6, numpy.max(calibrate_list[1][0]['T'].residual)
         err = numpy.max(numpy.abs(calibrate_list[0][0].vis - self.blockvis_list[0].vis))
         assert err < 2e-6, err
 
-    def test_calibrate_arlexecute_global_empty(self):
+    def test_calibrate_rsexecute_global_empty(self):
         amp_errors = {'T': 0.0, 'G': 0.0}
         phase_errors = {'T': 1.0, 'G': 0.0}
         self.actualSetUp(amp_errors=amp_errors, phase_errors=phase_errors)
@@ -182,11 +182,11 @@ class TestCalibrateGraphs(unittest.TestCase):
         controls['T']['timeslice'] = 'auto'
     
         calibrate_list = \
-            calibrate_list_arlexecute_workflow(self.error_blockvis_list, self.blockvis_list,
+            calibrate_list_rsexecute_workflow(self.error_blockvis_list, self.blockvis_list,
                                                calibration_context='T', controls=controls, do_selfcal=True,
                                                global_solution=True)
 
-        calibrate_list = arlexecute.compute(calibrate_list, sync=True)
+        calibrate_list = rsexecute.compute(calibrate_list, sync=True)
         assert len(calibrate_list[1][0]) > 0
 
 if __name__ == '__main__':
