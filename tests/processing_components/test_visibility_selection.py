@@ -1,23 +1,25 @@
-""" Unit tests for visibility operations
-
+"""Unit tests for visibility selectors
 
 """
-
+import logging
 import unittest
 
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.memory_data_models import Skycomponent
-from rascil.data_models.polarisation import PolarisationFrame
-from rascil.processing_components import create_flagtable_from_blockvisibility, \
-    create_blockvisibility, flagtable_select, flagtable_groupby, flagtable_groupby_bins, \
-    flagtable_where
+from rascil.data_models import PolarisationFrame
 from rascil.processing_components.simulation import create_named_configuration
+from rascil.processing_components.visibility import blockvisibility_select, blockvisibility_groupby, \
+    blockvisibility_groupby_bins, blockvisibility_where
+from rascil.processing_components.visibility.base import create_blockvisibility
+
+log = logging.getLogger('rascil-logger')
+
+log.setLevel(logging.WARNING)
 
 
-class TestFlagTableOperations(unittest.TestCase):
+class TestVisibilitySelectors(unittest.TestCase):
     def setUp(self):
         self.lowcore = create_named_configuration('LOWBD2-CORE')
         self.times = (numpy.pi / 43200.0) * numpy.arange(0.0, 300.0, 30.0)
@@ -31,66 +33,68 @@ class TestFlagTableOperations(unittest.TestCase):
         # The phase centre is absolute and the component is specified relative (for now).
         # This means that the component should end up at the position phasecentre+compredirection
         self.phasecentre = SkyCoord(ra=+180.0 * u.deg, dec=-35.0 * u.deg, frame='icrs', equinox='J2000')
-        self.compabsdirection = SkyCoord(ra=+181.0 * u.deg, dec=-35.0 * u.deg, frame='icrs', equinox='J2000')
-        pcof = self.phasecentre.skyoffset_frame()
-        self.compreldirection = self.compabsdirection.transform_to(pcof)
-        self.comp = Skycomponent(direction=self.compreldirection, frequency=self.frequency, flux=self.flux)
     
-    def test_create_flagtable(self):
-        bvis = create_blockvisibility(self.lowcore, self.times, self.frequency,
-                                      channel_bandwidth=self.channel_bandwidth,
-                                      phasecentre=self.phasecentre,
-                                      polarisation_frame=self.polarisation_frame,
-                                      weight=1.0)
-        ft = create_flagtable_from_blockvisibility(bvis)
-        assert ft.flags.shape == bvis.vis.shape
-
-    def test_flagtable_groupby_time(self):
+    def test_blockvisibility_groupby_time(self):
         bvis = create_blockvisibility(self.lowcore, self.times, self.frequency,
                                       channel_bandwidth=self.channel_bandwidth,
                                       polarisation_frame=self.polarisation_frame,
                                       phasecentre=self.phasecentre, weight=1.0)
-        ft = create_flagtable_from_blockvisibility(bvis)
-        times = numpy.array([result[0] for result in flagtable_groupby(ft, "time")])
+        times = numpy.array([result[0] for result in blockvisibility_groupby(bvis, "time")])
         assert times.all() == bvis.time.all()
 
-    def test_flagtable_groupby_bins_time(self):
+    def test_blockvisibility_groupby_bins_time(self):
         bvis = create_blockvisibility(self.lowcore, self.times, self.frequency,
                                       channel_bandwidth=self.channel_bandwidth,
                                       polarisation_frame=self.polarisation_frame,
                                       phasecentre=self.phasecentre, weight=1.0)
-        ft = create_flagtable_from_blockvisibility(bvis)
-        for result in flagtable_groupby_bins(ft, "time", 3):
+        for result in blockvisibility_groupby_bins(bvis, "time", 3):
             print(result[0])
 
-    def test_flagtable_where(self):
+    def test_blockvisibility_where(self):
         bvis = create_blockvisibility(self.lowcore, self.times, self.frequency,
                                       channel_bandwidth=self.channel_bandwidth,
                                       polarisation_frame=self.polarisation_frame,
                                       phasecentre=self.phasecentre, weight=1.0)
-        ft = create_flagtable_from_blockvisibility(bvis)
-        print(flagtable_where(ft, ft.data["flags"]==0))
+        selected_vis = blockvisibility_where(bvis, bvis.data["flags"] == 0)
+        print(selected_vis)
+        print(bvis.size(), selected_vis.size())
 
-    def test_flagtable_select_time(self):
+    def test_blockvisibility_where_absu(self):
         bvis = create_blockvisibility(self.lowcore, self.times, self.frequency,
                                       channel_bandwidth=self.channel_bandwidth,
                                       polarisation_frame=self.polarisation_frame,
                                       phasecentre=self.phasecentre, weight=1.0)
-        ft = create_flagtable_from_blockvisibility(bvis)
-        times = ft.time
-        selected_ft = flagtable_select(ft, {"time": slice(times[1], times[2])})
-        assert len(selected_ft.time) == 2
+        print(bvis)
+        selected_vis = blockvisibility_where(bvis, numpy.abs(bvis.u_lambda) < 30.0)
+        print(selected_vis)
+        print(bvis.size(), selected_vis.size())
 
-    def test_flagtable_select_frequency(self):
+    def test_blockvisibility_select_time(self):
         bvis = create_blockvisibility(self.lowcore, self.times, self.frequency,
                                       channel_bandwidth=self.channel_bandwidth,
                                       polarisation_frame=self.polarisation_frame,
                                       phasecentre=self.phasecentre, weight=1.0)
-        ft = create_flagtable_from_blockvisibility(bvis)
-        frequency = ft.frequency
-        selected_ft = flagtable_select(ft, {"frequency": slice(frequency[1], frequency[2])})
-        assert len(selected_ft.frequency) == 2
-
-
-if __name__ == '__main__':
-    unittest.main()
+        times = bvis.time
+        selected_bvis = blockvisibility_select(bvis, {"time": slice(times[1], times[2])})
+        assert len(selected_bvis.time) == 2
+    
+    def test_blockvisibility_select_frequency(self):
+        bvis = create_blockvisibility(self.lowcore, self.times, self.frequency,
+                                      channel_bandwidth=self.channel_bandwidth,
+                                      polarisation_frame=self.polarisation_frame,
+                                      phasecentre=self.phasecentre, weight=1.0)
+        frequency = bvis.frequency
+        selected_bvis = blockvisibility_select(bvis, {"frequency": slice(frequency[1], frequency[2])})
+        assert len(selected_bvis.frequency) == 2
+    
+    def test_blockvisibility_select_multiple(self):
+        bvis = create_blockvisibility(self.lowcore, self.times, self.frequency,
+                                      channel_bandwidth=self.channel_bandwidth,
+                                      polarisation_frame=self.polarisation_frame,
+                                      phasecentre=self.phasecentre, weight=1.0)
+        frequency = bvis.frequency
+        selected_bvis = blockvisibility_select(bvis, {"frequency": slice(frequency[1], frequency[2]),
+                                                      "polarisation": ["XX", "YY"],
+                                                      "uvw_index": ["u", "v"]})
+        print(selected_bvis)
+        assert len(selected_bvis.frequency) == 2
