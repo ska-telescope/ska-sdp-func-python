@@ -60,7 +60,10 @@ class TestGridDataGridding(unittest.TestCase):
         self.persist = os.getenv("RASCIL_PERSIST", False)
 
     def actualSetUp(
-        self, zerow=True, image_pol=PolarisationFrame("stokesIQUV"), test_skipped=False
+        self,
+        zerow=True,
+        image_pol=PolarisationFrame("stokesIQUV"),
+        test_ignored_visibilities=False,
     ):
         self.doplot = False
         self.npixel = 256
@@ -112,7 +115,7 @@ class TestGridDataGridding(unittest.TestCase):
             self.phasecentre,
             zerow=zerow,
         )
-        if test_skipped:
+        if test_ignored_visibilities:
             self.cellsize = 1 / (
                 2 * numpy.min(self.vis.uvw_lambda.data[..., 0, 0].flat)
             )
@@ -314,8 +317,8 @@ class TestGridDataGridding(unittest.TestCase):
             )
         self.check_peaks(im, 97.13206509100314)
 
-    def test_griddata_invert_wterm_skipped(self):
-        self.actualSetUp(zerow=False, test_skipped=True)
+    def test_griddata_invert_wterm_ignored_visibilities(self):
+        self.actualSetUp(zerow=False, test_ignored_visibilities=True)
         gcf, cf = create_awterm_convolutionfunction(
             self.model,
             nw=100,
@@ -337,7 +340,7 @@ class TestGridDataGridding(unittest.TestCase):
         im = convert_polimage_to_stokes(cim)
         if self.persist:
             export_image_to_fits(
-                im, "%s/test_gridding_dirty_wterm_skipped.fits" % self.results_dir
+                im, "%s/test_gridding_dirty_wterm_ingored.fits" % self.results_dir
             )
         self.check_peaks(im, 95.2816352307504)
 
@@ -524,9 +527,11 @@ class TestGridDataGridding(unittest.TestCase):
             )
         self.check_peaks(im, 99.40822097)
 
-    def test_griddata_blockvisibility_weight_with_uniform_skipped(self):
+    def test_griddata_blockvisibility_weight_with_uniform_ignore_visibilities(self):
         self.actualSetUp(
-            zerow=True, image_pol=PolarisationFrame("stokesIQUV"), test_skipped=True
+            zerow=True,
+            image_pol=PolarisationFrame("stokesIQUV"),
+            test_ignored_visibilities=True,
         )
         gcf, cf = create_pswf_convolutionfunction(
             self.model, polarisation_frame=self.vis_pol
@@ -545,14 +550,16 @@ class TestGridDataGridding(unittest.TestCase):
         if self.persist:
             export_image_to_fits(
                 im,
-                "%s/test_gridding_dirty_2d_uniform_skipped_block.fits"
+                "%s/test_gridding_dirty_2d_uniform_ignored_block.fits"
                 % self.results_dir,
             )
         self.check_peaks(im, 97.67984589114039)
 
-    def test_griddata_blockvisibility_weight_with_robust_skipped(self):
+    def test_griddata_blockvisibility_weight_with_robust_ignore_visibilities(self):
         self.actualSetUp(
-            zerow=True, image_pol=PolarisationFrame("stokesIQUV"), test_skipped=True
+            zerow=True,
+            image_pol=PolarisationFrame("stokesIQUV"),
+            test_ignored_visibilities=True,
         )
         gcf, cf = create_pswf_convolutionfunction(
             self.model, polarisation_frame=self.vis_pol
@@ -571,7 +578,7 @@ class TestGridDataGridding(unittest.TestCase):
         if self.persist:
             export_image_to_fits(
                 im,
-                "%s/test_gridding_dirty_2d_robust_skipped_block.fits"
+                "%s/test_gridding_dirty_2d_robust_ignored_block.fits"
                 % self.results_dir,
             )
         self.check_peaks(im, 98.15651201797554)
