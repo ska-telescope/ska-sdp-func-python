@@ -60,10 +60,10 @@ class TestGridDataGridding(unittest.TestCase):
         self.persist = os.getenv("RASCIL_PERSIST", False)
 
     def actualSetUp(
-            self,
-            zerow=True,
-            image_pol=PolarisationFrame("stokesIQUV"),
-            test_ignored_visibilities=False,
+        self,
+        zerow=True,
+        image_pol=PolarisationFrame("stokesIQUV"),
+        test_ignored_visibilities=False,
     ):
 
         self.doplot = False
@@ -118,7 +118,7 @@ class TestGridDataGridding(unittest.TestCase):
         )
         if test_ignored_visibilities:
             self.cellsize = 1 / (
-                    2 * numpy.min(self.vis.uvw_lambda.data[..., 0, 0].flat)
+                2 * numpy.min(self.vis.uvw_lambda.data[..., 0, 0].flat)
             )
 
         self.model = create_unittest_model(
@@ -366,14 +366,14 @@ class TestGridDataGridding(unittest.TestCase):
             self.model, polarisation_frame=self.vis_pol
         )
         assert (
-                cf.convolutionfunction_acc.cf_wcs.wcs.cdelt[0]
-                == griddata.griddata_acc.griddata_wcs.wcs.cdelt[0]
+            cf.convolutionfunction_acc.cf_wcs.wcs.cdelt[0]
+            == griddata.griddata_acc.griddata_wcs.wcs.cdelt[0]
         ), str(cf.convolutionfunction_acc.cf_wcs.wcs.cdelt[:2]) + str(
             griddata.griddata_acc.griddata_wcs.wcs.cdelt[:2]
         )
         assert (
-                cf.convolutionfunction_acc.cf_wcs.wcs.cdelt[1]
-                == griddata.griddata_acc.griddata_wcs.wcs.cdelt[1]
+            cf.convolutionfunction_acc.cf_wcs.wcs.cdelt[1]
+            == griddata.griddata_acc.griddata_wcs.wcs.cdelt[1]
         ), str(cf.convolutionfunction_acc.cf_wcs.wcs.cdelt[:2]) + str(
             griddata.griddata_acc.griddata_wcs.wcs.cdel[:2]
         )
@@ -558,7 +558,9 @@ class TestGridDataGridding(unittest.TestCase):
         ]
         assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
         gd, sumwt = griddata_merge_weights(gd_list)
-        assert numpy.isclose(numpy.sum(numpy.abs(gd["pixels"].data)), numpy.sum(sumwt), atol=1e-11)
+        assert numpy.isclose(
+            numpy.sum(numpy.abs(gd["pixels"].data)), numpy.sum(sumwt), atol=1e-11
+        )
         assert numpy.isclose(numpy.sum(sumwt), 3327480.0, atol=1e-11)
 
     def test_griddata_blockvisibility_reweight_ignore_visibilities(self):
@@ -574,8 +576,11 @@ class TestGridDataGridding(unittest.TestCase):
         assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
         gd, _ = griddata_merge_weights(gd_list)
         self.vis = griddata_blockvisibility_reweight(self.vis, gd)
-        assert numpy.isclose(numpy.sum(self.vis.blockvisibility_acc.flagged_imaging_weight), 10259.6, atol=1e-11)
-
+        assert numpy.isclose(
+            numpy.sum(self.vis.blockvisibility_acc.flagged_imaging_weight),
+            10259.6,
+            atol=1e-11,
+        )
 
     def test_grid_blockvisibility_to_griddata_ignore_visibilities(self):
         self.actualSetUp(
@@ -595,14 +600,16 @@ class TestGridDataGridding(unittest.TestCase):
         gd, _ = griddata_merge_weights(gd_list)
         self.vis = griddata_blockvisibility_reweight(self.vis, gd)
         gd, sumwt = grid_blockvisibility_to_griddata(self.vis, griddata=gd, cf=cf)
-        assert numpy.isclose(numpy.sum(numpy.abs(gd["pixels"].data)), 1235383.2942437963, atol=1e-11)
+        assert numpy.isclose(
+            numpy.sum(numpy.abs(gd["pixels"].data)), 1235383.2942437963, atol=1e-11
+        )
         assert numpy.isclose(numpy.sum(sumwt), 10253.599999999533, atol=1e-11)
 
     def plot_vis(self, newvis, title=""):
         if self.doplot:
             import matplotlib.pyplot as plt
 
-            r = numpy.sqrt(newvis.u ** 2 + newvis.v ** 2)
+            r = numpy.sqrt(newvis.u**2 + newvis.v**2)
             for pol in range(4):
                 plt.plot(newvis.w, numpy.real(newvis.vis[:, pol]), ".")
             plt.xlim(150, 300)
