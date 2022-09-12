@@ -552,14 +552,18 @@ class TestGridDataGridding(unittest.TestCase):
             image_pol=PolarisationFrame("stokesIQUV"),
             test_ignored_visibilities=True,
         )
-        gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
+        grid_data = create_griddata_from_image(
+            self.model, polarisation_frame=self.vis_pol
+        )
         gd_list = [
-            grid_blockvisibility_weight_to_griddata(self.vis, gd) for i in range(10)
+            grid_blockvisibility_weight_to_griddata(self.vis, grid_data)
+            for i in range(10)
         ]
         assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
-        gd, sumwt = griddata_merge_weights(gd_list)
+        grid_data, sumwt = griddata_merge_weights(gd_list)
+        # Using sum to judge the correctness after ignored some visbilities
         assert numpy.isclose(
-            numpy.sum(numpy.abs(gd["pixels"].data)), numpy.sum(sumwt), atol=1e-11
+            numpy.sum(numpy.abs(grid_data["pixels"].data)), numpy.sum(sumwt), atol=1e-11
         )
         assert numpy.isclose(numpy.sum(sumwt), 3327480.0, atol=1e-11)
 
