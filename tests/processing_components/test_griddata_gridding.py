@@ -60,11 +60,12 @@ class TestGridDataGridding(unittest.TestCase):
         self.persist = os.getenv("RASCIL_PERSIST", False)
 
     def actualSetUp(
-        self,
-        zerow=True,
-        image_pol=PolarisationFrame("stokesIQUV"),
-        test_ignored_visibilities=False,
+            self,
+            zerow=True,
+            image_pol=PolarisationFrame("stokesIQUV"),
+            test_ignored_visibilities=False,
     ):
+
         self.doplot = False
         self.npixel = 256
         self.cellsize = 0.0009
@@ -117,8 +118,9 @@ class TestGridDataGridding(unittest.TestCase):
         )
         if test_ignored_visibilities:
             self.cellsize = 1 / (
-                2 * numpy.min(self.vis.uvw_lambda.data[..., 0, 0].flat)
+                    2 * numpy.min(self.vis.uvw_lambda.data[..., 0, 0].flat)
             )
+
         self.model = create_unittest_model(
             self.vis,
             self.image_pol,
@@ -317,33 +319,6 @@ class TestGridDataGridding(unittest.TestCase):
             )
         self.check_peaks(im, 97.13206509100314)
 
-    def test_griddata_invert_wterm_ignored_visibilities(self):
-        self.actualSetUp(zerow=False, test_ignored_visibilities=True)
-        gcf, cf = create_awterm_convolutionfunction(
-            self.model,
-            nw=100,
-            wstep=8.0,
-            oversampling=4,
-            support=32,
-            use_aaf=True,
-            polarisation_frame=self.vis_pol,
-        )
-
-        griddata = create_griddata_from_image(
-            self.model, polarisation_frame=self.vis_pol
-        )
-        griddata, sumwt = grid_blockvisibility_to_griddata(
-            self.vis, griddata=griddata, cf=cf
-        )
-        cim = fft_griddata_to_image(griddata, gcf, gcf)
-        cim = normalise_sumwt(cim, sumwt)
-        im = convert_polimage_to_stokes(cim)
-        if self.persist:
-            export_image_to_fits(
-                im, "%s/test_gridding_dirty_wterm_ingored.fits" % self.results_dir
-            )
-        self.check_peaks(im, 95.2816352307504)
-
     def test_griddata_invert_wterm_noover(self):
         self.actualSetUp(zerow=False)
         gcf, cf = create_awterm_convolutionfunction(
@@ -391,14 +366,14 @@ class TestGridDataGridding(unittest.TestCase):
             self.model, polarisation_frame=self.vis_pol
         )
         assert (
-            cf.convolutionfunction_acc.cf_wcs.wcs.cdelt[0]
-            == griddata.griddata_acc.griddata_wcs.wcs.cdelt[0]
+                cf.convolutionfunction_acc.cf_wcs.wcs.cdelt[0]
+                == griddata.griddata_acc.griddata_wcs.wcs.cdelt[0]
         ), str(cf.convolutionfunction_acc.cf_wcs.wcs.cdelt[:2]) + str(
             griddata.griddata_acc.griddata_wcs.wcs.cdelt[:2]
         )
         assert (
-            cf.convolutionfunction_acc.cf_wcs.wcs.cdelt[1]
-            == griddata.griddata_acc.griddata_wcs.wcs.cdelt[1]
+                cf.convolutionfunction_acc.cf_wcs.wcs.cdelt[1]
+                == griddata.griddata_acc.griddata_wcs.wcs.cdelt[1]
         ), str(cf.convolutionfunction_acc.cf_wcs.wcs.cdelt[:2]) + str(
             griddata.griddata_acc.griddata_wcs.wcs.cdel[:2]
         )
@@ -527,62 +502,6 @@ class TestGridDataGridding(unittest.TestCase):
             )
         self.check_peaks(im, 99.40822097)
 
-    def test_griddata_blockvisibility_weight_with_uniform_ignore_visibilities(self):
-        self.actualSetUp(
-            zerow=True,
-            image_pol=PolarisationFrame("stokesIQUV"),
-            test_ignored_visibilities=True,
-        )
-        gcf, cf = create_pswf_convolutionfunction(
-            self.model, polarisation_frame=self.vis_pol
-        )
-        gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
-        gd_list = [
-            grid_blockvisibility_weight_to_griddata(self.vis, gd) for i in range(10)
-        ]
-        assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
-        gd, sumwt = griddata_merge_weights(gd_list)
-        self.vis = griddata_blockvisibility_reweight(self.vis, gd)
-        gd, sumwt = grid_blockvisibility_to_griddata(self.vis, griddata=gd, cf=cf)
-        cim = fft_griddata_to_image(gd, gcf, gcf)
-        cim = normalise_sumwt(cim, sumwt)
-        im = convert_polimage_to_stokes(cim)
-        if self.persist:
-            export_image_to_fits(
-                im,
-                "%s/test_gridding_dirty_2d_uniform_ignored_block.fits"
-                % self.results_dir,
-            )
-        self.check_peaks(im, 97.67984589114039)
-
-    def test_griddata_blockvisibility_weight_with_robust_ignore_visibilities(self):
-        self.actualSetUp(
-            zerow=True,
-            image_pol=PolarisationFrame("stokesIQUV"),
-            test_ignored_visibilities=True,
-        )
-        gcf, cf = create_pswf_convolutionfunction(
-            self.model, polarisation_frame=self.vis_pol
-        )
-        gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
-        gd_list = [
-            grid_blockvisibility_weight_to_griddata(self.vis, gd) for i in range(10)
-        ]
-        assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
-        gd, sumwt = griddata_merge_weights(gd_list)
-        self.vis = griddata_blockvisibility_reweight(self.vis, gd, weighting="robust")
-        gd, sumwt = grid_blockvisibility_to_griddata(self.vis, griddata=gd, cf=cf)
-        cim = fft_griddata_to_image(gd, gcf, gcf)
-        cim = normalise_sumwt(cim, sumwt)
-        im = convert_polimage_to_stokes(cim)
-        if self.persist:
-            export_image_to_fits(
-                im,
-                "%s/test_gridding_dirty_2d_robust_ignored_block.fits"
-                % self.results_dir,
-            )
-        self.check_peaks(im, 98.15651201797554)
-
     def test_griddata_blockvisibility_weight_I(self):
         self.actualSetUp(zerow=True, image_pol=PolarisationFrame("stokesI"))
         gcf, cf = create_pswf_convolutionfunction(
@@ -627,11 +546,63 @@ class TestGridDataGridding(unittest.TestCase):
             )
         self.check_peaks(im, 99.40822097)
 
+    def test_grid_blockvisibility_weight_to_griddata_ignore_visibilities(self):
+        self.actualSetUp(
+            zerow=True,
+            image_pol=PolarisationFrame("stokesIQUV"),
+            test_ignored_visibilities=True,
+        )
+        gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
+        gd_list = [
+            grid_blockvisibility_weight_to_griddata(self.vis, gd) for i in range(10)
+        ]
+        assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
+        gd, sumwt = griddata_merge_weights(gd_list)
+        assert numpy.isclose(numpy.sum(numpy.abs(gd["pixels"].data)), numpy.sum(sumwt), atol=1e-11)
+        assert numpy.isclose(numpy.sum(sumwt), 3327480.0, atol=1e-11)
+
+    def test_griddata_blockvisibility_reweight_ignore_visibilities(self):
+        self.actualSetUp(
+            zerow=True,
+            image_pol=PolarisationFrame("stokesIQUV"),
+            test_ignored_visibilities=True,
+        )
+        gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
+        gd_list = [
+            grid_blockvisibility_weight_to_griddata(self.vis, gd) for i in range(10)
+        ]
+        assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
+        gd, _ = griddata_merge_weights(gd_list)
+        self.vis = griddata_blockvisibility_reweight(self.vis, gd)
+        assert numpy.isclose(numpy.sum(self.vis.blockvisibility_acc.flagged_imaging_weight), 10259.6, atol=1e-11)
+
+
+    def test_grid_blockvisibility_to_griddata_ignore_visibilities(self):
+        self.actualSetUp(
+            zerow=True,
+            image_pol=PolarisationFrame("stokesIQUV"),
+            test_ignored_visibilities=True,
+        )
+        # cf: griddata kernel as ConvolutionFunction
+        _, cf = create_pswf_convolutionfunction(
+            self.model, polarisation_frame=self.vis_pol
+        )
+        gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
+        gd_list = [
+            grid_blockvisibility_weight_to_griddata(self.vis, gd) for i in range(10)
+        ]
+        assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
+        gd, _ = griddata_merge_weights(gd_list)
+        self.vis = griddata_blockvisibility_reweight(self.vis, gd)
+        gd, sumwt = grid_blockvisibility_to_griddata(self.vis, griddata=gd, cf=cf)
+        assert numpy.isclose(numpy.sum(numpy.abs(gd["pixels"].data)), 1235383.2942437963, atol=1e-11)
+        assert numpy.isclose(numpy.sum(sumwt), 10253.599999999533, atol=1e-11)
+
     def plot_vis(self, newvis, title=""):
         if self.doplot:
             import matplotlib.pyplot as plt
 
-            r = numpy.sqrt(newvis.u**2 + newvis.v**2)
+            r = numpy.sqrt(newvis.u ** 2 + newvis.v ** 2)
             for pol in range(4):
                 plt.plot(newvis.w, numpy.real(newvis.vis[:, pol]), ".")
             plt.xlim(150, 300)
