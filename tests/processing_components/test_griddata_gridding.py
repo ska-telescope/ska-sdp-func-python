@@ -559,6 +559,7 @@ class TestGridDataGridding(unittest.TestCase):
             grid_blockvisibility_weight_to_griddata(self.vis, grid_data)
             for i in range(10)
         ]
+        # TODO: need to discuss whether we need this assert
         assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
         grid_data, sumwt = griddata_merge_weights(gd_list)
         # Using sum to judge the correctness after ignored some visbilities
@@ -580,6 +581,7 @@ class TestGridDataGridding(unittest.TestCase):
             grid_blockvisibility_weight_to_griddata(self.vis, griddata)
             for i in range(10)
         ]
+        # TODO: need to discuss whether we need this assert
         assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
         griddata, _ = griddata_merge_weights(gd_list)
         self.vis = griddata_blockvisibility_reweight(self.vis, griddata)
@@ -606,6 +608,7 @@ class TestGridDataGridding(unittest.TestCase):
             grid_blockvisibility_weight_to_griddata(self.vis, griddata)
             for i in range(10)
         ]
+        # TODO: need to discuss whether we need this assert
         assert numpy.max(numpy.abs(griddata_list[0][0]["pixels"].data)) > 10.0
         griddata, _ = griddata_merge_weights(griddata_list)
         self.vis = griddata_blockvisibility_reweight(self.vis, griddata)
