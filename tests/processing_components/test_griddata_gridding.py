@@ -573,13 +573,16 @@ class TestGridDataGridding(unittest.TestCase):
             image_pol=PolarisationFrame("stokesIQUV"),
             test_ignored_visibilities=True,
         )
-        gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
+        griddata = create_griddata_from_image(
+            self.model, polarisation_frame=self.vis_pol
+        )
         gd_list = [
-            grid_blockvisibility_weight_to_griddata(self.vis, gd) for i in range(10)
+            grid_blockvisibility_weight_to_griddata(self.vis, griddata)
+            for i in range(10)
         ]
         assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
-        gd, _ = griddata_merge_weights(gd_list)
-        self.vis = griddata_blockvisibility_reweight(self.vis, gd)
+        griddata, _ = griddata_merge_weights(gd_list)
+        self.vis = griddata_blockvisibility_reweight(self.vis, griddata)
         assert numpy.isclose(
             numpy.sum(self.vis.blockvisibility_acc.flagged_imaging_weight),
             10259.6,
@@ -596,16 +599,24 @@ class TestGridDataGridding(unittest.TestCase):
         _, cf = create_pswf_convolutionfunction(
             self.model, polarisation_frame=self.vis_pol
         )
-        gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
-        gd_list = [
-            grid_blockvisibility_weight_to_griddata(self.vis, gd) for i in range(10)
+        griddata = create_griddata_from_image(
+            self.model, polarisation_frame=self.vis_pol
+        )
+        griddata_list = [
+            grid_blockvisibility_weight_to_griddata(self.vis, griddata)
+            for i in range(10)
         ]
-        assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
-        gd, _ = griddata_merge_weights(gd_list)
-        self.vis = griddata_blockvisibility_reweight(self.vis, gd)
-        gd, sumwt = grid_blockvisibility_to_griddata(self.vis, griddata=gd, cf=cf)
+        assert numpy.max(numpy.abs(griddata_list[0][0]["pixels"].data)) > 10.0
+        griddata, _ = griddata_merge_weights(griddata_list)
+        self.vis = griddata_blockvisibility_reweight(self.vis, griddata)
+        griddata, sumwt = grid_blockvisibility_to_griddata(
+            self.vis, griddata=griddata, cf=cf
+        )
+        # Using sum to judge the correctness after ignored some visbilities
         assert numpy.isclose(
-            numpy.sum(numpy.abs(gd["pixels"].data)), 1235383.2942437963, atol=1e-11
+            numpy.sum(numpy.abs(griddata["pixels"].data)),
+            1235383.2942437963,
+            atol=1e-11,
         )
         assert numpy.isclose(numpy.sum(sumwt), 10253.599999999533, atol=1e-11)
 
