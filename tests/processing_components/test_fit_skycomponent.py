@@ -25,7 +25,7 @@ log = logging.getLogger("rascil-logger")
 log.setLevel(logging.WARNING)
 
 
-class TestFitSkycomponent(unittest.TestCase):
+class TestFitSkyComponent(unittest.TestCase):
     def setUp(self):
 
         self.persist = os.getenv("RASCIL_PERSIST", False)

@@ -34,7 +34,7 @@ log = logging.getLogger("rascil-logger")
 log.setLevel(logging.WARNING)
 
 
-class TestSkycomponentInsert(unittest.TestCase):
+class TestSkyComponentInsert(unittest.TestCase):
     def setUp(self):
 
         self.persist = os.getenv("RASCIL_PERSIST", False)

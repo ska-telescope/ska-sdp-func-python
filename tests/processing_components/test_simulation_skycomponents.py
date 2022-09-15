@@ -26,7 +26,7 @@ log.setLevel(logging.WARNING)
 log.addHandler(logging.StreamHandler(sys.stdout))
 
 
-class TestSimSkycomponents(unittest.TestCase):
+class TestSimSkyComponents(unittest.TestCase):
     def setUp(self):
 
         from rascil.data_models.parameters import rascil_path, rascil_data_path
