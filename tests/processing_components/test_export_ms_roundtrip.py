@@ -21,7 +21,7 @@ from rascil.processing_components import (
     create_visibility_from_ms,
 )
 from rascil.processing_components.imaging.imaging import (
-    predict_,
+    predict_visibility,
     invert_visibility,
 )
 
