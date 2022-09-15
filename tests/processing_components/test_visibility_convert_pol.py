@@ -92,37 +92,6 @@ class TestVisibilityConvertPol(unittest.TestCase):
             assert visi.polarisation_frame.type == "stokesIQUV"
             assert visi.visibility_acc.npol == 4
 
-    def test_convert_visibility_I(self):
-        for pol in ["linear", "circular"]:
-            vis = create_visibility(
-                self.lowcore,
-                self.times,
-                self.frequency,
-                channel_bandwidth=self.channel_bandwidth,
-                phasecentre=self.phasecentre,
-                weight=1.0,
-                polarisation_frame=PolarisationFrame(pol),
-            )
-            visi = convert_visibility_to_stokesI(vis)
-            assert visi.visibility_acc.polarisation_frame.type == "stokesI"
-            assert visi.visibility_acc.npol == 1
-
-    def test_convert_visibility_stokes(self):
-        for pol in ["linear", "circular"]:
-            vis = create_visibility(
-                self.lowcore,
-                self.times,
-                self.frequency,
-                channel_bandwidth=self.channel_bandwidth,
-                phasecentre=self.phasecentre,
-                weight=1.0,
-                polarisation_frame=PolarisationFrame(pol),
-            )
-            visi = convert_visibility_to_stokes(vis)
-            print(visi.polarisation_frame.type)
-            assert visi.polarisation_frame.type == "stokesIQUV"
-            assert visi.visibility_acc.npol == 4
-
 
 if __name__ == "__main__":
     unittest.main()
