@@ -153,9 +153,7 @@ class TestRASCILRcal(unittest.TestCase):
 
         :return: bvis_error: Visibility
         """
-        self.gt = create_gaintable_from_visibility(
-            self.bvis_original, jones_type="B"
-        )
+        self.gt = create_gaintable_from_visibility(self.bvis_original, jones_type="B")
         self.gt = simulate_gaintable(self.gt, phase_error=0.1)
         qa_gt = qa_gaintable(self.gt)
         assert qa_gt.data["rms-amp"] < 1e-12, str(qa_gt)

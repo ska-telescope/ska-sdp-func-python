@@ -84,9 +84,7 @@ class TestImageDeconvolution(unittest.TestCase):
             polarisation_frame=PolarisationFrame("stokesI"),
         )
         self.dirty = invert_visibility(self.vis, self.model, context="2d")[0]
-        self.psf = invert_visibility(
-            self.vis, self.model, context="2d", dopsf=True
-        )[0]
+        self.psf = invert_visibility(self.vis, self.model, context="2d", dopsf=True)[0]
         self.sensitivity = create_pb(self.model, "LOW")
 
     def overlaptest(self, a1, a2, s1, s2):

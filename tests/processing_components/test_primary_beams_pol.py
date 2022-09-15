@@ -188,8 +188,7 @@ class TestPrimaryBeamsPol(unittest.TestCase):
                 bvis = dft_skycomponent_visibility(bvis, vpcomp)
                 vpcomp = idft_visibility_skycomponent(bvis, vpcomp)[0][0]
                 assert (
-                    vpcomp.polarisation_frame
-                    == bvis.visibility_acc.polarisation_frame
+                    vpcomp.polarisation_frame == bvis.visibility_acc.polarisation_frame
                 )
                 inv_vpcomp = apply_voltage_pattern_to_skycomponent(
                     vpcomp, vpbeam, inverse=True

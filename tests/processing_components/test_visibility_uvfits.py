@@ -83,9 +83,7 @@ class TestCreateMS(unittest.TestCase):
         nchan = 192
         for schan in range(0, nchan, nchan_ave):
             max_chan = min(nchan, schan + nchan_ave)
-            vis = create_visibility_from_uvfits(
-                uvfitsfile, range(schan, max_chan)
-            )[0]
+            vis = create_visibility_from_uvfits(uvfitsfile, range(schan, max_chan))[0]
             model = create_image_from_visibility(
                 vis, npixel=256, polarisation_frame=PolarisationFrame("stokesI")
             )

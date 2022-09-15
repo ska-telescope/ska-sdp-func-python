@@ -141,9 +141,7 @@ class TestVisibilityOperations(unittest.TestCase):
         )
         self.othervis["vis"][..., :] = [1.0 + 0.0j]
         self.ratiovis = divide_visibility(self.vis, self.othervis)
-        assert (
-            self.ratiovis.visibility_acc.nvis == self.vis.visibility_acc.nvis
-        )
+        assert self.ratiovis.visibility_acc.nvis == self.vis.visibility_acc.nvis
         assert numpy.max(numpy.abs(self.ratiovis.vis)) == 2.0, numpy.max(
             numpy.abs(self.ratiovis.vis)
         )
@@ -170,9 +168,7 @@ class TestVisibilityOperations(unittest.TestCase):
         )
         self.othervis["vis"][..., :] = [1.0 + 0.0j, 0.0j, 0.0j, 1.0 + 0.0j]
         self.ratiovis = divide_visibility(self.vis, self.othervis)
-        assert (
-            self.ratiovis.visibility_acc.nvis == self.vis.visibility_acc.nvis
-        )
+        assert self.ratiovis.visibility_acc.nvis == self.vis.visibility_acc.nvis
         assert numpy.max(numpy.abs(self.ratiovis.vis)) == 2.0, numpy.max(
             numpy.abs(self.ratiovis.vis)
         )
@@ -199,9 +195,7 @@ class TestVisibilityOperations(unittest.TestCase):
         )
         self.othervis["vis"][..., :] = [1.0 + 0.0j, 1.0 + 0.0j, 1.0 + 0.0j, 1.0 + 0.0j]
         self.ratiovis = divide_visibility(self.vis, self.othervis)
-        assert (
-            self.ratiovis.visibility_acc.nvis == self.vis.visibility_acc.nvis
-        )
+        assert self.ratiovis.visibility_acc.nvis == self.vis.visibility_acc.nvis
         assert numpy.max(numpy.abs(self.ratiovis.vis)) == 2.0, numpy.max(
             numpy.abs(self.ratiovis.vis)
         )

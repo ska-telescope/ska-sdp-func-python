@@ -399,9 +399,7 @@ class TestGridDataGridding(unittest.TestCase):
             polarisation_frame=self.vis_pol,
         )
         griddata = fft_image_to_griddata(modelIQUV, griddata, gcf)
-        newvis = degrid_visibility_from_griddata(
-            self.vis, griddata=griddata, cf=cf
-        )
+        newvis = degrid_visibility_from_griddata(self.vis, griddata=griddata, cf=cf)
         qa = qa_visibility(newvis)
         numpy.testing.assert_allclose(
             qa.data["maxabs"], 1091.515280627418, atol=1e-7, err_msg=f"{qa}"
@@ -428,9 +426,7 @@ class TestGridDataGridding(unittest.TestCase):
             modelIQUV, polarisation_frame=self.vis_pol
         )
         griddata = fft_image_to_griddata(modelIQUV, griddata, gcf)
-        newvis = degrid_visibility_from_griddata(
-            self.vis, griddata=griddata, cf=cf
-        )
+        newvis = degrid_visibility_from_griddata(self.vis, griddata=griddata, cf=cf)
         newvis["vis"].data[...] -= self.vis["vis"].data[...]
         self.plot_vis(newvis, "wterm")
         qa = qa_visibility(newvis)
@@ -468,9 +464,7 @@ class TestGridDataGridding(unittest.TestCase):
             modelIQUV, polarisation_frame=self.vis_pol
         )
         griddata = fft_image_to_griddata(modelIQUV, griddata, gcf)
-        newvis = degrid_visibility_from_griddata(
-            self.vis, griddata=griddata, cf=cf
-        )
+        newvis = degrid_visibility_from_griddata(self.vis, griddata=griddata, cf=cf)
         qa = qa_visibility(newvis)
         numpy.testing.assert_allclose(
             qa.data["maxabs"], 1086.4705273529883, atol=1e-7, err_msg=f"{qa}"
@@ -486,9 +480,7 @@ class TestGridDataGridding(unittest.TestCase):
             self.model, polarisation_frame=self.vis_pol
         )
         gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
-        gd_list = [
-            grid_visibility_weight_to_griddata(self.vis, gd) for i in range(10)
-        ]
+        gd_list = [grid_visibility_weight_to_griddata(self.vis, gd) for i in range(10)]
         assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
         gd, sumwt = griddata_merge_weights(gd_list)
         self.vis = griddata_visibility_reweight(self.vis, gd)
@@ -508,9 +500,7 @@ class TestGridDataGridding(unittest.TestCase):
             self.model, polarisation_frame=self.vis_pol
         )
         gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
-        gd_list = [
-            grid_visibility_weight_to_griddata(self.vis, gd) for i in range(10)
-        ]
+        gd_list = [grid_visibility_weight_to_griddata(self.vis, gd) for i in range(10)]
         assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
         gd, sumwt = griddata_merge_weights(gd_list)
         self.vis = griddata_visibility_reweight(self.vis, gd)
@@ -530,9 +520,7 @@ class TestGridDataGridding(unittest.TestCase):
             self.model, polarisation_frame=self.vis_pol
         )
         gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
-        gd_list = [
-            grid_visibility_weight_to_griddata(self.vis, gd) for i in range(10)
-        ]
+        gd_list = [grid_visibility_weight_to_griddata(self.vis, gd) for i in range(10)]
         assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
         gd, sumwt = griddata_merge_weights(gd_list)
         self.vis = griddata_visibility_reweight(self.vis, gd)
@@ -556,8 +544,7 @@ class TestGridDataGridding(unittest.TestCase):
             self.model, polarisation_frame=self.vis_pol
         )
         grid_data_list = [
-            grid_visibility_weight_to_griddata(self.vis, grid_data)
-            for i in range(10)
+            grid_visibility_weight_to_griddata(self.vis, grid_data) for i in range(10)
         ]
         griddata, sumwt = griddata_merge_weights(grid_data_list)
         # Using sum to judge the correctness after ignored some visbilities
@@ -576,8 +563,7 @@ class TestGridDataGridding(unittest.TestCase):
             self.model, polarisation_frame=self.vis_pol
         )
         grid_data_list = [
-            grid_visibility_weight_to_griddata(self.vis, grid_data)
-            for i in range(10)
+            grid_visibility_weight_to_griddata(self.vis, grid_data) for i in range(10)
         ]
         grid_data, _ = griddata_merge_weights(grid_data_list)
         self.vis = griddata_visibility_reweight(self.vis, grid_data)
@@ -601,8 +587,7 @@ class TestGridDataGridding(unittest.TestCase):
             self.model, polarisation_frame=self.vis_pol
         )
         grid_data_list = [
-            grid_visibility_weight_to_griddata(self.vis, grid_data)
-            for i in range(10)
+            grid_visibility_weight_to_griddata(self.vis, grid_data) for i in range(10)
         ]
         grid_data, _ = griddata_merge_weights(grid_data_list)
         self.vis = griddata_visibility_reweight(self.vis, grid_data)
