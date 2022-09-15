@@ -13,7 +13,7 @@ from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 from rascil.processing_components.visibility.visibility_fitting import fit_visibility
 
 
@@ -57,7 +57,7 @@ class TestVisibilityFitting(unittest.TestCase):
         methods = ["CG", "BFGS", "Powell", "trust-ncg", "trust-exact", "trust-krylov"]
         for method in methods:
             self.actualSetup()
-            self.vis = create_blockvisibility(
+            self.vis = create_visibility(
                 config=self.lowcore,
                 times=self.times,
                 frequency=self.frequency,

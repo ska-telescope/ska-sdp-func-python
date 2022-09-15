@@ -17,7 +17,7 @@ from rascil.processing_components.calibration.chain_calibration import (
     calibrate_chain,
 )
 from rascil.processing_components.calibration.operations import (
-    create_gaintable_from_blockvisibility,
+    create_gaintable_from_visibility,
     gaintable_summary,
 )
 from rascil.processing_components.imaging import dft_skycomponent_visibility
@@ -25,7 +25,7 @@ from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import simulate_gaintable
 from rascil.processing_components.visibility.base import (
     copy_visibility,
-    create_blockvisibility,
+    create_visibility,
 )
 
 log = logging.getLogger("rascil-logger")
@@ -74,7 +74,7 @@ class TestCalibrationChain(unittest.TestCase):
             flux=self.flux,
             polarisation_frame=PolarisationFrame(sky_pol_frame),
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -88,7 +88,7 @@ class TestCalibrationChain(unittest.TestCase):
     def test_calibrate_T_function(self):
         self.actualSetup("stokesI", "stokesI", f=[100.0])
         # Prepare the corrupted visibility data_models
-        gt = create_gaintable_from_blockvisibility(self.vis)
+        gt = create_gaintable_from_visibility(self.vis)
         log.info("Created gain table: %s" % (gaintable_summary(gt)))
         gt = simulate_gaintable(gt, phase_error=10.0, amplitude_error=0.0)
         original = copy_visibility(self.vis)
@@ -106,7 +106,7 @@ class TestCalibrationChain(unittest.TestCase):
     def test_calibrate_T_function_phase_only(self):
         self.actualSetup("stokesI", "stokesI", f=[100.0])
         # Prepare the corrupted visibility data_models
-        gt = create_gaintable_from_blockvisibility(self.vis)
+        gt = create_gaintable_from_visibility(self.vis)
         log.info("Created gain table: %s" % (gaintable_summary(gt)))
         gt = simulate_gaintable(gt, phase_error=10.0, amplitude_error=0.0)
         original = copy_visibility(self.vis)
@@ -124,7 +124,7 @@ class TestCalibrationChain(unittest.TestCase):
     def test_calibrate_G_function(self):
         self.actualSetup("stokesIQUV", "linear", f=[100.0, 50.0, 0.0, 0.0])
         # Prepare the corrupted visibility data_models
-        gt = create_gaintable_from_blockvisibility(self.vis)
+        gt = create_gaintable_from_visibility(self.vis)
         log.info("Created gain table: %s" % (gaintable_summary(gt)))
         gt = simulate_gaintable(
             gt,
@@ -147,7 +147,7 @@ class TestCalibrationChain(unittest.TestCase):
     def test_calibrate_TG_function(self):
         self.actualSetup("stokesIQUV", "linear", f=[100.0, 50, 0.0, 0.0])
         # Prepare the corrupted visibility data_models
-        gt = create_gaintable_from_blockvisibility(self.vis)
+        gt = create_gaintable_from_visibility(self.vis)
         log.info("Created gain table: %s" % (gaintable_summary(gt)))
         gt = simulate_gaintable(gt, phase_error=10.0, amplitude_error=0.1)
         original = copy_visibility(self.vis)
@@ -172,7 +172,7 @@ class TestCalibrationChain(unittest.TestCase):
     def test_calibrate_B_function(self):
         self.actualSetup("stokesIQUV", "linear", f=[100.0, 50, 0.0, 0.0], vnchan=32)
         # Prepare the corrupted visibility data_models
-        gt = create_gaintable_from_blockvisibility(self.vis)
+        gt = create_gaintable_from_visibility(self.vis)
         log.info("Created gain table: %s" % (gaintable_summary(gt)))
         gt = simulate_gaintable(gt, phase_error=10.0, amplitude_error=0.1)
         original = copy_visibility(self.vis)

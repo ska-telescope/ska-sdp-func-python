@@ -14,7 +14,7 @@ from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.calibration.solvers import solve_gaintable
 from rascil.processing_components.calibration.operations import (
     apply_gaintable,
-    create_gaintable_from_blockvisibility,
+    create_gaintable_from_visibility,
     gaintable_summary,
     qa_gaintable,
 )
@@ -23,7 +23,7 @@ from rascil.processing_components.simulation import simulate_gaintable
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import (
     copy_visibility,
-    create_blockvisibility,
+    create_visibility,
 )
 from rascil.processing_components.visibility.operations import divide_visibility
 
@@ -80,7 +80,7 @@ class TestCalibrationSolvers(unittest.TestCase):
             flux=self.flux,
             polarisation_frame=PolarisationFrame(sky_pol_frame),
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -203,7 +203,7 @@ class TestCalibrationSolvers(unittest.TestCase):
         if f is None:
             f = [100.0, 50.0, -10.0, 40.0]
         self.actualSetup(spf, dpf, f=f, vnchan=vnchan, ntimes=ntimes, rmax=rmax)
-        gt = create_gaintable_from_blockvisibility(
+        gt = create_gaintable_from_visibility(
             self.vis, timeslice=timeslice, jones_type=jones_type
         )
         log.info("Created gain table: %s" % (gaintable_summary(gt)))

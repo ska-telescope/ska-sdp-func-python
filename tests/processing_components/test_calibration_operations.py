@@ -16,14 +16,14 @@ from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components import (
     gaintable_summary,
     apply_gaintable,
-    create_gaintable_from_blockvisibility,
+    create_gaintable_from_visibility,
     concatenate_gaintables,
 )
 from rascil.processing_components.simulation import simulate_gaintable
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import (
     copy_visibility,
-    create_blockvisibility,
+    create_visibility,
 )
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 
@@ -64,7 +64,7 @@ class TestCalibrationOperations(unittest.TestCase):
             flux=self.flux,
             polarisation_frame=PolarisationFrame(sky_pol_frame),
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -84,7 +84,7 @@ class TestCalibrationOperations(unittest.TestCase):
                 ("stokesIQUV", "circular"),
             ]:
                 self.actualSetup(spf, dpf)
-                gt = create_gaintable_from_blockvisibility(
+                gt = create_gaintable_from_visibility(
                     self.vis, timeslice="auto", jones_type=jones_type
                 )
                 log.info("Created gain table: %s" % (gaintable_summary(gt)))
@@ -107,7 +107,7 @@ class TestCalibrationOperations(unittest.TestCase):
                     ("stokesIQUV", "circular"),
                 ]:
                     self.actualSetup(spf, dpf)
-                    gt = create_gaintable_from_blockvisibility(
+                    gt = create_gaintable_from_visibility(
                         self.vis, timeslice=timeslice, jones_type=jones_type
                     )
                     log.info("Created gain table: %s" % (gaintable_summary(gt)))
@@ -129,7 +129,7 @@ class TestCalibrationOperations(unittest.TestCase):
                 ("stokesIQUV", "circular"),
             ]:
                 self.actualSetup(spf, dpf)
-                gt = create_gaintable_from_blockvisibility(
+                gt = create_gaintable_from_visibility(
                     self.vis, timeslice="auto", jones_type=jones_type
                 )
                 log.info("Created gain table: %s" % (gaintable_summary(gt)))
@@ -146,7 +146,7 @@ class TestCalibrationOperations(unittest.TestCase):
                 ("stokesIQUV", "circular"),
             ]:
                 self.actualSetup(spf, dpf)
-                gt = create_gaintable_from_blockvisibility(
+                gt = create_gaintable_from_visibility(
                     self.vis, timeslice="auto", jones_type=jones_type
                 )
                 log.info("Created gain table: %s" % (gaintable_summary(gt)))
@@ -167,7 +167,7 @@ class TestCalibrationOperations(unittest.TestCase):
                 ("stokesIQUV", "circular"),
             ]:
                 self.actualSetup(spf, dpf)
-                gt = create_gaintable_from_blockvisibility(
+                gt = create_gaintable_from_visibility(
                     self.vis, timeslice="auto", jones_type=jones_type
                 )
                 log.info("Created gain table: %s" % (gaintable_summary(gt)))
@@ -189,7 +189,7 @@ class TestCalibrationOperations(unittest.TestCase):
                 ("stokesIQUV", "circular"),
             ]:
                 self.actualSetup(spf, dpf)
-                gt = create_gaintable_from_blockvisibility(
+                gt = create_gaintable_from_visibility(
                     self.vis, timeslice="auto", jones_type=jones_type
                 )
                 gt["gain"].data *= 0.0
@@ -202,7 +202,7 @@ class TestCalibrationOperations(unittest.TestCase):
         self.actualSetup(pol_frame, pol_frame)
 
         new_times = (numpy.pi / 43200.0) * numpy.arange(3001.0, 6000.0, 60.0)
-        new_vis = create_blockvisibility(
+        new_vis = create_visibility(
             self.lowcore,
             new_times,
             self.frequency,
@@ -212,10 +212,10 @@ class TestCalibrationOperations(unittest.TestCase):
             polarisation_frame=PolarisationFrame(pol_frame),
         )
 
-        gt = create_gaintable_from_blockvisibility(
+        gt = create_gaintable_from_visibility(
             self.vis, timeslice="auto", jones_type="T"
         )
-        new_gt = create_gaintable_from_blockvisibility(
+        new_gt = create_gaintable_from_visibility(
             new_vis, timeslice="auto", jones_type="T"
         )
 

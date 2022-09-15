@@ -24,8 +24,8 @@ from rascil.processing_components.image.operations import (
     qa_image,
 )
 from rascil.processing_components.imaging.imaging import (
-    predict_blockvisibility,
-    invert_blockvisibility,
+    predict_visibility,
+    invert_visibility,
 )
 from rascil.processing_components.imaging.dft import dft_skycomponent_visibility
 from rascil.processing_components.imaging.primary_beams import create_pb_generic
@@ -177,12 +177,12 @@ class TestImaging2D(unittest.TestCase):
         if gcfcf is not None:
             context = "awprojection"
 
-        vis = predict_blockvisibility(
+        vis = predict_visibility(
             self.vis, self.model, context=context, gcfcf=gcfcf, **kwargs
         )
 
         vis["vis"].data = self.vis["vis"].data - vis["vis"].data
-        dirty = invert_blockvisibility(
+        dirty = invert_visibility(
             vis,
             self.model,
             dopsf=False,
@@ -228,7 +228,7 @@ class TestImaging2D(unittest.TestCase):
         if gcfcf is not None:
             context = "awprojection"
 
-        dirty = invert_blockvisibility(
+        dirty = invert_visibility(
             self.vis,
             self.model,
             dopsf=False,
@@ -263,63 +263,63 @@ class TestImaging2D(unittest.TestCase):
             qa.data["min"], flux_min, atol=1e-7, err_msg=f"{qa}"
         )
 
-    def test_predict_blockvisibility(self):
+    def test_predict_visibility(self):
         self.actualSetUp(zerow=True)
         self._predict_base(
-            name="predict_blockvisibility",
+            name="predict_visibility",
             flux_max=1.7506686178796016e-11,
             flux_min=-1.6386206755947555e-11,
         )
 
-    def test_predict_blockvisibility_point(self):
+    def test_predict_visibility_point(self):
         self.actualSetUp(zerow=True)
         self.model["pixels"].data[...] = 0.0
         nchan, npol, ny, nx = self.model.image_acc.shape
         self.model["pixels"].data[0, 0, ny // 2, nx // 2] = 1.0
-        vis = predict_blockvisibility(self.vis, self.model, context="2d")
+        vis = predict_visibility(self.vis, self.model, context="2d")
         assert numpy.max(numpy.abs(vis.vis - 1.0)) < 1e-12, numpy.max(
             numpy.abs(vis.vis - 1.0)
         )
 
-    def test_predict_blockvisibility_point_IQUV(self):
+    def test_predict_visibility_point_IQUV(self):
         self.actualSetUp(zerow=True, image_pol=PolarisationFrame("stokesIQUV"))
         self.model["pixels"].data[...] = 0.0
         nchan, npol, ny, nx = self.model.image_acc.shape
         self.model["pixels"].data[0, 0, ny // 2, nx // 2] = 1.0
-        vis = predict_blockvisibility(self.vis, self.model, context="2d")
+        vis = predict_visibility(self.vis, self.model, context="2d")
         assert numpy.max(numpy.abs(vis.vis[..., 0] - 1.0)) < 1e-12
         assert numpy.max(numpy.abs(vis.vis[..., 1])) < 1e-12
         assert numpy.max(numpy.abs(vis.vis[..., 2])) < 1e-12
         assert numpy.max(numpy.abs(vis.vis[..., 3] - 1.0)) < 1e-12
 
-    def test_predict_blockvisibility_IQUV(self):
+    def test_predict_visibility_IQUV(self):
         self.actualSetUp(zerow=True, image_pol=PolarisationFrame("stokesIQUV"))
         self._predict_base(
-            name="predict_blockvisibility_IQUV",
+            name="predict_visibility_IQUV",
             flux_max=1.7506197334688512e-11,
             flux_min=-1.6385712182817783e-11,
         )
 
-    def test_predict_blockvisibility_IQ(self):
+    def test_predict_visibility_IQ(self):
         self.actualSetUp(zerow=True, image_pol=PolarisationFrame("stokesIQ"))
         self._predict_base(
-            name="predict_blockvisibility_IQ",
+            name="predict_visibility_IQ",
             flux_max=1.7506197334688512e-11,
             flux_min=-1.6385712182817783e-11,
         )
 
-    def test_predict_blockvisibility_IV(self):
+    def test_predict_visibility_IV(self):
         self.actualSetUp(zerow=True, image_pol=PolarisationFrame("stokesIV"))
         self._predict_base(
-            name="predict_blockvisibility_IV",
+            name="predict_visibility_IV",
             flux_max=1.7506197334688512e-11,
             flux_min=-1.6385712182817783e-11,
         )
 
-    def test_invert_blockvisibility(self):
+    def test_invert_visibility(self):
         self.actualSetUp(zerow=True)
         self._invert_base(
-            name="blockvisibility",
+            name="visibility",
             positionthreshold=2.0,
             check_components=False,
             context="ng",
@@ -327,18 +327,18 @@ class TestImaging2D(unittest.TestCase):
             flux_min=-8.116286458566002,
         )
 
-    def test_invert_blockvisibility_IQUV(self):
+    def test_invert_visibility_IQUV(self):
         self.actualSetUp(zerow=True, image_pol=PolarisationFrame("stokesIQUV"))
         self._invert_base(
             context="ng",
-            name="invert_blockvisibility_IQUV",
+            name="invert_visibility_IQUV",
             positionthreshold=2.0,
             check_components=True,
             flux_max=100.92845444332372,
             flux_min=-10.092845444332372,
         )
 
-    def test_invert_blockvisibility_spec_I(self):
+    def test_invert_visibility_spec_I(self):
         self.actualSetUp(
             zerow=True,
             freqwin=4,
@@ -346,7 +346,7 @@ class TestImaging2D(unittest.TestCase):
             dospectral=True,
         )
         self._invert_base(
-            name="invert_blockvisibility_spec_I",
+            name="invert_visibility_spec_I",
             context="ng",
             positionthreshold=2.0,
             check_components=True,
@@ -354,22 +354,22 @@ class TestImaging2D(unittest.TestCase):
             flux_min=-9.130114249590807,
         )
 
-    def test_invert_blockvisibility_spec_IQUV(self):
+    def test_invert_visibility_spec_IQUV(self):
         self.actualSetUp(
             zerow=True, freqwin=4, image_pol=PolarisationFrame("stokesIQUV")
         )
         self._invert_base(
-            name="invert_blockvisibility_IQUV",
+            name="invert_visibility_IQUV",
             positionthreshold=2.0,
             check_components=True,
             flux_max=115.83426630535374,
             flux_min=-11.583426630535378,
         )
 
-    def test_invert_blockvisibility_IQ(self):
+    def test_invert_visibility_IQ(self):
         self.actualSetUp(zerow=True, image_pol=PolarisationFrame("stokesIQ"))
         self._invert_base(
-            name="invert_blockvisibility_IQ",
+            name="invert_visibility_IQ",
             positionthreshold=2.0,
             check_components=True,
             context="ng",
@@ -377,10 +377,10 @@ class TestImaging2D(unittest.TestCase):
             flux_min=-8.116286458566002,
         )
 
-    def test_invert_blockvisibility_IV(self):
+    def test_invert_visibility_IV(self):
         self.actualSetUp(zerow=True, image_pol=PolarisationFrame("stokesIV"))
         self._invert_base(
-            name="invert_blockvisibility_IV",
+            name="invert_visibility_IV",
             context="ng",
             positionthreshold=2.0,
             check_components=True,
@@ -600,12 +600,12 @@ class TestImaging2D(unittest.TestCase):
 
     def test_invert_psf(self):
         self.actualSetUp(zerow=False)
-        psf = invert_blockvisibility(self.vis, self.model, dopsf=True)
+        psf = invert_visibility(self.vis, self.model, dopsf=True)
         error = numpy.max(psf[0]["pixels"].data) - 1.0
         assert abs(error) < 1.0e-12, error
         if self.persist:
             export_image_to_fits(
-                psf[0], "%s/test_imaging_blockvisibility_psf.fits" % self.results_dir
+                psf[0], "%s/test_imaging_visibility_psf.fits" % self.results_dir
             )
 
         assert numpy.max(numpy.abs(psf[0]["pixels"].data)), "Image is empty"
@@ -614,13 +614,13 @@ class TestImaging2D(unittest.TestCase):
         self.actualSetUp(zerow=False)
         for weighting in ["natural", "uniform", "robust"]:
             self.vis = weight_visibility(self.vis, self.model, weighting=weighting)
-            psf = invert_blockvisibility(self.vis, self.model, dopsf=True)
+            psf = invert_visibility(self.vis, self.model, dopsf=True)
             error = numpy.max(psf[0]["pixels"].data) - 1.0
             assert abs(error) < 1.0e-12, error
             if self.persist:
                 export_image_to_fits(
                     psf[0],
-                    "%s/test_imaging_blockvisibility_psf_%s.fits"
+                    "%s/test_imaging_visibility_psf_%s.fits"
                     % (self.results_dir, weighting),
                 )
             assert numpy.max(numpy.abs(psf[0]["pixels"].data)), "Image is empty"

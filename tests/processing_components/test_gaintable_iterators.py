@@ -14,9 +14,9 @@ from rascil.processing_components.calibration.iterators import (
     gaintable_null_iter,
 )
 from rascil.processing_components.calibration.operations import (
-    create_gaintable_from_blockvisibility,
+    create_gaintable_from_visibility,
 )
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 
 import logging
 
@@ -42,7 +42,7 @@ class TestGainTableIterators(unittest.TestCase):
         if times is not None:
             self.times = times
 
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -50,7 +50,7 @@ class TestGainTableIterators(unittest.TestCase):
             phasecentre=self.phasecentre,
             weight=1.0,
         )
-        self.gaintable = create_gaintable_from_blockvisibility(self.vis)
+        self.gaintable = create_gaintable_from_visibility(self.vis)
 
     def test_gt_null_iterator(self):
         self.actualSetUp()

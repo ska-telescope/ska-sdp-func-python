@@ -13,8 +13,8 @@ from rascil.apps.rascil_advise import cli_parser, advise
 from rascil.data_models.parameters import rascil_path
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components import (
-    export_blockvisibility_to_ms,
-    concatenate_blockvisibility_frequency,
+    export_visibility_to_ms,
+    concatenate_visibility_frequency,
 )
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import ingest_unittest_visibility
@@ -68,9 +68,9 @@ class TestRASCILAdvise(unittest.TestCase):
             rascil_path("test_results/test_rascil_advise.ms"), ignore_errors=True
         )
         if nfreqwin > 1:
-            self.bvis_list = [concatenate_blockvisibility_frequency(self.bvis_list)]
+            self.bvis_list = [concatenate_visibility_frequency(self.bvis_list)]
 
-        export_blockvisibility_to_ms(
+        export_visibility_to_ms(
             rascil_path("test_results/test_rascil_advise.ms"), self.bvis_list
         )
 

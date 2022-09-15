@@ -18,7 +18,7 @@ from rascil.processing_components.calibration.chain_calibration import (
     create_calibration_controls,
 )
 from rascil.processing_components.calibration.operations import (
-    create_gaintable_from_blockvisibility,
+    create_gaintable_from_visibility,
     apply_gaintable,
 )
 from rascil.processing_components.image.gather_scatter import image_gather_channels
@@ -198,7 +198,7 @@ class TestPipelineGraphs(unittest.TestCase):
                 ], seeds
 
             def sim_and_apply(vis, seed):
-                gt = create_gaintable_from_blockvisibility(vis, jones_type="G")
+                gt = create_gaintable_from_visibility(vis, jones_type="G")
                 gt = simulate_gaintable(
                     gt,
                     phase_error=0.1,

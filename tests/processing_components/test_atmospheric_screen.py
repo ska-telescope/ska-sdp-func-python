@@ -38,7 +38,7 @@ from rascil.processing_components.skycomponent.operations import (
 from rascil.processing_components.skycomponent.operations import (
     filter_skycomponents_by_flux,
 )
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -70,7 +70,7 @@ class TestAtmosphericScreen(unittest.TestCase):
             self.channel_bandwidth = numpy.array([1e8])
             self.cellsize = 0.00015
 
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.core,
             self.times,
             self.frequency,

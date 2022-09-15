@@ -18,7 +18,7 @@ from rascil.processing_components.imaging.base import create_image_from_visibili
 from rascil.processing_components.simulation import create_test_image
 from rascil.processing_components.imaging.primary_beams import create_pb
 from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 
 from rascil.workflows.rsexecute.image.image_rsexecute import (
     image_rsexecute_map_workflow,
@@ -60,7 +60,7 @@ class TestImageGraph(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+15 * u.deg, dec=dec * u.deg, frame="icrs", equinox="J2000"
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.config,
             self.times,
             self.frequency,

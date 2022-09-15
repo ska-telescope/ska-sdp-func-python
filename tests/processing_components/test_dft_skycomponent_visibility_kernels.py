@@ -13,7 +13,7 @@ from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components import create_named_configuration, qa_visibility
 from rascil.processing_components.imaging.dft import dft_skycomponent_visibility
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 
 
 class TestVisibilityDFTOperationsKernels(unittest.TestCase):
@@ -48,7 +48,7 @@ class TestVisibilityDFTOperationsKernels(unittest.TestCase):
             )
         ]
 
-    def test_dft_stokesiquv_blockvisibility(self):
+    def test_dft_stokesiquv_visibility(self):
         try:
             import cupy
 
@@ -63,7 +63,7 @@ class TestVisibilityDFTOperationsKernels(unittest.TestCase):
             import time
 
             # start = time.time()
-            vis[dft_compute_kernel] = create_blockvisibility(
+            vis[dft_compute_kernel] = create_visibility(
                 self.lowcore,
                 self.times,
                 self.frequency,
@@ -96,7 +96,7 @@ class TestVisibilityDFTOperationsKernels(unittest.TestCase):
                     )
                     assert err < 1e-12, err
 
-    def test_dft_stokesiquv_blockvisibility_quick(self):
+    def test_dft_stokesiquv_visibility_quick(self):
 
         self.init(ntimes=2, nchan=2, ncomp=2)
         try:
@@ -108,7 +108,7 @@ class TestVisibilityDFTOperationsKernels(unittest.TestCase):
 
         vpol = PolarisationFrame("linear")
         for dft_compute_kernel in compute_kernels:
-            self.vis = create_blockvisibility(
+            self.vis = create_visibility(
                 self.lowcore,
                 self.times,
                 self.frequency,

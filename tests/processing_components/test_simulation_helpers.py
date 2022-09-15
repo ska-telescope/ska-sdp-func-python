@@ -19,8 +19,8 @@ from rascil.processing_components.simulation import (
     plot_vwcoverage,
 )
 from rascil.processing_components.visibility.base import (
-    create_blockvisibility,
-    create_blockvisibility,
+    create_visibility,
+    create_visibility,
 )
 
 
@@ -38,7 +38,7 @@ class TestSimulationHelpers(unittest.TestCase):
         )
 
     def test_plotazel(self):
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -52,7 +52,7 @@ class TestSimulationHelpers(unittest.TestCase):
         plt.show(block=False)
 
     def test_plotpa(self):
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -66,7 +66,7 @@ class TestSimulationHelpers(unittest.TestCase):
         plt.show(block=False)
 
     def test_plot_uvcoverage(self):
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -82,7 +82,7 @@ class TestSimulationHelpers(unittest.TestCase):
         plot_vwcoverage([self.vis])
 
     def test_plot_uvcoverage_flagged(self):
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,

@@ -18,7 +18,7 @@ from rascil.processing_components.simulation.rfi import (
     simulate_rfi_block_prop,
     match_frequencies,
 )
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 
 log = logging.getLogger("rascil-logger")
 log.setLevel(logging.WARNING)
@@ -51,7 +51,7 @@ def setup_telescope(telescope):
         )
 
     polarisation_frame = PolarisationFrame("linear")
-    bvis = create_blockvisibility(
+    bvis = create_visibility(
         configuration,
         ftimes,
         ffrequency,

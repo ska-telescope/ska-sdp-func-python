@@ -13,8 +13,8 @@ import xarray
 from astropy.coordinates import SkyCoord
 
 from rascil.data_models.data_model_helpers import (
-    import_blockvisibility_from_hdf5,
-    export_blockvisibility_to_hdf5,
+    import_visibility_from_hdf5,
+    export_visibility_to_hdf5,
     import_gaintable_from_hdf5,
     export_gaintable_to_hdf5,
     import_flagtable_from_hdf5,
@@ -38,18 +38,18 @@ from rascil.data_models.memory_data_models import SkyComponent, SkyModel
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.image import create_image
 from rascil.processing_components.calibration.operations import (
-    create_gaintable_from_blockvisibility,
+    create_gaintable_from_visibility,
 )
 from rascil.processing_components.calibration.pointing import (
-    create_pointingtable_from_blockvisibility,
+    create_pointingtable_from_visibility,
 )
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.simulation import simulate_gaintable
 from rascil.processing_components.simulation.pointing import simulate_pointingtable
 from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 from rascil.processing_components.flagging.base import (
-    create_flagtable_from_blockvisibility,
+    create_flagtable_from_visibility,
 )
 from rascil.processing_components.griddata.operations import create_griddata_from_image
 from rascil.processing_components.griddata import create_convolutionfunction_from_image
@@ -114,8 +114,8 @@ class TestDataModelHelpers(unittest.TestCase):
 
         self.verbose = False
 
-    def test_readwriteblockvisibility(self):
-        self.vis = create_blockvisibility(
+    def test_readwritevisibility(self):
+        self.vis = create_visibility(
             self.mid,
             self.times,
             self.frequency,
@@ -128,17 +128,17 @@ class TestDataModelHelpers(unittest.TestCase):
         if self.verbose:
             print(self.vis)
             print(self.vis.configuration)
-        export_blockvisibility_to_hdf5(
+        export_visibility_to_hdf5(
             self.vis,
-            "%s/test_data_model_helpers_blockvisibility.hdf" % self.results_dir,
+            "%s/test_data_model_helpers_visibility.hdf" % self.results_dir,
         )
-        newvis = import_blockvisibility_from_hdf5(
-            "%s/test_data_model_helpers_blockvisibility.hdf" % self.results_dir
+        newvis = import_visibility_from_hdf5(
+            "%s/test_data_model_helpers_visibility.hdf" % self.results_dir
         )
         assert self._data_model_equals(newvis, self.vis)
 
     def test_readwritegaintable(self):
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.mid,
             self.times,
             self.frequency,
@@ -147,7 +147,7 @@ class TestDataModelHelpers(unittest.TestCase):
             polarisation_frame=PolarisationFrame("linear"),
             weight=1.0,
         )
-        gt = create_gaintable_from_blockvisibility(
+        gt = create_gaintable_from_visibility(
             self.vis, timeslice="auto", jones_type="G"
         )
         gt = simulate_gaintable(gt, phase_error=1.0, amplitude_error=0.1)
@@ -162,7 +162,7 @@ class TestDataModelHelpers(unittest.TestCase):
         assert self._data_model_equals(newgt, gt)
 
     def test_readwriteflagtable(self):
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.mid,
             self.times,
             self.frequency,
@@ -171,7 +171,7 @@ class TestDataModelHelpers(unittest.TestCase):
             polarisation_frame=PolarisationFrame("linear"),
             weight=1.0,
         )
-        ft = create_flagtable_from_blockvisibility(self.vis, timeslice="auto")
+        ft = create_flagtable_from_visibility(self.vis, timeslice="auto")
         if self.verbose:
             print(ft)
         export_flagtable_to_hdf5(
@@ -183,7 +183,7 @@ class TestDataModelHelpers(unittest.TestCase):
         assert self._data_model_equals(newft, ft)
 
     def test_readwritepointingtable(self):
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.mid,
             self.times,
             self.frequency,
@@ -192,7 +192,7 @@ class TestDataModelHelpers(unittest.TestCase):
             polarisation_frame=PolarisationFrame("linear"),
             weight=1.0,
         )
-        pt = create_pointingtable_from_blockvisibility(self.vis, timeslice="auto")
+        pt = create_pointingtable_from_visibility(self.vis, timeslice="auto")
         pt = simulate_pointingtable(pt, pointing_error=0.001)
         if self.verbose:
             print(pt)
@@ -261,7 +261,7 @@ class TestDataModelHelpers(unittest.TestCase):
         assert numpy.max(numpy.abs(newsc.flux - self.comp.flux)) < 1e-15
 
     def test_readwriteskymodel(self):
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.mid,
             self.times,
             self.frequency,
@@ -276,7 +276,7 @@ class TestDataModelHelpers(unittest.TestCase):
             npixel=256,
             polarisation_frame=PolarisationFrame("stokesIQUV"),
         )
-        gt = create_gaintable_from_blockvisibility(self.vis, timeslice="auto")
+        gt = create_gaintable_from_visibility(self.vis, timeslice="auto")
         sm = SkyModel(components=[self.comp], image=im, gaintable=gt)
         export_skymodel_to_hdf5(
             sm, "%s/test_data_model_helpers_skymodel.hdf" % self.results_dir

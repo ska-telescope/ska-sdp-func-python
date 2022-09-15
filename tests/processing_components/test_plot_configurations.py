@@ -21,7 +21,7 @@ from rascil.processing_components.simulation import (
     select_configuration,
     decimate_configuration,
 )
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 from rascil.processing_components.simulation import plot_uvcoverage, plot_configuration
 
 log = logging.getLogger("logger")
@@ -71,7 +71,7 @@ class TestPlotConfigurations(unittest.TestCase):
                 ra=+15 * u.deg, dec=-dec * u.deg, frame="icrs", equinox="J2000"
             )
 
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.config,
             self.times,
             self.frequency,

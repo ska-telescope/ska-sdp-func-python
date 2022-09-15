@@ -11,10 +11,10 @@ from astropy.coordinates import SkyCoord
 
 from rascil.data_models import PolarisationFrame
 from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 from rascil.processing_components.visibility.visibility_selection import (
-    blockvisibility_select_r_range,
-    blockvisibility_select_uv_range,
+    visibility_select_r_range,
+    visibility_select_uv_range,
 )
 
 log = logging.getLogger("rascil-logger")
@@ -39,8 +39,8 @@ class TestVisibilitySelectors(unittest.TestCase):
             ra=+180.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
         )
 
-    def test_blockvisibility_groupby_time(self):
-        bvis = create_blockvisibility(
+    def test_visibility_groupby_time(self):
+        bvis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -52,8 +52,8 @@ class TestVisibilitySelectors(unittest.TestCase):
         times = numpy.array([result[0] for result in bvis.groupby("time")])
         assert times.all() == bvis.time.all()
 
-    def test_blockvisibility_groupby_bins_time(self):
-        bvis = create_blockvisibility(
+    def test_visibility_groupby_bins_time(self):
+        bvis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -65,8 +65,8 @@ class TestVisibilitySelectors(unittest.TestCase):
         for result in bvis.groupby_bins("time", 3):
             log.info(result[0])
 
-    def test_blockvisibility_iselect_time(self):
-        bvis = create_blockvisibility(
+    def test_visibility_iselect_time(self):
+        bvis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -81,8 +81,8 @@ class TestVisibilitySelectors(unittest.TestCase):
         assert len(selected_bvis.channel_bandwidth.shape) == 1
         assert len(selected_bvis.integration_time.shape) == 1
 
-    def test_blockvisibility_select_time(self):
-        bvis = create_blockvisibility(
+    def test_visibility_select_time(self):
+        bvis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -97,8 +97,8 @@ class TestVisibilitySelectors(unittest.TestCase):
         assert len(selected_bvis.channel_bandwidth.shape) == 1
         assert len(selected_bvis.integration_time.shape) == 1
 
-    def test_blockvisibility_select_frequency(self):
-        bvis = create_blockvisibility(
+    def test_visibility_select_frequency(self):
+        bvis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -113,8 +113,8 @@ class TestVisibilitySelectors(unittest.TestCase):
         assert len(selected_bvis.channel_bandwidth.shape) == 1
         assert len(selected_bvis.integration_time.shape) == 1
 
-    def test_blockvisibility_select_frequency_polarisation(self):
-        bvis = create_blockvisibility(
+    def test_visibility_select_frequency_polarisation(self):
+        bvis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -132,8 +132,8 @@ class TestVisibilitySelectors(unittest.TestCase):
         assert len(selected_bvis.channel_bandwidth.shape) == 1
         assert len(selected_bvis.integration_time.shape) == 1
 
-    def test_blockvisibility_iselect_channel(self):
-        bvis = create_blockvisibility(
+    def test_visibility_iselect_channel(self):
+        bvis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -146,8 +146,8 @@ class TestVisibilitySelectors(unittest.TestCase):
         log.info(selected_bvis)
         assert len(selected_bvis.frequency) == 2
 
-    def test_blockvisibility_flag_auto(self):
-        bvis = create_blockvisibility(
+    def test_visibility_flag_auto(self):
+        bvis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -166,8 +166,8 @@ class TestVisibilitySelectors(unittest.TestCase):
         assert after > before
         log.info(bvis)
 
-    def test_blockvisibility_select_uvrange(self):
-        bvis = create_blockvisibility(
+    def test_visibility_select_uvrange(self):
+        bvis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -181,15 +181,15 @@ class TestVisibilitySelectors(unittest.TestCase):
         uvmax = 20000.0
 
         assert bvis["flags"].sum() == 0
-        bvis = blockvisibility_select_uv_range(bvis, uvmin, uvmax)
+        bvis = visibility_select_uv_range(bvis, uvmin, uvmax)
         assert bvis["flags"].sum() == 1185464
         assert bvis.frequency.shape == (5,)
 
-    def test_blockvisibility_select_r_range(self):
+    def test_visibility_select_r_range(self):
         """Expected number of baselines was calculated from a manual inspection
         of the configuration file.
         """
-        bvis = create_blockvisibility(
+        bvis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -201,7 +201,7 @@ class TestVisibilitySelectors(unittest.TestCase):
         rmin = 100.0
         rmax = 20000.0
 
-        sub_bvis = blockvisibility_select_r_range(bvis, rmin, rmax)
+        sub_bvis = visibility_select_r_range(bvis, rmin, rmax)
         assert len(sub_bvis.baselines) == 11781
         assert len(sub_bvis.configuration.names) == 166
         assert sub_bvis.frequency.shape == (5,)

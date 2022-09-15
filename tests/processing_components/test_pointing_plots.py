@@ -12,7 +12,7 @@ from astropy.coordinates import SkyCoord
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components import create_image
 from rascil.processing_components.calibration.pointing import (
-    create_pointingtable_from_blockvisibility,
+    create_pointingtable_from_visibility,
 )
 from rascil.processing_components.imaging.primary_beams import create_vp
 from rascil.processing_components.simulation import create_named_configuration
@@ -26,7 +26,7 @@ from rascil.processing_components.skycomponent.operations import (
     create_skycomponent,
     filter_skycomponents_by_flux,
 )
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -50,7 +50,7 @@ class TestPointing(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+15.0 * u.deg, dec=-45.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.midcore,
             self.times,
             self.frequency,
@@ -84,7 +84,7 @@ class TestPointing(unittest.TestCase):
 
         for telescope in ["MID_B2", "LOW", "ASKAP"]:
             vp = create_vp(self.beam, telescope)
-            pt = create_pointingtable_from_blockvisibility(self.vis, vp)
+            pt = create_pointingtable_from_visibility(self.vis, vp)
             pt = simulate_pointingtable(pt, 0.1, static_pointing_error=[0.01, 0.001])
             assert pt.pointing.shape == (
                 self.ntimes,
@@ -104,7 +104,7 @@ class TestPointing(unittest.TestCase):
         )
         s3_components = filter_skycomponents_by_flux(s3_components, 0.0, 10.0)
 
-        pt = create_pointingtable_from_blockvisibility(self.vis)
+        pt = create_pointingtable_from_visibility(self.vis)
         pt = simulate_pointingtable(
             pt, pointing_error=0.01, static_pointing_error=[0.001, 0.0001]
         )
@@ -128,7 +128,7 @@ class TestPointing(unittest.TestCase):
             polarisation_frame=PolarisationFrame("stokesIQUV"),
         )
 
-        pt = create_pointingtable_from_blockvisibility(self.vis)
+        pt = create_pointingtable_from_visibility(self.vis)
         pt = simulate_pointingtable(
             pt,
             pointing_error=0.01,
@@ -155,7 +155,7 @@ class TestPointing(unittest.TestCase):
             polarisation_frame=PolarisationFrame("stokesIQUV"),
         )
 
-        pt = create_pointingtable_from_blockvisibility(self.vis)
+        pt = create_pointingtable_from_visibility(self.vis)
         pt = simulate_pointingtable(
             pt,
             pointing_error=0.0,
@@ -183,7 +183,7 @@ class TestPointing(unittest.TestCase):
             polarisation_frame=PolarisationFrame("stokesIQUV"),
         )
 
-        pt = create_pointingtable_from_blockvisibility(self.vis)
+        pt = create_pointingtable_from_visibility(self.vis)
         pt = simulate_pointingtable(
             pt,
             pointing_error=0.01,
@@ -213,7 +213,7 @@ class TestPointing(unittest.TestCase):
 
         import matplotlib.pyplot as plt
 
-        pt = create_pointingtable_from_blockvisibility(self.vis)
+        pt = create_pointingtable_from_visibility(self.vis)
         pt = simulate_pointingtable(
             pt,
             pointing_error=0.0,
@@ -238,7 +238,7 @@ class TestPointing(unittest.TestCase):
             polarisation_frame=PolarisationFrame("stokesIQUV"),
         )
 
-        pt = create_pointingtable_from_blockvisibility(self.vis)
+        pt = create_pointingtable_from_visibility(self.vis)
         pt = simulate_pointingtable(
             pt,
             pointing_error=0.01,

@@ -18,7 +18,7 @@ from rascil.processing_components import (
 from rascil.processing_components import (
     ingest_unittest_visibility,
     create_low_test_skymodel_from_gleam,
-    calculate_blockvisibility_parallactic_angles,
+    calculate_visibility_parallactic_angles,
     qa_image,
     create_low_test_beam,
     convert_azelvp_to_radec,
@@ -143,7 +143,7 @@ class TestSkyModel(unittest.TestCase):
 
         def get_pb(vis, model):
             pb = create_low_test_beam(model)
-            pa = numpy.mean(calculate_blockvisibility_parallactic_angles(vis))
+            pa = numpy.mean(calculate_visibility_parallactic_angles(vis))
             pb = convert_azelvp_to_radec(pb, model, pa)
             return pb
 
@@ -229,7 +229,7 @@ class TestSkyModel(unittest.TestCase):
 
         def get_pb(bvis, model):
             pb = create_low_test_beam(model)
-            pa = numpy.mean(calculate_blockvisibility_parallactic_angles(bvis))
+            pa = numpy.mean(calculate_visibility_parallactic_angles(bvis))
             pb = convert_azelvp_to_radec(pb, model, pa)
             return pb
 

@@ -20,11 +20,11 @@ from rascil.processing_components import (
     fit_psf,
 )
 from rascil.processing_components.imaging.imaging import (
-    invert_blockvisibility,
+    invert_visibility,
 )
 
 from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -82,7 +82,7 @@ class TestWeighting(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+180.0 * u.deg, dec=-60.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.componentvis = create_blockvisibility(
+        self.componentvis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -114,7 +114,7 @@ class TestWeighting(unittest.TestCase):
         self.componentvis = taper_visibility_gaussian(
             self.componentvis, beam=size_required
         )
-        psf, sumwt = invert_blockvisibility(
+        psf, sumwt = invert_visibility(
             self.componentvis, self.model, dopsf=True, context="2d"
         )
         if self.persist:
@@ -138,7 +138,7 @@ class TestWeighting(unittest.TestCase):
             self.componentvis, self.model, algorithm="uniform"
         )
         self.componentvis = taper_visibility_tukey(self.componentvis, tukey=0.1)
-        psf, sumwt = invert_blockvisibility(
+        psf, sumwt = invert_visibility(
             self.componentvis, self.model, dopsf=True, context="2d"
         )
         if self.persist:

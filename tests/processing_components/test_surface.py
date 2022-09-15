@@ -19,7 +19,7 @@ from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation.surface import (
     simulate_gaintable_from_zernikes,
 )
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 from rascil.processing_components import create_image
 
 log = logging.getLogger("rascil-logger")
@@ -51,7 +51,7 @@ class TestSurface(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+15.0 * u.deg, dec=-45.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.midcore,
             self.times,
             self.frequency,

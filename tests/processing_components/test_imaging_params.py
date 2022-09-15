@@ -14,7 +14,7 @@ from rascil.processing_components.imaging.base import create_image_from_visibili
 from rascil.processing_components.imaging.imaging_params import get_frequency_map
 from rascil.processing_components.simulation import create_low_test_image_from_gleam
 from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -38,7 +38,7 @@ class TestImagingParams(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+180.0 * u.deg, dec=-60.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             times=self.times,
             frequency=self.frequency,

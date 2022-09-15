@@ -13,7 +13,7 @@ from astropy.coordinates import SkyCoord
 
 from rascil.data_models import PolarisationFrame, rascil_path
 from rascil.processing_components import (
-    create_blockvisibility,
+    create_visibility,
     qa_image,
     export_image_to_fits,
     create_image_from_visibility,
@@ -56,7 +56,7 @@ class TestRFIRegression(unittest.TestCase):
         phasecentre = SkyCoord(
             ra=0.0 * u.deg, dec=+30.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.bvis = create_blockvisibility(
+        self.bvis = create_visibility(
             self.configuration,
             ftimes,
             ffrequency,

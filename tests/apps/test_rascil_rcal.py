@@ -31,9 +31,9 @@ from rascil.data_models import (
 )
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components import (
-    export_blockvisibility_to_ms,
+    export_visibility_to_ms,
     dft_skycomponent_visibility,
-    create_gaintable_from_blockvisibility,
+    create_gaintable_from_visibility,
     simulate_gaintable,
     apply_gaintable,
     qa_visibility,
@@ -105,7 +105,7 @@ class TestRASCILRcal(unittest.TestCase):
 
         self.bvis_error = self.create_apply_gains()
 
-        export_blockvisibility_to_ms(
+        export_visibility_to_ms(
             self.tempdir + "/test_rascil_rcal.ms", [self.bvis_error]
         )
 
@@ -153,7 +153,7 @@ class TestRASCILRcal(unittest.TestCase):
 
         :return: bvis_error: Visibility
         """
-        self.gt = create_gaintable_from_blockvisibility(
+        self.gt = create_gaintable_from_visibility(
             self.bvis_original, jones_type="B"
         )
         self.gt = simulate_gaintable(self.gt, phase_error=0.1)

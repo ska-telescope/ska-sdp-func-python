@@ -19,7 +19,7 @@ from rascil.processing_components.imaging.dft import (
 )
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import (
-    create_blockvisibility,
+    create_visibility,
     phaserotate_visibility,
 )
 
@@ -70,7 +70,7 @@ class TestVisibilityDFTOperations(unittest.TestCase):
             polarisation_frame=PolarisationFrame("stokesI"),
         )
 
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -82,7 +82,7 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         self.vismodel = dft_skycomponent_visibility(self.vis, self.comp)
         # Predict visibilities with new phase centre independently
         ha_diff = -(self.compabsdirection.ra - self.phasecentre.ra).to(u.rad).value
-        vispred = create_blockvisibility(
+        vispred = create_visibility(
             self.lowcore,
             self.times + ha_diff,
             self.frequency,
@@ -101,7 +101,7 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         assert_allclose(rotatedvis.uvw, vismodel2.uvw, rtol=3e-6)
 
     def test_phase_rotation_stokesiquv(self):
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -113,7 +113,7 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         self.vismodel = dft_skycomponent_visibility(self.vis, self.comp)
         # Predict visibilities with new phase centre independently
         ha_diff = -(self.compabsdirection.ra - self.phasecentre.ra).to(u.rad).value
-        vispred = create_blockvisibility(
+        vispred = create_visibility(
             self.lowcore,
             self.times + ha_diff,
             self.frequency,
@@ -131,9 +131,9 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         assert_allclose(rotatedvis.vis, vismodel2.vis, rtol=3e-6)
         assert_allclose(rotatedvis.uvw, vismodel2.uvw, rtol=3e-6)
 
-    def test_dft_idft_stokesiquv_blockvisibility(self):
+    def test_dft_idft_stokesiquv_visibility(self):
         for vpol in [PolarisationFrame("linear"), PolarisationFrame("circular")]:
-            self.vis = create_blockvisibility(
+            self.vis = create_visibility(
                 self.lowcore,
                 self.times,
                 self.frequency,
@@ -151,7 +151,7 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         vis and comp frequency and polarisation are the same
         --> expected flux is same as comp flux (except complex)
         """
-        vis = create_blockvisibility(
+        vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -175,7 +175,7 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         different (vis = stokesI, comp = stokesIQUV).
         Expected flux contains the data for the polarisation of visibility.
         """
-        vis = create_blockvisibility(
+        vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,

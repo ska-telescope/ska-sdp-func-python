@@ -24,11 +24,11 @@ try:
     import casacore
     from casacore.tables import table  # pylint: disable=import-error
     from rascil.processing_components.visibility.base import (
-        create_blockvisibility,
-        create_blockvisibility_from_ms,
+        create_visibility,
+        create_visibility_from_ms,
     )
     from rascil.processing_components.visibility.base import (
-        export_blockvisibility_to_ms,
+        export_visibility_to_ms,
     )
 
     run_ms_tests = True
@@ -106,7 +106,7 @@ class TestMSTests(unittest.TestCase):
             self.results_dir,
             len(self.frequency),
         )
-        export_blockvisibility_to_ms(msoutfile, [self.bvis], source_name="M31")
+        export_visibility_to_ms(msoutfile, [self.bvis], source_name="M31")
 
     @unittest.skipUnless(run_ms_tests, "requires the 'casacore' module")
     def test_export_ms_7freqwin(self):
@@ -115,7 +115,7 @@ class TestMSTests(unittest.TestCase):
             self.results_dir,
             len(self.frequency),
         )
-        export_blockvisibility_to_ms(msoutfile, [self.bvis], source_name="M31")
+        export_visibility_to_ms(msoutfile, [self.bvis], source_name="M31")
 
     @unittest.skipUnless(run_ms_tests, "requires the 'casacore' module")
     def test_export_ms_pol(self):
@@ -124,7 +124,7 @@ class TestMSTests(unittest.TestCase):
             self.results_dir,
             len(self.frequency),
         )
-        export_blockvisibility_to_ms(msoutfile, [self.bvis], source_name="M31")
+        export_visibility_to_ms(msoutfile, [self.bvis], source_name="M31")
 
     @unittest.skipUnless(run_ms_tests, "requires the 'casacore' module")
     def test_export_ms_7freqwin_pol(self):
@@ -133,7 +133,7 @@ class TestMSTests(unittest.TestCase):
             self.results_dir,
             len(self.frequency),
         )
-        export_blockvisibility_to_ms(msoutfile, [self.bvis], source_name="M31")
+        export_visibility_to_ms(msoutfile, [self.bvis], source_name="M31")
 
 
 if __name__ == "__main__":
