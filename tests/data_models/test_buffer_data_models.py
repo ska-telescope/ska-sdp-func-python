@@ -12,7 +12,7 @@ from astropy.coordinates import SkyCoord
 
 from rascil.data_models.buffer_data_models import (
     BufferImage,
-    BufferBlockVisibility,
+    BufferVisibility,
     BufferGainTable,
     BufferSkyModel,
     BufferConvolutionFunction,
@@ -21,9 +21,9 @@ from rascil.data_models.buffer_data_models import (
     BufferFlagTable,
 )
 from rascil.data_models.memory_data_models import (
-    Skycomponent,
+    SkyComponent,
     SkyModel,
-    BlockVisibility,
+    Visibility,
 )
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.griddata.operations import create_griddata_from_image
@@ -69,7 +69,7 @@ class TestBufferDataModelHelpers(unittest.TestCase):
         self.compabsdirection = SkyCoord(
             ra=+181.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.comp = Skycomponent(
+        self.comp = SkyComponent(
             direction=self.compabsdirection, frequency=self.frequency, flux=self.flux
         )
 
@@ -90,16 +90,16 @@ class TestBufferDataModelHelpers(unittest.TestCase):
             "buffer": {"directory": self.results_dir},
             "vislist": {
                 "name": "test_bufferblockvisibility.hdf",
-                "data_model": "BlockVisibility",
+                "data_model": "Visibility",
             },
         }
-        bdm = BufferBlockVisibility(config["buffer"], config["vislist"], self.vis)
+        bdm = BufferVisibility(config["buffer"], config["vislist"], self.vis)
         bdm.sync()
-        new_bdm = BufferBlockVisibility(config["buffer"], config["vislist"])
+        new_bdm = BufferVisibility(config["buffer"], config["vislist"])
         new_bdm.sync()
         newvis = bdm.memory_data_model
 
-        # assert isinstance(newvis, BlockVisibility)
+        # assert isinstance(newvis, Visibility)
         assert numpy.array_equal(newvis.frequency, self.vis.frequency)
         assert newvis.vis.shape == self.vis.vis.shape
         assert numpy.max(numpy.abs(self.vis.vis - newvis.vis)) < 1e-15

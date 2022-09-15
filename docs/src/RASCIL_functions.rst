@@ -9,7 +9,7 @@ Functions
 Create empty visibility data set for observation
 ------------------------------------------------
 
-* For BlockVisibility: :py:func:`rascil.processing_components.visibility.base.create_blockvisibility`
+* For Visibility: :py:func:`rascil.processing_components.visibility.base.create_blockvisibility`
 
 Read existing Measurement Set
 -----------------------------
@@ -33,8 +33,8 @@ Visibility predict and invert
 * Invert by gridding visibilities with Nifty Gridder :py:func:`rascil.processing_components.imaging.ng.invert_ng`
 * Predict by de-gridding visibilities with GPU-based WAGG :py:func:`rascil.processing_components.imaging.wg.predict_wg`
 * Invert by gridding visibilities with GPU-based WAGG :py:func:`rascil.processing_components.imaging.wg.invert_wg`
-* Predict BlockVisibility for Skycomponent :py:func:`rascil.processing_components.imaging.dft.dft_skycomponent_visibility`
-* Predict Skycomponent from BlockVisibility :py:func:`rascil.processing_components.imaging.dft.idft_visibility_skycomponent`
+* Predict Visibility for SkyComponent :py:func:`rascil.processing_components.imaging.dft.dft_skycomponent_visibility`
+* Predict SkyComponent from Visibility :py:func:`rascil.processing_components.imaging.dft.idft_visibility_skycomponent`
 
 Deconvolution
 -------------
@@ -82,7 +82,7 @@ Image
 Visibility
 ----------
 
-* Append/sum/divide/QA: :py:func:`rascil.processing_components.visibility.operations.divide_visibility`
+* Append/sum/divide/QualityAssessment: :py:func:`rascil.processing_components.visibility.operations.divide_visibility`
 * Remove continuum: :py:func:`rascil.processing_components.visibility.operations.remove_continuum_blockvisibility`
 * Integrate across channels: :py:func:`rascil.processing_components.visibility.operations.integrate_visibility_by_channel`
 

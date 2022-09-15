@@ -9,7 +9,7 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.memory_data_models import Skycomponent
+from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components import create_named_configuration, qa_visibility
 from rascil.processing_components.imaging.dft import dft_skycomponent_visibility
@@ -41,7 +41,7 @@ class TestVisibilityDFTOperationsKernels(unittest.TestCase):
         self.compreldirection = self.compabsdirection.transform_to(pcof)
 
         self.comp = ncomp * [
-            Skycomponent(
+            SkyComponent(
                 direction=self.compreldirection,
                 frequency=self.frequency,
                 flux=self.flux,

@@ -9,7 +9,7 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.memory_data_models import Skycomponent
+from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.calibration.solvers import solve_gaintable
 from rascil.processing_components.calibration.operations import (
@@ -74,7 +74,7 @@ class TestCalibrationSolvers(unittest.TestCase):
         self.compabsdirection = SkyCoord(
             ra=+181.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.comp = Skycomponent(
+        self.comp = SkyComponent(
             direction=self.compabsdirection,
             frequency=self.frequency,
             flux=self.flux,

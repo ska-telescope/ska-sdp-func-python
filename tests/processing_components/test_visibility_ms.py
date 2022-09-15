@@ -9,7 +9,7 @@ import shutil
 
 import numpy
 
-from rascil.data_models import rascil_path, rascil_data_path, BlockVisibility
+from rascil.data_models import rascil_path, rascil_data_path, Visibility
 from rascil.processing_components.visibility.base import (
     create_blockvisibility_from_ms,
     create_blockvisibility_from_ms,
@@ -191,14 +191,14 @@ class TestCreateMS(unittest.TestCase):
 
         for ms in ms_list:
             vis_list = create_blockvisibility_from_ms(rascil_data_path(ms))
-            assert isinstance(vis_list[0], BlockVisibility)
+            assert isinstance(vis_list[0], Visibility)
 
     def test_read_not_ms(self):
 
         with self.assertRaises(RuntimeError):
             ms = "vis/ASKAP_example.fits"
             vis_list = create_blockvisibility_from_ms(rascil_data_path(ms))
-            # assert isinstance(vis_list[0], BlockVisibility)
+            # assert isinstance(vis_list[0], Visibility)
 
     def test_write_multi_bvis_ms(self):
         # read in an MS which produces multiple bvis

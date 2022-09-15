@@ -9,7 +9,7 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.memory_data_models import Skycomponent
+from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.calibration.pointing import (
     create_pointingtable_from_blockvisibility,
@@ -76,7 +76,7 @@ class TestPointing(unittest.TestCase):
             ra=+15.0 * u.deg, dec=-44.58 * u.deg, frame="icrs", equinox="J2000"
         )
         component = [
-            Skycomponent(
+            SkyComponent(
                 frequency=self.frequency,
                 direction=offset_phasecentre,
                 polarisation_frame=PolarisationFrame("stokesI"),

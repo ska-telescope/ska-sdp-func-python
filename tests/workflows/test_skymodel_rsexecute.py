@@ -347,7 +347,7 @@ class TestSkyModel(unittest.TestCase):
         for i, sm in enumerate(self.skymodel_list):
             sm.image = None
 
-        ##assert isinstance(self.skymodel_list[0].components[0], Skycomponent), self.skymodel_list[0].components[0]
+        ##assert isinstance(self.skymodel_list[0].components[0], SkyComponent), self.skymodel_list[0].components[0]
         assert len(self.skymodel_list[0].components) == 11, len(
             self.skymodel_list[0].components
         )

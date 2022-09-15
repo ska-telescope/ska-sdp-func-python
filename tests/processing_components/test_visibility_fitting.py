@@ -9,7 +9,7 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.memory_data_models import Skycomponent
+from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.simulation import create_named_configuration
@@ -45,7 +45,7 @@ class TestVisibilityFitting(unittest.TestCase):
         self.comp_start_direction = SkyCoord(
             ra=+180.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.comp = Skycomponent(
+        self.comp = SkyComponent(
             direction=self.comp_actual_direction,
             frequency=self.frequency,
             flux=self.flux,
@@ -67,7 +67,7 @@ class TestVisibilityFitting(unittest.TestCase):
                 polarisation_frame=PolarisationFrame("stokesI"),
             )
             self.vismodel = dft_skycomponent_visibility(self.vis, self.comp)
-            initial_comp = Skycomponent(
+            initial_comp = SkyComponent(
                 direction=self.comp_start_direction,
                 frequency=self.frequency,
                 flux=2.0 * self.flux,

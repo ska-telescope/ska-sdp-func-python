@@ -96,7 +96,7 @@ class TestRFIRegression(unittest.TestCase):
         regression to test that simulate_rfi_block_prop correctly updates the
         block visibility data with RFI signal. We do this by making an image
 
-        RFI signal is for the same frequency channels as the BlockVisibility has
+        RFI signal is for the same frequency channels as the Visibility has
         """
         self.setup_telescope("MID")
         bvis = self.bvis.copy(deep=True)
@@ -136,7 +136,7 @@ class TestRFIRegression(unittest.TestCase):
         regression to test that simulate_rfi_block_prop correctly updates the
         block visibility data with RFI signal. We do this by making an image
 
-        RFI signal is for the same frequency channels as the BlockVisibility has
+        RFI signal is for the same frequency channels as the Visibility has
         """
         self.setup_telescope("MID")
         bvis = self.bvis.copy(deep=True)

@@ -9,7 +9,7 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.memory_data_models import Skycomponent
+from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.imaging.primary_beams import (
     create_vp_generic_numeric,
@@ -78,7 +78,7 @@ class TestSurface(unittest.TestCase):
             ra=+15.0 * u.deg, dec=-44.58 * u.deg, frame="icrs", equinox="J2000"
         )
         component = [
-            Skycomponent(
+            SkyComponent(
                 frequency=self.frequency,
                 direction=offset_phasecentre,
                 polarisation_frame=PolarisationFrame("stokesI"),

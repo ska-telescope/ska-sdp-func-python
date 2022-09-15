@@ -42,7 +42,7 @@ Although a CASA MeasurementSet can hold heterogeneous observations, identified b
 only process identical data descriptors from a MS. The number of channels and polarisation must be the same.
 
 Each selected data descriptor is optionally split into a number of channels optionally averaged and placed into one
-BlockVisibility.
+Visibility.
 
 For example, using the arguments::
 
@@ -51,8 +51,8 @@ For example, using the arguments::
 
 will read data descriptors 0, 1, 2, 3, each of which has 64 channels. Each set of 64 channels are split
 into blocks of 8 and averaged. We thus end up with 32 separate datasets in RASCIL, each of which
-is a BlockVisibility and has 1 channel, for a total of 32 channels. If the argument :code:`--ingest_average_blockvis`
-is set to False, each BlockVisibility has eight channels, for a total of 256 channels.
+is a Visibility and has 1 channel, for a total of 32 channels. If the argument :code:`--ingest_average_blockvis`
+is set to False, each Visibility has eight channels, for a total of 256 channels.
 
 Selection
 +++++++++
@@ -83,7 +83,7 @@ The clean methods support a number of processing speed enhancements:
 
      - The multi-frequency-synthesis CLEAN works by fitting a Taylor series in frequency.
        The :code:`--ingest_chan_per_blockvis` argument controls the aggregation of channels
-       in the MeasurementSet to form image planes for the CLEAN. Within a BlockVisibility the
+       in the MeasurementSet to form image planes for the CLEAN. Within a Visibility the
        different channels are gridded together to form one image. Each image is then used in the
        mmclean algorithm. For example, a data set may have 256 channels spread over 4 data descriptors.
        We can split these into 32 BlockVisibilities and then run the mmclean over these 32

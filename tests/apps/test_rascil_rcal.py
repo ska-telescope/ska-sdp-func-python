@@ -24,7 +24,7 @@ from rascil.apps.rascil_rcal import (
     realtime_single_bvis_solver,
 )
 from rascil.data_models import (
-    Skycomponent,
+    SkyComponent,
     import_gaintable_from_hdf5,
     export_skycomponent_to_hdf5,
     rascil_path,
@@ -116,7 +116,7 @@ class TestRASCILRcal(unittest.TestCase):
 
         :return pointsource: Point source skycomponent
         """
-        pointsource = Skycomponent(
+        pointsource = SkyComponent(
             direction=self.phasecentre,
             polarisation_frame=self.image_pol,
             flux=flux,
@@ -151,7 +151,7 @@ class TestRASCILRcal(unittest.TestCase):
     def create_apply_gains(self):
         """Create the gaintable, apply to the visibility, write as MeasurementSet
 
-        :return: bvis_error: BlockVisibility
+        :return: bvis_error: Visibility
         """
         self.gt = create_gaintable_from_blockvisibility(
             self.bvis_original, jones_type="B"

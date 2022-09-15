@@ -33,7 +33,7 @@ def setup_telescope(telescope):
     antskip = 1
     configuration = create_named_configuration(telescope, rmax=rmax, skip=antskip)
 
-    # Info. for dummy BlockVisibility
+    # Info. for dummy Visibility
     ftimes = (numpy.pi / 43200.0) * numpy.arange(0.0, 300.0, 30.0)
     if telescope == "MID":
         ffrequency = numpy.linspace(1.4e9, 1.9e9, 5)
@@ -222,7 +222,7 @@ def test_rfi_correlation():
 def test_simulate_rfi_block_prop_use_pol(telescope, apply_beam):
     """
     Test that simulate_rfi_block_prop correctly updates the
-    BlockVisibility data with RFI signal. The starting BlockVisibility is empty.
+    Visibility data with RFI signal. The starting Visibility is empty.
     """
     bvis = setup_telescope(telescope)
     nants_start = len(bvis.configuration.names)

@@ -10,7 +10,7 @@ import numpy
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_allclose, assert_array_almost_equal
 
-from rascil.data_models.memory_data_models import Skycomponent
+from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.imaging.dft import (
     dft_skycomponent_visibility,
@@ -44,7 +44,7 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         )
         pcof = self.phasecentre.skyoffset_frame()
         self.compreldirection = self.compabsdirection.transform_to(pcof)
-        self.comp = Skycomponent(
+        self.comp = SkyComponent(
             direction=self.compreldirection, frequency=self.frequency, flux=self.flux
         )
 
@@ -63,7 +63,7 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         )
         pcof = self.phasecentre.skyoffset_frame()
         self.compreldirection = self.compabsdirection.transform_to(pcof)
-        self.comp = Skycomponent(
+        self.comp = SkyComponent(
             direction=self.compreldirection,
             frequency=self.frequency,
             flux=self.flux,

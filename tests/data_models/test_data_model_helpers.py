@@ -34,7 +34,7 @@ from rascil.data_models.data_model_helpers import (
 )
 
 from rascil.data_models.xarray_coordinate_support import image_wcs, griddata_wcs, cf_wcs
-from rascil.data_models.memory_data_models import Skycomponent, SkyModel
+from rascil.data_models.memory_data_models import SkyComponent, SkyModel
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.image import create_image
 from rascil.processing_components.calibration.operations import (
@@ -108,7 +108,7 @@ class TestDataModelHelpers(unittest.TestCase):
         self.compabsdirection = SkyCoord(
             ra=+181.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.comp = Skycomponent(
+        self.comp = SkyComponent(
             direction=self.compabsdirection, frequency=self.frequency, flux=self.flux
         )
 

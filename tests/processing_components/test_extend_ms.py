@@ -14,7 +14,7 @@ from rascil.processing_components.visibility.base import (
     create_blockvisibility,
     extend_blockvisibility_to_ms,
 )
-from rascil.data_models import rascil_path, rascil_data_path, BlockVisibility
+from rascil.data_models import rascil_path, rascil_data_path, Visibility
 from rascil.processing_components.visibility.base import (
     create_blockvisibility_from_ms,
     export_blockvisibility_to_ms,

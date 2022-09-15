@@ -11,7 +11,7 @@ import numpy
 from astropy.coordinates import SkyCoord
 
 from rascil.data_models.polarisation import PolarisationFrame
-from rascil.data_models import Skycomponent
+from rascil.data_models import SkyComponent
 
 from rascil.processing_components.arrays.cleaners import overlapIndices
 from rascil.processing_components.image.deconvolution import (
@@ -153,7 +153,7 @@ class TestImageDeconvolution(unittest.TestCase):
         """Test restoration of single pixel and skycomponent"""
         self.model["pixels"].data[0, 0, 256, 256] = 0.5
 
-        sc = Skycomponent(
+        sc = SkyComponent(
             flux=numpy.array([[1.0]]),
             direction=SkyCoord(
                 ra=+180.0 * u.deg, dec=-61.0 * u.deg, frame="icrs", equinox="J2000"

@@ -87,7 +87,7 @@ The steps required are:
     im.attrs["nchan"]
 
 
- - For BlockVisibility, the various columns become data variables::
+ - For Visibility, the various columns become data variables::
 
     # The numpy format
     bvis.data["vis"]

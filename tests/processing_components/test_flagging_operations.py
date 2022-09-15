@@ -9,7 +9,7 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.memory_data_models import Skycomponent
+from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components import create_blockvisibility
 from rascil.processing_components.flagging.operations import flagging_blockvisibility
@@ -37,7 +37,7 @@ class TestFlaggingOperations(unittest.TestCase):
         )
         pcof = self.phasecentre.skyoffset_frame()
         self.compreldirection = self.compabsdirection.transform_to(pcof)
-        self.comp = Skycomponent(
+        self.comp = SkyComponent(
             direction=self.compreldirection, frequency=self.frequency, flux=self.flux
         )
 

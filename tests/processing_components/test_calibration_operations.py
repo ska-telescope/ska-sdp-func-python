@@ -10,7 +10,7 @@ import unittest
 from astropy.coordinates import SkyCoord
 import astropy.units as u
 
-from rascil.data_models.memory_data_models import Skycomponent
+from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation import PolarisationFrame
 
 from rascil.processing_components import (
@@ -58,7 +58,7 @@ class TestCalibrationOperations(unittest.TestCase):
         if sky_pol_frame == "stokesI":
             self.flux = self.flux[:, 0][:, numpy.newaxis]
 
-        self.comp = Skycomponent(
+        self.comp = SkyComponent(
             direction=self.compabsdirection,
             frequency=self.frequency,
             flux=self.flux,
