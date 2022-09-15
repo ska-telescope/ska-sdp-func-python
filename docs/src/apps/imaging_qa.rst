@@ -67,7 +67,7 @@ Example arguments file, called `args.txt`::
 Make sure each line contains one argument, there is an equal sign between arg and its value,
 and that there aren't any trailing white spaces in the lines.
 
-Then run the QualityAssessment code as follows::
+Then run the imaging_qa code as follows::
 
     python imaging_qa_main.py @args.txt
 
@@ -86,7 +86,7 @@ are not all in the same directory? Let's take the following directory structure 
                 my_residual_file.fits
             args.txt
 
-With such a setup, the best way to run the QualityAssessment code is from the top-level ``rascil`` directory
+With such a setup, the best way to run the imaging_qa code is from the top-level ``rascil`` directory
 (the git root directory). Your ``args.txt`` file will need to contain either the relative or
 absolute path to your FITS files. E.g.::
 
