@@ -9,7 +9,7 @@ from astropy import units as u
 
 from rascil.apps.rascil_imager import generate_skymodel_list
 from rascil.data_models import (
-    Skycomponent,
+    SkyComponent,
     export_skycomponent_to_hdf5,
     rascil_path,
     PolarisationFrame,
@@ -74,19 +74,19 @@ def sky_comp_file():
     frequency = numpy.array([1.0e8, 1.5e8, 2.0e8])
 
     sky_com_list = [
-        Skycomponent(
+        SkyComponent(
             direction=PHASE_CENTRE,
             flux=numpy.array([[1.0], [2.0], [2.5]]),
             polarisation_frame=pol_frame,
             frequency=frequency,
         ),
-        Skycomponent(
+        SkyComponent(
             direction=PHASE_CENTRE,
             flux=numpy.array([[1.1], [2.2], [2.5]]),
             polarisation_frame=pol_frame,
             frequency=frequency,
         ),
-        Skycomponent(
+        SkyComponent(
             direction=PHASE_CENTRE,
             flux=numpy.array([[0.4], [1.1], [1.6]]),
             polarisation_frame=pol_frame,

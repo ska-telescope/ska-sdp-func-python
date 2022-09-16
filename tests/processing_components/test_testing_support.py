@@ -11,7 +11,7 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.memory_data_models import Skycomponent
+from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.image.operations import export_image_to_fits
 from rascil.processing_components.imaging.primary_beams import create_low_test_beam
@@ -29,8 +29,8 @@ from rascil.processing_components.simulation import (
     decimate_configuration,
 )
 from rascil.processing_components.visibility.base import (
-    create_blockvisibility,
-    create_blockvisibility,
+    create_visibility,
+    create_visibility,
     copy_visibility,
 )
 
@@ -66,7 +66,7 @@ class TestTesting_Support(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+15 * u.deg, dec=dec * u.deg, frame="icrs", equinox="J2000"
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.config,
             self.times,
             self.frequency,

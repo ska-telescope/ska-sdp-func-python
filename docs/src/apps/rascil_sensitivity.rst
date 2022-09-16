@@ -14,8 +14,8 @@ point source sensitivity (pss) and surface brightness sensitivity (sbs). The ana
 based on Dan Briggs's PhD thesis https://casa.nrao.edu/Documents/Briggs-PhD.pdf
 
 rascil_sensitivity works by constructing a
-BlockVisibility set and running invert to obtain the point spread function. The visibility weights
-in the BlockVisibility are constructed to be equal to the time-bandwidth product each visibility
+Visibility set and running invert to obtain the point spread function. The visibility weights
+in the Visibility are constructed to be equal to the time-bandwidth product each visibility
 sample. For natural weighting, these weights are used as the imaging weights. The sum of gridded weights
 therefore gives the total time-bandwidth of the observation. Given Tsys and efficiency it can then calculate the
 point source sensitivity. To obtain the surface brightness sensitivity, we calculate the solid angle of

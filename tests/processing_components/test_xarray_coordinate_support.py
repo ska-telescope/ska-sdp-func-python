@@ -14,7 +14,7 @@ from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components import create_image, create_griddata_from_image
 from rascil.processing_components.skycomponent.operations import create_skycomponent
 from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 from rascil.data_models.xarray_coordinate_support import image_wcs, griddata_wcs
 
 log = logging.getLogger("rascil-logger")
@@ -50,7 +50,7 @@ class TestXarrayCoordinateSupport(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+180.0 * u.deg, dec=-60.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.image_frequency,

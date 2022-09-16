@@ -28,7 +28,7 @@ from rascil.processing_components.skycomponent.operations import (
     filter_skycomponents_by_flux,
 )
 from rascil.processing_components.skymodel.operations import image_voronoi_iter
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 from rascil.processing_components import create_image
 
 log = logging.getLogger("rascil-logger")
@@ -51,7 +51,7 @@ class TestSkymodelOperations(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+0.0 * u.deg, dec=dec, frame="icrs", equinox="J2000"
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,

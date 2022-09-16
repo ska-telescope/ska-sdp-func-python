@@ -21,7 +21,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 FUNCTIONS = (
     "skymodel_predict_calibrate "
     "skymodel_calibrate_invert "
-    "create_blockvisibility_from_ms "
+    "create_visibility_from_ms "
     "imaging_deconvolve "
     "invert_ng "
     "restore_cube "

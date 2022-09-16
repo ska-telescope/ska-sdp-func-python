@@ -5,7 +5,7 @@
 import unittest
 import logging
 
-from rascil.data_models.memory_data_models import QA
+from rascil.data_models.memory_data_models import QualityAssessment
 
 log = logging.getLogger("rascil-logger")
 
@@ -14,7 +14,9 @@ log.setLevel(logging.WARNING)
 
 class TestQualityAssessment(unittest.TestCase):
     def test_qa(self):
-        qa = QA(origin="foo", data={"rms": 100.0, "median": 10.0}, context="test of qa")
+        qa = QualityAssessment(
+            origin="foo", data={"rms": 100.0, "median": 10.0}, context="test of qa"
+        )
         log.debug(str(qa))
 
 

@@ -11,7 +11,7 @@ import numpy
 from astropy.coordinates import SkyCoord
 
 from rascil.data_models.polarisation import PolarisationFrame
-from rascil.data_models import Skycomponent
+from rascil.data_models import SkyComponent
 
 from rascil.processing_components.arrays.cleaners import overlapIndices
 from rascil.processing_components.image.deconvolution import (
@@ -30,10 +30,10 @@ from rascil.processing_components import (
 from rascil.processing_components.image.operations import export_image_to_fits, qa_image
 from rascil.processing_components.simulation import create_test_image
 from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 from rascil.processing_components.imaging.imaging import (
-    predict_blockvisibility,
-    invert_blockvisibility,
+    predict_visibility,
+    invert_visibility,
 )
 from rascil.processing_components.imaging.base import (
     create_image_from_visibility,
@@ -59,7 +59,7 @@ class TestImageDeconvolution(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+180.0 * u.deg, dec=-60.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -75,7 +75,7 @@ class TestImageDeconvolution(unittest.TestCase):
         self.test_model = create_test_image(
             cellsize=0.001, frequency=self.frequency, phasecentre=self.vis.phasecentre
         )
-        self.vis = predict_blockvisibility(self.vis, self.test_model, context="2d")
+        self.vis = predict_visibility(self.vis, self.test_model, context="2d")
         assert numpy.max(numpy.abs(self.vis.vis)) > 0.0
         self.model = create_image_from_visibility(
             self.vis,
@@ -83,10 +83,8 @@ class TestImageDeconvolution(unittest.TestCase):
             cellsize=0.001,
             polarisation_frame=PolarisationFrame("stokesI"),
         )
-        self.dirty = invert_blockvisibility(self.vis, self.model, context="2d")[0]
-        self.psf = invert_blockvisibility(
-            self.vis, self.model, context="2d", dopsf=True
-        )[0]
+        self.dirty = invert_visibility(self.vis, self.model, context="2d")[0]
+        self.psf = invert_visibility(self.vis, self.model, context="2d", dopsf=True)[0]
         self.sensitivity = create_pb(self.model, "LOW")
 
     def overlaptest(self, a1, a2, s1, s2):
@@ -153,7 +151,7 @@ class TestImageDeconvolution(unittest.TestCase):
         """Test restoration of single pixel and skycomponent"""
         self.model["pixels"].data[0, 0, 256, 256] = 0.5
 
-        sc = Skycomponent(
+        sc = SkyComponent(
             flux=numpy.array([[1.0]]),
             direction=SkyCoord(
                 ra=+180.0 * u.deg, dec=-61.0 * u.deg, frame="icrs", equinox="J2000"

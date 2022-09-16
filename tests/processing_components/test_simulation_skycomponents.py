@@ -11,7 +11,7 @@ import numpy
 from numpy.testing import assert_almost_equal
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models import Skycomponent
+from rascil.data_models import SkyComponent
 from rascil.data_models.polarisation import PolarisationFrame
 
 from rascil.processing_components.simulation.skycomponents import addnoise_skycomponent
@@ -26,7 +26,7 @@ log.setLevel(logging.WARNING)
 log.addHandler(logging.StreamHandler(sys.stdout))
 
 
-class TestSimSkycomponents(unittest.TestCase):
+class TestSimSkyComponents(unittest.TestCase):
     def setUp(self):
 
         from rascil.data_models.parameters import rascil_path, rascil_data_path

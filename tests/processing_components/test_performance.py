@@ -33,7 +33,7 @@ class TestPerformance(unittest.TestCase):
         self.persist = os.getenv("RASCIL_PERSIST", False)
 
     def test_qa_image(self):
-        """Test that the QA for an image is written correctly"""
+        """Test that the QualityAssessment for an image is written correctly"""
         performance_qa_image(self.json_file, "restored", self.m31image, mode="w")
         performance = performance_read(self.json_file)
         assert "restored" in performance

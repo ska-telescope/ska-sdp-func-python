@@ -15,13 +15,13 @@ from rascil.data_models.data_model_helpers import export_skymodel_to_hdf5
 from rascil.data_models.parameters import rascil_path
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components import (
-    export_blockvisibility_to_ms,
-    concatenate_blockvisibility_frequency,
+    export_visibility_to_ms,
+    concatenate_visibility_frequency,
     find_skycomponents,
 )
 from rascil.processing_components import import_image_from_fits
 from rascil.processing_components.calibration.operations import (
-    create_gaintable_from_blockvisibility,
+    create_gaintable_from_visibility,
     apply_gaintable,
 )
 from rascil.processing_components.image.operations import (
@@ -64,7 +64,7 @@ def _add_errors_to_bvis(bvis_list, freqwin, nfreqwin, rng):
         ], seeds
 
     def sim_and_apply(vis, seed):
-        gt = create_gaintable_from_blockvisibility(vis, jones_type="G")
+        gt = create_gaintable_from_visibility(vis, jones_type="G")
         gt = simulate_gaintable(
             gt,
             phase_error=0.1,
@@ -424,8 +424,8 @@ def test_rascil_imager(
         rascil_path(f"test_results/test_rascil_imager_{tag}.ms"), ignore_errors=True
     )
     bvis_list = rsexecute.compute(bvis_list, sync=True)
-    bvis_list = [concatenate_blockvisibility_frequency(bvis_list)]
-    export_blockvisibility_to_ms(
+    bvis_list = [concatenate_visibility_frequency(bvis_list)]
+    export_visibility_to_ms(
         rascil_path(f"test_results/test_rascil_imager_{tag}.ms"), bvis_list
     )
 

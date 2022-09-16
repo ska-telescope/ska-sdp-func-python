@@ -11,18 +11,18 @@ from astropy.coordinates import SkyCoord
 
 from rascil.data_models import PolarisationFrame, rascil_path
 from rascil.processing_components import (
-    create_blockvisibility,
+    create_visibility,
     export_image_to_fits,
     create_named_configuration,
     create_test_image,
     create_image_from_visibility,
     advise_wide_field,
-    export_blockvisibility_to_ms,
-    create_blockvisibility_from_ms,
+    export_visibility_to_ms,
+    create_visibility_from_ms,
 )
 from rascil.processing_components.imaging.imaging import (
-    predict_blockvisibility,
-    invert_blockvisibility,
+    predict_visibility,
+    invert_visibility,
 )
 
 
@@ -68,7 +68,7 @@ class measurementset_tests(unittest.TestCase):
         phasecentre = SkyCoord(
             ra=+15.0 * u.deg, dec=-45.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        vt = create_blockvisibility(
+        vt = create_visibility(
             lowr3,
             times,
             frequency,
@@ -94,10 +94,10 @@ class measurementset_tests(unittest.TestCase):
         )
 
         # Predict the visibility for the Image
-        vt = predict_blockvisibility(vt, m31image, context="2d")
+        vt = predict_visibility(vt, m31image, context="2d")
 
         model = create_image_from_visibility(vt, cellsize=cellsize, npixel=512)
-        dirty_before, sumwt = invert_blockvisibility(vt, model, context="2d")
+        dirty_before, sumwt = invert_visibility(vt, model, context="2d")
         export_image_to_fits(
             dirty_before,
             "{dir}/test_roundtrip_dirty_before.fits".format(dir=results_dir),
@@ -107,8 +107,8 @@ class measurementset_tests(unittest.TestCase):
         #      (dirty_before.data.max(), dirty_before.data.min(), sumwt))
 
         msname = "{dir}/test_roundtrip.ms".format(dir=results_dir)
-        export_blockvisibility_to_ms(msname, [vt])
-        vt_after = create_blockvisibility_from_ms(msname)[0]
+        export_visibility_to_ms(msname, [vt])
+        vt_after = create_visibility_from_ms(msname)[0]
 
         # Temporarily flag autocorrelations until MS writer is fixed
         vt_after["flags"] = xarray.where(
@@ -117,7 +117,7 @@ class measurementset_tests(unittest.TestCase):
 
         # Make the dirty image and point spread function
         model = create_image_from_visibility(vt_after, cellsize=cellsize, npixel=512)
-        dirty_after, sumwt = invert_blockvisibility(vt_after, model, context="2d")
+        dirty_after, sumwt = invert_visibility(vt_after, model, context="2d")
         export_image_to_fits(
             dirty_after, "{dir}/test_roundtrip_dirty_after.fits".format(dir=results_dir)
         )

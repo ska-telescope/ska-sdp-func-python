@@ -16,7 +16,7 @@ from rascil.processing_components.calibration.chain_calibration import (
     create_calibration_controls,
 )
 from rascil.processing_components.calibration.operations import (
-    create_gaintable_from_blockvisibility,
+    create_gaintable_from_visibility,
     apply_gaintable,
 )
 from rascil.processing_components.simulation import create_named_configuration
@@ -118,7 +118,7 @@ class TestCalibrateGraphs(unittest.TestCase):
         self.error_blockvis_list = [
             rsexecute.execute(copy_visibility(v)) for v in self.blockvis_list
         ]
-        gt = rsexecute.execute(create_gaintable_from_blockvisibility)(
+        gt = rsexecute.execute(create_gaintable_from_visibility)(
             self.blockvis_list[0], jones_type="G"
         )
         gt = rsexecute.execute(simulate_gaintable)(
@@ -170,8 +170,8 @@ class TestCalibrateGraphs(unittest.TestCase):
         )
         err = numpy.max(
             numpy.abs(
-                calibrate_list[0][0].blockvisibility_acc.flagged_vis
-                - self.blockvis_list[0].blockvisibility_acc.flagged_vis
+                calibrate_list[0][0].visibility_acc.flagged_vis
+                - self.blockvis_list[0].visibility_acc.flagged_vis
             )
         )
         assert err < 2e-6, err
@@ -201,8 +201,8 @@ class TestCalibrateGraphs(unittest.TestCase):
         )
         err = numpy.max(
             numpy.abs(
-                calibrate_list[0][0].blockvisibility_acc.flagged_vis
-                - self.blockvis_list[0].blockvisibility_acc.flagged_vis
+                calibrate_list[0][0].visibility_acc.flagged_vis
+                - self.blockvis_list[0].visibility_acc.flagged_vis
             )
         )
         assert err < 2e-6, err
@@ -224,8 +224,8 @@ class TestCalibrateGraphs(unittest.TestCase):
         )
         err = numpy.max(
             numpy.abs(
-                calibrate_list[0][0].blockvisibility_acc.flagged_vis
-                - self.blockvis_list[0].blockvisibility_acc.flagged_vis
+                calibrate_list[0][0].visibility_acc.flagged_vis
+                - self.blockvis_list[0].visibility_acc.flagged_vis
             )
         )
         assert err < 2e-6, err
@@ -279,8 +279,8 @@ class TestCalibrateGraphs(unittest.TestCase):
         )
         err = numpy.max(
             numpy.abs(
-                calibrate_list[0][0].blockvisibility_acc.flagged_vis
-                - self.blockvis_list[0].blockvisibility_acc.flagged_vis
+                calibrate_list[0][0].visibility_acc.flagged_vis
+                - self.blockvis_list[0].visibility_acc.flagged_vis
             )
         )
         assert err < 2e-6, err

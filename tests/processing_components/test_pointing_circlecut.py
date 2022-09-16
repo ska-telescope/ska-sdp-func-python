@@ -13,7 +13,7 @@ from rascil.data_models.polarisation import PolarisationFrame
 
 from rascil.processing_components.skycomponent.operations import create_skycomponent
 from rascil.processing_components.calibration.pointing import (
-    create_pointingtable_from_blockvisibility,
+    create_pointingtable_from_visibility,
 )
 from rascil.processing_components.imaging.primary_beams import create_vp
 from rascil.processing_components.simulation import create_named_configuration
@@ -23,7 +23,7 @@ from rascil.processing_components.simulation.pointing import (
 from rascil.processing_components.simulation import create_test_image
 from rascil.processing_components.simulation.pointing import simulate_pointingtable
 from rascil.processing_components.simulation import create_test_skycomponents_from_s3
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 from rascil.processing_components import create_image
 
 log = logging.getLogger("rascil-logger")
@@ -48,7 +48,7 @@ class TestPointing(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+15.0 * u.deg, dec=-50.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.midcore,
             self.times,
             self.frequency,
@@ -82,7 +82,7 @@ class TestPointing(unittest.TestCase):
 
         telescopes = ["MID"]
         for telescope in telescopes:
-            pt = create_pointingtable_from_blockvisibility(self.vis)
+            pt = create_pointingtable_from_visibility(self.vis)
             pt = simulate_pointingtable(
                 pt, pointing_error=0.0, global_pointing_error=[0.0, 0.0]
             )
@@ -114,7 +114,7 @@ class TestPointing(unittest.TestCase):
             ].gain.shape
 
     def test_create_gaintable_from_pointingtable_circlecut_stokesIQUV(self):
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.midcore,
             self.times,
             self.frequency,
@@ -135,7 +135,7 @@ class TestPointing(unittest.TestCase):
 
         telescopes = ["MID_FEKO_B2"]
         for telescope in telescopes:
-            pt = create_pointingtable_from_blockvisibility(self.vis)
+            pt = create_pointingtable_from_visibility(self.vis)
             pt = simulate_pointingtable(
                 pt, pointing_error=0.0, global_pointing_error=[0.0, 0.0]
             )

@@ -21,7 +21,7 @@ from rascil.processing_components import (
     ingest_unittest_visibility,
     create_low_test_skymodel_from_gleam,
     create_pb,
-    calculate_blockvisibility_parallactic_angles,
+    calculate_visibility_parallactic_angles,
     qa_image,
     create_low_test_beam,
     convert_azelvp_to_radec,
@@ -173,7 +173,7 @@ class TestSkyModel(unittest.TestCase):
 
         def get_pb(vis, model):
             pb = create_low_test_beam(model)
-            pa = numpy.mean(calculate_blockvisibility_parallactic_angles(vis))
+            pa = numpy.mean(calculate_visibility_parallactic_angles(vis))
             pb = convert_azelvp_to_radec(pb, model, pa)
             return pb
 
@@ -220,7 +220,7 @@ class TestSkyModel(unittest.TestCase):
 
         def get_pb(bvis, model):
             pb = create_low_test_beam(model)
-            pa = numpy.mean(calculate_blockvisibility_parallactic_angles(bvis))
+            pa = numpy.mean(calculate_visibility_parallactic_angles(bvis))
             pb = convert_azelvp_to_radec(pb, model, pa)
             return pb
 
@@ -347,7 +347,7 @@ class TestSkyModel(unittest.TestCase):
         for i, sm in enumerate(self.skymodel_list):
             sm.image = None
 
-        ##assert isinstance(self.skymodel_list[0].components[0], Skycomponent), self.skymodel_list[0].components[0]
+        ##assert isinstance(self.skymodel_list[0].components[0], SkyComponent), self.skymodel_list[0].components[0]
         assert len(self.skymodel_list[0].components) == 11, len(
             self.skymodel_list[0].components
         )

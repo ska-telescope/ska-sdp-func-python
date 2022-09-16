@@ -19,7 +19,7 @@ from rascil.processing_components import (
     apply_voltage_pattern_to_image,
     qa_image,
     create_image_from_array,
-    invert_blockvisibility,
+    invert_visibility,
 )
 from rascil.processing_components.imaging import (
     create_image_from_visibility,
@@ -40,7 +40,7 @@ from rascil.processing_components.skycomponent import (
     apply_voltage_pattern_to_skycomponent,
     find_skycomponents,
 )
-from rascil.processing_components.visibility import create_blockvisibility
+from rascil.processing_components.visibility import create_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -84,7 +84,7 @@ class TestPrimaryBeamsPol(unittest.TestCase):
         ):
             # print("Testing {0}".format(vpol.type))
             # print("Original flux = {}".format(flux))
-            bvis = create_blockvisibility(
+            bvis = create_visibility(
                 self.config,
                 self.times,
                 self.frequency,
@@ -145,7 +145,7 @@ class TestPrimaryBeamsPol(unittest.TestCase):
         ):
             vpol = PolarisationFrame("linear")
             try:
-                bvis = create_blockvisibility(
+                bvis = create_visibility(
                     self.config,
                     self.times,
                     self.frequency,
@@ -188,8 +188,7 @@ class TestPrimaryBeamsPol(unittest.TestCase):
                 bvis = dft_skycomponent_visibility(bvis, vpcomp)
                 vpcomp = idft_visibility_skycomponent(bvis, vpcomp)[0][0]
                 assert (
-                    vpcomp.polarisation_frame
-                    == bvis.blockvisibility_acc.polarisation_frame
+                    vpcomp.polarisation_frame == bvis.visibility_acc.polarisation_frame
                 )
                 inv_vpcomp = apply_voltage_pattern_to_skycomponent(
                     vpcomp, vpbeam, inverse=True

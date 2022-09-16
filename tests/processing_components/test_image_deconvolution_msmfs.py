@@ -27,8 +27,8 @@ from rascil.processing_components.imaging.base import (
     create_image_from_visibility,
 )
 from rascil.processing_components.imaging.imaging import (
-    predict_blockvisibility,
-    invert_blockvisibility,
+    predict_visibility,
+    invert_visibility,
 )
 
 from rascil.processing_components.imaging.primary_beams import create_low_test_beam
@@ -37,7 +37,7 @@ from rascil.processing_components.simulation import (
     create_named_configuration,
     decimate_configuration,
 )
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -62,7 +62,7 @@ class TestImageDeconvolutionMSMFS(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+0.0 * u.deg, dec=-45.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             config=self.lowcore,
             times=self.times,
             frequency=self.frequency,
@@ -94,7 +94,7 @@ class TestImageDeconvolutionMSMFS(unittest.TestCase):
                 self.test_model,
                 "%s/test_deconvolve_mmclean_model.fits" % self.results_dir,
             )
-        self.vis = predict_blockvisibility(self.vis, self.test_model, context="2d")
+        self.vis = predict_visibility(self.vis, self.test_model, context="2d")
         assert numpy.max(numpy.abs(self.vis.vis)) > 0.0
         self.model = create_image_from_visibility(
             self.vis,
@@ -104,8 +104,8 @@ class TestImageDeconvolutionMSMFS(unittest.TestCase):
         )
         self.vis = weight_visibility(self.vis, self.model)
         self.vis = taper_visibility_gaussian(self.vis, 0.002)
-        self.dirty, sumwt = invert_blockvisibility(self.vis, self.model, context="2d")
-        self.psf, sumwt = invert_blockvisibility(
+        self.dirty, sumwt = invert_visibility(self.vis, self.model, context="2d")
+        self.psf, sumwt = invert_visibility(
             self.vis, self.model, context="2d", dopsf=True
         )
         if self.persist:

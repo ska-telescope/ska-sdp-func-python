@@ -13,7 +13,7 @@ from astropy.coordinates import SkyCoord
 
 from rascil.data_models import PolarisationFrame, rascil_path
 from rascil.processing_components import (
-    create_blockvisibility,
+    create_visibility,
     qa_image,
     export_image_to_fits,
     create_image_from_visibility,
@@ -56,7 +56,7 @@ class TestRFIRegression(unittest.TestCase):
         phasecentre = SkyCoord(
             ra=0.0 * u.deg, dec=+30.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.bvis = create_blockvisibility(
+        self.bvis = create_visibility(
             self.configuration,
             ftimes,
             ffrequency,
@@ -96,7 +96,7 @@ class TestRFIRegression(unittest.TestCase):
         regression to test that simulate_rfi_block_prop correctly updates the
         block visibility data with RFI signal. We do this by making an image
 
-        RFI signal is for the same frequency channels as the BlockVisibility has
+        RFI signal is for the same frequency channels as the Visibility has
         """
         self.setup_telescope("MID")
         bvis = self.bvis.copy(deep=True)
@@ -136,7 +136,7 @@ class TestRFIRegression(unittest.TestCase):
         regression to test that simulate_rfi_block_prop correctly updates the
         block visibility data with RFI signal. We do this by making an image
 
-        RFI signal is for the same frequency channels as the BlockVisibility has
+        RFI signal is for the same frequency channels as the Visibility has
         """
         self.setup_telescope("MID")
         bvis = self.bvis.copy(deep=True)

@@ -9,11 +9,11 @@ import shutil
 
 import numpy
 
-from rascil.data_models import rascil_path, rascil_data_path, BlockVisibility
+from rascil.data_models import rascil_path, rascil_data_path, Visibility
 from rascil.processing_components.visibility.base import (
-    create_blockvisibility_from_ms,
-    create_blockvisibility_from_ms,
-    export_blockvisibility_to_ms,
+    create_visibility_from_ms,
+    create_visibility_from_ms,
+    export_visibility_to_ms,
 )
 from rascil.processing_components.visibility.operations import (
     integrate_visibility_by_channel,
@@ -42,11 +42,11 @@ class TestCreateMS(unittest.TestCase):
             return
 
         msfile = rascil_data_path("vis/xcasa.ms")
-        self.vis = create_blockvisibility_from_ms(msfile)
+        self.vis = create_visibility_from_ms(msfile)
 
         for v in self.vis:
             assert v.vis.data.shape[-1] == 4
-            assert v.blockvisibility_acc.polarisation_frame.type == "circular"
+            assert v.visibility_acc.polarisation_frame.type == "circular"
 
     def test_create_list_spectral(self):
         if not self.casacore_available:
@@ -59,13 +59,13 @@ class TestCreateMS(unittest.TestCase):
         nchan = 192
         for schan in range(0, nchan, nchan_ave):
             max_chan = min(nchan, schan + nchan_ave)
-            v = create_blockvisibility_from_ms(msfile, range(schan, max_chan))
+            v = create_visibility_from_ms(msfile, range(schan, max_chan))
             vis_by_channel.append(v[0])
 
         assert len(vis_by_channel) == 12
         for v in vis_by_channel:
             assert v.vis.data.shape[-1] == 4
-            assert v.blockvisibility_acc.polarisation_frame.type == "linear"
+            assert v.visibility_acc.polarisation_frame.type == "linear"
 
     def test_create_list_slice(self):
         if not self.casacore_available:
@@ -78,7 +78,7 @@ class TestCreateMS(unittest.TestCase):
         nchan = 192
         for schan in range(0, nchan, nchan_ave):
             max_chan = min(nchan, schan + nchan_ave)
-            v = create_blockvisibility_from_ms(
+            v = create_visibility_from_ms(
                 msfile, start_chan=schan, end_chan=max_chan - 1
             )
             assert v[0].vis.shape[-2] == nchan_ave
@@ -87,7 +87,7 @@ class TestCreateMS(unittest.TestCase):
         assert len(vis_by_channel) == 12
         for v in vis_by_channel:
             assert v.vis.data.shape[-1] == 4
-            assert v.blockvisibility_acc.polarisation_frame.type == "linear"
+            assert v.visibility_acc.polarisation_frame.type == "linear"
 
     def test_create_list_slice_visibility(self):
         if not self.casacore_available:
@@ -100,7 +100,7 @@ class TestCreateMS(unittest.TestCase):
         nchan = 192
         for schan in range(0, nchan, nchan_ave):
             max_chan = min(nchan, schan + nchan_ave)
-            v = create_blockvisibility_from_ms(
+            v = create_visibility_from_ms(
                 msfile, start_chan=schan, end_chan=max_chan - 1
             )
             nchannels = len(numpy.unique(v[0].frequency))
@@ -110,11 +110,11 @@ class TestCreateMS(unittest.TestCase):
         assert len(vis_by_channel) == 12
         for v in vis_by_channel:
             assert v.vis.data.shape[-1] == 4
-            assert v.blockvisibility_acc.polarisation_frame.type == "linear"
+            assert v.visibility_acc.polarisation_frame.type == "linear"
             assert numpy.max(numpy.abs(v.vis)) > 0.0
-            assert numpy.max(numpy.abs(v.blockvisibility_acc.flagged_vis)) > 0.0
+            assert numpy.max(numpy.abs(v.visibility_acc.flagged_vis)) > 0.0
             assert numpy.sum(v.weight) > 0.0
-            assert numpy.sum(v.blockvisibility_acc.flagged_weight) > 0.0
+            assert numpy.sum(v.visibility_acc.flagged_weight) > 0.0
 
     def test_create_list_average_slice_visibility(self):
         if not self.casacore_available:
@@ -127,7 +127,7 @@ class TestCreateMS(unittest.TestCase):
         nchan = 192
         for schan in range(0, nchan, nchan_ave):
             max_chan = min(nchan, schan + nchan_ave)
-            v = create_blockvisibility_from_ms(
+            v = create_visibility_from_ms(
                 msfile, start_chan=schan, end_chan=max_chan - 1, average_channels=True
             )
             nchannels = len(numpy.unique(v[0].frequency))
@@ -137,11 +137,11 @@ class TestCreateMS(unittest.TestCase):
         assert len(vis_by_channel) == 12
         for ivis, v in enumerate(vis_by_channel):
             assert v.vis.data.shape[-1] == 4
-            assert v.blockvisibility_acc.polarisation_frame.type == "linear"
+            assert v.visibility_acc.polarisation_frame.type == "linear"
             assert numpy.max(numpy.abs(v.vis)) > 0.0, ivis
-            assert numpy.max(numpy.abs(v.blockvisibility_acc.flagged_vis)) > 0.0, ivis
+            assert numpy.max(numpy.abs(v.visibility_acc.flagged_vis)) > 0.0, ivis
             assert numpy.sum(v.weight) > 0.0, ivis
-            assert numpy.sum(v.blockvisibility_acc.flagged_weight) > 0.0, ivis
+            assert numpy.sum(v.visibility_acc.flagged_weight) > 0.0, ivis
 
     def test_create_list_single(self):
         if not self.casacore_available:
@@ -154,13 +154,13 @@ class TestCreateMS(unittest.TestCase):
         nchan = 8
         for schan in range(0, nchan, nchan_ave):
             max_chan = min(nchan, schan + nchan_ave)
-            v = create_blockvisibility_from_ms(msfile, start_chan=schan, end_chan=schan)
+            v = create_visibility_from_ms(msfile, start_chan=schan, end_chan=schan)
             vis_by_channel.append(v[0])
 
         assert len(vis_by_channel) == 8, len(vis_by_channel)
         for v in vis_by_channel:
             assert v.vis.data.shape[-1] == 4
-            assert v.blockvisibility_acc.polarisation_frame.type == "linear"
+            assert v.visibility_acc.polarisation_frame.type == "linear"
 
     def test_create_list_spectral_average(self):
         if not self.casacore_available:
@@ -173,7 +173,7 @@ class TestCreateMS(unittest.TestCase):
         nchan = 192
         for schan in range(0, nchan, nchan_ave):
             max_chan = min(nchan, schan + nchan_ave)
-            v = create_blockvisibility_from_ms(
+            v = create_visibility_from_ms(
                 msfile, range(schan, max_chan), average_channels=True
             )
             vis_by_channel.append(v[0])
@@ -182,32 +182,32 @@ class TestCreateMS(unittest.TestCase):
         for v in vis_by_channel:
             assert v.vis.data.shape[-1] == 4
             assert v.vis.data.shape[-2] == 1
-            assert v.blockvisibility_acc.polarisation_frame.type == "linear"
+            assert v.visibility_acc.polarisation_frame.type == "linear"
             assert numpy.max(numpy.abs(v.vis)) > 0.0
-            assert numpy.max(numpy.abs(v.blockvisibility_acc.flagged_vis)) > 0.0
+            assert numpy.max(numpy.abs(v.visibility_acc.flagged_vis)) > 0.0
 
     def test_read_all(self):
         ms_list = ["vis/3C277.1C.16channels.ms", "vis/ASKAP_example.ms", "vis/xcasa.ms"]
 
         for ms in ms_list:
-            vis_list = create_blockvisibility_from_ms(rascil_data_path(ms))
-            assert isinstance(vis_list[0], BlockVisibility)
+            vis_list = create_visibility_from_ms(rascil_data_path(ms))
+            assert isinstance(vis_list[0], Visibility)
 
     def test_read_not_ms(self):
 
         with self.assertRaises(RuntimeError):
             ms = "vis/ASKAP_example.fits"
-            vis_list = create_blockvisibility_from_ms(rascil_data_path(ms))
-            # assert isinstance(vis_list[0], BlockVisibility)
+            vis_list = create_visibility_from_ms(rascil_data_path(ms))
+            # assert isinstance(vis_list[0], Visibility)
 
     def test_write_multi_bvis_ms(self):
         # read in an MS which produces multiple bvis
-        bvis_list = create_blockvisibility_from_ms(rascil_path("data/vis/xcasa.ms"))
+        bvis_list = create_visibility_from_ms(rascil_path("data/vis/xcasa.ms"))
 
         # export the list without any changes
-        export_blockvisibility_to_ms("out.ms", bvis_list)
+        export_visibility_to_ms("out.ms", bvis_list)
         # verify data
-        bvis_list_2 = create_blockvisibility_from_ms("out.ms")
+        bvis_list_2 = create_visibility_from_ms("out.ms")
         # there are 14 elements in the list and we test half to decrease the time it takes for the test to run
         for i in range(0, len(bvis_list), 2):
             assert bvis_list[i] == bvis_list_2[i]

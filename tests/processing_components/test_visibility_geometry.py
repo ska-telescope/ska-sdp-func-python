@@ -9,13 +9,13 @@ import numpy
 from astropy.coordinates import SkyCoord
 from astropy.time import Time
 
-from rascil.processing_components.visibility import create_blockvisibility
+from rascil.processing_components.visibility import create_visibility
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.visibility_geometry import (
-    calculate_blockvisibility_azel,
-    calculate_blockvisibility_hourangles,
-    calculate_blockvisibility_transit_time,
-    calculate_blockvisibility_parallactic_angles,
+    calculate_visibility_azel,
+    calculate_visibility_hourangles,
+    calculate_visibility_transit_time,
+    calculate_visibility_parallactic_angles,
 )
 
 
@@ -28,7 +28,7 @@ class TestGeometry(unittest.TestCase):
         )
         self.frequency = numpy.linspace(1.0e8, 1.1e8, 3)
         self.channel_bandwidth = numpy.array([1e7, 1e7, 1e7])
-        self.bvis = create_blockvisibility(
+        self.bvis = create_visibility(
             self.lowcore,
             self.times,
             self.frequency,
@@ -39,20 +39,20 @@ class TestGeometry(unittest.TestCase):
         )
 
     def test_azel(self):
-        azel = calculate_blockvisibility_azel(self.bvis)
+        azel = calculate_visibility_azel(self.bvis)
         numpy.testing.assert_array_almost_equal(azel[0][0].deg, 152.546993)
         numpy.testing.assert_array_almost_equal(azel[1][0].deg, 24.061762)
 
     def test_hourangle(self):
-        ha = calculate_blockvisibility_hourangles(self.bvis)
+        ha = calculate_visibility_hourangles(self.bvis)
         numpy.testing.assert_array_almost_equal(ha[0].deg, -89.989667)
 
     def test_parallactic_angle(self):
-        pa = calculate_blockvisibility_parallactic_angles(self.bvis)
+        pa = calculate_visibility_parallactic_angles(self.bvis)
         numpy.testing.assert_array_almost_equal(pa[0].deg, -102.050543)
 
     def test_transit_time(self):
-        transit_time = calculate_blockvisibility_transit_time(self.bvis)
+        transit_time = calculate_visibility_transit_time(self.bvis)
         numpy.testing.assert_array_almost_equal(transit_time.mjd, 58849.895812)
 
 

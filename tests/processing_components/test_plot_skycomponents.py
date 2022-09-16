@@ -51,7 +51,7 @@ log.setLevel(logging.WARNING)
 log.addHandler(logging.StreamHandler(sys.stdout))
 
 
-class TestPlotSkycomponent(unittest.TestCase):
+class TestPlotSkyComponent(unittest.TestCase):
     def setUp(self):
 
         self.results_dir = rascil_path("test_results")

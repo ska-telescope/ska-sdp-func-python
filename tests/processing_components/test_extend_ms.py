@@ -11,13 +11,13 @@ from astropy.coordinates import SkyCoord
 
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import (
-    create_blockvisibility,
-    extend_blockvisibility_to_ms,
+    create_visibility,
+    extend_visibility_to_ms,
 )
-from rascil.data_models import rascil_path, rascil_data_path, BlockVisibility
+from rascil.data_models import rascil_path, rascil_data_path, Visibility
 from rascil.processing_components.visibility.base import (
-    create_blockvisibility_from_ms,
-    export_blockvisibility_to_ms,
+    create_visibility_from_ms,
+    export_visibility_to_ms,
 )
 
 import logging
@@ -57,10 +57,10 @@ class TestExtendMS(unittest.TestCase):
         if os.path.exists(msoutfile):
             shutil.rmtree(msoutfile, ignore_errors=False)
         # open an existent file
-        bvis = create_blockvisibility_from_ms(msfile)[0]
+        bvis = create_visibility_from_ms(msfile)[0]
         bvis_list = [bv[1] for bv in bvis.groupby("time", squeeze=False)]
         for bvis in bvis_list:
-            extend_blockvisibility_to_ms(msoutfile, bvis)
+            extend_visibility_to_ms(msoutfile, bvis)
 
 
 if __name__ == "__main__":

@@ -24,16 +24,16 @@ from rascil.apps.rascil_rcal import (
     realtime_single_bvis_solver,
 )
 from rascil.data_models import (
-    Skycomponent,
+    SkyComponent,
     import_gaintable_from_hdf5,
     export_skycomponent_to_hdf5,
     rascil_path,
 )
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components import (
-    export_blockvisibility_to_ms,
+    export_visibility_to_ms,
     dft_skycomponent_visibility,
-    create_gaintable_from_blockvisibility,
+    create_gaintable_from_visibility,
     simulate_gaintable,
     apply_gaintable,
     qa_visibility,
@@ -105,7 +105,7 @@ class TestRASCILRcal(unittest.TestCase):
 
         self.bvis_error = self.create_apply_gains()
 
-        export_blockvisibility_to_ms(
+        export_visibility_to_ms(
             self.tempdir + "/test_rascil_rcal.ms", [self.bvis_error]
         )
 
@@ -116,7 +116,7 @@ class TestRASCILRcal(unittest.TestCase):
 
         :return pointsource: Point source skycomponent
         """
-        pointsource = Skycomponent(
+        pointsource = SkyComponent(
             direction=self.phasecentre,
             polarisation_frame=self.image_pol,
             flux=flux,
@@ -151,11 +151,9 @@ class TestRASCILRcal(unittest.TestCase):
     def create_apply_gains(self):
         """Create the gaintable, apply to the visibility, write as MeasurementSet
 
-        :return: bvis_error: BlockVisibility
+        :return: bvis_error: Visibility
         """
-        self.gt = create_gaintable_from_blockvisibility(
-            self.bvis_original, jones_type="B"
-        )
+        self.gt = create_gaintable_from_visibility(self.bvis_original, jones_type="B")
         self.gt = simulate_gaintable(self.gt, phase_error=0.1)
         qa_gt = qa_gaintable(self.gt)
         assert qa_gt.data["rms-amp"] < 1e-12, str(qa_gt)

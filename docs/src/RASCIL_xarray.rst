@@ -24,13 +24,13 @@ methods specfic to the class. This design is suggested in the xarray documentati
 on extending xarray. Examples::
 
     # Flagged visibility
-    vis.blockvisibility_acc.flagged_vis
+    vis.visibility_acc.flagged_vis
 
     # UVW in wavelengths
-    vis.blockvisibility_acc.uvw_lambda
+    vis.visibility_acc.uvw_lambda
 
     # DataArray sizes
-    vis.blockvisibility_acc.datasizes
+    vis.visibility_acc.datasizes
 
     # Phasecentre as an astropy.SkyCoord
     im.image_acc.phasecentre
@@ -52,7 +52,7 @@ Here is a simple example of how the capabilities of xarray can be used:
 
 .. code:: ipython3
 
-    vis = create_blockvisibility_from_ms(ms)[0]
+    vis = create_visibility_from_ms(ms)[0]
 
     # Don't squeeze out the unit dimensions because we will want
     # them for the concat
@@ -87,7 +87,7 @@ The steps required are:
     im.attrs["nchan"]
 
 
- - For BlockVisibility, the various columns become data variables::
+ - For Visibility, the various columns become data variables::
 
     # The numpy format
     bvis.data["vis"]
@@ -100,11 +100,11 @@ The steps required are:
     # The properties now require using the accessor class. For example:
     bvis.nchan
     # becomes
-    bvis.blockvisibility_acc.nchan
+    bvis.visibility_acc.nchan
     # or directly to the attributes of the xarray.Dataset
     bvis.attrs["nchan"]
     # The convenience methods for handling flags also require the accessor:
     bvis.flagged_vis
     # becomes
-    bvis.blockvisibility_acc.flagged_vis
+    bvis.visibility_acc.flagged_vis
 

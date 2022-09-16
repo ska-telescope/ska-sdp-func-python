@@ -14,7 +14,7 @@ from rascil.data_models.polarisation import PolarisationFrame
 from rascil.data_models.parameters import rascil_path, rascil_data_path
 
 from rascil.processing_components import (
-    create_blockvisibility_from_ms,
+    create_visibility_from_ms,
     show_image,
     create_pb,
     create_image_from_visibility,
@@ -50,7 +50,7 @@ class TestImaging2D(unittest.TestCase):
         self.persist = os.getenv("RASCIL_PERSIST", False)
 
     def test_mosaic(self):
-        vis_list = create_blockvisibility_from_ms(rascil_data_path("vis/xcasa.ms"))
+        vis_list = create_visibility_from_ms(rascil_data_path("vis/xcasa.ms"))
 
         cellsize = 0.00001
 

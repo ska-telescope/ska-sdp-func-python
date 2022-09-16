@@ -30,7 +30,7 @@ rascil_rcal also implements reading RFI (Radio Frequency Interference) flags
 and using them as part of the pipeline. Flagging is optional and can be
 controlled with the `flag_rfi` argument.
 
-RASCIL's BlockVisibility object contains a "flags" data array with the same
+RASCIL's Visibility object contains a "flags" data array with the same
 dimensions as the visibilities. This array is updated with the results of
 the SKA Processing Function Library
 `RFI Flagger <https://gitlab.com/ska-telescope/sdp/ska-sdp-func/-/blob/main/src/ska_sdp_func/rfi_flagger.py>`_,

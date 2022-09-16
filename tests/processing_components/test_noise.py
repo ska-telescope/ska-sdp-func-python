@@ -15,8 +15,8 @@ from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation.noise import addnoise_visibility
 from rascil.processing_components.visibility.base import (
-    create_blockvisibility,
-    create_blockvisibility,
+    create_visibility,
+    create_visibility,
     copy_visibility,
 )
 
@@ -45,8 +45,8 @@ class TestNoise(unittest.TestCase):
         assert len(self.config.names) == nants
         assert len(self.config.mount) == nants
 
-    def test_addnoise_blockvisibility(self):
-        self.vis = create_blockvisibility(
+    def test_addnoise_visibility(self):
+        self.vis = create_visibility(
             self.config,
             self.times,
             self.frequency,

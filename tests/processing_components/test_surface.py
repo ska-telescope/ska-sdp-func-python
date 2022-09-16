@@ -9,7 +9,7 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.memory_data_models import Skycomponent
+from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.imaging.primary_beams import (
     create_vp_generic_numeric,
@@ -19,7 +19,7 @@ from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation.surface import (
     simulate_gaintable_from_zernikes,
 )
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 from rascil.processing_components import create_image
 
 log = logging.getLogger("rascil-logger")
@@ -51,7 +51,7 @@ class TestSurface(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+15.0 * u.deg, dec=-45.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.midcore,
             self.times,
             self.frequency,
@@ -78,7 +78,7 @@ class TestSurface(unittest.TestCase):
             ra=+15.0 * u.deg, dec=-44.58 * u.deg, frame="icrs", equinox="J2000"
         )
         component = [
-            Skycomponent(
+            SkyComponent(
                 frequency=self.frequency,
                 direction=offset_phasecentre,
                 polarisation_frame=PolarisationFrame("stokesI"),

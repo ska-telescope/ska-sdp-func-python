@@ -23,10 +23,10 @@ from rascil.processing_components.skycomponent.operations import (
     create_skycomponent,
 )
 from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility.base import create_blockvisibility
+from rascil.processing_components.visibility.base import create_visibility
 from rascil.processing_components.imaging.imaging import (
-    predict_blockvisibility,
-    invert_blockvisibility,
+    predict_visibility,
+    invert_visibility,
 )
 
 log = logging.getLogger("rascil-logger")
@@ -34,7 +34,7 @@ log = logging.getLogger("rascil-logger")
 log.setLevel(logging.WARNING)
 
 
-class TestSkycomponentInsert(unittest.TestCase):
+class TestSkyComponentInsert(unittest.TestCase):
     def setUp(self):
 
         self.persist = os.getenv("RASCIL_PERSIST", False)
@@ -62,7 +62,7 @@ class TestSkycomponentInsert(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+180.0 * u.deg, dec=-60.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.lowcore,
             self.times,
             self.image_frequency,
@@ -118,7 +118,7 @@ class TestSkycomponentInsert(unittest.TestCase):
         # If we predict the visibility, then the imaginary part must be zero. This is determined entirely
         # by shift_vis_to_image in processing_components.imaging.base
         self.vis["vis"].data[...] = 0.0
-        self.vis = predict_blockvisibility(self.vis, self.model, context="2d")
+        self.vis = predict_visibility(self.vis, self.model, context="2d")
         # The actual phase centre of a numpy FFT is at nx //2, nx //2 (0 rel).
         assert numpy.max(numpy.abs(self.vis.vis.imag)) < 1e-3
 
@@ -147,7 +147,7 @@ class TestSkycomponentInsert(unittest.TestCase):
         # If we predict the visibility, then the imaginary part must be zero. This is determined entirely
         # by shift_vis_to_image in processing_components.imaging.base
         self.vis["vis"].data[...] = 0.0
-        self.vis = predict_blockvisibility(self.vis, self.model, context="2d")
+        self.vis = predict_visibility(self.vis, self.model, context="2d")
         # The actual phase centre of a numpy FFT is at nx //2, nx //2 (0 rel).
 
         assert numpy.max(numpy.abs(self.vis["vis"].data[..., 0].imag)) == 0.0
@@ -165,7 +165,7 @@ class TestSkycomponentInsert(unittest.TestCase):
 
         self.vis["vis"].data[...] = 0.0
         self.vis = dft_skycomponent_visibility(self.vis, self.sc)
-        im, sumwt = invert_blockvisibility(self.vis, self.model, context="2d")
+        im, sumwt = invert_visibility(self.vis, self.model, context="2d")
         if self.persist:
             export_image_to_fits(im, "%s/test_skycomponent_dft.fits" % self.results_dir)
         assert numpy.max(numpy.abs(self.vis.vis.imag)) < 1e-3

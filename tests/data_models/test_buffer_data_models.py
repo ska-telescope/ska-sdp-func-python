@@ -12,7 +12,7 @@ from astropy.coordinates import SkyCoord
 
 from rascil.data_models.buffer_data_models import (
     BufferImage,
-    BufferBlockVisibility,
+    BufferVisibility,
     BufferGainTable,
     BufferSkyModel,
     BufferConvolutionFunction,
@@ -21,18 +21,18 @@ from rascil.data_models.buffer_data_models import (
     BufferFlagTable,
 )
 from rascil.data_models.memory_data_models import (
-    Skycomponent,
+    SkyComponent,
     SkyModel,
-    BlockVisibility,
+    Visibility,
 )
 from rascil.data_models.polarisation import PolarisationFrame
 from rascil.processing_components.griddata.operations import create_griddata_from_image
 from rascil.processing_components.griddata import create_convolutionfunction_from_image
 from rascil.processing_components.calibration.operations import (
-    create_gaintable_from_blockvisibility,
+    create_gaintable_from_visibility,
 )
 from rascil.processing_components.calibration.pointing import (
-    create_pointingtable_from_blockvisibility,
+    create_pointingtable_from_visibility,
 )
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.simulation import (
@@ -42,8 +42,8 @@ from rascil.processing_components.simulation import (
 from rascil.processing_components.simulation.pointing import simulate_pointingtable
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components import (
-    create_blockvisibility,
-    create_flagtable_from_blockvisibility,
+    create_visibility,
+    create_flagtable_from_visibility,
 )
 
 
@@ -69,12 +69,12 @@ class TestBufferDataModelHelpers(unittest.TestCase):
         self.compabsdirection = SkyCoord(
             ra=+181.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.comp = Skycomponent(
+        self.comp = SkyComponent(
             direction=self.compabsdirection, frequency=self.frequency, flux=self.flux
         )
 
-    def test_readwriteblockvisibility(self):
-        self.vis = create_blockvisibility(
+    def test_readwritevisibility(self):
+        self.vis = create_visibility(
             self.midcore,
             self.times,
             self.frequency,
@@ -89,17 +89,17 @@ class TestBufferDataModelHelpers(unittest.TestCase):
         config = {
             "buffer": {"directory": self.results_dir},
             "vislist": {
-                "name": "test_bufferblockvisibility.hdf",
-                "data_model": "BlockVisibility",
+                "name": "test_buffervisibility.hdf",
+                "data_model": "Visibility",
             },
         }
-        bdm = BufferBlockVisibility(config["buffer"], config["vislist"], self.vis)
+        bdm = BufferVisibility(config["buffer"], config["vislist"], self.vis)
         bdm.sync()
-        new_bdm = BufferBlockVisibility(config["buffer"], config["vislist"])
+        new_bdm = BufferVisibility(config["buffer"], config["vislist"])
         new_bdm.sync()
         newvis = bdm.memory_data_model
 
-        # assert isinstance(newvis, BlockVisibility)
+        # assert isinstance(newvis, Visibility)
         assert numpy.array_equal(newvis.frequency, self.vis.frequency)
         assert newvis.vis.shape == self.vis.vis.shape
         assert numpy.max(numpy.abs(self.vis.vis - newvis.vis)) < 1e-15
@@ -132,7 +132,7 @@ class TestBufferDataModelHelpers(unittest.TestCase):
         assert newvis.meta == self.vis.meta
 
     def test_readwritegaintable(self):
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.midcore,
             self.times,
             self.frequency,
@@ -141,7 +141,7 @@ class TestBufferDataModelHelpers(unittest.TestCase):
             polarisation_frame=PolarisationFrame("linear"),
             weight=1.0,
         )
-        gt = create_gaintable_from_blockvisibility(self.vis, timeslice="auto")
+        gt = create_gaintable_from_visibility(self.vis, timeslice="auto")
         gt = simulate_gaintable(gt, phase_error=1.0, amplitude_error=0.1)
 
         config = {
@@ -161,7 +161,7 @@ class TestBufferDataModelHelpers(unittest.TestCase):
         assert numpy.max(numpy.abs(gt.gain - newgt.gain)) < 1e-15
 
     def test_readwriteflagtable(self):
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.midcore,
             self.times,
             self.frequency,
@@ -170,7 +170,7 @@ class TestBufferDataModelHelpers(unittest.TestCase):
             polarisation_frame=PolarisationFrame("linear"),
             weight=1.0,
         )
-        ft = create_flagtable_from_blockvisibility(self.vis, timeslice="auto")
+        ft = create_flagtable_from_visibility(self.vis, timeslice="auto")
 
         config = {
             "buffer": {"directory": self.results_dir},
@@ -189,7 +189,7 @@ class TestBufferDataModelHelpers(unittest.TestCase):
         assert numpy.max(numpy.abs(ft.flags - newft.flags)) < 1e-15
 
     def test_readwritepointingtable(self):
-        self.vis = create_blockvisibility(
+        self.vis = create_visibility(
             self.midcore,
             self.times,
             self.frequency,
@@ -198,7 +198,7 @@ class TestBufferDataModelHelpers(unittest.TestCase):
             polarisation_frame=PolarisationFrame("linear"),
             weight=1.0,
         )
-        pt = create_pointingtable_from_blockvisibility(self.vis, timeslice="auto")
+        pt = create_pointingtable_from_visibility(self.vis, timeslice="auto")
         pt = simulate_pointingtable(pt, pointing_error=0.1)
 
         config = {
@@ -218,7 +218,7 @@ class TestBufferDataModelHelpers(unittest.TestCase):
         assert numpy.max(numpy.abs(pt.pointing - newpt.pointing)) < 1e-15
 
     def test_readwriteskymodel(self):
-        vis = create_blockvisibility(
+        vis = create_visibility(
             self.midcore,
             self.times,
             self.frequency,
@@ -227,7 +227,7 @@ class TestBufferDataModelHelpers(unittest.TestCase):
             polarisation_frame=PolarisationFrame("linear"),
             weight=1.0,
         )
-        gt = create_gaintable_from_blockvisibility(vis, timeslice="auto")
+        gt = create_gaintable_from_visibility(vis, timeslice="auto")
         gt = simulate_gaintable(gt, phase_error=1.0, amplitude_error=0.1)
         im = create_test_image()
         sm = SkyModel(components=[self.comp], image=im, gaintable=gt)
@@ -250,7 +250,7 @@ class TestBufferDataModelHelpers(unittest.TestCase):
         )
 
     def test_readwriteskymodel_no_image(self):
-        vis = create_blockvisibility(
+        vis = create_visibility(
             self.midcore,
             self.times,
             self.frequency,
@@ -259,7 +259,7 @@ class TestBufferDataModelHelpers(unittest.TestCase):
             polarisation_frame=PolarisationFrame("linear"),
             weight=1.0,
         )
-        gt = create_gaintable_from_blockvisibility(vis, timeslice="auto")
+        gt = create_gaintable_from_visibility(vis, timeslice="auto")
         gt = simulate_gaintable(gt, phase_error=1.0, amplitude_error=0.1)
         sm = SkyModel(components=[self.comp], gaintable=gt)
 

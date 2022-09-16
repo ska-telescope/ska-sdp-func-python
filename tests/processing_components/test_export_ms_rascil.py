@@ -12,7 +12,7 @@ from rascil.data_models.parameters import rascil_path, rascil_data_path
 
 from rascil.processing_components import (
     create_image_from_visibility,
-    predict_blockvisibility,
+    predict_visibility,
 )
 
 log = logging.getLogger("rascil-logger")
@@ -25,11 +25,11 @@ run_ms_tests = False
 try:
     import casacore
     from rascil.processing_components.visibility.base import (
-        create_blockvisibility,
-        create_blockvisibility_from_ms,
+        create_visibility,
+        create_visibility_from_ms,
     )
     from rascil.processing_components.visibility.base import (
-        export_blockvisibility_to_ms,
+        export_visibility_to_ms,
     )
 
     run_ms_tests = True
@@ -50,8 +50,8 @@ class export_ms_RASCIL_test(unittest.TestCase):
         msfile = rascil_data_path("vis/ASKAP_example.ms")
         msoutfile = rascil_path("test_results/test_export_ms_ASKAP_output.ms")
 
-        v = create_blockvisibility_from_ms(msfile)
-        export_blockvisibility_to_ms(
+        v = create_visibility_from_ms(msfile)
+        export_visibility_to_ms(
             msoutfile, v
         )  # vis_by_channel.append(integrate_visibility_by_channel(v[0]))
 
@@ -81,7 +81,7 @@ class export_ms_RASCIL_test(unittest.TestCase):
             ra=+15.0 * u.deg, dec=-45.0 * u.deg, frame="icrs", equinox="J2000"
         )
 
-        bvis = create_blockvisibility(
+        bvis = create_visibility(
             lowr3,
             times,
             frequency,
@@ -104,8 +104,8 @@ class export_ms_RASCIL_test(unittest.TestCase):
         m31image = create_test_image(cellsize=cellsize, frequency=frequency)
         nchan, npol, ny, nx = m31image["pixels"].data.shape
         m31image = create_image_from_visibility(bvis, cellsize=cellsize, npixel=nx)
-        bvis = predict_blockvisibility(bvis, m31image, context="2d")
-        export_blockvisibility_to_ms(msoutfile, [bvis], source_name="M31")
+        bvis = predict_visibility(bvis, m31image, context="2d")
+        export_visibility_to_ms(msoutfile, [bvis], source_name="M31")
 
 
 class export_measurementset_test_suite(unittest.TestSuite):

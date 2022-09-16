@@ -9,7 +9,7 @@ Functions
 Create empty visibility data set for observation
 ------------------------------------------------
 
-* For BlockVisibility: :py:func:`rascil.processing_components.visibility.base.create_blockvisibility`
+* For Visibility: :py:func:`rascil.processing_components.visibility.base.create_visibility`
 
 Read existing Measurement Set
 -----------------------------
@@ -17,7 +17,7 @@ Read existing Measurement Set
 Casacore must be installed for MS reading and writing:
 
 * List contents of a MeasurementSet: :py:func:`rascil.processing_components.visibility.base.list_ms`
-* Creates a list of BlockVisibilities, one per FIELD_ID and DATA_DESC_ID: :py:func:`rascil.processing_components.visibility.base.create_blockvisibility_from_ms`
+* Creates a list of BlockVisibilities, one per FIELD_ID and DATA_DESC_ID: :py:func:`rascil.processing_components.visibility.base.create_visibility_from_ms`
 
 Visibility weighting and tapering
 ---------------------------------
@@ -33,8 +33,8 @@ Visibility predict and invert
 * Invert by gridding visibilities with Nifty Gridder :py:func:`rascil.processing_components.imaging.ng.invert_ng`
 * Predict by de-gridding visibilities with GPU-based WAGG :py:func:`rascil.processing_components.imaging.wg.predict_wg`
 * Invert by gridding visibilities with GPU-based WAGG :py:func:`rascil.processing_components.imaging.wg.invert_wg`
-* Predict BlockVisibility for Skycomponent :py:func:`rascil.processing_components.imaging.dft.dft_skycomponent_visibility`
-* Predict Skycomponent from BlockVisibility :py:func:`rascil.processing_components.imaging.dft.idft_visibility_skycomponent`
+* Predict Visibility for SkyComponent :py:func:`rascil.processing_components.imaging.dft.dft_skycomponent_visibility`
+* Predict SkyComponent from Visibility :py:func:`rascil.processing_components.imaging.dft.idft_visibility_skycomponent`
 
 Deconvolution
 -------------
@@ -52,7 +52,7 @@ Deconvolution
 Calibration
 -----------
 
-* Create empty gain table: :py:func:`rascil.processing_components.calibration.operations.create_gaintable_from_blockvisibility`
+* Create empty gain table: :py:func:`rascil.processing_components.calibration.operations.create_gaintable_from_visibility`
 * Solve for complex gains: :py:func:`rascil.processing_components.calibration.solvers.solve_gaintable`
 * Apply complex gains: :py:func:`rascil.processing_components.calibration.operations.apply_gaintable`
 
@@ -82,8 +82,8 @@ Image
 Visibility
 ----------
 
-* Append/sum/divide/QA: :py:func:`rascil.processing_components.visibility.operations.divide_visibility`
-* Remove continuum: :py:func:`rascil.processing_components.visibility.operations.remove_continuum_blockvisibility`
+* Append/sum/divide/QualityAssessment: :py:func:`rascil.processing_components.visibility.operations.divide_visibility`
+* Remove continuum: :py:func:`rascil.processing_components.visibility.operations.remove_continuum_visibility`
 * Integrate across channels: :py:func:`rascil.processing_components.visibility.operations.integrate_visibility_by_channel`
 
 
