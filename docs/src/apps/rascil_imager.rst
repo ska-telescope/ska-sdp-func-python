@@ -47,11 +47,11 @@ Visibility.
 For example, using the arguments::
 
     --ingest_msname SNR_G55_10s.calib.ms --ingest_dd 0 1 2 3 --ingest_vis_nchan 64 \
-    --ingest_chan_per_blockvis 8 --ingest_average_blockvis True
+    --ingest_chan_per_vis 8 --ingest_average_vis True
 
 will read data descriptors 0, 1, 2, 3, each of which has 64 channels. Each set of 64 channels are split
 into blocks of 8 and averaged. We thus end up with 32 separate datasets in RASCIL, each of which
-is a Visibility and has 1 channel, for a total of 32 channels. If the argument :code:`--ingest_average_blockvis`
+is a Visibility and has 1 channel, for a total of 32 channels. If the argument :code:`--ingest_average_vis`
 is set to False, each Visibility has eight channels, for a total of 256 channels.
 
 Selection
@@ -82,7 +82,7 @@ MMClean works jointly cross all channels using a Taylor Series expansion in freq
 The clean methods support a number of processing speed enhancements:
 
      - The multi-frequency-synthesis CLEAN works by fitting a Taylor series in frequency.
-       The :code:`--ingest_chan_per_blockvis` argument controls the aggregation of channels
+       The :code:`--ingest_chan_per_vis` argument controls the aggregation of channels
        in the MeasurementSet to form image planes for the CLEAN. Within a Visibility the
        different channels are gridded together to form one image. Each image is then used in the
        mmclean algorithm. For example, a data set may have 256 channels spread over 4 data descriptors.
@@ -185,7 +185,7 @@ The following runs the cip on a data set from the CASA examples::
     # Run this in the directory containing SNR_G55_10s.calib.ms
     python $RASCIL/rascil/apps/rascil_imager.py --mode cip \
     --ingest_msname SNR_G55_10s.calib.ms --ingest_dd 0 1 2 3 --ingest_vis_nchan 64 \
-    --ingest_chan_per_blockvis 8 --ingest_average_blockvis True \
+    --ingest_chan_per_vis 8 --ingest_average_vis True \
     --imaging_npixel 1280 --imaging_cellsize 3.878509448876288e-05 \
     --imaging_weighting robust --imaging_robustness -0.5 \
     --clean_nmajor 5 --clean_algorithm mmclean --clean_scales 0 6 10 30 60 \

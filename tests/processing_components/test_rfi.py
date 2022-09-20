@@ -255,7 +255,7 @@ def test_simulate_rfi_block_prop_use_pol(telescope, apply_beam):
         apply_primary_beam=apply_beam,
     )
 
-    # original block visibility doesn't have any signal in it
+    # original visibility doesn't have any signal in it
     # len(bvis["frequency"]) => 5
     for i in range(5):
         assert (starting_visibility[:, :, i, :] == 0).all()

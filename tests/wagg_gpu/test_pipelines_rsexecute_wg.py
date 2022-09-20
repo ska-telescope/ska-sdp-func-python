@@ -87,7 +87,7 @@ class TestPipelineGraphs(unittest.TestCase):
     def actualSetUp(
         self, add_errors=False, nfreqwin=5, dopol=False, zerow=False, vnchan=1
     ):
-        """Setup the blockvis, model images, and components for use in the tests
+        """Setup the vis, model images, and components for use in the tests
 
         :param add_errors: Do we want to add errors?
         :param nfreqwin: Number of frequency windows

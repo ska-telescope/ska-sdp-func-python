@@ -61,7 +61,7 @@ class TestImagingWG(unittest.TestCase):
         self.npixel = 256
         self.low = create_named_configuration("LOWBD2", rmax=750.0)
         self.freqwin = freqwin
-        self.blockvis = list()
+        self.vis = list()
         self.ntimes = 5
         self.times = numpy.linspace(-3.0, +3.0, self.ntimes) * numpy.pi / 12.0
 
@@ -75,19 +75,19 @@ class TestImagingWG(unittest.TestCase):
             self.channelwidth = numpy.array([1e6])
 
         if image_pol == PolarisationFrame("stokesIQUV"):
-            self.blockvis_pol = PolarisationFrame("linear")
+            self.vis_pol = PolarisationFrame("linear")
             self.image_pol = image_pol
             f = numpy.array([100.0, 20.0, -10.0, 1.0])
         elif image_pol == PolarisationFrame("stokesIQ"):
-            self.blockvis_pol = PolarisationFrame("linearnp")
+            self.vis_pol = PolarisationFrame("linearnp")
             self.image_pol = image_pol
             f = numpy.array([100.0, 20.0])
         elif image_pol == PolarisationFrame("stokesIV"):
-            self.blockvis_pol = PolarisationFrame("circularnp")
+            self.vis_pol = PolarisationFrame("circularnp")
             self.image_pol = image_pol
             f = numpy.array([100.0, 20.0])
         else:
-            self.blockvis_pol = PolarisationFrame("stokesI")
+            self.vis_pol = PolarisationFrame("stokesI")
             self.image_pol = PolarisationFrame("stokesI")
             f = numpy.array([100.0])
 
@@ -101,25 +101,25 @@ class TestImagingWG(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+180.0 * u.deg, dec=-45.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.blockvis = ingest_unittest_visibility(
+        self.vis = ingest_unittest_visibility(
             self.low,
             self.frequency,
             self.channelwidth,
             self.times,
-            self.blockvis_pol,
+            self.vis_pol,
             self.phasecentre,
             zerow=zerow,
         )
 
         self.model = create_unittest_model(
-            self.blockvis, self.image_pol, npixel=self.npixel, nchan=freqwin
+            self.vis, self.image_pol, npixel=self.npixel, nchan=freqwin
         )
 
         self.components = create_unittest_components(self.model, flux)
 
         self.model = insert_skycomponent(self.model, self.components)
 
-        self.blockvis = dft_skycomponent_visibility(self.blockvis, self.components)
+        self.vis = dft_skycomponent_visibility(self.vis, self.components)
 
         # Calculate the model convolved with a Gaussian.
 
@@ -135,7 +135,7 @@ class TestImagingWG(unittest.TestCase):
 
         if mfs:
             self.model = create_unittest_model(
-                self.blockvis, self.image_pol, npixel=self.npixel, nchan=1
+                self.vis, self.image_pol, npixel=self.npixel, nchan=1
             )
 
     def _check_components(self, dirty, fluxthreshold=0.6, positionthreshold=0.1):
@@ -163,8 +163,8 @@ class TestImagingWG(unittest.TestCase):
 
         from rascil.processing_components.imaging.wg import predict_wg, invert_wg
 
-        original_vis = copy_visibility(self.blockvis)
-        vis = predict_wg(self.blockvis, self.model, verbosity=self.verbosity, **kwargs)
+        original_vis = copy_visibility(self.vis)
+        vis = predict_wg(self.vis, self.model, verbosity=self.verbosity, **kwargs)
         vis["vis"].data = vis["vis"].data - original_vis["vis"].data
         dirty = invert_wg(
             vis,
@@ -198,7 +198,7 @@ class TestImagingWG(unittest.TestCase):
         from rascil.processing_components.imaging.wg import invert_wg
 
         dirty = invert_wg(
-            self.blockvis,
+            self.vis,
             self.model,
             normalise=True,
             do_wstacking=True,

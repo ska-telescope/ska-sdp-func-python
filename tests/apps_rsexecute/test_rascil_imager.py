@@ -444,7 +444,7 @@ def test_rascil_imager(
         f"{nfreqwin}",
         "--ingest_dd",
         "0",
-        "--ingest_chan_per_blockvis",
+        "--ingest_chan_per_vis",
         "1",
         "--imaging_npixel",
         "512",

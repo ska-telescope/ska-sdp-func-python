@@ -94,7 +94,7 @@ class TestRFIRegression(unittest.TestCase):
     def test_simulate_rfi_block_prop_image_beam_true(self):
         """
         regression to test that simulate_rfi_block_prop correctly updates the
-        block visibility data with RFI signal. We do this by making an image
+        visibility data with RFI signal. We do this by making an image
 
         RFI signal is for the same frequency channels as the Visibility has
         """
@@ -134,7 +134,7 @@ class TestRFIRegression(unittest.TestCase):
     def test_simulate_rfi_block_prop_image_beam_false(self):
         """
         regression to test that simulate_rfi_block_prop correctly updates the
-        block visibility data with RFI signal. We do this by making an image
+        visibility data with RFI signal. We do this by making an image
 
         RFI signal is for the same frequency channels as the Visibility has
         """

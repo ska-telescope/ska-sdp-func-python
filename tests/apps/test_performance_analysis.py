@@ -33,7 +33,7 @@ FUNCTIONS = (
 @pytest.mark.parametrize(
     "mode, parameters, functions",
     [
-        ("fit", "imaging_npixel_sq blockvis_nvis", "summary"),
+        ("fit", "imaging_npixel_sq vis_nvis", "summary"),
         (
             "line",
             "imaging_npixel_sq",
@@ -44,21 +44,21 @@ FUNCTIONS = (
             "",
             FUNCTIONS,
         ),
-        ("summary", "imaging_npixel_sq blockvis_nvis", "summary"),
+        ("summary", "imaging_npixel_sq vis_nvis", "summary"),
         (
             "line",
             "imaging_npixel_sq",
             FUNCTIONS,
         ),
         ("bar", "", FUNCTIONS),
-        ("contour", "imaging_npixel_sq blockvis_nvis", "invert_ng"),
+        ("contour", "imaging_npixel_sq vis_nvis", "invert_ng"),
     ],
 )
 def test_performance_analysis(mode, parameters, functions):
     """This tests the different modes of operation.
 
     :param mode: Mode of processing: plot or bar or contour or memory_histogram or fit
-    :param parameters: Parameters for the test e.g. blockvis_nvis,
+    :param parameters: Parameters for the test e.g. vis_nvis,
     :param functions: Functions for the test e.g. invert_ng
     :return:
     """
