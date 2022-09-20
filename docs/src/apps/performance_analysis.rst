@@ -29,7 +29,7 @@ The performance files can be obtained using a script to iterate over some parame
             --clean_threshold 3e-5 --clean_restore_facets 4 --clean_restore_overlap 32 \
             --use_dask True --imaging_context ng --imaging_npixel ${npixel} --imaging_pol stokesI --clean_restored_output list \
             --imaging_cellsize 5e-6 --imaging_weighting uniform --imaging_nchan 1 \
-            --ingest_vis_nchan 100 --ingest_chan_per_blockvis 16 \
+            --ingest_vis_nchan 100 --ingest_chan_per_vis 16 \
             --ingest_msname ${mshome}/SKA_MID_SIM.ms \
             --performance_file ${results_dir}/performance_rascil_imager_${int_time}_${npixel}.json
         done
