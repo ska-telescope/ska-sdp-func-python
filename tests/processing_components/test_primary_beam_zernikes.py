@@ -13,7 +13,7 @@ from astropy.coordinates import SkyCoord
 
 import matplotlib.pyplot as plt
 
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 
 from rascil.processing_components.image.operations import (
     export_image_to_fits,

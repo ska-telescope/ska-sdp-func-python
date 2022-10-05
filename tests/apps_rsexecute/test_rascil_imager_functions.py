@@ -12,8 +12,8 @@ from rascil.data_models import (
     SkyComponent,
     export_skycomponent_to_hdf5,
     rascil_path,
-    PolarisationFrame,
 )
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image.operations import create_image
 from rascil.processing_components.skycomponent import fit_skycomponent_spectral_index
 from rascil.workflows.rsexecute.execution_support import rsexecute

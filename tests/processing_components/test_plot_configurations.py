@@ -15,7 +15,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from rascil.data_models import PolarisationFrame, rascil_path
+from rascil.data_models import rascil_path
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.simulation import (
     create_named_configuration,
     select_configuration,

@@ -8,9 +8,7 @@ import unittest
 from numpy import random
 from numpy.testing import assert_array_almost_equal
 
-from rascil.data_models.polarisation import (
-    PolarisationFrame,
-    ReceptorFrame,
+from rascil.data_models.polarisation_convert import (
     congruent_polarisation,
     correlate_polarisation,
     convert_pol_frame,
@@ -20,6 +18,7 @@ from rascil.data_models.polarisation import (
     convert_stokes_to_linear,
     polarisation_frame_from_names,
 )
+from rascil.data_models.polarisation_data_models import ReceptorFrame, PolarisationFrame
 
 
 class TestPolarisation(unittest.TestCase):

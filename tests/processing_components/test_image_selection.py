@@ -12,7 +12,7 @@ import numpy
 import xarray
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_test_image,
     show_image,

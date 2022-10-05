@@ -7,7 +7,8 @@ import unittest
 
 import numpy
 
-from rascil.data_models import PolarisationFrame, rascil_path
+from rascil.data_models import rascil_path
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 
 from rascil.processing_components.image.iterators import (
     image_raster_iter,

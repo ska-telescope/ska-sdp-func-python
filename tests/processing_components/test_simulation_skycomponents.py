@@ -12,7 +12,7 @@ from numpy.testing import assert_almost_equal
 from astropy.coordinates import SkyCoord
 
 from rascil.data_models import SkyComponent
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 
 from rascil.processing_components.simulation.skycomponents import addnoise_skycomponent
 from rascil.processing_components.simulation import (

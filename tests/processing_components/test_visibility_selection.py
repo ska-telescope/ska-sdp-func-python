@@ -9,7 +9,7 @@ import numpy
 import xarray
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import create_visibility
 from rascil.processing_components.visibility.visibility_selection import (

@@ -12,7 +12,7 @@ import numpy
 import xarray
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.data_model_helpers import (
+from rascil.data_models.data_convert_persist import (
     import_visibility_from_hdf5,
     export_visibility_to_hdf5,
     import_gaintable_from_hdf5,
@@ -35,7 +35,7 @@ from rascil.data_models.data_model_helpers import (
 
 from rascil.data_models.xarray_coordinate_support import image_wcs, griddata_wcs, cf_wcs
 from rascil.data_models.memory_data_models import SkyComponent, SkyModel
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image import create_image
 from rascil.processing_components.calibration.operations import (
     create_gaintable_from_visibility,

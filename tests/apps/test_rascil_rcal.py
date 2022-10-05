@@ -29,7 +29,7 @@ from rascil.data_models import (
     export_skycomponent_to_hdf5,
     rascil_path,
 )
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     export_visibility_to_ms,
     dft_skycomponent_visibility,

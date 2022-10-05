@@ -11,7 +11,8 @@ import numpy
 import numpy.testing
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models import PolarisationFrame, rascil_path
+from rascil.data_models import rascil_path
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_visibility,
     qa_image,

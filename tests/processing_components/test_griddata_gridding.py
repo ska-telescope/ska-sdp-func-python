@@ -12,7 +12,7 @@ import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.griddata.gridding import (
     fft_griddata_to_image,
     fft_image_to_griddata,

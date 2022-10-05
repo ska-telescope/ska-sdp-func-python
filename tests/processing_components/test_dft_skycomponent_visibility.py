@@ -11,7 +11,7 @@ from astropy.coordinates import SkyCoord
 from numpy.testing import assert_allclose, assert_array_almost_equal
 
 from rascil.data_models.memory_data_models import SkyComponent
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.imaging.dft import (
     dft_skycomponent_visibility,
     idft_visibility_skycomponent,

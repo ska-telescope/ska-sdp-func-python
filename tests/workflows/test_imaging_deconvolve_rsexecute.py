@@ -15,7 +15,7 @@ from types import SimpleNamespace
 
 from rascil.data_models.parameters import rascil_path
 
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.workflows.rsexecute.imaging.imaging_rsexecute import (
     invert_list_rsexecute_workflow,

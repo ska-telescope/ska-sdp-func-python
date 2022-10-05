@@ -10,7 +10,7 @@ import numpy
 
 from rascil.data_models.parameters import rascil_path
 
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image.gather_scatter import (
     image_gather_channels,
     image_scatter_channels,

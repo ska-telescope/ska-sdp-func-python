@@ -11,7 +11,7 @@ from astropy.coordinates import SkyCoord
 import astropy.units as u
 
 from rascil.data_models.memory_data_models import SkyComponent
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 
 from rascil.processing_components import (
     gaintable_summary,

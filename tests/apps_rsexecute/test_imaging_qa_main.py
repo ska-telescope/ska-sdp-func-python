@@ -30,8 +30,8 @@ from rascil.apps.imaging_qa_main import (
     analyze_image,
 )
 from rascil.data_models.parameters import rascil_path
-from rascil.data_models.polarisation import PolarisationFrame
-from rascil.data_models.data_model_helpers import export_skycomponent_to_hdf5
+from rascil.data_models.polarisation_data_models import PolarisationFrame
+from rascil.data_models.data_convert_persist import export_skycomponent_to_hdf5
 from rascil.processing_components.imaging.primary_beams import create_pb
 from rascil.processing_components.image import (
     create_image,

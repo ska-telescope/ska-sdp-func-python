@@ -9,8 +9,8 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation import PolarisationFrame
-from rascil.data_models.data_model_helpers import export_skycomponent_to_hdf5
+from rascil.data_models.polarisation_data_models import PolarisationFrame
+from rascil.data_models.data_convert_persist import export_skycomponent_to_hdf5
 from rascil.processing_components import create_image, export_image_to_fits
 from rascil.processing_components import (
     insert_skycomponent,

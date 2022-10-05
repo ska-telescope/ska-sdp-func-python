@@ -11,7 +11,7 @@ import unittest
 import numpy
 
 from rascil.data_models.memory_data_models import Configuration
-from rascil.data_models.polarisation import ReceptorFrame
+from rascil.data_models.polarisation_data_models import ReceptorFrame
 
 from astropy.coordinates import EarthLocation
 import astropy.units as u
