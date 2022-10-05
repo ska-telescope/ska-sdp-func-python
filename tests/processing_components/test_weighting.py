@@ -19,9 +19,7 @@ from rascil.processing_components import (
     taper_visibility_tukey,
     fit_psf,
 )
-from rascil.processing_components.imaging.imaging import (
-    invert_visibility,
-)
+from rascil.processing_components.imaging.imaging import invert_visibility
 
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import create_visibility

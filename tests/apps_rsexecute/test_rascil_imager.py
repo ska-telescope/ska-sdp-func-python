@@ -30,9 +30,7 @@ from rascil.processing_components.image.operations import (
     smooth_image,
 )
 from rascil.processing_components.imaging import dft_skycomponent_visibility
-from rascil.processing_components.simulation import (
-    create_named_configuration,
-)
+from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import (
     ingest_unittest_visibility,
     create_unittest_model,

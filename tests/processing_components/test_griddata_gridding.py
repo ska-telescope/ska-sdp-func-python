@@ -118,7 +118,7 @@ class TestGridDataGridding(unittest.TestCase):
         )
         if test_ignored_visibilities:
             self.cellsize = 1 / (
-                2 * numpy.min(self.vis.uvw_lambda.data[..., 0, 0].flat)
+                2 * numpy.min(self.vis.visibility_acc.uvw_lambda[..., 0, 0].flat)
             )
 
         self.model = create_unittest_model(

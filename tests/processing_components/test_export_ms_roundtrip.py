@@ -5,9 +5,9 @@
 import unittest
 
 import numpy
-import xarray
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+import xarray
 
 from rascil.data_models import PolarisationFrame, rascil_path
 from rascil.processing_components import (
@@ -111,9 +111,11 @@ class measurementset_tests(unittest.TestCase):
         vt_after = create_visibility_from_ms(msname)[0]
 
         # Temporarily flag autocorrelations until MS writer is fixed
-        vt_after["flags"] = xarray.where(
-            vt_after["uvdist_lambda"] > 0.0, vt_after["flags"], 1.0
+        uvdist_lambda = numpy.hypot(
+            vt_after.visibility_acc.uvw_lambda[..., 0],
+            vt_after.visibility_acc.uvw_lambda[..., 1],
         )
+        vt_after["flags"].data[numpy.where(uvdist_lambda <= 0.0)] = 1
 
         # Make the dirty image and point spread function
         model = create_image_from_visibility(vt_after, cellsize=cellsize, npixel=512)

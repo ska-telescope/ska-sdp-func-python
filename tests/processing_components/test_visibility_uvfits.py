@@ -11,9 +11,7 @@ import numpy
 from rascil.data_models.parameters import rascil_path, rascil_data_path
 from rascil.data_models.polarisation import PolarisationFrame
 
-from rascil.processing_components.visibility.base import (
-    create_visibility_from_uvfits,
-)
+from rascil.processing_components.visibility.base import create_visibility_from_uvfits
 from rascil.processing_components.visibility.operations import (
     integrate_visibility_by_channel,
 )
