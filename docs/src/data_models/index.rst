@@ -10,8 +10,9 @@ Data models
    :maxdepth: 1
 
    memory_data_models.rst
-   data_model_helpers.rst
-   polarisation.rst
+   data_convert_persist.rst
+   polarisation_data_models.rst
+   polarisation_convert.rst
    parameters.rst
 
 

@@ -1,6 +1,6 @@
-""" Unit tests for data model helpers. The helpers facilitate persistence of data models
-using HDF5
-
+"""
+    Unit tests for functions in data_convert_persist.
+    The functions facilitate persistence of data models using HDF5
 
 """
 
@@ -128,10 +128,10 @@ class TestDataModelHelpers(unittest.TestCase):
             print(self.vis.configuration)
         export_visibility_to_hdf5(
             self.vis,
-            "%s/test_data_model_helpers_visibility.hdf" % self.results_dir,
+            "%s/test_data_convert_persist_visibility.hdf" % self.results_dir,
         )
         newvis = import_visibility_from_hdf5(
-            "%s/test_data_model_helpers_visibility.hdf" % self.results_dir
+            "%s/test_data_convert_persist_visibility.hdf" % self.results_dir
         )
         assert self._data_model_equals(newvis, self.vis)
 
@@ -152,10 +152,10 @@ class TestDataModelHelpers(unittest.TestCase):
         if self.verbose:
             print(gt)
         export_gaintable_to_hdf5(
-            gt, "%s/test_data_model_helpers_gaintable.hdf" % self.results_dir
+            gt, "%s/test_data_convert_persist_gaintable.hdf" % self.results_dir
         )
         newgt = import_gaintable_from_hdf5(
-            "%s/test_data_model_helpers_gaintable.hdf" % self.results_dir
+            "%s/test_data_convert_persist_gaintable.hdf" % self.results_dir
         )
         assert self._data_model_equals(newgt, gt)
 
@@ -173,10 +173,10 @@ class TestDataModelHelpers(unittest.TestCase):
         if self.verbose:
             print(ft)
         export_flagtable_to_hdf5(
-            ft, "%s/test_data_model_helpers_flagtable.hdf" % self.results_dir
+            ft, "%s/test_data_convert_persist_flagtable.hdf" % self.results_dir
         )
         newft = import_flagtable_from_hdf5(
-            "%s/test_data_model_helpers_flagtable.hdf" % self.results_dir
+            "%s/test_data_convert_persist_flagtable.hdf" % self.results_dir
         )
         assert self._data_model_equals(newft, ft)
 
@@ -195,10 +195,10 @@ class TestDataModelHelpers(unittest.TestCase):
         if self.verbose:
             print(pt)
         export_pointingtable_to_hdf5(
-            pt, "%s/test_data_model_helpers_pointingtable.hdf" % self.results_dir
+            pt, "%s/test_data_convert_persist_pointingtable.hdf" % self.results_dir
         )
         newpt = import_pointingtable_from_hdf5(
-            "%s/test_data_model_helpers_pointingtable.hdf" % self.results_dir
+            "%s/test_data_convert_persist_pointingtable.hdf" % self.results_dir
         )
         assert self._data_model_equals(newpt, pt)
 
@@ -211,10 +211,10 @@ class TestDataModelHelpers(unittest.TestCase):
         )
         im["pixels"].data[...] = 1.0
         export_image_to_hdf5(
-            im, "%s/test_data_model_helpers_image.hdf" % self.results_dir
+            im, "%s/test_data_convert_persist_image.hdf" % self.results_dir
         )
         newim = import_image_from_hdf5(
-            "%s/test_data_model_helpers_image.hdf" % self.results_dir
+            "%s/test_data_convert_persist_image.hdf" % self.results_dir
         )
         assert self._data_model_equals(newim, im)
 
@@ -236,7 +236,7 @@ class TestDataModelHelpers(unittest.TestCase):
         im.attrs["clean_beam"] = ""
 
         store = os.path.expanduser(
-            "%s/test_data_model_helpers_image.zarr" % self.results_dir
+            "%s/test_data_convert_persist_image.zarr" % self.results_dir
         )
         im.to_zarr(
             store=store,
@@ -249,10 +249,11 @@ class TestDataModelHelpers(unittest.TestCase):
 
     def test_readwriteskycomponent(self):
         export_skycomponent_to_hdf5(
-            self.comp, "%s/test_data_model_helpers_skycomponent.hdf" % self.results_dir
+            self.comp,
+            "%s/test_data_convert_persist_skycomponent.hdf" % self.results_dir,
         )
         newsc = import_skycomponent_from_hdf5(
-            "%s/test_data_model_helpers_skycomponent.hdf" % self.results_dir
+            "%s/test_data_convert_persist_skycomponent.hdf" % self.results_dir
         )
 
         assert newsc.flux.shape == self.comp.flux.shape
@@ -277,10 +278,10 @@ class TestDataModelHelpers(unittest.TestCase):
         gt = create_gaintable_from_visibility(self.vis, timeslice="auto")
         sm = SkyModel(components=[self.comp], image=im, gaintable=gt)
         export_skymodel_to_hdf5(
-            sm, "%s/test_data_model_helpers_skymodel.hdf" % self.results_dir
+            sm, "%s/test_data_convert_persist_skymodel.hdf" % self.results_dir
         )
         newsm = import_skymodel_from_hdf5(
-            "%s/test_data_model_helpers_skymodel.hdf" % self.results_dir
+            "%s/test_data_convert_persist_skymodel.hdf" % self.results_dir
         )
 
         assert newsm.components[0].flux.shape == self.comp.flux.shape
@@ -295,10 +296,10 @@ class TestDataModelHelpers(unittest.TestCase):
         )
         gd = create_griddata_from_image(im)
         export_griddata_to_hdf5(
-            gd, "%s/test_data_model_helpers_griddata.hdf" % self.results_dir
+            gd, "%s/test_data_convert_persist_griddata.hdf" % self.results_dir
         )
         newgd = import_griddata_from_hdf5(
-            "%s/test_data_model_helpers_griddata.hdf" % self.results_dir
+            "%s/test_data_convert_persist_griddata.hdf" % self.results_dir
         )
         assert self._data_model_equals(newgd, gd)
 
@@ -314,10 +315,11 @@ class TestDataModelHelpers(unittest.TestCase):
         if self.verbose:
             print(cf)
         export_convolutionfunction_to_hdf5(
-            cf, "%s/test_data_model_helpers_convolutionfunction.hdf" % self.results_dir
+            cf,
+            "%s/test_data_convert_persist_convolutionfunction.hdf" % self.results_dir,
         )
         newcf = import_convolutionfunction_from_hdf5(
-            "%s/test_data_model_helpers_convolutionfunction.hdf" % self.results_dir
+            "%s/test_data_convert_persist_convolutionfunction.hdf" % self.results_dir
         )
 
         assert self._data_model_equals(newcf, cf)
