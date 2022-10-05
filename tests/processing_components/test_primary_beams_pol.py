@@ -21,9 +21,7 @@ from rascil.processing_components import (
     create_image_from_array,
     invert_visibility,
 )
-from rascil.processing_components.imaging import (
-    create_image_from_visibility,
-)
+from rascil.processing_components.imaging import create_image_from_visibility
 from rascil.processing_components.imaging.dft import (
     dft_skycomponent_visibility,
     idft_visibility_skycomponent,

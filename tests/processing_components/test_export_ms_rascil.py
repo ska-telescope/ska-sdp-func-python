@@ -28,9 +28,7 @@ try:
         create_visibility,
         create_visibility_from_ms,
     )
-    from rascil.processing_components.visibility.base import (
-        export_visibility_to_ms,
-    )
+    from rascil.processing_components.visibility.base import export_visibility_to_ms
 
     run_ms_tests = True
 except ImportError:
@@ -66,9 +64,7 @@ class export_ms_RASCIL_test(unittest.TestCase):
 
         from rascil.processing_components.simulation import create_named_configuration
         from rascil.processing_components.simulation import create_test_image
-        from rascil.processing_components.imaging.base import (
-            advise_wide_field,
-        )
+        from rascil.processing_components.imaging.base import advise_wide_field
 
         from rascil.data_models.polarisation import PolarisationFrame
 

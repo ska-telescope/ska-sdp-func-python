@@ -278,7 +278,11 @@ class TestVisibilityOperations(unittest.TestCase):
             self.vismodel, newphasecentre=self.compabsdirection, tangent=False
         )
         assert_allclose(rotatedvis.vis, vismodel2.vis, rtol=3e-6)
-        assert_allclose(rotatedvis.uvw_lambda, vismodel2.uvw_lambda, rtol=3e-6)
+        assert_allclose(
+            rotatedvis.visibility_acc.uvw_lambda,
+            vismodel2.visibility_acc.uvw_lambda,
+            rtol=3e-6,
+        )
 
     def test_phase_rotation_inverse(self):
         self.vis = create_visibility(

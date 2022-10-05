@@ -48,9 +48,7 @@ from rascil.processing_components.simulation import simulate_gaintable
 from rascil.processing_components.simulation.pointing import simulate_pointingtable
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import create_visibility
-from rascil.processing_components.flagging.base import (
-    create_flagtable_from_visibility,
-)
+from rascil.processing_components.flagging.base import create_flagtable_from_visibility
 from rascil.processing_components.griddata.operations import create_griddata_from_image
 from rascil.processing_components.griddata import create_convolutionfunction_from_image
 

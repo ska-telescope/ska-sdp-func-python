@@ -18,9 +18,7 @@ from rascil.processing_components import (
     create_empty_image_like,
     image_scatter_channels,
 )
-from rascil.processing_components.image.operations import (
-    export_image_to_fits,
-)
+from rascil.processing_components.image.operations import export_image_to_fits
 from rascil.processing_components.simulation import (
     create_test_image,
     create_low_test_image_from_gleam,

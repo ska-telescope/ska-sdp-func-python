@@ -20,9 +20,7 @@ from rascil.processing_components import (
     invert_ng,
 )
 from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.simulation.rfi import (
-    simulate_rfi_block_prop,
-)
+from rascil.processing_components.simulation.rfi import simulate_rfi_block_prop
 
 log = logging.getLogger("rascil-logger")
 log.setLevel(logging.WARNING)

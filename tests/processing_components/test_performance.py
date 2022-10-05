@@ -7,9 +7,7 @@ import unittest
 
 import numpy
 
-from rascil.processing_components.simulation import (
-    create_test_image,
-)
+from rascil.processing_components.simulation import create_test_image
 from rascil.processing_components.util.performance import (
     performance_store_dict,
     performance_qa_image,

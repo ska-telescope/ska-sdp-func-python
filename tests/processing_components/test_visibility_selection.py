@@ -158,9 +158,11 @@ class TestVisibilitySelectors(unittest.TestCase):
         )
         flags_shape = bvis.flags.shape
         before = bvis["flags"].sum()
-        bvis["flags"] = xarray.where(
-            bvis["uvdist_lambda"] > 20000.0, bvis["flags"], 1.0
+        uvdist_lambda = numpy.hypot(
+            bvis.visibility_acc.uvw_lambda[..., 0],
+            bvis.visibility_acc.uvw_lambda[..., 1],
         )
+        bvis["flags"].data[numpy.where(uvdist_lambda <= 20000.0)] = 1
         assert bvis.flags.shape == flags_shape
         after = bvis["flags"].sum()
         assert after > before

@@ -23,9 +23,7 @@ from rascil.processing_components import (
 )
 from rascil.processing_components.image.operations import create_image_from_array
 from rascil.processing_components.image.operations import export_image_to_fits
-from rascil.processing_components.imaging.base import (
-    create_image_from_visibility,
-)
+from rascil.processing_components.imaging.base import create_image_from_visibility
 from rascil.processing_components.imaging.imaging import (
     predict_visibility,
     invert_visibility,

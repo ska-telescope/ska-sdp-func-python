@@ -35,9 +35,7 @@ from rascil.processing_components.imaging.imaging import (
     predict_visibility,
     invert_visibility,
 )
-from rascil.processing_components.imaging.base import (
-    create_image_from_visibility,
-)
+from rascil.processing_components.imaging.base import create_image_from_visibility
 
 log = logging.getLogger("rascil-logger")
 

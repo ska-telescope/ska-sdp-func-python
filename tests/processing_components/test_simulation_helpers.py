@@ -92,9 +92,11 @@ class TestSimulationHelpers(unittest.TestCase):
         )
         plt.clf()
         before = self.vis["flags"].sum()
-        self.vis["flags"] = xarray.where(
-            self.vis["uvdist_lambda"] < 5000.0, self.vis["flags"], 1.0
+        uvdist_lambda = numpy.hypot(
+            self.vis.visibility_acc.uvw_lambda[..., 0],
+            self.vis.visibility_acc.uvw_lambda[..., 1],
         )
+        self.vis["flags"].data[numpy.where(uvdist_lambda >= 5000.0)] = 1
         after = self.vis["flags"].sum()
         plot_uvcoverage([self.vis])
         assert after > before

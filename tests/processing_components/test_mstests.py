@@ -27,9 +27,7 @@ try:
         create_visibility,
         create_visibility_from_ms,
     )
-    from rascil.processing_components.visibility.base import (
-        export_visibility_to_ms,
-    )
+    from rascil.processing_components.visibility.base import export_visibility_to_ms
 
     run_ms_tests = True
 #            except ModuleNotFoundError:
