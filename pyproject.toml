@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "ska-sdp-func-python"
+version = "0.0.0"
+description = "SKA SDP Python-Based Processing Functions"
+authors = ["SKA SDP Developers"]
+license = "Apache 2.0"
+repository = "https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python"
+# Uncomment once set up
+# documentation = "https://developer.skao.int/projects/ska-sdp-func-pyhton/en/latest/"
+
+[[tool.poetry.source]]
+name = "ska"
+url = "https://artefact.skao.int/repository/pypi-internal/simple"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+black = "^22.1.0"
+build = "^0.7.0"
+flake8 = "^4.0.1"
+isort = "^5.10.1"
+pylint = "^2.12.2"
+pytest = "^7.1.1"
+pytest-cov = "^3.0.0"
+pylint-junit = "^0.3.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
