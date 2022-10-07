@@ -12,7 +12,6 @@ from rascil.data_models import PolarisationFrame, rascil_path
 from rascil.processing_components.image.iterators import (
     image_raster_iter,
     image_channel_iter,
-    image_null_iter,
 )
 
 from rascil.processing_components.image.operations import (
