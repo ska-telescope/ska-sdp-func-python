@@ -130,15 +130,6 @@ class TestImageIterators(unittest.TestCase):
             for slab in image_channel_iter(m31cube, subimages=subimages):
                 assert slab["pixels"].data.shape[0] == 128 // subimages
 
-    def test_null(self):
-        m31cube = create_test_image(
-            frequency=numpy.linspace(1e8, 1.1e8, 128),
-            polarisation_frame=PolarisationFrame("stokesI"),
-        )
-
-        for i, im in enumerate(image_null_iter(m31cube)):
-            assert i < 1, "Null iterator returns more than one value"
-
 
 if __name__ == "__main__":
     unittest.main()
