@@ -9,6 +9,9 @@ Images
 .. toctree::
    :maxdepth: 3
 
+.. automodapi::    rascil.processing_components.image.cleaners
+   :no-inheritance-diagram:
+
 .. automodapi::    rascil.processing_components.image.deconvolution
    :no-inheritance-diagram:
 

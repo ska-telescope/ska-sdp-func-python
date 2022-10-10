@@ -6,7 +6,7 @@ import unittest
 import numpy
 import logging
 
-from rascil.processing_components.arrays.cleaners import (
+from rascil.processing_components.image.cleaners import (
     create_scalestack,
     convolve_scalestack,
     convolve_convolve_scalestack,
