@@ -14,13 +14,12 @@
     param tag: Tag to keep track of the relavant files and images.
 
 """
+import glob
 import logging
 import os
-import glob
 
 import astropy.units as u
 import numpy
-import pandas as pd
 import pytest
 from astropy.coordinates import SkyCoord
 from numpy.random import default_rng
@@ -29,15 +28,15 @@ from rascil.apps.imaging_qa_main import (
     cli_parser,
     analyze_image,
 )
-from rascil.data_models.parameters import rascil_path
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.data_models.data_convert_persist import export_skycomponent_to_hdf5
-from rascil.processing_components.imaging.primary_beams import create_pb
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image import (
     create_image,
     export_image_to_fits,
     restore_cube,
 )
+from rascil.processing_components.imaging.primary_beams import create_pb
+from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import (
     create_mid_simulation_components,
     find_pb_width_null,
@@ -45,7 +44,6 @@ from rascil.processing_components.simulation import (
 from rascil.processing_components.skycomponent import (
     insert_skycomponent,
     find_skycomponent_matches,
-    fit_skycomponent_spectral_index,
     apply_beam_to_skycomponent,
     copy_skycomponent,
 )

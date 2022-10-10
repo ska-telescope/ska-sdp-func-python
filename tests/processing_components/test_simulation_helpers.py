@@ -6,7 +6,6 @@ import unittest
 
 import astropy.units as u
 import matplotlib.pyplot as plt
-import xarray
 import numpy
 from astropy.coordinates import SkyCoord
 
@@ -19,7 +18,6 @@ from rascil.processing_components.simulation import (
     plot_vwcoverage,
 )
 from rascil.processing_components.visibility.base import (
-    create_visibility,
     create_visibility,
 )
 

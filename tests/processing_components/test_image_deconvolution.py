@@ -2,24 +2,16 @@
 
 
 """
-import os
 import logging
+import os
 import unittest
 
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.data_models import SkyComponent
-
-from rascil.processing_components.image.cleaners import overlapIndices
-from rascil.processing_components.image.deconvolution import (
-    hogbom_kernel_list,
-    find_window_list,
-)
-from rascil.processing_components.skycomponent.operations import restore_skycomponent
-
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     restore_list,
     deconvolve_cube,
@@ -27,15 +19,21 @@ from rascil.processing_components import (
     fit_psf,
     create_pb,
 )
+from rascil.processing_components.image.cleaners import overlapIndices
+from rascil.processing_components.image.deconvolution import (
+    hogbom_kernel_list,
+    find_window_list,
+)
 from rascil.processing_components.image.operations import export_image_to_fits, qa_image
-from rascil.processing_components.simulation import create_test_image
-from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility.base import create_visibility
+from rascil.processing_components.imaging.base import create_image_from_visibility
 from rascil.processing_components.imaging.imaging import (
     predict_visibility,
     invert_visibility,
 )
-from rascil.processing_components.imaging.base import create_image_from_visibility
+from rascil.processing_components.simulation import create_named_configuration
+from rascil.processing_components.simulation import create_test_image
+from rascil.processing_components.skycomponent.operations import restore_skycomponent
+from rascil.processing_components.visibility.base import create_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -47,7 +45,9 @@ class TestImageDeconvolution(unittest.TestCase):
 
         self.persist = os.getenv("RASCIL_PERSIST", False)
 
-        from rascil.data_models.parameters import rascil_path, rascil_data_path
+        from rascil.processing_components.parameters import (
+            rascil_path,
+        )
 
         self.results_dir = rascil_path("test_results")
         self.lowcore = create_named_configuration("LOWBD2-CORE")

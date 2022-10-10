@@ -3,26 +3,21 @@
 
 """
 
-import os
 import logging
+import os
 import unittest
 
+import matplotlib.pyplot as plt
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-import matplotlib.pyplot as plt
-
 from rascil.data_models.polarisation_data_models import PolarisationFrame
-
 from rascil.processing_components.image.operations import (
     export_image_to_fits,
-    show_image,
 )
 from rascil.processing_components.imaging.base import create_image_from_visibility
 from rascil.processing_components.imaging.primary_beams import (
-    create_pb,
-    create_vp,
     create_vp_generic_numeric,
 )
 from rascil.processing_components.simulation import create_named_configuration
@@ -35,7 +30,9 @@ log.setLevel(logging.WARNING)
 
 class TestPrimaryBeams(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path, rascil_data_path
+        from rascil.processing_components.parameters import (
+            rascil_path,
+        )
 
         self.results_dir = rascil_path("test_results")
 

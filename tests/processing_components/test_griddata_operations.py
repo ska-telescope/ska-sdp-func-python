@@ -17,7 +17,7 @@ log.setLevel(logging.WARNING)
 
 class TestGridData(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

@@ -3,6 +3,7 @@
 
 """
 import functools
+import logging
 import os
 import sys
 import unittest
@@ -10,9 +11,6 @@ import unittest
 from matplotlib import pyplot as plt
 
 from rascil.data_models.polarisation_data_models import PolarisationFrame
-
-from rascil.data_models.parameters import rascil_path, rascil_data_path
-
 from rascil.processing_components import (
     create_visibility_from_ms,
     show_image,
@@ -24,8 +22,7 @@ from rascil.processing_components import (
     export_image_to_fits,
     weight_visibility,
 )
-
-import logging
+from rascil.processing_components.parameters import rascil_path, rascil_data_path
 
 log = logging.getLogger("rascil-logger")
 log.setLevel(logging.WARNING)
@@ -43,7 +40,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 
 class TestImaging2D(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

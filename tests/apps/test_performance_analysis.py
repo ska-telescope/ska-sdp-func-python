@@ -1,18 +1,17 @@
 """ Regression for performance analysis
 
 """
-import sys
+import logging
 import os
 import shutil
-import logging
+import sys
 import tempfile
 
 import numpy.testing
 import pytest
 
-from rascil.data_models.parameters import rascil_path, rascil_data_path
-
 from rascil.apps.performance_analysis import cli_parser, analyser, fit_2d_plane
+from rascil.processing_components.parameters import rascil_path, rascil_data_path
 
 log = logging.getLogger("rascil-logger")
 log.setLevel(logging.WARNING)

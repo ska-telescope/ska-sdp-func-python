@@ -45,7 +45,6 @@ from rascil.workflows.rsexecute.imaging.imaging_rsexecute import (
     subtract_list_rsexecute_workflow,
     predict_list_rsexecute_workflow,
 )
-from rascil.processing_components.imaging.imaging_helpers import sum_invert_results
 
 log = logging.getLogger("rascil-logger")
 
@@ -64,7 +63,7 @@ class TestImaging(unittest.TestCase):
             verbose=True,
         )
 
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.test_dir = rascil_path("test_results")
 

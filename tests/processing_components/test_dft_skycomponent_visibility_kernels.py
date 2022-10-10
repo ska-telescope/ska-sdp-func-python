@@ -60,8 +60,6 @@ class TestVisibilityDFTOperationsKernels(unittest.TestCase):
 
         self.init(ntimes=2, nchan=10, ncomp=100)
         for dft_compute_kernel in compute_kernels:
-            import time
-
             # start = time.time()
             vis[dft_compute_kernel] = create_visibility(
                 self.lowcore,

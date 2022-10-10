@@ -3,12 +3,12 @@
 """
 # pylint: disable=bad-string-format-type
 
+import glob
 import logging
+import os
 import shutil
 import tempfile
 import unittest
-import os
-import glob
 from unittest.mock import patch, Mock
 
 import numpy
@@ -22,16 +22,16 @@ from rascil.apps.imaging_qa_main import (
     correct_primary_beam,
     read_skycomponent_from_txt,
 )
-from rascil.data_models.parameters import rascil_path
 from rascil.data_models.polarisation_data_models import PolarisationFrame
-from rascil.processing_components.imaging.primary_beams import (
-    create_pb,
-    create_low_test_beam,
-)
 from rascil.processing_components.image import (
     create_image,
     export_image_to_fits,
 )
+from rascil.processing_components.imaging.primary_beams import (
+    create_pb,
+    create_low_test_beam,
+)
+from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import (
     create_mid_simulation_components,
     find_pb_width_null,

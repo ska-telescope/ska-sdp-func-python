@@ -4,8 +4,8 @@
 
 """
 
-import unittest
 import logging
+import unittest
 
 import astropy.units as u
 import numpy
@@ -32,25 +32,23 @@ from rascil.data_models.data_convert_persist import (
     import_convolutionfunction_from_hdf5,
     export_convolutionfunction_to_hdf5,
 )
-
-from rascil.data_models.xarray_coordinate_support import image_wcs, griddata_wcs, cf_wcs
 from rascil.data_models.memory_data_models import SkyComponent, SkyModel
 from rascil.data_models.polarisation_data_models import PolarisationFrame
-from rascil.processing_components.image import create_image
 from rascil.processing_components.calibration.operations import (
     create_gaintable_from_visibility,
 )
 from rascil.processing_components.calibration.pointing import (
     create_pointingtable_from_visibility,
 )
+from rascil.processing_components.flagging.base import create_flagtable_from_visibility
+from rascil.processing_components.griddata import create_convolutionfunction_from_image
+from rascil.processing_components.griddata.operations import create_griddata_from_image
+from rascil.processing_components.image import create_image
 from rascil.processing_components.imaging import dft_skycomponent_visibility
+from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import simulate_gaintable
 from rascil.processing_components.simulation.pointing import simulate_pointingtable
-from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import create_visibility
-from rascil.processing_components.flagging.base import create_flagtable_from_visibility
-from rascil.processing_components.griddata.operations import create_griddata_from_image
-from rascil.processing_components.griddata import create_convolutionfunction_from_image
 
 log = logging.getLogger("rascil-logger")
 
@@ -86,7 +84,9 @@ class TestDataModelHelpers(unittest.TestCase):
         return True
 
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path, rascil_data_path
+        from rascil.processing_components.parameters import (
+            rascil_path,
+        )
 
         self.results_dir = rascil_path("test_results")
 

@@ -29,7 +29,6 @@ from rascil.processing_components.skycomponent.operations import (
 )
 from rascil.processing_components.visibility import copy_visibility
 
-
 log = logging.getLogger("rascil-logger")
 
 log.setLevel(logging.WARNING)
@@ -39,7 +38,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 class TestImagingNG(unittest.TestCase):
     def setUp(self):
 
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

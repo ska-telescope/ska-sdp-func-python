@@ -16,7 +16,6 @@ from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation.noise import addnoise_visibility
 from rascil.processing_components.visibility.base import (
     create_visibility,
-    create_visibility,
     copy_visibility,
 )
 
@@ -28,7 +27,9 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 
 class TestNoise(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path, rascil_data_path
+        from rascil.processing_components.parameters import (
+            rascil_path,
+        )
 
         self.results_dir = rascil_path("test_results")
 

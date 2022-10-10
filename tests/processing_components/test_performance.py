@@ -5,11 +5,8 @@ import logging
 import os
 import unittest
 
-import numpy
-
 from rascil.processing_components.simulation import create_test_image
 from rascil.processing_components.util.performance import (
-    performance_store_dict,
     performance_qa_image,
     performance_read,
     performance_environment,
@@ -22,7 +19,7 @@ log.setLevel(logging.WARNING)
 
 class TestPerformance(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
         self.json_file = rascil_path("test_results/test_performance.json")

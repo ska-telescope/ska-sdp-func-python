@@ -2,12 +2,11 @@
 Data path testing
 """
 import os
+from unittest.mock import patch
 
 import pytest
 
-from unittest.mock import patch
-
-from rascil.data_models.parameters import rascil_path, rascil_data_path
+from rascil.processing_components.parameters import rascil_path, rascil_data_path
 from rascil.processing_components.util.installation_checks import check_data_directory
 
 

@@ -14,7 +14,7 @@ from rascil.apps.imaging_qa.generate_results_index import (
     OTHER_FILES,
     _find_path_for_index_files,
 )
-from rascil.data_models import rascil_path
+from rascil.processing_components.parameters import rascil_path
 
 
 def test_generate_html_sub_string_one_file():

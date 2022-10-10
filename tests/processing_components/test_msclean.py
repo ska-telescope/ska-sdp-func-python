@@ -2,9 +2,10 @@
 
 
 """
-import unittest
-import numpy
 import logging
+import unittest
+
+import numpy
 
 from rascil.processing_components.image.cleaners import (
     create_scalestack,

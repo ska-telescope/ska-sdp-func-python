@@ -2,36 +2,26 @@
 
 
 """
-import os
 import logging
-import sys
+import os
 import unittest
+from types import SimpleNamespace
 
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from types import SimpleNamespace
-
-from rascil.data_models.parameters import rascil_path
-
+from rascil.apps.rascil_imager import get_cellsize
 from rascil.data_models.polarisation_data_models import PolarisationFrame
-from rascil.processing_components.simulation import create_named_configuration
-from rascil.workflows.rsexecute.imaging.imaging_rsexecute import (
-    invert_list_rsexecute_workflow,
-    deconvolve_list_rsexecute_workflow,
-    residual_list_rsexecute_workflow,
-    restore_list_rsexecute_workflow,
-)
-from rascil.workflows.rsexecute.execution_support.rsexecute import rsexecute
 from rascil.processing_components import (
     export_image_to_fits,
     smooth_image,
-    create_pb,
     qa_image,
     image_gather_channels,
 )
 from rascil.processing_components.imaging import dft_skycomponent_visibility
+from rascil.processing_components.parameters import rascil_path
+from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import (
     ingest_unittest_visibility,
     create_unittest_model,
@@ -39,7 +29,13 @@ from rascil.processing_components.simulation import (
     insert_unittest_errors,
 )
 from rascil.processing_components.skycomponent.operations import insert_skycomponent
-from rascil.apps.rascil_imager import get_cellsize
+from rascil.workflows.rsexecute.execution_support.rsexecute import rsexecute
+from rascil.workflows.rsexecute.imaging.imaging_rsexecute import (
+    invert_list_rsexecute_workflow,
+    deconvolve_list_rsexecute_workflow,
+    residual_list_rsexecute_workflow,
+    restore_list_rsexecute_workflow,
+)
 
 log = logging.getLogger("rascil-logger")
 

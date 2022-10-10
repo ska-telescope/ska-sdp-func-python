@@ -3,11 +3,10 @@
 
 """
 
+import logging
 import unittest
 
-from rascil.data_models.parameters import get_parameter
-
-import logging
+from rascil.processing_components.parameters import get_parameter
 
 log = logging.getLogger("rascil-logger")
 

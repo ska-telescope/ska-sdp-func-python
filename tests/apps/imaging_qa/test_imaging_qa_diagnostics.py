@@ -1,9 +1,8 @@
 from unittest.mock import patch, Mock, call, MagicMock
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import pytest
-
 from scipy.signal.windows import gaussian as scipy_gaussian
 
 from rascil.apps.imaging_qa.imaging_qa_diagnostics import (
@@ -19,7 +18,7 @@ from rascil.apps.imaging_qa.imaging_qa_diagnostics import (
     power_spectrum,
     imaging_qa_diagnostics,
 )
-from rascil.data_models import rascil_data_path
+from rascil.processing_components.parameters import rascil_data_path
 
 BASE_PATH = "rascil.apps.imaging_qa.imaging_qa_diagnostics"
 

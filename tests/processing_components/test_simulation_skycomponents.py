@@ -8,16 +8,14 @@ import unittest
 
 import astropy.units as u
 import numpy
-from numpy.testing import assert_almost_equal
 from astropy.coordinates import SkyCoord
+from numpy.testing import assert_almost_equal
 
-from rascil.data_models import SkyComponent
 from rascil.data_models.polarisation_data_models import PolarisationFrame
-
-from rascil.processing_components.simulation.skycomponents import addnoise_skycomponent
 from rascil.processing_components.simulation import (
     create_low_test_skycomponents_from_gleam,
 )
+from rascil.processing_components.simulation.skycomponents import addnoise_skycomponent
 from rascil.processing_components.skycomponent.base import copy_skycomponent
 
 log = logging.getLogger("rascil-logger")
@@ -29,7 +27,9 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 class TestSimSkyComponents(unittest.TestCase):
     def setUp(self):
 
-        from rascil.data_models.parameters import rascil_path, rascil_data_path
+        from rascil.processing_components.parameters import (
+            rascil_path,
+        )
 
         self.results_dir = rascil_path("test_results")
 

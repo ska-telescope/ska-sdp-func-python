@@ -3,29 +3,28 @@
 
 """
 
-import numpy
 import logging
 import unittest
 
-from astropy.coordinates import SkyCoord
 import astropy.units as u
+import numpy
+from astropy.coordinates import SkyCoord
 
 from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation_data_models import PolarisationFrame
-
 from rascil.processing_components import (
     gaintable_summary,
     apply_gaintable,
     create_gaintable_from_visibility,
     concatenate_gaintables,
 )
-from rascil.processing_components.simulation import simulate_gaintable
+from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.simulation import create_named_configuration
+from rascil.processing_components.simulation import simulate_gaintable
 from rascil.processing_components.visibility.base import (
     copy_visibility,
     create_visibility,
 )
-from rascil.processing_components.imaging import dft_skycomponent_visibility
 
 log = logging.getLogger("rascil-logger")
 

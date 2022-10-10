@@ -6,7 +6,6 @@ import unittest
 
 import astropy.units as u
 import numpy
-import xarray
 from astropy.coordinates import SkyCoord
 
 from rascil.data_models.polarisation_data_models import PolarisationFrame

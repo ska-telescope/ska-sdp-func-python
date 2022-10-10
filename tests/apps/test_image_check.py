@@ -6,7 +6,7 @@ import logging
 import pytest
 
 from rascil.apps.rascil_image_check import cli_parser, image_check
-from rascil.data_models import rascil_data_path
+from rascil.processing_components.parameters import rascil_data_path
 
 log = logging.getLogger("rascil-logger")
 log.setLevel(logging.INFO)

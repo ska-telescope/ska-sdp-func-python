@@ -4,7 +4,6 @@
 """
 import logging
 import os
-import sys
 import unittest
 
 import numpy
@@ -14,6 +13,7 @@ from astropy.coordinates import SkyCoord
 from rascil.data_models.data_convert_persist import export_gaintable_to_hdf5
 from rascil.data_models.memory_data_models import SkyModel
 from rascil.data_models.polarisation_data_models import PolarisationFrame
+from rascil.processing_components import qa_gaintable
 from rascil.processing_components.calibration.chain_calibration import (
     create_calibration_controls,
 )
@@ -42,7 +42,6 @@ from rascil.processing_components.skycomponent import (
     insert_skycomponent,
     copy_skycomponent,
 )
-from rascil.processing_components import qa_gaintable
 from rascil.workflows.rsexecute.execution_support.rsexecute import rsexecute
 from rascil.workflows.rsexecute.pipelines.pipeline_skymodel_rsexecute import (
     ical_skymodel_list_rsexecute_workflow,
@@ -63,7 +62,7 @@ class TestPipelineGraphs(unittest.TestCase):
         self.rng = default_rng(1805550721)
 
         rsexecute.set_client(use_dask=True)
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
         self.persist = os.getenv("RASCIL_PERSIST", False)

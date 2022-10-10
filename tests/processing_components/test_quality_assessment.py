@@ -2,8 +2,8 @@
 
 
 """
-import unittest
 import logging
+import unittest
 
 from rascil.data_models.memory_data_models import QualityAssessment
 

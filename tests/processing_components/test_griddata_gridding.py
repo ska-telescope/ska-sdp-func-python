@@ -54,7 +54,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 
 class TestGridDataGridding(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
         self.persist = os.getenv("RASCIL_PERSIST", False)

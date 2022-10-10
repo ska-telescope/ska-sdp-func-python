@@ -35,7 +35,7 @@ log.setLevel(logging.WARNING)
 
 class TestPointing(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.doplot = True
 

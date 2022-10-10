@@ -12,7 +12,6 @@ from astropy.coordinates import SkyCoord
 from rascil.apps.rascil_imager import cli_parser, imager
 from rascil.data_models import SkyModel
 from rascil.data_models.data_convert_persist import export_skymodel_to_hdf5
-from rascil.data_models.parameters import rascil_path
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     export_visibility_to_ms,
@@ -30,6 +29,7 @@ from rascil.processing_components.image.operations import (
     smooth_image,
 )
 from rascil.processing_components.imaging import dft_skycomponent_visibility
+from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import (
     ingest_unittest_visibility,

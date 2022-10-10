@@ -1,11 +1,8 @@
 """ Unit tests for pipelines expressed via rsexecute
 """
-import functools
 import logging
 import os
-import sys
 import unittest
-import copy
 
 import numpy
 from astropy import units as u
@@ -20,7 +17,6 @@ from rascil.processing_components import (
 from rascil.processing_components import (
     ingest_unittest_visibility,
     create_low_test_skymodel_from_gleam,
-    create_pb,
     calculate_visibility_parallactic_angles,
     qa_image,
     create_low_test_beam,
@@ -43,7 +39,7 @@ class TestSkyModel(unittest.TestCase):
 
         rsexecute.set_client(use_dask=True)
 
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

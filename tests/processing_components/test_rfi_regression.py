@@ -2,8 +2,8 @@
 
 """
 
-import os
 import logging
+import os
 import unittest
 
 import astropy.units as u
@@ -11,7 +11,6 @@ import numpy
 import numpy.testing
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models import rascil_path
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_visibility,
@@ -20,6 +19,7 @@ from rascil.processing_components import (
     create_image_from_visibility,
     invert_ng,
 )
+from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation.rfi import simulate_rfi_block_prop
 

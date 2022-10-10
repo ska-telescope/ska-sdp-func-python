@@ -9,12 +9,10 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.memory_data_models import SkyModel, Image
+from rascil.data_models.memory_data_models import SkyModel
 from rascil.data_models.polarisation_data_models import PolarisationFrame
+from rascil.processing_components import create_image
 from rascil.processing_components.imaging.primary_beams import create_low_test_beam
-from rascil.processing_components.skymodel.operations import (
-    expand_skymodel_by_skycomponents,
-)
 from rascil.processing_components.simulation import (
     create_low_test_skycomponents_from_gleam,
 )
@@ -27,9 +25,11 @@ from rascil.processing_components.skycomponent.operations import (
 from rascil.processing_components.skycomponent.operations import (
     filter_skycomponents_by_flux,
 )
+from rascil.processing_components.skymodel.operations import (
+    expand_skymodel_by_skycomponents,
+)
 from rascil.processing_components.skymodel.operations import image_voronoi_iter
 from rascil.processing_components.visibility.base import create_visibility
-from rascil.processing_components import create_image
 
 log = logging.getLogger("rascil-logger")
 
@@ -38,7 +38,9 @@ log.setLevel(logging.WARNING)
 
 class TestSkymodelOperations(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path, rascil_data_path
+        from rascil.processing_components.parameters import (
+            rascil_path,
+        )
 
         dec = -40.0 * u.deg
 

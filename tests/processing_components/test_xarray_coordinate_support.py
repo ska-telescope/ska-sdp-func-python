@@ -1,8 +1,8 @@
 """ Unit tests for skycomponents
 
 """
-import os
 import logging
+import os
 import unittest
 
 import astropy.units as u
@@ -10,12 +10,11 @@ import numpy
 from astropy.coordinates import SkyCoord
 
 from rascil.data_models.polarisation_data_models import PolarisationFrame
-
+from rascil.data_models.xarray_coordinate_support import image_wcs
 from rascil.processing_components import create_image, create_griddata_from_image
-from rascil.processing_components.skycomponent.operations import create_skycomponent
 from rascil.processing_components.simulation import create_named_configuration
+from rascil.processing_components.skycomponent.operations import create_skycomponent
 from rascil.processing_components.visibility.base import create_visibility
-from rascil.data_models.xarray_coordinate_support import image_wcs, griddata_wcs
 
 log = logging.getLogger("rascil-logger")
 
@@ -27,7 +26,7 @@ class TestXarrayCoordinateSupport(unittest.TestCase):
 
         self.persist = os.getenv("RASCIL_PERSIST", False)
 
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.lowcore = create_named_configuration("LOWBD2-CORE")
         self.results_dir = rascil_path("test_results")

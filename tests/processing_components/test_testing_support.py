@@ -2,8 +2,8 @@
 
 
 """
-import os
 import logging
+import os
 import sys
 import unittest
 
@@ -11,10 +11,13 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image.operations import export_image_to_fits
 from rascil.processing_components.imaging.primary_beams import create_low_test_beam
+from rascil.processing_components.simulation import (
+    create_named_configuration,
+    decimate_configuration,
+)
 from rascil.processing_components.simulation import (
     create_test_image_from_s3,
     create_test_image,
@@ -23,15 +26,8 @@ from rascil.processing_components.simulation import (
     create_low_test_skymodel_from_gleam,
     create_test_skycomponents_from_s3,
 )
-from rascil.processing_components import concatenate_visibility
-from rascil.processing_components.simulation import (
-    create_named_configuration,
-    decimate_configuration,
-)
 from rascil.processing_components.visibility.base import (
     create_visibility,
-    create_visibility,
-    copy_visibility,
 )
 
 log = logging.getLogger("rascil-logger")
@@ -42,7 +38,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 
 class TestTesting_Support(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
         self.persist = os.getenv("RASCIL_PERSIST", False)

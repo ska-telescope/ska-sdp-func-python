@@ -1,20 +1,20 @@
+import logging
 import os
+
 import numpy
 import pytest
-import logging
-
-from numpy.testing import assert_almost_equal
-from astropy.coordinates import SkyCoord
 from astropy import units as u
+from astropy.coordinates import SkyCoord
+from numpy.testing import assert_almost_equal
 
 from rascil.apps.rascil_imager import generate_skymodel_list
 from rascil.data_models import (
     SkyComponent,
     export_skycomponent_to_hdf5,
-    rascil_path,
 )
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image.operations import create_image
+from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.skycomponent import fit_skycomponent_spectral_index
 from rascil.workflows.rsexecute.execution_support import rsexecute
 

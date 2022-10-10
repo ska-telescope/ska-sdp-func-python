@@ -2,13 +2,13 @@
 
 
 """
-import numpy
+import logging
 import unittest
 
-from astropy.coordinates import SkyCoord
 import astropy.units as u
+import numpy
+from astropy.coordinates import SkyCoord
 
-from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.calibration.iterators import (
     gaintable_timeslice_iter,
     gaintable_null_iter,
@@ -16,9 +16,8 @@ from rascil.processing_components.calibration.iterators import (
 from rascil.processing_components.calibration.operations import (
     create_gaintable_from_visibility,
 )
+from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import create_visibility
-
-import logging
 
 log = logging.getLogger("rascil-logger")
 

@@ -2,7 +2,6 @@
 
 
 """
-import random
 import unittest
 
 import numpy

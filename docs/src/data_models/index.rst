@@ -13,6 +13,5 @@ Data models
    data_convert_persist.rst
    polarisation_data_models.rst
    polarisation_convert.rst
-   parameters.rst
 
 
