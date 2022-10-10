@@ -13,7 +13,7 @@ from astropy.coordinates import SkyCoord
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.data_models import SkyComponent
 
-from rascil.processing_components.arrays.cleaners import overlapIndices
+from rascil.processing_components.image.cleaners import overlapIndices
 from rascil.processing_components.image.deconvolution import (
     hogbom_kernel_list,
     find_window_list,

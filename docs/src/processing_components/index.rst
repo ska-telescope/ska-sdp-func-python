@@ -8,7 +8,6 @@ Processing Components
 .. toctree::
    :maxdepth: 1
 
-   arrays/index
    calibration/index
    flagging/index
    fourier_transforms/index

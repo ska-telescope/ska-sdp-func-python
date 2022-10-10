@@ -13,7 +13,6 @@ from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image.iterators import (
     image_raster_iter,
     image_channel_iter,
-    image_null_iter,
 )
 
 from rascil.processing_components.image.operations import (
@@ -130,15 +129,6 @@ class TestImageIterators(unittest.TestCase):
         for subimages in [128, 16, 8, 2, 1]:
             for slab in image_channel_iter(m31cube, subimages=subimages):
                 assert slab["pixels"].data.shape[0] == 128 // subimages
-
-    def test_null(self):
-        m31cube = create_test_image(
-            frequency=numpy.linspace(1e8, 1.1e8, 128),
-            polarisation_frame=PolarisationFrame("stokesI"),
-        )
-
-        for i, im in enumerate(image_null_iter(m31cube)):
-            assert i < 1, "Null iterator returns more than one value"
 
 
 if __name__ == "__main__":

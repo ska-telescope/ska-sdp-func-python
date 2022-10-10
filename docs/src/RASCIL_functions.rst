@@ -41,10 +41,10 @@ Deconvolution
 
 * Deconvolution :py:func:`rascil.processing_components.image.deconvolution.deconvolve_cube` wraps:
 
- * Hogbom Clean: :py:func:`rascil.processing_components.arrays.cleaners.hogbom`
- * Hogbom Complex Clean: :py:func:`rascil.processing_components.arrays.cleaners.hogbom_complex`
- * Multi-scale Clean: :py:func:`rascil.processing_components.arrays.cleaners.msclean`
- * Multi-scale multi-frequency Clean: :py:func:`rascil.processing_components.arrays.cleaners.msmfsclean`
+ * Hogbom Clean: :py:func:`rascil.processing_components.image.cleaners.hogbom`
+ * Hogbom Complex Clean: :py:func:`rascil.processing_components.image.cleaners.hogbom_complex`
+ * Multi-scale Clean: :py:func:`rascil.processing_components.image.cleaners.msclean`
+ * Multi-scale multi-frequency Clean: :py:func:`rascil.processing_components.image.cleaners.msmfsclean`
 
 
 * Restore: :py:func:`rascil.processing_components.image.deconvolution.restore_cube`
