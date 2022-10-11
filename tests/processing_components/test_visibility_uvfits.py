@@ -2,25 +2,24 @@
     
     
 """
+import logging
 import os
 import sys
 import unittest
-import logging
 
 import numpy
-from rascil.data_models.parameters import rascil_path, rascil_data_path
-from rascil.data_models.polarisation import PolarisationFrame
 
-from rascil.processing_components.visibility.base import create_visibility_from_uvfits
-from rascil.processing_components.visibility.operations import (
-    integrate_visibility_by_channel,
-)
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     invert_visibility,
     create_image_from_visibility,
 )
 from rascil.processing_components.image.operations import export_image_to_fits, qa_image
-
+from rascil.processing_components.parameters import rascil_path, rascil_data_path
+from rascil.processing_components.visibility.base import create_visibility_from_uvfits
+from rascil.processing_components.visibility.operations import (
+    integrate_visibility_by_channel,
+)
 
 log = logging.getLogger("rascil-logger")
 

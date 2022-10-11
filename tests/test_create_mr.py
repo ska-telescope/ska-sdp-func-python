@@ -1,7 +1,7 @@
-import pytest
-
 from configparser import NoSectionError
 from unittest.mock import patch, Mock, call, PropertyMock
+
+import pytest
 from git import GitConfigParser, Repo
 
 from create_mr import BranchManager

@@ -7,9 +7,8 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
-import xarray
 
-from rascil.data_models import PolarisationFrame, rascil_path
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_visibility,
     export_image_to_fits,
@@ -24,7 +23,7 @@ from rascil.processing_components.imaging.imaging import (
     predict_visibility,
     invert_visibility,
 )
-
+from rascil.processing_components.parameters import rascil_path
 
 try:
     import casacore

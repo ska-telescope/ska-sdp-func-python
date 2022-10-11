@@ -11,19 +11,19 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import create_image
 from rascil.processing_components.griddata import (
     apply_bounding_box_convolutionfunction,
     calculate_bounding_box_convolutionfunction,
 )
+from rascil.processing_components.griddata.convolution_functions import (
+    export_convolutionfunction_to_fits,
+)
 from rascil.processing_components.griddata.kernels import (
     create_pswf_convolutionfunction,
     create_awterm_convolutionfunction,
     create_box_convolutionfunction,
-)
-from rascil.processing_components.griddata.convolution_functions import (
-    export_convolutionfunction_to_fits,
 )
 from rascil.processing_components.image.operations import export_image_to_fits
 from rascil.processing_components.imaging.primary_beams import create_pb_generic
@@ -35,7 +35,7 @@ log.setLevel(logging.WARNING)
 
 class TestGridDataKernels(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

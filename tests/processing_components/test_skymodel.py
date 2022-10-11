@@ -10,15 +10,14 @@ import numpy
 from astropy.coordinates import SkyCoord
 
 from rascil.data_models.memory_data_models import SkyModel
-from rascil.data_models.polarisation import PolarisationFrame
-
+from rascil.data_models.polarisation_data_models import PolarisationFrame
+from rascil.processing_components.simulation import create_named_configuration
+from rascil.processing_components.simulation import create_test_image
 from rascil.processing_components.skycomponent.operations import create_skycomponent
 from rascil.processing_components.skymodel.operations import (
     copy_skymodel,
     partition_skymodel_by_flux,
 )
-from rascil.processing_components.simulation import create_test_image
-from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import create_visibility
 
 log = logging.getLogger("rascil-logger")
@@ -28,7 +27,9 @@ log.setLevel(logging.WARNING)
 
 class TestSkyModel(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path, rascil_data_path
+        from rascil.processing_components.parameters import (
+            rascil_path,
+        )
 
         self.lowcore = create_named_configuration("LOWBD2", rmax=300.0)
         self.results_dir = rascil_path("test_results")

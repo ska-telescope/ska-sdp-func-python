@@ -10,7 +10,7 @@ import numpy
 from astropy.coordinates import SkyCoord
 
 from rascil.data_models.memory_data_models import SkyComponent
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.calibration import apply_gaintable
 from rascil.processing_components.calibration.chain_calibration import (
     create_calibration_controls,

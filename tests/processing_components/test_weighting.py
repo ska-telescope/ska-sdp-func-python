@@ -10,7 +10,7 @@ import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import create_image_from_visibility
 from rascil.processing_components import export_image_to_fits
 from rascil.processing_components import (
@@ -20,7 +20,6 @@ from rascil.processing_components import (
     fit_psf,
 )
 from rascil.processing_components.imaging.imaging import invert_visibility
-
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import create_visibility
 
@@ -31,7 +30,7 @@ log.setLevel(logging.WARNING)
 
 class TestWeighting(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
         self.npixel = 512

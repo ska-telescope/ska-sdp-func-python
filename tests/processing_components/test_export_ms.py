@@ -3,19 +3,18 @@
 """Unit test for the measurementset module."""
 
 import os
-import time
 import shutil
 import tempfile
+import time
 import unittest
 
+import astropy.units as u
 import numpy
+from astropy.coordinates import EarthLocation
+from astropy.time import Time
 
 from rascil.data_models.memory_data_models import Configuration
-from rascil.data_models.polarisation import ReceptorFrame
-
-from astropy.coordinates import EarthLocation
-import astropy.units as u
-from astropy.time import Time
+from rascil.data_models.polarisation_data_models import ReceptorFrame
 
 try:
     import casacore

@@ -5,14 +5,12 @@ import logging
 import os
 import unittest
 
-import matplotlib.pyplot as plt
-
 import astropy.units as u
+import matplotlib.pyplot as plt
 import numpy
-import xarray
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_test_image,
     show_image,
@@ -26,7 +24,7 @@ log.setLevel(logging.WARNING)
 
 class TestImageSelection(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

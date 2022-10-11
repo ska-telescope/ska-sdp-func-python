@@ -1,13 +1,13 @@
 """ Unit test for rascil_rcal app.
 
 """
-import os
-import logging
-import unittest
-import shutil
 import glob
-import tempfile
+import logging
+import os
+import shutil
 import sys
+import tempfile
+import unittest
 
 import numpy
 from astropy import units as u
@@ -27,9 +27,8 @@ from rascil.data_models import (
     SkyComponent,
     import_gaintable_from_hdf5,
     export_skycomponent_to_hdf5,
-    rascil_path,
 )
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     export_visibility_to_ms,
     dft_skycomponent_visibility,
@@ -39,6 +38,7 @@ from rascil.processing_components import (
     qa_visibility,
     qa_gaintable,
 )
+from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import ingest_unittest_visibility
 

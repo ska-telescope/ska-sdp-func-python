@@ -12,14 +12,9 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_array_almost_equal
 
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
-    export_image_to_fits,
-    reproject_image,
-    apply_voltage_pattern_to_image,
-    qa_image,
     create_image_from_array,
-    invert_visibility,
 )
 from rascil.processing_components.imaging import create_image_from_visibility
 from rascil.processing_components.imaging.dft import (
@@ -29,14 +24,12 @@ from rascil.processing_components.imaging.dft import (
 from rascil.processing_components.imaging.primary_beams import create_vp, create_pb
 from rascil.processing_components.simulation import (
     create_named_configuration,
-    decimate_configuration,
 )
 from rascil.processing_components.skycomponent import (
     create_skycomponent,
     apply_beam_to_skycomponent,
     copy_skycomponent,
     apply_voltage_pattern_to_skycomponent,
-    find_skycomponents,
 )
 from rascil.processing_components.visibility import create_visibility
 
@@ -47,7 +40,7 @@ log.setLevel(logging.WARNING)
 
 class TestPrimaryBeamsPol(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

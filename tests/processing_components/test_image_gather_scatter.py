@@ -2,22 +2,21 @@
 
 
 """
-import os
 import logging
+import os
 import unittest
 
 import numpy
 
-from rascil.data_models.polarisation import PolarisationFrame
-
-from rascil.processing_components.image.operations import export_image_to_fits
-from rascil.processing_components.image.operations import create_empty_image_like
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image.gather_scatter import (
     image_gather_facets,
     image_scatter_facets,
     image_gather_channels,
     image_scatter_channels,
 )
+from rascil.processing_components.image.operations import create_empty_image_like
+from rascil.processing_components.image.operations import export_image_to_fits
 from rascil.processing_components.simulation import create_test_image
 
 log = logging.getLogger("rascil-logger")
@@ -27,7 +26,7 @@ log.setLevel(logging.WARNING)
 
 class TestImageGatherScatters(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
         self.persist = os.getenv("RASCIL_PERSIST", False)

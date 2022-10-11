@@ -9,7 +9,7 @@ import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.imaging.base import create_image_from_visibility
 from rascil.processing_components.imaging.imaging_params import get_frequency_map
 from rascil.processing_components.simulation import create_low_test_image_from_gleam
@@ -23,7 +23,7 @@ log.setLevel(logging.WARNING)
 
 class TestImagingParams(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

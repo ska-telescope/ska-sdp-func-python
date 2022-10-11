@@ -8,7 +8,7 @@ import unittest
 import logging
 import numpy
 
-from rascil.data_models.parameters import rascil_path, rascil_data_path
+from rascil.processing_components.parameters import rascil_path, rascil_data_path
 
 from rascil.processing_components import (
     create_image_from_visibility,
@@ -66,7 +66,7 @@ class export_ms_RASCIL_test(unittest.TestCase):
         from rascil.processing_components.simulation import create_test_image
         from rascil.processing_components.imaging.base import advise_wide_field
 
-        from rascil.data_models.polarisation import PolarisationFrame
+        from rascil.data_models.polarisation_data_models import PolarisationFrame
 
         lowr3 = create_named_configuration("LOWBD2", rmax=750.0)
 

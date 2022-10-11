@@ -3,24 +3,16 @@
 
 """
 
+import logging
 import unittest
 
-import numpy
-from astropy import units as u
-from astropy.coordinates import SkyCoord
-
-from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility.base import (
-    create_visibility,
-    extend_visibility_to_ms,
-)
-from rascil.data_models import rascil_path, rascil_data_path, Visibility
+from rascil.processing_components.parameters import rascil_path, rascil_data_path
 from rascil.processing_components.visibility.base import (
     create_visibility_from_ms,
-    export_visibility_to_ms,
 )
-
-import logging
+from rascil.processing_components.visibility.base import (
+    extend_visibility_to_ms,
+)
 
 log = logging.getLogger("logger")
 

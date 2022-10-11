@@ -9,8 +9,7 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.parameters import rascil_data_path
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_image,
     create_image_from_array,
@@ -36,6 +35,7 @@ from rascil.processing_components.image.operations import (
     fft_image_to_griddata,
     ifft_griddata_to_image,
 )
+from rascil.processing_components.parameters import rascil_data_path
 from rascil.processing_components.simulation import (
     create_test_image,
     create_low_test_image_from_gleam,
@@ -49,7 +49,7 @@ log.setLevel(logging.WARNING)
 class TestImage(unittest.TestCase):
     def setUp(self):
 
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

@@ -11,12 +11,7 @@ import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation import PolarisationFrame
-from rascil.processing_components.image.operations import (
-    export_image_to_fits,
-    scale_and_rotate_image,
-)
-from rascil.processing_components.imaging.base import create_image_from_visibility
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_pb,
     create_vp,
@@ -25,6 +20,11 @@ from rascil.processing_components import (
     qa_image,
     create_mid_allsky,
 )
+from rascil.processing_components.image.operations import (
+    export_image_to_fits,
+    scale_and_rotate_image,
+)
+from rascil.processing_components.imaging.base import create_image_from_visibility
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import create_visibility
 
@@ -45,7 +45,7 @@ def check_max_min(im, flux_max, flux_min, context):
 
 class TestPrimaryBeams(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

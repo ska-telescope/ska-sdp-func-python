@@ -10,7 +10,7 @@ import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image.operations import (
     export_image_to_fits,
     smooth_image,
@@ -29,7 +29,6 @@ from rascil.processing_components.skycomponent.operations import (
 )
 from rascil.processing_components.visibility import copy_visibility
 
-
 log = logging.getLogger("rascil-logger")
 
 log.setLevel(logging.WARNING)
@@ -39,7 +38,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 class TestImagingNG(unittest.TestCase):
     def setUp(self):
 
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

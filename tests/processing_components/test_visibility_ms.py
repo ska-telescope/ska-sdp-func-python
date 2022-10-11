@@ -2,21 +2,18 @@
 
 
 """
-import sys
-import unittest
 import logging
 import shutil
+import sys
+import unittest
 
 import numpy
 
-from rascil.data_models import rascil_path, rascil_data_path, Visibility
+from rascil.data_models import Visibility
+from rascil.processing_components.parameters import rascil_path, rascil_data_path
 from rascil.processing_components.visibility.base import (
     create_visibility_from_ms,
-    create_visibility_from_ms,
     export_visibility_to_ms,
-)
-from rascil.processing_components.visibility.operations import (
-    integrate_visibility_by_channel,
 )
 
 log = logging.getLogger("rascil-logger")

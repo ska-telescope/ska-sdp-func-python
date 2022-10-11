@@ -7,15 +7,15 @@ import sys
 import unittest
 
 import astropy.units as u
+import matplotlib
 import numpy
 from astropy.coordinates import SkyCoord
-
-import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from rascil.data_models import PolarisationFrame, rascil_path
+from rascil.processing_components.parameters import rascil_path
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.simulation import (
     create_named_configuration,
     select_configuration,
@@ -46,7 +46,7 @@ CONFIG_SKIP = [
 
 class TestPlotConfigurations(unittest.TestCase):
     def setUp(self):
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

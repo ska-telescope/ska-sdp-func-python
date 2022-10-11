@@ -4,14 +4,13 @@
 import functools
 import logging
 import os
-import sys
 import unittest
 
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     export_image_to_fits,
     smooth_image,
@@ -21,6 +20,7 @@ from rascil.processing_components.griddata.kernels import (
     create_awterm_convolutionfunction,
 )
 from rascil.processing_components.imaging import dft_skycomponent_visibility
+from rascil.processing_components.imaging.imaging_helpers import sum_invert_results
 from rascil.processing_components.simulation import (
     create_named_configuration,
     decimate_configuration,
@@ -47,7 +47,6 @@ from rascil.workflows.rsexecute.imaging.imaging_rsexecute import (
     sum_invert_results_rsexecute,
     restore_list_rsexecute_workflow,
 )
-from rascil.processing_components.imaging.imaging_helpers import sum_invert_results
 
 log = logging.getLogger("rascil-logger")
 
@@ -59,7 +58,7 @@ class TestImaging(unittest.TestCase):
 
         rsexecute.set_client(use_dask=True)
 
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

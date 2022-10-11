@@ -2,9 +2,10 @@
 
 
 """
-import unittest
-import numpy
 import logging
+import unittest
+
+import numpy
 
 from rascil.processing_components.util.array_functions import (
     average_chunks,

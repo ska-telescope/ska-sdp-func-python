@@ -4,16 +4,16 @@
 import logging
 import os
 import unittest
+
 import numpy
 
-from rascil.data_models.parameters import rascil_path, rascil_data_path
+from rascil.processing_components import fft_image_to_griddata
+from rascil.processing_components.parameters import rascil_path, rascil_data_path
+from rascil.processing_components.simulation.testing_support import create_test_image
 from rascil.processing_components.xarray.operations import (
     import_xarray_from_fits,
     export_xarray_to_fits,
 )
-from rascil.processing_components.simulation.testing_support import create_test_image
-
-from rascil.processing_components import fft_image_to_griddata
 
 log = logging.getLogger("rascil-logger")
 

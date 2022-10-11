@@ -10,17 +10,16 @@ import numpy
 from astropy.coordinates import SkyCoord
 
 from rascil.data_models.memory_data_models import SkyComponent
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
+from rascil.processing_components import create_image
 from rascil.processing_components.imaging.primary_beams import (
     create_vp_generic_numeric,
-    create_vp,
 )
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation.surface import (
     simulate_gaintable_from_zernikes,
 )
 from rascil.processing_components.visibility.base import create_visibility
-from rascil.processing_components import create_image
 
 log = logging.getLogger("rascil-logger")
 
@@ -34,7 +33,9 @@ class TestSurface(unittest.TestCase):
 
         self.rng = default_rng(1805550721)
 
-        from rascil.data_models.parameters import rascil_path, rascil_data_path
+        from rascil.processing_components.parameters import (
+            rascil_path,
+        )
 
         self.doplot = True
 

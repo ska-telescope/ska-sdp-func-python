@@ -11,13 +11,12 @@ import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.parameters import rascil_path
 from rascil.processing_components import (
     create_image,
     qa_image,
 )
-from rascil.workflows import sum_invert_results_rsexecute
 from rascil.processing_components.imaging.imaging_helpers import sum_invert_results
+from rascil.workflows import sum_invert_results_rsexecute
 from rascil.workflows.rsexecute.execution_support.rsexecute import rsexecute
 
 log = logging.getLogger("rascil-logger")

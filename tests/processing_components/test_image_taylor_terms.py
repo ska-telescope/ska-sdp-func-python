@@ -7,18 +7,16 @@ import unittest
 
 import numpy
 
-from rascil.processing_components.image.taylor_terms import (
-    calculate_image_list_frequency_moments,
-    calculate_image_list_from_frequency_taylor_terms,
-    calculate_image_frequency_moments,
-    calculate_image_from_frequency_taylor_terms,
-    calculate_frequency_taylor_terms_from_image_list,
-)
 from rascil.processing_components import (
     create_empty_image_like,
     image_scatter_channels,
 )
 from rascil.processing_components.image.operations import export_image_to_fits
+from rascil.processing_components.image.taylor_terms import (
+    calculate_image_frequency_moments,
+    calculate_image_from_frequency_taylor_terms,
+    calculate_frequency_taylor_terms_from_image_list,
+)
 from rascil.processing_components.simulation import (
     create_test_image,
     create_low_test_image_from_gleam,
@@ -32,7 +30,7 @@ log.setLevel(logging.WARNING)
 class TestImage(unittest.TestCase):
     def setUp(self):
 
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

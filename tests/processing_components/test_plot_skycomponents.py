@@ -14,21 +14,19 @@ Output files:
     test_plot_skycomponents_spec_index.png
 """
 import logging
-import unittest
-import sys
 import os
-import glob
+import sys
+import unittest
 
 import astropy.units as u
+import matplotlib
 import numpy
 from astropy.coordinates import SkyCoord
 
-import matplotlib
-
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 from numpy.testing import assert_array_almost_equal
-from rascil.data_models import PolarisationFrame, rascil_path, rascil_data_path
+from rascil.processing_components.parameters import rascil_path
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.simulation import (
     create_low_test_skycomponents_from_gleam,
     addnoise_skycomponent,

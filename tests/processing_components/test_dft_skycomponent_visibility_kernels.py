@@ -10,7 +10,7 @@ import numpy
 from astropy.coordinates import SkyCoord
 
 from rascil.data_models.memory_data_models import SkyComponent
-from rascil.data_models.polarisation import PolarisationFrame
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import create_named_configuration, qa_visibility
 from rascil.processing_components.imaging.dft import dft_skycomponent_visibility
 from rascil.processing_components.visibility.base import create_visibility
@@ -60,8 +60,6 @@ class TestVisibilityDFTOperationsKernels(unittest.TestCase):
 
         self.init(ntimes=2, nchan=10, ncomp=100)
         for dft_compute_kernel in compute_kernels:
-            import time
-
             # start = time.time()
             vis[dft_compute_kernel] = create_visibility(
                 self.lowcore,

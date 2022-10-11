@@ -2,12 +2,11 @@
 Data path testing
 """
 import os
+from unittest.mock import patch
 
 import pytest
 
-from unittest.mock import patch
-
-from rascil.data_models.parameters import rascil_path, rascil_data_path
+from rascil.processing_components.parameters import rascil_path, rascil_data_path
 from rascil.processing_components.util.installation_checks import check_data_directory
 
 
@@ -16,7 +15,7 @@ def test_rascil_data_path():
     assert "data/configurations" in result
 
 
-@patch("rascil.data_models.parameters.rascil_path")
+@patch("rascil.processing_components.parameters.rascil_path")
 def test_rascil_data_path_not_exist(mock_path):
     """
     When the path we check doesn't exist, the code raises
@@ -34,7 +33,7 @@ def test_rascil_data_path_not_exist(mock_path):
             rascil_data_path("configurations")
 
 
-@patch("rascil.data_models.parameters.rascil_path")
+@patch("rascil.processing_components.parameters.rascil_path")
 def test_check_data_directory_data_dir_not_exist_fatal_true(mock_path):
     """
     When the data directory doesn't exist, and fatal key is True,
@@ -50,7 +49,7 @@ def test_check_data_directory_data_dir_not_exist_fatal_true(mock_path):
     assert str(error.value) == "The RASCIL data directory is not available - stopping"
 
 
-@patch("rascil.data_models.parameters.rascil_path")
+@patch("rascil.processing_components.parameters.rascil_path")
 def test_check_data_directory_data_dir_not_exist_fatal_false(mock_path):
     """
     When the data directory doesn't exist, and fatal key is False,

@@ -1,17 +1,17 @@
 """ Test for rascil_sensitivity
 
 """
-import os
 import logging
-import numpy
-import pandas as pd
+import os
 import subprocess
 import tempfile
 
+import numpy
+import pandas as pd
 import pytest
 
-from rascil.data_models import rascil_path
 from rascil.apps.rascil_sensitivity import cli_parser, calculate_sensitivity
+from rascil.processing_components.parameters import rascil_path
 
 log = logging.getLogger("rascil-logger")
 log.setLevel(logging.WARNING)

@@ -10,22 +10,20 @@ import numpy
 from astropy.coordinates import SkyCoord
 
 from rascil.data_models.memory_data_models import SkyComponent
-from rascil.data_models.polarisation import PolarisationFrame
-from rascil.processing_components.calibration.solvers import solve_gaintable
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.calibration.operations import (
     apply_gaintable,
     create_gaintable_from_visibility,
     gaintable_summary,
-    qa_gaintable,
 )
+from rascil.processing_components.calibration.solvers import solve_gaintable
 from rascil.processing_components.imaging import dft_skycomponent_visibility
-from rascil.processing_components.simulation import simulate_gaintable
 from rascil.processing_components.simulation import create_named_configuration
+from rascil.processing_components.simulation import simulate_gaintable
 from rascil.processing_components.visibility.base import (
     copy_visibility,
     create_visibility,
 )
-from rascil.processing_components.visibility.operations import divide_visibility
 
 log = logging.getLogger("rascil-logger")
 

@@ -9,8 +9,8 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation import PolarisationFrame
-from rascil.data_models.data_model_helpers import export_skycomponent_to_hdf5
+from rascil.data_models.data_convert_persist import export_skycomponent_to_hdf5
+from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import create_image, export_image_to_fits
 from rascil.processing_components import (
     insert_skycomponent,
@@ -30,7 +30,7 @@ class TestFitSkyComponent(unittest.TestCase):
 
         self.persist = os.getenv("RASCIL_PERSIST", False)
 
-        from rascil.data_models.parameters import rascil_path
+        from rascil.processing_components.parameters import rascil_path
 
         self.lowcore = create_named_configuration("LOWBD2-CORE")
         self.results_dir = rascil_path("test_results")
