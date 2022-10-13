@@ -97,8 +97,7 @@ class measurementset_tests(unittest.TestCase):
 
         model = create_image_from_visibility(vt, cellsize=cellsize, npixel=512)
         dirty_before, sumwt = invert_visibility(vt, model, context="2d")
-        export_to_fits(
-            dirty_before,
+        dirty_before.export_to_fits(
             "{dir}/test_roundtrip_dirty_before.fits".format(dir=results_dir),
         )
 
@@ -119,14 +118,14 @@ class measurementset_tests(unittest.TestCase):
         # Make the dirty image and point spread function
         model = create_image_from_visibility(vt_after, cellsize=cellsize, npixel=512)
         dirty_after, sumwt = invert_visibility(vt_after, model, context="2d")
-        export_to_fits(
-            dirty_after, "{dir}/test_roundtrip_dirty_after.fits".format(dir=results_dir)
+        dirty_after.export_to_fits(
+            "{dir}/test_roundtrip_dirty_after.fits".format(dir=results_dir)
         )
 
         # print("After: Max, min in dirty image = %.6f, %.6f, sumwt = %f" %
         #      (dirty_after.data.max(), dirty_after.data.min(), sumwt))
 
-        # export_to_fits(dirty_after, '%s/imaging_dirty_after.fits' % (results_dir))
+        # dirty_after.export_to_fits('%s/imaging_dirty_after.fits' % (results_dir))
 
         error = numpy.max(
             numpy.abs(dirty_after["pixels"].data - dirty_before["pixels"].data)

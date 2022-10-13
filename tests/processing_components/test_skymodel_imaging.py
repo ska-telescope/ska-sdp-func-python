@@ -190,8 +190,7 @@ class TestSkyModel(unittest.TestCase):
             flat_sky=False,
         )
         if self.persist:
-            export_to_fits(
-                dirty,
+            dirty.export_to_fits(
                 "%s/test_skymodel_invert_dirty.fits" % (self.results_dir),
             )
         qa = dirty.qa_image()

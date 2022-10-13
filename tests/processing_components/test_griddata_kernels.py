@@ -223,8 +223,8 @@ class TestGridDataKernels(unittest.TestCase):
         )
         pb = make_pb(self.image)
         if self.persist:
-            export_to_fits(
-                pb, "%s/test_convolutionfunction_aterm_pb.fits" % self.results_dir
+            pb.export_to_fits(
+                "%s/test_convolutionfunction_aterm_pb.fits" % self.results_dir
             )
         gcf, cf = create_awterm_convolutionfunction(
             self.image,
@@ -237,8 +237,8 @@ class TestGridDataKernels(unittest.TestCase):
             polarisation_frame=PolarisationFrame("linear"),
         )
         if self.persist:
-            export_to_fits(
-                gcf, "%s/test_convolutionfunction_aterm_gcf.fits" % self.results_dir
+            gcf.export_to_fits(
+                "%s/test_convolutionfunction_aterm_gcf.fits" % self.results_dir
             )
             export_convolutionfunction_to_fits(
                 cf, "%s/test_convolutionfunction_aterm_cf.fits" % self.results_dir

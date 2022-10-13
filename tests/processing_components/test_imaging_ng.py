@@ -122,12 +122,12 @@ class TestImagingNG(unittest.TestCase):
 
         self.cmodel = smooth_image(self.model)
         if self.persist:
-            export_to_fits(
-                self.model, "%s/test_imaging_ng_model.fits" % self.results_dir
+            self.model.export_to_fits(
+                "%s/test_imaging_ng_model.fits" % self.results_dir
             )
         if self.persist:
-            export_to_fits(
-                self.cmodel, "%s/test_imaging_ng_cmodel.fits" % self.results_dir
+            self.cmodel.export_to_fits(
+                "%s/test_imaging_ng_cmodel.fits" % self.results_dir
             )
 
         if mfs:
@@ -190,8 +190,7 @@ class TestImagingNG(unittest.TestCase):
         #     plt.show(block=False)
 
         if self.persist:
-            export_to_fits(
-                dirty[0],
+            dirty[0].export_to_fits(
                 "%s/test_imaging_ng_%s_residual.fits" % (self.results_dir, name),
             )
 
@@ -224,8 +223,8 @@ class TestImagingNG(unittest.TestCase):
         )
 
         if self.persist:
-            export_to_fits(
-                dirty[0], "%s/test_imaging_ng_%s_dirty.fits" % (self.results_dir, name)
+            dirty[0].export_to_fits(
+                "%s/test_imaging_ng_%s_dirty.fits" % (self.results_dir, name)
             )
 
         # import matplotlib.pyplot as plt

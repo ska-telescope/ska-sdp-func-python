@@ -79,8 +79,8 @@ class TestVPGridDataKernels(unittest.TestCase):
         assert numpy.abs(v_peak) < 1e-7, u_peak
 
         if self.persist:
-            export_to_fits(
-                gcf, "%s/test_convolutionfunction_aterm_vp_gcf.fits" % self.results_dir
+            gcf.export_to_fits(
+                "%s/test_convolutionfunction_aterm_vp_gcf.fits" % self.results_dir
             )
 
 

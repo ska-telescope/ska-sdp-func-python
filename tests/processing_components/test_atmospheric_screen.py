@@ -205,8 +205,7 @@ class TestAtmosphericScreen(unittest.TestCase):
                 rascil_path("test_results/test_mpc_screen_gridded.fits")
             )
         if self.persist:
-            export_to_fits(
-                weights,
+            weights.export_to_fits(
                 rascil_path("test_results/test_mpc_screen_gridded_weights.fits"),
             )
 

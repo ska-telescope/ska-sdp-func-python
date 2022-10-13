@@ -98,8 +98,8 @@ class TestImage(unittest.TestCase):
             self.m31image.image_acc.polarisation_frame,
             clean_beam,
         )
-        export_to_fits(
-            m31model_by_array, fitsfile="%s/test_model.fits" % (self.results_dir)
+        m31model_by_array.export_to_fits(
+            fitsfile="%s/test_model.fits" % (self.results_dir)
         )
         m31image_by_fits = import_image_from_fits(
             fitsfile="%s/test_model.fits" % (self.results_dir)
@@ -272,7 +272,7 @@ class TestImage(unittest.TestCase):
                     im["pixels"].data[0, 0, y, x], -0.46042631800538464, 7
                 )
         if self.persist:
-            export_to_fits(im, "%s/test_wterm.fits" % self.results_dir)
+            im.export_to_fits("%s/test_wterm.fits" % self.results_dir)
         assert im["pixels"].data.shape == (5, 4, 1024, 1024), im["pixels"].data.shape
         self.assertAlmostEqual(numpy.max(im["pixels"].real), 1.0, 7)
 
@@ -281,8 +281,8 @@ class TestImage(unittest.TestCase):
         m31_fft_ifft = ifft_griddata_to_image(m31_fft, self.m31image)
         m31_fft_ifft["pixels"] = m31_fft_ifft["pixels"].real
         if self.persist:
-            export_to_fits(
-                m31_fft_ifft, fitsfile="%s/test_m31_fft_fft.fits" % (self.results_dir)
+            m31_fft_ifft.export_to_fits(
+                fitsfile="%s/test_m31_fft_fft.fits" % (self.results_dir)
             )
         err = numpy.max(
             numpy.abs(self.m31image["pixels"].data - m31_fft_ifft["pixels"].data)
@@ -304,8 +304,7 @@ class TestImage(unittest.TestCase):
             assert err < 1e-7, err
             padded_fft["pixels"].data = numpy.abs(padded_fft["pixels"].data)
             if self.persist:
-                export_to_fits(
-                    padded_fft,
+                padded_fft.export_to_fits(
                     fitsfile="%s/test_m31_fft_%d.fits" % (self.results_dir, npixel),
                 )
 
@@ -332,7 +331,7 @@ class TestImage(unittest.TestCase):
         if self.persist:
             vp["pixels"].data = vp["pixels"].data.real
             fitsfile = "{}/test_vp_rotate_real.fits".format(self.results_dir)
-            export_to_fits(vp, fitsfile=fitsfile)
+            vp.export_to_fits(fitsfile=fitsfile)
 
     def test_apply_voltage_pattern(self):
 
@@ -354,12 +353,12 @@ class TestImage(unittest.TestCase):
             fitsfile = "{}/test_apply_voltage_pattern_real.fits".format(
                 self.results_dir
             )
-            export_to_fits(applied, fitsfile=fitsfile)
+            applied.export_to_fits(fitsfile=fitsfile)
             unapplied["pixels"].data = unapplied["pixels"].data.real
             fitsfile = "{}/test_apply_voltage_pattern_inv_real.fits".format(
                 self.results_dir
             )
-            export_to_fits(unapplied, fitsfile=fitsfile)
+            unapplied.export_to_fits(fitsfile=fitsfile)
 
         err = numpy.max(numpy.abs(unapplied["pixels"].data - padded["pixels"].data))
         assert err < 1e-12, err

@@ -167,7 +167,7 @@ class TestSkyComponentInsert(unittest.TestCase):
         self.vis = dft_skycomponent_visibility(self.vis, self.sc)
         im, sumwt = invert_visibility(self.vis, self.model, context="2d")
         if self.persist:
-            export_to_fits(im, "%s/test_skycomponent_dft.fits" % self.results_dir)
+            im.export_to_fits("%s/test_skycomponent_dft.fits" % self.results_dir)
         assert numpy.max(numpy.abs(self.vis.vis.imag)) < 1e-3
 
     def test_insert_skycomponent_nearest(self):

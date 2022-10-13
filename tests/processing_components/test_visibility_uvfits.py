@@ -93,8 +93,8 @@ class TestCreateMS(unittest.TestCase):
                 show_image(dirty)
                 plt.show(block=False)
             if self.persist:
-                export_to_fits(
-                    dirty, "%s/test_visibility_uvfits_dirty.fits" % self.results_dir
+                dirty.export_to_fits(
+                    "%s/test_visibility_uvfits_dirty.fits" % self.results_dir
                 )
 
             if schan == 0:

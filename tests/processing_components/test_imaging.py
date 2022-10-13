@@ -596,8 +596,8 @@ class TestImaging2D(unittest.TestCase):
         error = numpy.max(psf[0]["pixels"].data) - 1.0
         assert abs(error) < 1.0e-12, error
         if self.persist:
-            export_to_fits(
-                psf[0], "%s/test_imaging_visibility_psf.fits" % self.results_dir
+            psf[0].export_to_fits(
+                "%s/test_imaging_visibility_psf.fits" % self.results_dir
             )
 
         assert numpy.max(numpy.abs(psf[0]["pixels"].data)), "Image is empty"
@@ -610,8 +610,7 @@ class TestImaging2D(unittest.TestCase):
             error = numpy.max(psf[0]["pixels"].data) - 1.0
             assert abs(error) < 1.0e-12, error
             if self.persist:
-                export_to_fits(
-                    psf[0],
+                psf[0].export_to_fits(
                     "%s/test_imaging_visibility_psf_%s.fits"
                     % (self.results_dir, weighting),
                 )

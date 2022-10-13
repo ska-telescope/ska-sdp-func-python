@@ -85,8 +85,7 @@ class TestImageDeconvolutionMSMFS(unittest.TestCase):
             )
         self.test_model["pixels"].data *= beam["pixels"].data
         if self.persist:
-            export_to_fits(
-                self.test_model,
+            self.test_model.export_to_fits(
                 "%s/test_deconvolve_mmclean_model.fits" % self.results_dir,
             )
         self.vis = predict_visibility(self.vis, self.test_model, context="2d")
@@ -104,12 +103,12 @@ class TestImageDeconvolutionMSMFS(unittest.TestCase):
             self.vis, self.model, context="2d", dopsf=True
         )
         if self.persist:
-            export_to_fits(
-                self.dirty, "%s/test_deconvolve_mmclean-dirty.fits" % self.results_dir
+            self.dirty.export_to_fits(
+                "%s/test_deconvolve_mmclean-dirty.fits" % self.results_dir
             )
         if self.persist:
-            export_to_fits(
-                self.psf, "%s/test_deconvolve_mmclean-psf.fits" % self.results_dir
+            self.psf.export_to_fits(
+                "%s/test_deconvolve_mmclean-psf.fits" % self.results_dir
             )
         self.dirty = image_scatter_channels(self.dirty)
         self.psf = image_scatter_channels(self.psf)
@@ -218,8 +217,7 @@ class TestImageDeconvolutionMSMFS(unittest.TestCase):
         )
         if self.persist:
             sensitivity = image_gather_channels(self.sensitivity)
-            export_to_fits(
-                sensitivity,
+            sensitivity.export_to_fits(
                 "%s/test_deconvolve_mmclean_linear_sensitivity.fits" % self.results_dir,
             )
         self.cmodel = restore_list(self.comp, self.psf, self.residual)
@@ -293,17 +291,14 @@ class TestImageDeconvolutionMSMFS(unittest.TestCase):
         cmodel = image_gather_channels(self.cmodel)
         if self.persist:
             comp = image_gather_channels(self.comp)
-            export_to_fits(
-                comp,
+            comp.export_to_fits(
                 f"{self.results_dir}/test_deconvolve_{tag}_deconvolved.fits",
             )
             residual = image_gather_channels(self.residual)
-            export_to_fits(
-                residual,
+            residual.export_to_fits(
                 f"{self.results_dir}/test_deconvolve_{tag}_residual.fits",
             )
-            export_to_fits(
-                cmodel,
+            cmodel.export_to_fits(
                 f"{self.results_dir}/test_deconvolve_{tag}_restored.fits",
             )
         qa = cmodel.qa_image()
