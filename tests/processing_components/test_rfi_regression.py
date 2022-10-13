@@ -14,8 +14,6 @@ from astropy.coordinates import SkyCoord
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_visibility,
-    qa_image,
-    export_image_to_fits,
     create_image_from_visibility,
     invert_ng,
 )
@@ -114,11 +112,10 @@ class TestRFIRegression(unittest.TestCase):
         dirty, sumwt = invert_ng(bvis, model)
         dirty["pixels"].data[numpy.abs(dirty["pixels"].data) > 1e6] = 0.0
         if self.persist:
-            export_image_to_fits(
-                dirty,
+            dirty.export_to_fits(
                 rascil_path(f"test_results/test_rfi_image_withPBTrue.fits"),
             )
-        qa = qa_image(dirty)
+        qa = dirty.qa_image()
 
         numpy.testing.assert_approx_equal(
             qa.data["max"],
@@ -154,11 +151,10 @@ class TestRFIRegression(unittest.TestCase):
         dirty, sumwt = invert_ng(bvis, model)
         dirty["pixels"].data[numpy.abs(dirty["pixels"].data) > 1e6] = 0.0
         if self.persist:
-            export_image_to_fits(
-                dirty,
+            dirty.export_to_fits(
                 rascil_path(f"test_results/test_rfi_image_withPBFalse.fits"),
             )
-        qa = qa_image(dirty)
+        qa = dirty.qa_image()
 
         numpy.testing.assert_approx_equal(
             qa.data["max"], 999979.7305620918, 8, err_msg=str(qa)

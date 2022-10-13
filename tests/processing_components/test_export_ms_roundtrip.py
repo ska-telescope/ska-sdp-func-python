@@ -11,7 +11,6 @@ from astropy.coordinates import SkyCoord
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_visibility,
-    export_image_to_fits,
     create_named_configuration,
     create_test_image,
     create_image_from_visibility,
@@ -19,6 +18,7 @@ from rascil.processing_components import (
     export_visibility_to_ms,
     create_visibility_from_ms,
 )
+
 from rascil.processing_components.imaging.imaging import (
     predict_visibility,
     invert_visibility,
@@ -97,7 +97,7 @@ class measurementset_tests(unittest.TestCase):
 
         model = create_image_from_visibility(vt, cellsize=cellsize, npixel=512)
         dirty_before, sumwt = invert_visibility(vt, model, context="2d")
-        export_image_to_fits(
+        export_to_fits(
             dirty_before,
             "{dir}/test_roundtrip_dirty_before.fits".format(dir=results_dir),
         )
@@ -119,14 +119,14 @@ class measurementset_tests(unittest.TestCase):
         # Make the dirty image and point spread function
         model = create_image_from_visibility(vt_after, cellsize=cellsize, npixel=512)
         dirty_after, sumwt = invert_visibility(vt_after, model, context="2d")
-        export_image_to_fits(
+        export_to_fits(
             dirty_after, "{dir}/test_roundtrip_dirty_after.fits".format(dir=results_dir)
         )
 
         # print("After: Max, min in dirty image = %.6f, %.6f, sumwt = %f" %
         #      (dirty_after.data.max(), dirty_after.data.min(), sumwt))
 
-        # export_image_to_fits(dirty_after, '%s/imaging_dirty_after.fits' % (results_dir))
+        # export_to_fits(dirty_after, '%s/imaging_dirty_after.fits' % (results_dir))
 
         error = numpy.max(
             numpy.abs(dirty_after["pixels"].data - dirty_before["pixels"].data)

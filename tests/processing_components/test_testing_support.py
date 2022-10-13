@@ -12,7 +12,7 @@ import numpy
 from astropy.coordinates import SkyCoord
 
 from rascil.data_models.polarisation_data_models import PolarisationFrame
-from rascil.processing_components.image.operations import export_image_to_fits
+
 from rascil.processing_components.imaging.primary_beams import create_low_test_beam
 from rascil.processing_components.simulation import (
     create_named_configuration,
@@ -111,8 +111,8 @@ class TestTesting_Support(unittest.TestCase):
         assert im["pixels"].data.shape[2] == 256
         assert im["pixels"].data.shape[3] == 256
         if self.persist:
-            export_image_to_fits(
-                im, "%s/test_test_support_low_gleam.fits" % (self.results_dir)
+            im.export_to_fits(
+                "%s/test_test_support_low_gleam.fits" % (self.results_dir)
             )
 
         comp = sm.components
@@ -135,8 +135,8 @@ class TestTesting_Support(unittest.TestCase):
         assert im["pixels"].data.shape[2] == 256
         assert im["pixels"].data.shape[3] == 256
         if self.persist:
-            export_image_to_fits(
-                im, "%s/test_test_support_low_gleam.fits" % (self.results_dir)
+            im.export_to_fits(
+                "%s/test_test_support_low_gleam.fits" % (self.results_dir)
             )
 
     def test_create_low_test_image_from_gleam_with_pb(self):
@@ -155,8 +155,8 @@ class TestTesting_Support(unittest.TestCase):
         assert im["pixels"].data.shape[2] == 256
         assert im["pixels"].data.shape[3] == 256
         if self.persist:
-            export_image_to_fits(
-                im, "%s/test_test_support_low_gleam_with_pb.fits" % (self.results_dir)
+            im.export_to_fits(
+                "%s/test_test_support_low_gleam_with_pb.fits" % (self.results_dir)
             )
 
     def test_create_low_test_skycomponents_from_gleam(self):
@@ -215,9 +215,7 @@ class TestTesting_Support(unittest.TestCase):
         assert im["pixels"].data.shape[2] == 1024
         assert im["pixels"].data.shape[3] == 1024
         if self.persist:
-            export_image_to_fits(
-                im, "%s/test_test_support_low_s3.fits" % (self.results_dir)
-            )
+            im.export_to_fits("%s/test_test_support_low_s3.fits" % (self.results_dir))
 
     def test_create_test_image_from_s3_mid(self):
         im = create_test_image_from_s3(
@@ -232,9 +230,7 @@ class TestTesting_Support(unittest.TestCase):
         assert im["pixels"].data.shape[2] == 1024
         assert im["pixels"].data.shape[3] == 1024
         if self.persist:
-            export_image_to_fits(
-                im, "%s/test_test_support_mid_s3.fits" % (self.results_dir)
-            )
+            im.export_to_fits("%s/test_test_support_mid_s3.fits" % (self.results_dir))
 
     def test_create_test_image_s3_spectral(self):
         im = create_test_image_from_s3(
@@ -264,9 +260,7 @@ class TestTesting_Support(unittest.TestCase):
         assert im["pixels"].data.shape[2] == 1024
         assert im["pixels"].data.shape[3] == 1024
         if self.persist:
-            export_image_to_fits(
-                im, "%s/test_test_support_low_s3.fits" % (self.results_dir)
-            )
+            export_to_fits(im, "%s/test_test_support_low_s3.fits" % (self.results_dir))
 
     def test_create_low_test_beam(self):
         im = create_test_image(
@@ -278,7 +272,7 @@ class TestTesting_Support(unittest.TestCase):
         )
         bm = create_low_test_beam(model=im)
         if self.persist:
-            export_image_to_fits(
+            export_to_fits(
                 bm, "%s/test_test_support_low_beam.fits" % (self.results_dir)
             )
 

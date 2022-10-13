@@ -25,7 +25,6 @@ from rascil.apps.imaging_qa_main import (
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image import (
     create_image,
-    export_image_to_fits,
 )
 from rascil.processing_components.imaging.primary_beams import (
     create_pb,
@@ -148,7 +147,7 @@ class TestCIChecker(unittest.TestCase):
         sensitivity_image = (
             self.results_dir + "/test_imaging_qa_functions_sensitivity.fits"
         )
-        export_image_to_fits(self.pb_mid, sensitivity_image)
+        self.pb_mid.export_to_fits(sensitivity_image)
 
         reversed_comp = correct_primary_beam(
             None, sensitivity_image, self.components_with_pb_mid, "MID"
@@ -161,7 +160,7 @@ class TestCIChecker(unittest.TestCase):
 
     def test_correct_primary_beam_restored_mid(self):
 
-        export_image_to_fits(self.multi_chan_image, self.restored_image_multi)
+        self.multi_chan_image.export_to_fits(self.restored_image_multi)
         # Test using restored image
         reversed_comp_rest = correct_primary_beam(
             self.restored_image_multi,
@@ -179,7 +178,7 @@ class TestCIChecker(unittest.TestCase):
 
     def test_correct_primary_beam_restored_low(self):
 
-        export_image_to_fits(self.multi_chan_image, self.restored_image_multi)
+        self.multi_chan_image.export_to_fits(self.restored_image_multi)
         # Test using restored image
         reversed_comp_rest = correct_primary_beam(
             self.restored_image_multi,
@@ -278,7 +277,7 @@ class TestCIChecker(unittest.TestCase):
         self.args.ingest_fitsname_restored = self.restored_image_multi
         self.args.restart = "False"
 
-        export_image_to_fits(self.multi_chan_image, self.restored_image_multi)
+        self.multi_chan_image.export_to_fits(self.restored_image_multi)
 
         result = analyze_image(self.args)
 

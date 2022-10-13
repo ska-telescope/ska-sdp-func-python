@@ -12,7 +12,7 @@ rascil_image_check
 rascil_image_check is a command line app written using RASCIL. It allows simple
 check on an image statistics.
 
-The allowed fields are the statistics checked by :py:func:`rascil.processing_components.image.operations.qa_image`
+The allowed fields are the statistics checked by qa_image function within the Image class
 
 Example script
 ++++++++++++++

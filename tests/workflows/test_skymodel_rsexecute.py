@@ -18,11 +18,10 @@ from rascil.processing_components import (
     ingest_unittest_visibility,
     create_low_test_skymodel_from_gleam,
     calculate_visibility_parallactic_angles,
-    qa_image,
     create_low_test_beam,
     convert_azelvp_to_radec,
-    export_image_to_fits,
 )
+
 from rascil.workflows.rsexecute.execution_support.rsexecute import rsexecute
 from rascil.workflows.rsexecute.skymodel.skymodel_rsexecute import (
     predict_skymodel_list_rsexecute_workflow,
@@ -238,16 +237,14 @@ class TestSkyModel(unittest.TestCase):
         )
         skymodel_list = rsexecute.compute(skymodel_list, sync=True)
         if self.persist:
-            export_image_to_fits(
-                skymodel_list[0][0],
+            skymodel_list[0][0].export_to_fits(
                 "%s/test_skymodel_invert_flat_noise_dirty.fits" % (self.results_dir),
             )
-            export_image_to_fits(
-                skymodel_list[0][1],
+            skymodel_list[0][1].export_to_fits(
                 "%s/test_skymodel_invert_flat_noise_sensitivity.fits"
                 % (self.results_dir),
             )
-        qa = qa_image(skymodel_list[0][0])
+        qa = skymodel_list[0][0].qa_image()
 
         numpy.testing.assert_allclose(
             qa.data["max"], 3.7166391470621285, atol=1e-7, err_msg=f"{qa}"
@@ -266,16 +263,14 @@ class TestSkyModel(unittest.TestCase):
         )
         skymodel_list = rsexecute.compute(skymodel_list, sync=True)
         if self.persist:
-            export_image_to_fits(
-                skymodel_list[0][0],
+            skymodel_list[0][0].export_to_fits(
                 "%s/test_skymodel_invert_flat_sky_dirty.fits" % (self.results_dir),
             )
-            export_image_to_fits(
-                skymodel_list[0][0],
+            skymodel_list[0][0].export_to_fits(
                 "%s/test_skymodel_invert_flat_sky_sensitivity.fits"
                 % (self.results_dir),
             )
-        qa = qa_image(skymodel_list[0][0])
+        qa = skymodel_list[0][0].qa_image()
 
         numpy.testing.assert_allclose(
             qa.data["max"], 3.970861986801607, atol=1e-7, err_msg=f"{qa}"

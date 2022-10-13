@@ -31,7 +31,8 @@ from rascil.processing_components.simulation import (
     create_low_test_skycomponents_from_gleam,
     addnoise_skycomponent,
 )
-from rascil.processing_components.image import create_image, export_image_to_fits
+from rascil.processing_components.image import create_image
+
 from rascil.processing_components.skycomponent.operations import restore_skycomponent
 from rascil.processing_components.skycomponent.plot_skycomponent import (
     plot_skycomponents_positions,
@@ -92,8 +93,8 @@ class TestPlotSkyComponent(unittest.TestCase):
             self.model, self.components, clean_beam=self.clean_beam
         )
         if self.persist:
-            export_image_to_fits(
-                self.model, self.results_dir + "/test_plot_skycomponents_model.fits"
+            self.model.export_to_fits(
+                self.results_dir + "/test_plot_skycomponents_model.fits"
             )
 
         self.noise = 1.0e-6

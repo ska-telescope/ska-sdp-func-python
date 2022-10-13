@@ -7,7 +7,6 @@ import unittest
 
 from rascil.processing_components.image.gradients import image_gradients
 from rascil.processing_components.image.operations import (
-    export_image_to_fits,
     show_image,
     import_image_from_fits,
 )
@@ -55,11 +54,11 @@ class TestGradients(unittest.TestCase):
             show_image(grady, title="grady")
             plt.show(block=False)
         if self.persist:
-            export_image_to_fits(
-                gradx, "%s/test_image_gradients_gradx.fits" % (self.results_dir)
+            gradx.export_to_fits(
+                "%s/test_image_gradients_gradx.fits" % (self.results_dir)
             )
-            export_image_to_fits(
-                grady, "%s/test_image_gradients_grady.fits" % (self.results_dir)
+            grady.export_to_fits(
+                "%s/test_image_gradients_grady.fits" % (self.results_dir)
             )
 
         if self.show:
@@ -78,17 +77,17 @@ class TestGradients(unittest.TestCase):
             show_image(gradyy, title="gradyy")
             plt.show(block=False)
         if self.persist:
-            export_image_to_fits(
-                gradxx, "%s/test_image_gradients_gradxx.fits" % (self.results_dir)
+            gradxx.export_to_fits(
+                "%s/test_image_gradients_gradxx.fits" % (self.results_dir)
             )
-            export_image_to_fits(
-                gradxy, "%s/test_image_gradients_gradxy.fits" % (self.results_dir)
+            gradxy.export_to_fits(
+                "%s/test_image_gradients_gradxy.fits" % (self.results_dir)
             )
-            export_image_to_fits(
-                gradyx, "%s/test_image_gradients_gradyx.fits" % (self.results_dir)
+            gradyx.export_to_fits(
+                "%s/test_image_gradients_gradyx.fits" % (self.results_dir)
             )
-            export_image_to_fits(
-                gradyy, "%s/test_image_gradients_gradyy.fits" % (self.results_dir)
+            gradyy.export_to_fits(
+                "%s/test_image_gradients_gradyy.fits" % (self.results_dir)
             )
 
 
