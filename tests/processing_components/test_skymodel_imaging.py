@@ -245,12 +245,10 @@ class TestSkyModel(unittest.TestCase):
             flat_sky=False,
         )
         if self.persist:
-            export_to_fits(
-                skymodel[0],
+            skymodel[0].export_to_fits(
                 "%s/test_skymodel_invert_flat_noise_dirty.fits" % (self.results_dir),
             )
-            export_to_fits(
-                skymodel[1],
+            skymodel[1].export_to_fits(
                 "%s/test_skymodel_invert_flat_noise_sensitivity.fits"
                 % (self.results_dir),
             )
@@ -272,12 +270,10 @@ class TestSkyModel(unittest.TestCase):
             flat_sky=True,
         )
         if self.persist:
-            export_to_fits(
-                skymodel[0],
+            skymodel[0].export_to_fits(
                 "%s/test_skymodel_invert_flat_sky_dirty.fits" % (self.results_dir),
             )
-            export_to_fits(
-                skymodel[1],
+            skymodel[1].export_to_fits(
                 "%s/test_skymodel_invert_flat_sky_sensitivity.fits"
                 % (self.results_dir),
             )
