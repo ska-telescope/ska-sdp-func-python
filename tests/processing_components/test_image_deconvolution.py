@@ -136,8 +136,8 @@ class TestImageDeconvolution(unittest.TestCase):
             self.cmodel["pixels"].data
         )
         if self.persist:
-            export_to_fits(
-                self.cmodel, "%s/test_restore_6mrad_beam.fits" % (self.results_dir)
+            self.cmodel.export_to_fits(
+                "%s/test_restore_6mrad_beam.fits" % (self.results_dir)
             )
 
     def test_restore_skycomponent(self):
@@ -158,8 +158,8 @@ class TestImageDeconvolution(unittest.TestCase):
         self.cmodel = restore_cube(self.model, clean_beam=clean_beam)
         self.cmodel = restore_skycomponent(self.cmodel, sc, clean_beam=clean_beam)
         if self.persist:
-            export_to_fits(
-                self.cmodel, "%s/test_restore_skycomponent.fits" % (self.results_dir)
+            self.cmodel.export_to_fits(
+                "%s/test_restore_skycomponent.fits" % (self.results_dir)
             )
         assert (
             numpy.abs(numpy.max(self.cmodel["pixels"].data) - 0.9959046879055156) < 1e-7
@@ -168,7 +168,7 @@ class TestImageDeconvolution(unittest.TestCase):
     def test_fit_psf(self):
         clean_beam = fit_psf(self.psf)
         if self.persist:
-            export_to_fits(self.psf, "%s/test_fit_psf.fits" % (self.results_dir))
+            self.psf.export_to_fits("%s/test_fit_psf.fits" % (self.results_dir))
         # Sanity check: by eyeball the FHWM = 4 pixels = 0.004 rad = 0.229 deg
         assert numpy.abs(clean_beam["bmaj"] - 0.24790689057765794) < 1.0e-7, clean_beam
         assert numpy.abs(clean_beam["bmin"] - 0.2371401153972545) < 1.0e-7, clean_beam
@@ -204,15 +204,14 @@ class TestImageDeconvolution(unittest.TestCase):
         assert numpy.max(self.residual["pixels"].data) < 1.2
 
     def save_results(self, tag):
-        export_to_fits(
-            self.comp, f"{self.results_dir}/test_deconvolve_{tag}-deconvolved.fits"
+        self.comp.export_to_fits(
+            f"{self.results_dir}/test_deconvolve_{tag}-deconvolved.fits"
         )
-        export_to_fits(
-            self.residual,
+        self.residual.export_to_fits(
             f"{self.results_dir}/test_deconvolve_{tag}-residual.fits",
         )
-        export_to_fits(
-            self.cmodel, f"{self.results_dir}/test_deconvolve_{tag}-restored.fits"
+        self.cmodel.export_to_fits(
+            f"{self.results_dir}/test_deconvolve_{tag}-restored.fits"
         )
 
     def test_deconvolve_msclean_sensitivity(self):

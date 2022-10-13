@@ -260,7 +260,7 @@ class TestTesting_Support(unittest.TestCase):
         assert im["pixels"].data.shape[2] == 1024
         assert im["pixels"].data.shape[3] == 1024
         if self.persist:
-            export_to_fits(im, "%s/test_test_support_low_s3.fits" % (self.results_dir))
+            im.export_to_fits("%s/test_test_support_low_s3.fits" % (self.results_dir))
 
     def test_create_low_test_beam(self):
         im = create_test_image(
@@ -272,9 +272,7 @@ class TestTesting_Support(unittest.TestCase):
         )
         bm = create_low_test_beam(model=im)
         if self.persist:
-            export_to_fits(
-                bm, "%s/test_test_support_low_beam.fits" % (self.results_dir)
-            )
+            bm.export_to_fits("%s/test_test_support_low_beam.fits" % (self.results_dir))
 
         bmshape = bm["pixels"].data.shape
         assert bmshape[0] == 3

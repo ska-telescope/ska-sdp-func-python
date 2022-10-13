@@ -169,8 +169,7 @@ class TestImageGatherScatters(unittest.TestCase):
                         % (self.results_dir, nraster, overlap, taper),
                     )
                 if self.persist:
-                    export_to_fits(
-                        flat,
+                    flat.export_to_fits(
                         "%s/test_image_gather_scatter_%dnraster_%doverlap_%s_flat.fits"
                         % (self.results_dir, nraster, overlap, taper),
                     )

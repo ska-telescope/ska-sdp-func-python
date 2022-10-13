@@ -163,8 +163,8 @@ class TestGridDataKernels(unittest.TestCase):
         )
         pb = make_pb(self.image)
         if self.persist:
-            export_to_fits(
-                pb, "%s/test_convolutionfunction_awterm_pb.fits" % self.results_dir
+            pb.export_to_fits(
+                "%s/test_convolutionfunction_awterm_pb.fits" % self.results_dir
             )
         gcf, cf = create_awterm_convolutionfunction(
             self.image,
@@ -179,8 +179,8 @@ class TestGridDataKernels(unittest.TestCase):
         assert gcf["pixels"].data.dtype == "float", gcf["pixels"].data.dtype
         assert numpy.max(numpy.abs(cf["pixels"].data)) > 0.0
         if self.persist:
-            export_to_fits(
-                gcf, "%s/test_convolutionfunction_awterm_gcf.fits" % self.results_dir
+            gcf.export_to_fits(
+                "%s/test_convolutionfunction_awterm_gcf.fits" % self.results_dir
             )
             export_convolutionfunction_to_fits(
                 cf, "%s/test_convolutionfunction_awterm_cf.fits" % self.results_dir
