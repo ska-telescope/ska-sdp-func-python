@@ -107,7 +107,7 @@ class measurementset_tests(unittest.TestCase):
             ]
         )
 
-        site_config = Configuration(
+        site_config = Configuration.constructor(
             name="ASKAP",
             location=obs,
             names=names,
@@ -212,7 +212,7 @@ class measurementset_tests(unittest.TestCase):
             ]
         )
 
-        site_config = Configuration(
+        site_config = Configuration.constructor(
             name="ASKAP",
             location=obs,
             names=names,
