@@ -14,7 +14,6 @@ from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.calibration.operations import (
     apply_gaintable,
     create_gaintable_from_visibility,
-    gaintable_summary,
 )
 from rascil.processing_components.calibration.solvers import solve_gaintable
 from rascil.processing_components.imaging import dft_skycomponent_visibility
@@ -204,7 +203,7 @@ class TestCalibrationSolvers(unittest.TestCase):
         gt = create_gaintable_from_visibility(
             self.vis, timeslice=timeslice, jones_type=jones_type
         )
-        log.info("Created gain table: %s" % (gaintable_summary(gt)))
+        log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
         gt = simulate_gaintable(
             gt,
             phase_error=phase_error,

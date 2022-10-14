@@ -13,7 +13,6 @@ from astropy.coordinates import SkyCoord
 from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
-    gaintable_summary,
     apply_gaintable,
     create_gaintable_from_visibility,
     concatenate_gaintables,
@@ -86,7 +85,7 @@ class TestCalibrationOperations(unittest.TestCase):
                 gt = create_gaintable_from_visibility(
                     self.vis, timeslice="auto", jones_type=jones_type
                 )
-                log.info("Created gain table: %s" % (gaintable_summary(gt)))
+                log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
                 gt = simulate_gaintable(gt, phase_error=1.0)
                 original = copy_visibility(self.vis)
                 vis = apply_gaintable(self.vis, gt)
@@ -109,7 +108,7 @@ class TestCalibrationOperations(unittest.TestCase):
                     gt = create_gaintable_from_visibility(
                         self.vis, timeslice=timeslice, jones_type=jones_type
                     )
-                    log.info("Created gain table: %s" % (gaintable_summary(gt)))
+                    log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
                     gt = simulate_gaintable(gt, phase_error=1.0)
                     original = copy_visibility(self.vis)
                     vis = apply_gaintable(self.vis, gt)
@@ -131,7 +130,7 @@ class TestCalibrationOperations(unittest.TestCase):
                 gt = create_gaintable_from_visibility(
                     self.vis, timeslice="auto", jones_type=jones_type
                 )
-                log.info("Created gain table: %s" % (gaintable_summary(gt)))
+                log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
                 gt = simulate_gaintable(gt, phase_error=0.1, amplitude_error=0.01)
                 original = copy_visibility(self.vis)
                 vis = apply_gaintable(self.vis, gt)
@@ -148,7 +147,7 @@ class TestCalibrationOperations(unittest.TestCase):
                 gt = create_gaintable_from_visibility(
                     self.vis, timeslice="auto", jones_type=jones_type
                 )
-                log.info("Created gain table: %s" % (gaintable_summary(gt)))
+                log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
                 gt = simulate_gaintable(gt, phase_error=0.1)
                 original = copy_visibility(self.vis)
                 vis = apply_gaintable(self.vis, gt)
@@ -169,7 +168,7 @@ class TestCalibrationOperations(unittest.TestCase):
                 gt = create_gaintable_from_visibility(
                     self.vis, timeslice="auto", jones_type=jones_type
                 )
-                log.info("Created gain table: %s" % (gaintable_summary(gt)))
+                log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
                 gt = simulate_gaintable(gt, phase_error=0.1, amplitude_error=0.1)
                 original = copy_visibility(self.vis)
                 vis = apply_gaintable(self.vis, gt)

@@ -18,7 +18,6 @@ from rascil.processing_components.calibration.chain_calibration import (
 )
 from rascil.processing_components.calibration.operations import (
     create_gaintable_from_visibility,
-    gaintable_summary,
 )
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.simulation import create_named_configuration
@@ -89,7 +88,7 @@ class TestCalibrationChain(unittest.TestCase):
         self.actualSetup("stokesI", "stokesI", f=[100.0])
         # Prepare the corrupted visibility data_models
         gt = create_gaintable_from_visibility(self.vis)
-        log.info("Created gain table: %s" % (gaintable_summary(gt)))
+        log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
         gt = simulate_gaintable(gt, phase_error=10.0, amplitude_error=0.0)
         original = copy_visibility(self.vis)
         self.vis = apply_gaintable(self.vis, gt)
@@ -107,7 +106,7 @@ class TestCalibrationChain(unittest.TestCase):
         self.actualSetup("stokesI", "stokesI", f=[100.0])
         # Prepare the corrupted visibility data_models
         gt = create_gaintable_from_visibility(self.vis)
-        log.info("Created gain table: %s" % (gaintable_summary(gt)))
+        log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
         gt = simulate_gaintable(gt, phase_error=10.0, amplitude_error=0.0)
         original = copy_visibility(self.vis)
         self.vis = apply_gaintable(self.vis, gt)
@@ -125,7 +124,7 @@ class TestCalibrationChain(unittest.TestCase):
         self.actualSetup("stokesIQUV", "linear", f=[100.0, 50.0, 0.0, 0.0])
         # Prepare the corrupted visibility data_models
         gt = create_gaintable_from_visibility(self.vis)
-        log.info("Created gain table: %s" % (gaintable_summary(gt)))
+        log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
         gt = simulate_gaintable(
             gt,
             phase_error=1.0,
@@ -148,7 +147,7 @@ class TestCalibrationChain(unittest.TestCase):
         self.actualSetup("stokesIQUV", "linear", f=[100.0, 50, 0.0, 0.0])
         # Prepare the corrupted visibility data_models
         gt = create_gaintable_from_visibility(self.vis)
-        log.info("Created gain table: %s" % (gaintable_summary(gt)))
+        log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
         gt = simulate_gaintable(gt, phase_error=10.0, amplitude_error=0.1)
         original = copy_visibility(self.vis)
         self.vis = apply_gaintable(self.vis, gt)
@@ -173,7 +172,7 @@ class TestCalibrationChain(unittest.TestCase):
         self.actualSetup("stokesIQUV", "linear", f=[100.0, 50, 0.0, 0.0], vnchan=32)
         # Prepare the corrupted visibility data_models
         gt = create_gaintable_from_visibility(self.vis)
-        log.info("Created gain table: %s" % (gaintable_summary(gt)))
+        log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
         gt = simulate_gaintable(gt, phase_error=10.0, amplitude_error=0.1)
         original = copy_visibility(self.vis)
         self.vis = apply_gaintable(self.vis, gt)
