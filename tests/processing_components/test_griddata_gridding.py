@@ -206,10 +206,7 @@ class TestGridDataGridding(unittest.TestCase):
             use_aaf=False,
             polarisation_frame=self.vis_pol,
         )
-        # cf_image = convert_convolutionfunction_to_image(cf)
-        # cf_image.data = numpy.real(cf_image.data)
-        # if self.persist:
-        #     cf_image.export_to_fits("%s/test_gridding_aterm_cf.fits" % self.results_dir )
+
         griddata = create_griddata_from_image(
             self.model, polarisation_frame=self.vis_pol
         )
@@ -314,11 +311,6 @@ class TestGridDataGridding(unittest.TestCase):
             use_aaf=True,
             polarisation_frame=self.vis_pol,
         )
-
-        # cf_image = convert_convolutionfunction_to_image(cf)
-        # cf_image.data = numpy.real(cf_image.data)
-        # if self.persist:
-        #     cf_image.export_to_fits("%s/test_gridding_wterm_cf.fits" % self.results_dir)
 
         griddata = create_griddata_from_image(
             self.model, polarisation_frame=self.vis_pol

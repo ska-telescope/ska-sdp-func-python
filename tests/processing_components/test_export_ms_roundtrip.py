@@ -101,9 +101,6 @@ class measurementset_tests(unittest.TestCase):
             "{dir}/test_roundtrip_dirty_before.fits".format(dir=results_dir),
         )
 
-        # print("Before: Max, min in dirty image = %.6f, %.6f, sumwt = %f" %
-        #      (dirty_before.data.max(), dirty_before.data.min(), sumwt))
-
         msname = "{dir}/test_roundtrip.ms".format(dir=results_dir)
         export_visibility_to_ms(msname, [vt])
         vt_after = create_visibility_from_ms(msname)[0]
@@ -122,15 +119,9 @@ class measurementset_tests(unittest.TestCase):
             "{dir}/test_roundtrip_dirty_after.fits".format(dir=results_dir)
         )
 
-        # print("After: Max, min in dirty image = %.6f, %.6f, sumwt = %f" %
-        #      (dirty_after.data.max(), dirty_after.data.min(), sumwt))
-
-        # dirty_after.export_to_fits('%s/imaging_dirty_after.fits' % (results_dir))
-
         error = numpy.max(
             numpy.abs(dirty_after["pixels"].data - dirty_before["pixels"].data)
         ) / numpy.max(numpy.abs(dirty_before["pixels"].data))
-        # print("Maximum fractional difference in peak of dirty image before, after writing to MS = {}".format(error))
 
         assert (
             error < 1e-8
