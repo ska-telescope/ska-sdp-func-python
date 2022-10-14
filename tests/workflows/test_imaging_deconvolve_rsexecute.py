@@ -14,9 +14,7 @@ from astropy.coordinates import SkyCoord
 from rascil.apps.rascil_imager import get_cellsize
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
-    export_image_to_fits,
     smooth_image,
-    qa_image,
     image_gather_channels,
 )
 from rascil.processing_components.imaging import dft_skycomponent_visibility
@@ -139,12 +137,10 @@ class TestImagingDeconvolveGraph(unittest.TestCase):
             model = image_gather_channels(self.model_imagelist)
 
             self.cmodel = smooth_image(model)
-            export_image_to_fits(
-                model,
+            model.export_to_fits(
                 "%s/test_imaging_deconvolve_rsexecute_model.fits" % self.results_dir,
             )
-            export_image_to_fits(
-                self.cmodel,
+            self.cmodel.export_to_fits(
                 "%s/test_imaging_deconvolve_rsexecute_cmodel.fits" % self.results_dir,
             )
 
@@ -392,11 +388,10 @@ class TestImagingDeconvolveGraph(unittest.TestCase):
 
     def save_and_check(self, flux_max, flux_min, restored, tag):
         if self.persist:
-            export_image_to_fits(
-                restored,
+            restored.export_to_fits(
                 f"{self.results_dir}/test_imaging_deconvolve_rsexecute_{tag}_restored.fits",
             )
-        qa = qa_image(restored)
+        qa = restored.qa_image()
         numpy.testing.assert_allclose(
             qa.data["max"], flux_max, atol=1e-7, err_msg=f"{qa}"
         )

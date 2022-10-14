@@ -24,10 +24,9 @@ from rascil.processing_components.calibration.operations import (
     apply_gaintable,
 )
 from rascil.processing_components.image.operations import (
-    export_image_to_fits,
-    qa_image,
     smooth_image,
 )
+
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import create_named_configuration
@@ -399,11 +398,9 @@ def test_rascil_imager(
 
         model = model_imagelist[0]
         cmodel = smooth_image(model)
-        export_image_to_fits(
-            model, rascil_path("test_results/test_rascil_imager_model.fits")
-        )
-        export_image_to_fits(
-            cmodel, rascil_path("test_results/test_rascil_imager_cmodel.fits")
+        model.export_to_fits(rascil_path("test_results/test_rascil_imager_model.fits"))
+        cmodel.export_to_fits(
+            rascil_path("test_results/test_rascil_imager_cmodel.fits")
         )
         found_components = find_skycomponents(cmodel)
         sm = SkyModel(components=components_list[3])
@@ -555,15 +552,15 @@ def test_rascil_imager(
     if mode == "invert":
         dirtyname = imager(args)
         dirty = import_image_from_fits(dirtyname)
-        qa = qa_image(dirty)
+        qa = dirty.qa_image()
     elif mode == "cip":
         restoredname = imager(args)[2]
         dirty = import_image_from_fits(restoredname)
-        qa = qa_image(dirty)
+        qa = dirty.qa_image()
     elif mode == "ical":
         restoredname = imager(args)[2]
         dirty = import_image_from_fits(restoredname)
-        qa = qa_image(dirty)
+        qa = dirty.qa_image()
     else:
         return ValueError(f"rascil-imager: Unknown mode {mode}")
 

@@ -11,7 +11,8 @@ from astropy.coordinates import SkyCoord
 
 from rascil.data_models.data_convert_persist import export_skycomponent_to_hdf5
 from rascil.data_models.polarisation_data_models import PolarisationFrame
-from rascil.processing_components import create_image, export_image_to_fits
+from rascil.processing_components import create_image
+
 from rascil.processing_components import (
     insert_skycomponent,
     create_skycomponent,
@@ -87,8 +88,8 @@ class TestFitSkyComponent(unittest.TestCase):
         assert separation < 1e-7, separation
 
         if self.persist:
-            export_image_to_fits(
-                self.model, "%s/test_fit_skycomponent.fits" % (self.results_dir)
+            self.model.export_to_fits(
+                "%s/test_fit_skycomponent.fits" % (self.results_dir)
             )
             export_skycomponent_to_hdf5(
                 newsc, "%s/test_fit_skycomponent.hdf" % (self.results_dir)

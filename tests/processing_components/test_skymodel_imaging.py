@@ -18,10 +18,8 @@ from rascil.processing_components import (
     ingest_unittest_visibility,
     create_low_test_skymodel_from_gleam,
     calculate_visibility_parallactic_angles,
-    qa_image,
     create_low_test_beam,
     convert_azelvp_to_radec,
-    export_image_to_fits,
     skymodel_calibrate_invert,
     skymodel_predict_calibrate,
 )
@@ -192,11 +190,10 @@ class TestSkyModel(unittest.TestCase):
             flat_sky=False,
         )
         if self.persist:
-            export_image_to_fits(
-                dirty,
+            dirty.export_to_fits(
                 "%s/test_skymodel_invert_dirty.fits" % (self.results_dir),
             )
-        qa = qa_image(dirty)
+        qa = dirty.qa_image()
 
         numpy.testing.assert_allclose(
             qa.data["max"], 4.179714181498791, atol=1e-7, err_msg=f"{qa}"
@@ -248,16 +245,14 @@ class TestSkyModel(unittest.TestCase):
             flat_sky=False,
         )
         if self.persist:
-            export_image_to_fits(
-                skymodel[0],
+            skymodel[0].export_to_fits(
                 "%s/test_skymodel_invert_flat_noise_dirty.fits" % (self.results_dir),
             )
-            export_image_to_fits(
-                skymodel[1],
+            skymodel[1].export_to_fits(
                 "%s/test_skymodel_invert_flat_noise_sensitivity.fits"
                 % (self.results_dir),
             )
-        qa = qa_image(skymodel[0])
+        qa = skymodel[0].qa_image()
 
         numpy.testing.assert_allclose(
             qa.data["max"], 3.767454977596991, atol=1e-7, err_msg=f"{qa}"
@@ -275,16 +270,14 @@ class TestSkyModel(unittest.TestCase):
             flat_sky=True,
         )
         if self.persist:
-            export_image_to_fits(
-                skymodel[0],
+            skymodel[0].export_to_fits(
                 "%s/test_skymodel_invert_flat_sky_dirty.fits" % (self.results_dir),
             )
-            export_image_to_fits(
-                skymodel[1],
+            skymodel[1].export_to_fits(
                 "%s/test_skymodel_invert_flat_sky_sensitivity.fits"
                 % (self.results_dir),
             )
-        qa = qa_image(skymodel[0])
+        qa = skymodel[0].qa_image()
 
         numpy.testing.assert_allclose(
             qa.data["max"], 4.025153684707801, atol=1e-7, err_msg=f"{qa}"

@@ -12,9 +12,9 @@ from numpy.testing import assert_array_almost_equal
 
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image.operations import (
-    export_image_to_fits,
     create_image,
 )
+
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.imaging.imaging import (
     predict_visibility,
@@ -167,7 +167,7 @@ class TestSkyComponentInsert(unittest.TestCase):
         self.vis = dft_skycomponent_visibility(self.vis, self.sc)
         im, sumwt = invert_visibility(self.vis, self.model, context="2d")
         if self.persist:
-            export_image_to_fits(im, "%s/test_skycomponent_dft.fits" % self.results_dir)
+            im.export_to_fits("%s/test_skycomponent_dft.fits" % self.results_dir)
         assert numpy.max(numpy.abs(self.vis.vis.imag)) < 1e-3
 
     def test_insert_skycomponent_nearest(self):

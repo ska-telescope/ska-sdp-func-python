@@ -12,7 +12,7 @@ from astropy.coordinates import SkyCoord
 
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import create_image_from_visibility
-from rascil.processing_components import export_image_to_fits
+
 from rascil.processing_components import (
     weight_visibility,
     taper_visibility_gaussian,
@@ -115,8 +115,7 @@ class TestWeighting(unittest.TestCase):
             self.componentvis, self.model, dopsf=True, context="2d"
         )
         if self.persist:
-            export_image_to_fits(
-                psf,
+            psf.export_to_fits(
                 "%s/test_weighting_gaussian_taper_psf.fits" % (self.results_dir),
             )
         fit = fit_psf(psf)
@@ -139,8 +138,7 @@ class TestWeighting(unittest.TestCase):
             self.componentvis, self.model, dopsf=True, context="2d"
         )
         if self.persist:
-            export_image_to_fits(
-                psf,
+            psf.export_to_fits(
                 "%s/test_weighting_tukey_taper_psf.fits" % (self.results_dir),
             )
         fit = fit_psf(psf)

@@ -14,7 +14,6 @@ from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_test_image,
     show_image,
-    image_add_ra_dec_grid,
 )
 
 log = logging.getLogger("rascil-logger")
@@ -70,16 +69,6 @@ class TestImageSelection(unittest.TestCase):
         assert subim["pixels"].shape == (5, 1, 256, 256)
         assert subim.dims == {"frequency": 5, "polarisation": 1, "y": 256, "x": 256}
         numpy.testing.assert_array_equal(subim.coords["polarisation"], ["I"])
-
-    def test_image_where_radius_radec(self):
-        self.image = image_add_ra_dec_grid(self.image)
-        secd = 1.0 / numpy.cos(numpy.deg2rad(self.image.dec))
-        r = numpy.hypot(
-            (self.image.ra_grid - self.image.ra) * secd,
-            self.image.dec_grid - self.image.dec,
-        )
-        show_image(self.image.where(r < 0.3, 0.0))
-        plt.show()
 
     def test_image_where_radius_xy(self):
         nchan, npol, ny, nx = self.image["pixels"].shape

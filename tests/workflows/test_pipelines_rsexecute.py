@@ -23,8 +23,6 @@ from rascil.processing_components.calibration.operations import (
 )
 from rascil.processing_components.image.gather_scatter import image_gather_channels
 from rascil.processing_components.image.operations import (
-    export_image_to_fits,
-    qa_image,
     smooth_image,
 )
 from rascil.processing_components.imaging import dft_skycomponent_visibility
@@ -175,11 +173,10 @@ class TestPipelineGraphs(unittest.TestCase):
             model = rsexecute.compute(self.model_imagelist[0], sync=True)
             self.cmodel = smooth_image(model)
 
-            export_image_to_fits(
-                model, "%s/test_pipelines_rsexecute_model.fits" % self.results_dir
+            model.export_to_fits(
+                "%s/test_pipelines_rsexecute_model.fits" % self.results_dir
             )
-            export_image_to_fits(
-                self.cmodel,
+            self.cmodel.export_to_fits(
                 "%s/test_pipelines_rsexecute_cmodel.fits" % self.results_dir,
             )
 
@@ -233,39 +230,33 @@ class TestPipelineGraphs(unittest.TestCase):
             residual = image_gather_channels([r[0] for r in residual])
             restored = image_gather_channels(restored)
             if self.persist:
-                export_image_to_fits(
-                    clean,
+                clean.export_to_fits(
                     f"{self.results_dir}/test_pipelines_{tag}_rsexecute_deconvolved.fits",
                 )
-                export_image_to_fits(
-                    residual,
+                residual.export_to_fits(
                     f"{self.results_dir}/test_pipelines_{tag}_rsexecute_residual.fits",
                 )
-                export_image_to_fits(
-                    restored,
+                restored.export_to_fits(
                     f"{self.results_dir}/test_pipelines_{tag}_rsexecute_restored.fits",
                 )
-            qa = qa_image(restored)
+            qa = restored.qa_image()
             assert numpy.abs(qa.data["max"] - flux_max) < 1.0e-7, str(qa)
             assert numpy.abs(qa.data["min"] - flux_min) < 1.0e-7, str(qa)
         else:
             if self.persist:
                 for moment, _ in enumerate(clean):
-                    export_image_to_fits(
-                        clean[moment],
+                    clean[moment].export_to_fits(
                         f"{self.results_dir}/test_pipelines_{tag}_rsexecute_deconvolved_taylor{moment}.fits",
                     )
                 for moment, _ in enumerate(clean):
-                    export_image_to_fits(
-                        residual[moment][0],
+                    residual[moment][0].export_to_fits(
                         f"{self.results_dir}/test_pipelines_{tag}_rsexecute_residual_taylor{moment}.fits",
                     )
                 for moment, _ in enumerate(clean):
-                    export_image_to_fits(
-                        restored[moment],
+                    restored[moment].export_to_fits(
                         f"{self.results_dir}/test_pipelines_{tag}_rsexecute_restored_taylor{moment}.fits",
                     )
-            qa = qa_image(restored[0])
+            qa = restored[0].qa_image()
             assert numpy.abs(qa.data["max"] - flux_max) < 1.0e-7, str(qa)
             assert numpy.abs(qa.data["min"] - flux_min) < 1.0e-7, str(qa)
 

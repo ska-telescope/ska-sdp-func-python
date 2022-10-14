@@ -13,8 +13,8 @@ from astropy.coordinates import SkyCoord
 
 from rascil.processing_components import (
     create_image,
-    qa_image,
 )
+
 from rascil.processing_components.imaging.imaging_helpers import sum_invert_results
 from rascil.workflows import sum_invert_results_rsexecute
 from rascil.workflows.rsexecute.execution_support.rsexecute import rsexecute
@@ -50,7 +50,7 @@ class TestSumInvert(unittest.TestCase):
             results.append((im, wt))
         sum_py = sum_invert_results(results)
         sum_dask = rsexecute.compute(sum_invert_results_rsexecute(results), sync=True)
-        qa = qa_image(sum_py[0])
+        qa = sum_py[0].qa_image()
 
         expected = {
             "max": 7.0,
@@ -62,7 +62,7 @@ class TestSumInvert(unittest.TestCase):
             numpy.testing.assert_almost_equal(
                 qa.data[field], expected[field], err_msg=str(qa)
             )
-        qa_sum = qa_image(sum_dask[0])
+        qa_sum = sum_dask[0].qa_image()
         for field in ["max", "min", "rms", "sum"]:
             numpy.testing.assert_approx_equal(qa.data[field], qa_sum.data[field])
         numpy.testing.assert_array_almost_equal_nulp(sum_py[1], sum_dask[1])
@@ -79,7 +79,7 @@ class TestSumInvert(unittest.TestCase):
         result = [(im, wt)]
         sum_py = sum_invert_results(result)
         sum_dask = rsexecute.compute(sum_invert_results_rsexecute(result), sync=True)
-        qa = qa_image(sum_py[0])
+        qa = sum_py[0].qa_image()
 
         expected = {
             "max": 1.0,
@@ -91,7 +91,7 @@ class TestSumInvert(unittest.TestCase):
             numpy.testing.assert_almost_equal(
                 qa.data[field], expected[field], err_msg=str(qa)
             )
-        qa_sum = qa_image(sum_dask[0])
+        qa_sum = sum_dask[0].qa_image()
         for field in ["max", "min", "rms", "sum"]:
             numpy.testing.assert_approx_equal(qa.data[field], qa_sum.data[field])
         numpy.testing.assert_array_almost_equal_nulp(sum_py[1], sum_dask[1])
