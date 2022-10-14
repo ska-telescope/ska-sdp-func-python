@@ -154,7 +154,7 @@ class TestRASCILRcal(unittest.TestCase):
         """
         self.gt = create_gaintable_from_visibility(self.bvis_original, jones_type="B")
         self.gt = simulate_gaintable(self.gt, phase_error=0.1)
-        qa_gt = self.gt.qa_gaintable()
+        qa_gt = self.gt.qa_gain_table()
         assert qa_gt.data["rms-amp"] < 1e-12, str(qa_gt)
         assert qa_gt.data["rms-phase"] > 0.0, str(qa_gt)
         bvis_error = apply_gaintable(self.bvis_original, self.gt)
@@ -206,7 +206,7 @@ class TestRASCILRcal(unittest.TestCase):
         ).all()  # un-flagged data, all weights are non-zero
         log.info(f"\nFinal gaintable: {gain_table}")
 
-        qa_gt = gain_table.qa_gaintable()
+        qa_gt = gain_table.qa_gain_table()
         log.info(qa_gt)
         assert qa_gt.data["rms-phase"] > 0.0, str(qa_gt)
 

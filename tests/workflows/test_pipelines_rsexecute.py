@@ -301,7 +301,7 @@ class TestPipelineGraphs(unittest.TestCase):
         clean = [sm.image for sm in sky_model_list]
 
         for freqwin in range(self.freqwin):
-            qa = gt_list[freqwin]["T"].qa_gaintable(
+            qa = gt_list[freqwin]["T"].qa_gain_table(
                 context=f"Frequency window {freqwin}"
             )
             assert qa.data["residual"] < 2.1e-2, str(qa)
@@ -363,7 +363,7 @@ class TestPipelineGraphs(unittest.TestCase):
         clean = [sm.image for sm in sky_model_list]
 
         for freqwin in range(self.freqwin):
-            qa = gt_list[freqwin]["T"].qa_gaintable(
+            qa = gt_list[freqwin]["T"].qa_gain_table(
                 context=f"Frequency window {freqwin}"
             )
             assert qa.data["residual"] < 4e-2, str(qa)
@@ -427,7 +427,7 @@ class TestPipelineGraphs(unittest.TestCase):
         clean = [sm.image for sm in sky_model_list]
 
         for freqwin in range(self.freqwin):
-            qa = gt_list[freqwin]["T"].qa_gaintable(
+            qa = gt_list[freqwin]["T"].qa_gain_table(
                 context=f"Frequency window {freqwin}"
             )
             assert qa.data["residual"] < 2.1e-2, str(qa)
@@ -493,11 +493,11 @@ class TestPipelineGraphs(unittest.TestCase):
         clean = [sm.image for sm in sky_model_list]
 
         for freqwin in range(self.freqwin):
-            qa = gt_list[freqwin]["T"].qa_gaintable(
+            qa = gt_list[freqwin]["T"].qa_gain_table(
                 context=f"Frequency window {freqwin}"
             )
             assert qa.data["residual"] < 3.3e-2, str(qa)
-            qa = gt_list[freqwin]["B"].qa_gaintable(
+            qa = gt_list[freqwin]["B"].qa_gain_table(
                 context=f"Frequency window {freqwin}"
             )
             assert qa.data["residual"] < 5e-3, str(qa)
@@ -566,15 +566,15 @@ class TestPipelineGraphs(unittest.TestCase):
         clean = [sm.image for sm in sky_model_list]
 
         for freqwin in range(self.freqwin):
-            qa = gt_list[freqwin]["T"].qa_gaintable(
+            qa = gt_list[freqwin]["T"].qa_gain_table(
                 context=f"Frequency window {freqwin}"
             )
             assert qa.data["residual"] < 3.3e-2, str(qa)
-            qa = gt_list[freqwin]["G"].qa_gaintable(
+            qa = gt_list[freqwin]["G"].qa_gain_table(
                 context=f"Frequency window {freqwin}"
             )
             assert qa.data["residual"] < 3.3e-2, str(qa)
-            qa = gt_list[freqwin]["B"].qa_gaintable(
+            qa = gt_list[freqwin]["B"].qa_gain_table(
                 context=f"Frequency window {freqwin}"
             )
             assert qa.data["residual"] < 5e-3, str(qa)
@@ -635,7 +635,7 @@ class TestPipelineGraphs(unittest.TestCase):
         )
         clean = [sm.image for sm in sky_model_list]
 
-        qa = gt_list[0]["T"].qa_gaintable(context=f"Entire frequency window")
+        qa = gt_list[0]["T"].qa_gain_table(context=f"Entire frequency window")
         assert qa.data["residual"] < 3.2e-2, str(qa)
 
         if self.persist:
