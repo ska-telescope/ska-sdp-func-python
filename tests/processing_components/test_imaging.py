@@ -18,9 +18,7 @@ from rascil.processing_components.griddata.kernels import (
     create_awterm_convolutionfunction,
 )
 from rascil.processing_components.image.operations import (
-    export_image_to_fits,
     smooth_image,
-    qa_image,
 )
 from rascil.processing_components.imaging.dft import dft_skycomponent_visibility
 from rascil.processing_components.imaging.imaging import (
@@ -134,13 +132,9 @@ class TestImaging2D(unittest.TestCase):
 
         self.cmodel = smooth_image(self.model)
         if self.persist:
-            export_image_to_fits(
-                self.model, "%s/test_imaging_model.fits" % self.results_dir
-            )
+            self.model.export_to_fits("%s/test_imaging_model.fits" % self.results_dir)
         if self.persist:
-            export_image_to_fits(
-                self.cmodel, "%s/test_imaging_cmodel.fits" % self.results_dir
-            )
+            self.cmodel.export_to_fits("%s/test_imaging_cmodel.fits" % self.results_dir)
 
     def _checkcomponents(self, dirty, fluxthreshold=0.6, positionthreshold=0.1):
         comps = find_skycomponents(
@@ -190,8 +184,7 @@ class TestImaging2D(unittest.TestCase):
         )
 
         if self.persist:
-            export_image_to_fits(
-                dirty[0],
+            dirty[0].export_to_fits(
                 "%s/test_imaging_%s_residual.fits" % (self.results_dir, context),
             )
         for pol in range(dirty[0].image_acc.npol):
@@ -204,7 +197,7 @@ class TestImaging2D(unittest.TestCase):
             maxabs,
             fluxthreshold,
         )
-        qa = qa_image(dirty[0])
+        qa = dirty[0].qa_image()
         numpy.testing.assert_allclose(
             qa.data["max"], flux_max, atol=1e-7, err_msg=f"{qa}"
         )
@@ -238,8 +231,8 @@ class TestImaging2D(unittest.TestCase):
         )
 
         if self.persist:
-            export_image_to_fits(
-                dirty[0], "%s/test_imaging_%s_dirty.fits" % (self.results_dir, context)
+            dirty[0].export_to_fits(
+                "%s/test_imaging_%s_dirty.fits" % (self.results_dir, context)
             )
 
         for pol in range(dirty[0].image_acc.npol):
@@ -254,7 +247,7 @@ class TestImaging2D(unittest.TestCase):
         if check_components:
             self._checkcomponents(dirty[0], fluxthreshold, positionthreshold)
 
-        qa = qa_image(dirty[0])
+        qa = dirty[0].qa_image()
         numpy.testing.assert_allclose(
             qa.data["max"], flux_max, atol=1e-7, err_msg=f"{qa}"
         )
@@ -603,8 +596,8 @@ class TestImaging2D(unittest.TestCase):
         error = numpy.max(psf[0]["pixels"].data) - 1.0
         assert abs(error) < 1.0e-12, error
         if self.persist:
-            export_image_to_fits(
-                psf[0], "%s/test_imaging_visibility_psf.fits" % self.results_dir
+            psf[0].export_to_fits(
+                "%s/test_imaging_visibility_psf.fits" % self.results_dir
             )
 
         assert numpy.max(numpy.abs(psf[0]["pixels"].data)), "Image is empty"
@@ -617,8 +610,7 @@ class TestImaging2D(unittest.TestCase):
             error = numpy.max(psf[0]["pixels"].data) - 1.0
             assert abs(error) < 1.0e-12, error
             if self.persist:
-                export_image_to_fits(
-                    psf[0],
+                psf[0].export_to_fits(
                     "%s/test_imaging_visibility_psf_%s.fits"
                     % (self.results_dir, weighting),
                 )

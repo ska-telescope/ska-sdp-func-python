@@ -17,11 +17,9 @@ from rascil.processing_components import (
     create_vp,
     convert_azelvp_to_radec,
     create_low_test_vp,
-    qa_image,
     create_mid_allsky,
 )
 from rascil.processing_components.image.operations import (
-    export_image_to_fits,
     scale_and_rotate_image,
 )
 from rascil.processing_components.imaging.base import create_image_from_visibility
@@ -34,7 +32,7 @@ log.setLevel(logging.WARNING)
 
 
 def check_max_min(im, flux_max, flux_min, context):
-    qa = qa_image(im)
+    qa = im.qa_image()
     numpy.testing.assert_allclose(
         qa.data["max"], flux_max, atol=1e-7, err_msg=f"{context} {qa}"
     )
@@ -99,8 +97,7 @@ class TestPrimaryBeams(unittest.TestCase):
             beam = create_pb(model, telescope=telescope, use_local=False)
             assert numpy.max(beam["pixels"].data) > 0.0, telescope
             if self.persist:
-                export_image_to_fits(
-                    beam,
+                beam.export_to_fits(
                     "%s/test_primary_beam_RADEC_%s.fits"
                     % (self.results_dir, telescope),
                 )
@@ -126,8 +123,7 @@ class TestPrimaryBeams(unittest.TestCase):
             )
             beam = create_pb(model, telescope=telescope, use_local=True)
             if self.persist:
-                export_image_to_fits(
-                    beam,
+                beam.export_to_fits(
                     "%s/test_primary_beam_AZELGEO_%s.fits"
                     % (self.results_dir, telescope),
                 )
@@ -167,15 +163,13 @@ class TestPrimaryBeams(unittest.TestCase):
         beam["pixels"].data = numpy.real(beam_data)
         check_max_min(beam, 1.0, -0.04908413672703686, telescope)
         if self.persist:
-            export_image_to_fits(
-                beam,
+            beam.export_to_fits(
                 "%s/test_voltage_pattern_real_%s.fits" % (self.results_dir, telescope),
             )
         beam["pixels"].data = numpy.imag(beam_data)
         check_max_min(beam, 0.0, 0.0, telescope)
         if self.persist:
-            export_image_to_fits(
-                beam,
+            beam.export_to_fits(
                 "%s/test_voltage_pattern_imag_%s.fits" % (self.results_dir, telescope),
             )
 
@@ -188,15 +182,13 @@ class TestPrimaryBeams(unittest.TestCase):
         beam["pixels"].data = numpy.real(beam_data)
         check_max_min(beam, 1.0, -0.13220304339601227, telescope)
         if self.persist:
-            export_image_to_fits(
-                beam,
+            beam.export_to_fits(
                 "%s/test_voltage_pattern_real_mid_allsky.fits" % (self.results_dir),
             )
         beam["pixels"].data = numpy.imag(beam_data)
         check_max_min(beam, 0.0, 0.0, telescope)
         if self.persist:
-            export_image_to_fits(
-                beam,
+            beam.export_to_fits(
                 "%s/test_voltage_pattern_imag_mid_allsky.fits" % (self.results_dir),
             )
 
@@ -221,8 +213,7 @@ class TestPrimaryBeams(unittest.TestCase):
             beam.image_acc.wcs.wcs.crval[0] = 0.0
             beam.image_acc.wcs.wcs.crval[1] = 90.0
             if self.persist:
-                export_image_to_fits(
-                    beam,
+                beam.export_to_fits(
                     "%s/test_voltage_pattern_real_zenith_%s.fits"
                     % (self.results_dir, telescope),
                 )
@@ -246,8 +237,7 @@ class TestPrimaryBeams(unittest.TestCase):
             beam = scale_and_rotate_image(beam, scale=[1.2, 0.8])
 
             if self.persist:
-                export_image_to_fits(
-                    beam,
+                beam.export_to_fits(
                     "%s/test_voltage_pattern_real_prerotate_%s.fits"
                     % (self.results_dir, telescope),
                 )
@@ -256,8 +246,7 @@ class TestPrimaryBeams(unittest.TestCase):
             beam_data = beam_radec["pixels"].data
             beam_radec["pixels"].data = numpy.real(beam_data)
             if self.persist:
-                export_image_to_fits(
-                    beam_radec,
+                beam_radec.export_to_fits(
                     "%s/test_voltage_pattern_real_rotate_%s.fits"
                     % (self.results_dir, telescope),
                 )
@@ -282,8 +271,7 @@ class TestPrimaryBeams(unittest.TestCase):
                 azel=(numpy.deg2rad(az), numpy.deg2rad(el)),
             )
             if self.persist:
-                export_image_to_fits(
-                    beam,
+                beam.export_to_fits(
                     f"{self.results_dir}/test_voltage_pattern_low_real_az{az}_el{el}.fits",
                 )
             check_max_min(beam, flux_max, flux_min, f"{az} {el}")

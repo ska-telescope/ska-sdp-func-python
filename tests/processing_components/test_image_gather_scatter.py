@@ -16,7 +16,7 @@ from rascil.processing_components.image.gather_scatter import (
     image_scatter_channels,
 )
 from rascil.processing_components.image.operations import create_empty_image_like
-from rascil.processing_components.image.operations import export_image_to_fits
+
 from rascil.processing_components.simulation import create_test_image
 
 log = logging.getLogger("rascil-logger")
@@ -164,14 +164,12 @@ class TestImageGatherScatters(unittest.TestCase):
                     return_flat=True,
                 )
                 if self.persist:
-                    export_image_to_fits(
-                        m31reconstructed,
+                    m31reconstructed.export_to_fits(
                         "%s/test_image_gather_scatter_%dnraster_%doverlap_%s_reconstructed.fits"
                         % (self.results_dir, nraster, overlap, taper),
                     )
                 if self.persist:
-                    export_image_to_fits(
-                        flat,
+                    flat.export_to_fits(
                         "%s/test_image_gather_scatter_%dnraster_%doverlap_%s_flat.fits"
                         % (self.results_dir, nraster, overlap, taper),
                     )

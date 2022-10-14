@@ -19,7 +19,6 @@ from rascil.processing_components import (
     invert_awprojection,
     create_awterm_convolutionfunction,
     export_convolutionfunction_to_fits,
-    export_image_to_fits,
     weight_visibility,
 )
 from rascil.processing_components.parameters import rascil_path, rascil_data_path
@@ -89,9 +88,7 @@ class TestImaging2D(unittest.TestCase):
         plt.show()
 
         if self.persist:
-            export_image_to_fits(
-                mosaic, "{}/test_mosaic_dirty.fits".format(results_dir)
-            )
+            mosaic.export_to_fits("{}/test_mosaic_dirty.fits".format(results_dir))
             export_convolutionfunction_to_fits(
                 gcfcf(model)[1], "{}/test_mosaic_cf.fits".format(results_dir)
             )
