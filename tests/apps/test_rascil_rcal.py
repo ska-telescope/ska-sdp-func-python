@@ -37,6 +37,7 @@ from rascil.processing_components import (
     apply_gaintable,
     qa_visibility,
     qa_gaintable,
+    copy_visibility,
 )
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import create_named_configuration
@@ -268,7 +269,7 @@ class TestRASCILRcal(unittest.TestCase):
         Currently only test for LOW"""
 
         self.pre_setup()
-        new_bvis = self.bvis_original.copy(deep=True)
+        new_bvis = copy_visibility(self.bvis_original)
         comp = self.create_dft_components(self.flux)
         new_comp = apply_beam_correction(new_bvis, [comp], None, telescope_name="LOW")
 
@@ -296,7 +297,7 @@ class TestRASCILRcal(unittest.TestCase):
 
     def test_rfi_flagger(self):
         self.pre_setup()
-        new_bvis = self.bvis_original.copy(deep=True)
+        new_bvis = copy_visibility(self.bvis_original)
         # update new_bvis to have a value that will be flagged
         new_bvis["vis"].data[0, 0, 0, 0] = complex(100, 0)
 
@@ -318,7 +319,7 @@ class TestRASCILRcal(unittest.TestCase):
         break when that argument is set.
         """
         self.pre_setup()
-        bvis = self.bvis_original.copy(deep=True)
+        bvis = copy_visibility(self.bvis_original)
         model_components = None
         previous_solution = None
         use_previous = True
