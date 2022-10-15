@@ -212,7 +212,9 @@ class TestVisibilityOperations(unittest.TestCase):
         )
         vis = copy_visibility(self.vis)
         self.vis["vis"][...] = 0.0
+        # pylint: disable=unsupported-assignment-operation
         vis["vis"][...] = 1.0
+        # pylint: disable=unsubscriptable-object
         assert vis["vis"][0, 0].real.all() == 1.0
         assert self.vis["vis"][0, 0].real.all() == 0.0
 
