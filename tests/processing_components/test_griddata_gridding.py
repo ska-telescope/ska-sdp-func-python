@@ -44,7 +44,6 @@ from rascil.processing_components.simulation import (
     ingest_unittest_visibility,
 )
 from rascil.processing_components.skycomponent.operations import insert_skycomponent
-from rascil.processing_components.visibility.operations import qa_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -374,7 +373,7 @@ class TestGridDataGridding(unittest.TestCase):
         )
         griddata = fft_image_to_griddata(modelIQUV, griddata, gcf)
         newvis = degrid_visibility_from_griddata(self.vis, griddata=griddata, cf=cf)
-        qa = qa_visibility(newvis)
+        qa = newvis.qa_visibility()
         numpy.testing.assert_allclose(
             qa.data["maxabs"], 1091.515280627418, atol=1e-7, err_msg=f"{qa}"
         )
@@ -403,7 +402,7 @@ class TestGridDataGridding(unittest.TestCase):
         newvis = degrid_visibility_from_griddata(self.vis, griddata=griddata, cf=cf)
         newvis["vis"].data[...] -= self.vis["vis"].data[...]
         self.plot_vis(newvis, "wterm")
-        qa = qa_visibility(newvis)
+        qa = newvis.qa_visibility()
         numpy.testing.assert_allclose(
             qa.data["maxabs"], 224.28478109440636, atol=1e-7, err_msg=f"{qa}"
         )
@@ -437,7 +436,7 @@ class TestGridDataGridding(unittest.TestCase):
         )
         griddata = fft_image_to_griddata(modelIQUV, griddata, gcf)
         newvis = degrid_visibility_from_griddata(self.vis, griddata=griddata, cf=cf)
-        qa = qa_visibility(newvis)
+        qa = newvis.qa_visibility()
         numpy.testing.assert_allclose(
             qa.data["maxabs"], 1086.4705273529883, atol=1e-7, err_msg=f"{qa}"
         )

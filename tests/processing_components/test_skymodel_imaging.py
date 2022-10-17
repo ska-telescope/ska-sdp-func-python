@@ -12,7 +12,6 @@ from astropy.coordinates import SkyCoord
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_named_configuration,
-    qa_visibility,
 )
 from rascil.processing_components import (
     ingest_unittest_visibility,
@@ -112,7 +111,7 @@ class TestSkyModel(unittest.TestCase):
         ), "Image is empty"
 
         skymodel_vis = skymodel_predict_calibrate(self.vis, self.skymodel, context="ng")
-        qa = qa_visibility(skymodel_vis)
+        qa = skymodel_vis.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 60.35140880932053, err_msg=str(qa)
         )
@@ -150,7 +149,7 @@ class TestSkyModel(unittest.TestCase):
             context="ng",
             get_pb=get_pb,
         )
-        qa = qa_visibility(skymodel_vis)
+        qa = skymodel_vis.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 32.20530966848842, err_msg=str(qa)
         )
@@ -310,7 +309,7 @@ class TestSkyModel(unittest.TestCase):
         ), "Image is empty"
 
         skymodel_vis = skymodel_predict_calibrate(self.vis, self.skymodel, context="ng")
-        qa = qa_visibility(skymodel_vis)
+        qa = skymodel_vis.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 39.916746503252156, err_msg=str(qa)
         )
@@ -337,7 +336,7 @@ class TestSkyModel(unittest.TestCase):
         assert len(self.skymodel.components) == 11, len(self.skymodel.components)
 
         skymodel_vis = skymodel_predict_calibrate(self.vis, self.skymodel, context="ng")
-        qa = qa_visibility(skymodel_vis)
+        qa = skymodel_vis.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 20.434662306068372, err_msg=str(qa)
         )
