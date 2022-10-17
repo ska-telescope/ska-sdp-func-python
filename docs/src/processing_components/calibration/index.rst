@@ -30,9 +30,6 @@ late seventies.
 .. automodapi::    rascil.processing_components.calibration.pointing
    :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.calibration.rcal
-   :no-inheritance-diagram:
-
 .. automodapi::    rascil.processing_components.calibration.solvers
    :no-inheritance-diagram:
 

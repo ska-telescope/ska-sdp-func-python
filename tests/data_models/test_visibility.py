@@ -6,7 +6,7 @@ from rascil.data_models import PolarisationFrame
 from rascil.processing_components import create_visibility, create_named_configuration
 
 
-def test_copy_visibility():
+def test_visibility_copy():
     """
     TODO: we will need a good suit of input data,
       e.g. in-memory, simple visibility and configuration objects
@@ -30,7 +30,7 @@ def test_copy_visibility():
     )
 
     new_vis = vis.copy(deep=True)
-    vis["vis"][...] = 0.0
-    new_vis["vis"][...] = 1.0
-    assert new_vis["vis"][0, 0].real.all() == 1.0
-    assert vis["vis"][0, 0].real.all() == 0.0
+    vis["vis"].data[...] = 0.0
+    new_vis["vis"].data[...] = 1.0
+    assert new_vis["vis"].data[0, 0].real.all() == 1.0
+    assert vis["vis"].data[0, 0].real.all() == 0.0
