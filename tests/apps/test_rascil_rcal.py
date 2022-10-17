@@ -35,8 +35,6 @@ from rascil.processing_components import (
     create_gaintable_from_visibility,
     simulate_gaintable,
     apply_gaintable,
-    qa_gaintable,
-    copy_visibility,
 )
 
 from rascil.processing_components.parameters import rascil_path
@@ -156,7 +154,7 @@ class TestRASCILRcal(unittest.TestCase):
         """
         self.gt = create_gaintable_from_visibility(self.bvis_original, jones_type="B")
         self.gt = simulate_gaintable(self.gt, phase_error=0.1)
-        qa_gt = qa_gaintable(self.gt)
+        qa_gt = self.gt.qa_gain_table()
         assert qa_gt.data["rms-amp"] < 1e-12, str(qa_gt)
         assert qa_gt.data["rms-phase"] > 0.0, str(qa_gt)
         bvis_error = apply_gaintable(self.bvis_original, self.gt)
@@ -208,7 +206,7 @@ class TestRASCILRcal(unittest.TestCase):
         ).all()  # un-flagged data, all weights are non-zero
         log.info(f"\nFinal gaintable: {gain_table}")
 
-        qa_gt = qa_gaintable(gain_table)
+        qa_gt = gain_table.qa_gain_table()
         log.info(qa_gt)
         assert qa_gt.data["rms-phase"] > 0.0, str(qa_gt)
 
@@ -269,7 +267,7 @@ class TestRASCILRcal(unittest.TestCase):
         Currently only test for LOW"""
 
         self.pre_setup()
-        new_bvis = copy_visibility(self.bvis_original)
+        new_bvis = self.bvis_original.copy(deep=True)
         comp = self.create_dft_components(self.flux)
         new_comp = apply_beam_correction(new_bvis, [comp], None, telescope_name="LOW")
 
@@ -297,7 +295,7 @@ class TestRASCILRcal(unittest.TestCase):
 
     def test_rfi_flagger(self):
         self.pre_setup()
-        new_bvis = copy_visibility(self.bvis_original)
+        new_bvis = self.bvis_original.copy(deep=True)
         # update new_bvis to have a value that will be flagged
         new_bvis["vis"].data[0, 0, 0, 0] = complex(100, 0)
 
@@ -319,7 +317,7 @@ class TestRASCILRcal(unittest.TestCase):
         break when that argument is set.
         """
         self.pre_setup()
-        bvis = copy_visibility(self.bvis_original)
+        bvis = self.bvis_original.copy(deep=True)
         model_components = None
         previous_solution = None
         use_previous = True
