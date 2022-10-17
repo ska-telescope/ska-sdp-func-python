@@ -20,7 +20,6 @@ from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import simulate_gaintable
 from rascil.processing_components.visibility.base import (
-    copy_visibility,
     create_visibility,
 )
 
@@ -210,7 +209,7 @@ class TestCalibrationSolvers(unittest.TestCase):
             amplitude_error=amplitude_error,
             leakage=leakage,
         )
-        original = copy_visibility(self.vis)
+        original = self.vis.copy(deep=True)
         vis = apply_gaintable(self.vis, gt)
         gtsol = solve_gaintable(
             self.vis,

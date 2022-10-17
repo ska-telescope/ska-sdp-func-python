@@ -22,7 +22,6 @@ from rascil.processing_components.calibration.operations import (
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import ingest_unittest_visibility
 from rascil.processing_components.simulation import simulate_gaintable
-from rascil.processing_components.visibility.base import copy_visibility
 from rascil.workflows.rsexecute.calibration.calibration_rsexecute import (
     calibrate_list_rsexecute_workflow,
 )
@@ -118,7 +117,7 @@ class TestCalibrateGraphs(unittest.TestCase):
             v["vis"].data[...] = 1.0 + 0.0j
 
         self.error_vis_list = [
-            rsexecute.execute(copy_visibility(v)) for v in self.vis_list
+            rsexecute.execute(v.copy)(deep=True) for v in self.vis_list
         ]
         gt = rsexecute.execute(create_gaintable_from_visibility)(
             self.vis_list[0], jones_type="G"
