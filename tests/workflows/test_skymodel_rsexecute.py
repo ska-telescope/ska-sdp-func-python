@@ -12,7 +12,6 @@ from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_named_configuration,
     decimate_configuration,
-    qa_visibility,
 )
 from rascil.processing_components import (
     ingest_unittest_visibility,
@@ -132,7 +131,7 @@ class TestSkyModel(unittest.TestCase):
             self.vis_list[0], self.skymodel_list, context="ng"
         )
         skymodel_vislist = rsexecute.compute(skymodel_vislist, sync=True)
-        qa = qa_visibility(skymodel_vislist[0])
+        qa = skymodel_vislist[0].qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 60.35140880932053, err_msg=str(qa)
         )
@@ -179,7 +178,7 @@ class TestSkyModel(unittest.TestCase):
             get_pb=get_pb,
         )
         skymodel_vislist = rsexecute.compute(skymodel_vislist, sync=True)
-        qa = qa_visibility(skymodel_vislist[0])
+        qa = skymodel_vislist[0].qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 32.20530966848842, err_msg=str(qa)
         )
@@ -311,7 +310,7 @@ class TestSkyModel(unittest.TestCase):
             self.vis_list[0], self.skymodel_list, context="ng"
         )
         skymodel_vislist = rsexecute.compute(skymodel_vislist, sync=True)
-        qa = qa_visibility(skymodel_vislist[0])
+        qa = skymodel_vislist[0].qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 39.916746503252156, err_msg=str(qa)
         )
@@ -348,7 +347,7 @@ class TestSkyModel(unittest.TestCase):
             self.vis_list[0], self.skymodel_list, context="ng"
         )
         skymodel_vislist = rsexecute.compute(skymodel_vislist, sync=True)
-        qa = qa_visibility(skymodel_vislist[0])
+        qa = skymodel_vislist[0].qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 20.434662306068372, err_msg=str(qa)
         )

@@ -35,9 +35,9 @@ from rascil.processing_components import (
     create_gaintable_from_visibility,
     simulate_gaintable,
     apply_gaintable,
-    qa_visibility,
     qa_gaintable,
 )
+
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import ingest_unittest_visibility
@@ -213,7 +213,7 @@ class TestRASCILRcal(unittest.TestCase):
 
         bvis_difference = apply_gaintable(self.bvis_error, gain_table, inverse=True)
         bvis_difference["vis"] -= self.bvis_original["vis"]
-        qa = qa_visibility(bvis_difference)
+        qa = bvis_difference.qa_visibility()
         assert qa.data["maxabs"] < 1e-12, str(qa)
         assert qa.data["minabs"] < 1e-12, str(qa)
 
