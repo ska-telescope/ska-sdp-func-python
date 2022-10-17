@@ -16,7 +16,6 @@ from rascil.processing_components import (
     create_visibility,
     create_image_from_visibility,
     invert_ng,
-    copy_visibility,
 )
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import create_named_configuration
@@ -97,7 +96,7 @@ class TestRFIRegression(unittest.TestCase):
         RFI signal is for the same frequency channels as the Visibility has
         """
         self.setup_telescope("MID")
-        bvis = copy_visibility(self.bvis)
+        bvis = self.bvis.copy(deep=True)
 
         simulate_rfi_block_prop(
             bvis,
@@ -136,7 +135,7 @@ class TestRFIRegression(unittest.TestCase):
         RFI signal is for the same frequency channels as the Visibility has
         """
         self.setup_telescope("MID")
-        bvis = copy_visibility(self.bvis)
+        bvis = self.bvis.copy(deep=True)
 
         simulate_rfi_block_prop(
             bvis,
