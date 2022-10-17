@@ -16,7 +16,7 @@ from rascil.processing_components import create_image
 from rascil.processing_components.griddata.kernels import (
     create_vpterm_convolutionfunction,
 )
-from rascil.processing_components.image.operations import export_image_to_fits
+
 from rascil.processing_components.imaging.primary_beams import create_vp
 
 log = logging.getLogger("rascil-logger")
@@ -79,8 +79,8 @@ class TestVPGridDataKernels(unittest.TestCase):
         assert numpy.abs(v_peak) < 1e-7, u_peak
 
         if self.persist:
-            export_image_to_fits(
-                gcf, "%s/test_convolutionfunction_aterm_vp_gcf.fits" % self.results_dir
+            gcf.export_to_fits(
+                "%s/test_convolutionfunction_aterm_vp_gcf.fits" % self.results_dir
             )
 
 

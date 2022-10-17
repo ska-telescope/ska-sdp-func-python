@@ -20,9 +20,6 @@ Visibility
 .. automodapi::    rascil.processing_components.visibility.visibility_geometry
    :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.visibility.visibility_selection
-   :no-inheritance-diagram:
-
 
 
 

@@ -11,10 +11,6 @@ from astropy.coordinates import SkyCoord
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import create_visibility
-from rascil.processing_components.visibility.visibility_selection import (
-    visibility_select_r_range,
-    visibility_select_uv_range,
-)
 
 log = logging.getLogger("rascil-logger")
 
@@ -182,7 +178,7 @@ class TestVisibilitySelectors(unittest.TestCase):
         uvmax = 20000.0
 
         assert bvis["flags"].sum() == 0
-        bvis = visibility_select_uv_range(bvis, uvmin, uvmax)
+        bvis.select_uv_range(uvmin, uvmax)
         assert bvis["flags"].sum() == 1185464
         assert bvis.frequency.shape == (5,)
 
@@ -202,7 +198,7 @@ class TestVisibilitySelectors(unittest.TestCase):
         rmin = 100.0
         rmax = 20000.0
 
-        sub_bvis = visibility_select_r_range(bvis, rmin, rmax)
+        sub_bvis = bvis.select_r_range(rmin, rmax)
         assert len(sub_bvis.baselines) == 11781
         assert len(sub_bvis.configuration.names) == 166
         assert sub_bvis.frequency.shape == (5,)

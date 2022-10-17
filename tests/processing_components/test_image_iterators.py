@@ -13,9 +13,9 @@ from rascil.processing_components.image.iterators import (
     image_channel_iter,
 )
 from rascil.processing_components.image.operations import (
-    export_image_to_fits,
     pad_image,
 )
+
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import create_test_image
 
@@ -80,12 +80,10 @@ class TestImageIterators(unittest.TestCase):
                             log.warning(
                                 f"Raster set failed for {npixel}, {nraster}, {overlap}: error {err}"
                             )
-                        export_image_to_fits(
-                            m31model,
+                        m31model.export_to_fits(
                             f"{testdir}/test_image_iterators_model_{npixel}_{nraster}_{overlap}.fits",
                         )
-                        export_image_to_fits(
-                            diff,
+                        diff.export_to_fits(
                             f"{testdir}/test_image_iterators_diff_{npixel}_{nraster}_{overlap}.fits",
                         )
                     except ValueError as err:

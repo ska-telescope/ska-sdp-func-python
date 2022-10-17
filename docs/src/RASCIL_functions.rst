@@ -68,7 +68,6 @@ Image
 
 * Image operations: :py:func:`rascil.processing_components.image.operations`
 * Import from FITS: :py:func:`rascil.processing_components.image.operations.import_image_from_fits`
-* Export from FITS: :py:func:`rascil.processing_components.image.operations.export_image_to_fits`
 * Re-project coordinate system: :py:func:`rascil.processing_components.image.operations.reproject_image`
 * Smooth image: :py:func:`rascil.processing_components.image.operations.smooth_image`
 * FFT: :py:func:`rascil.processing_components.image.operations.fft_image_to_griddata`

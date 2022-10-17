@@ -14,7 +14,6 @@ from rascil.processing_components import (
     invert_visibility,
     create_image_from_visibility,
 )
-from rascil.processing_components.image.operations import export_image_to_fits, qa_image
 from rascil.processing_components.parameters import rascil_path, rascil_data_path
 from rascil.processing_components.visibility.base import create_visibility_from_uvfits
 from rascil.processing_components.visibility.operations import (
@@ -94,12 +93,12 @@ class TestCreateMS(unittest.TestCase):
                 show_image(dirty)
                 plt.show(block=False)
             if self.persist:
-                export_image_to_fits(
-                    dirty, "%s/test_visibility_uvfits_dirty.fits" % self.results_dir
+                dirty.export_to_fits(
+                    "%s/test_visibility_uvfits_dirty.fits" % self.results_dir
                 )
 
             if schan == 0:
-                qa = qa_image(dirty)
+                qa = dirty.qa_image()
                 numpy.testing.assert_allclose(
                     qa.data["max"], 1.0668020958044764, atol=1e-7, err_msg=f"{qa}"
                 )

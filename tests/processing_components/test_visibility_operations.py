@@ -21,7 +21,6 @@ from rascil.processing_components.visibility.base import (
     generate_baselines,
 )
 from rascil.processing_components.visibility.operations import (
-    qa_visibility,
     subtract_visibility,
     divide_visibility,
     concatenate_visibility,
@@ -332,7 +331,7 @@ class TestVisibilityOperations(unittest.TestCase):
         )
         vis2["vis"].data[...] = 1.0
         zerovis = subtract_visibility(vis1, vis2)
-        qa = qa_visibility(zerovis, context="test_qa")
+        qa = zerovis.qa_visibility(context="test_qa")
         self.assertAlmostEqual(qa.data["maxabs"], 0.0, 7)
 
     def test_qa(self):
@@ -346,7 +345,7 @@ class TestVisibilityOperations(unittest.TestCase):
             polarisation_frame=PolarisationFrame("stokesIQUV"),
         )
         self.vismodel = dft_skycomponent_visibility(self.vis, self.comp)
-        qa = qa_visibility(self.vis, context="test_qa")
+        qa = self.vis.qa_visibility(context="test_qa")
         self.assertAlmostEqual(qa.data["maxabs"], 100.0, 7)
         self.assertAlmostEqual(qa.data["medianabs"], 11.0, 7)
         assert qa.context == "test_qa"
