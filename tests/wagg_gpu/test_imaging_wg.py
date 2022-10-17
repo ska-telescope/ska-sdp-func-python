@@ -27,7 +27,6 @@ from rascil.processing_components.skycomponent.operations import (
     find_nearest_skycomponent,
     insert_skycomponent,
 )
-from rascil.processing_components.visibility import copy_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -158,7 +157,7 @@ class TestImagingWG(unittest.TestCase):
 
         from rascil.processing_components.imaging.wg import predict_wg, invert_wg
 
-        original_vis = copy_visibility(self.vis)
+        original_vis = self.vis.copy(deep=True)
         vis = predict_wg(self.vis, self.model, verbosity=self.verbosity, **kwargs)
         vis["vis"].data = vis["vis"].data - original_vis["vis"].data
         dirty = invert_wg(

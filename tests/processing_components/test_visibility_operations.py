@@ -15,7 +15,6 @@ from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import (
-    copy_visibility,
     create_visibility,
     phaserotate_visibility,
     generate_baselines,
@@ -198,22 +197,6 @@ class TestVisibilityOperations(unittest.TestCase):
         assert numpy.max(numpy.abs(self.ratiovis.vis)) == 2.0, numpy.max(
             numpy.abs(self.ratiovis.vis)
         )
-
-    def test_copy_visibility(self):
-        self.vis = create_visibility(
-            self.lowcore,
-            self.times,
-            self.frequency,
-            channel_bandwidth=self.channel_bandwidth,
-            phasecentre=self.phasecentre,
-            weight=1.0,
-            polarisation_frame=PolarisationFrame("stokesIQUV"),
-        )
-        vis = copy_visibility(self.vis)
-        self.vis["vis"][...] = 0.0
-        vis["vis"][...] = 1.0
-        assert vis["vis"][0, 0].real.all() == 1.0
-        assert self.vis["vis"][0, 0].real.all() == 0.0
 
     def test_phase_rotation_identity(self):
         self.vis = create_visibility(

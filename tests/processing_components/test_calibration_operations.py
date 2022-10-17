@@ -13,7 +13,6 @@ from astropy.coordinates import SkyCoord
 from rascil.data_models.memory_data_models import SkyComponent
 from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
-    gaintable_summary,
     apply_gaintable,
     create_gaintable_from_visibility,
     concatenate_gaintables,
@@ -22,7 +21,6 @@ from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import simulate_gaintable
 from rascil.processing_components.visibility.base import (
-    copy_visibility,
     create_visibility,
 )
 
@@ -86,9 +84,9 @@ class TestCalibrationOperations(unittest.TestCase):
                 gt = create_gaintable_from_visibility(
                     self.vis, timeslice="auto", jones_type=jones_type
                 )
-                log.info("Created gain table: %s" % (gaintable_summary(gt)))
+                log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
                 gt = simulate_gaintable(gt, phase_error=1.0)
-                original = copy_visibility(self.vis)
+                original = self.vis.copy(deep=True)
                 vis = apply_gaintable(self.vis, gt)
                 corrected_vis = apply_gaintable(vis, gt, inverse=True)
                 assert (
@@ -109,9 +107,9 @@ class TestCalibrationOperations(unittest.TestCase):
                     gt = create_gaintable_from_visibility(
                         self.vis, timeslice=timeslice, jones_type=jones_type
                     )
-                    log.info("Created gain table: %s" % (gaintable_summary(gt)))
+                    log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
                     gt = simulate_gaintable(gt, phase_error=1.0)
-                    original = copy_visibility(self.vis)
+                    original = self.vis.copy(deep=True)
                     vis = apply_gaintable(self.vis, gt)
                     corrected_vis = apply_gaintable(vis, gt, inverse=True)
                     assert (
@@ -131,9 +129,9 @@ class TestCalibrationOperations(unittest.TestCase):
                 gt = create_gaintable_from_visibility(
                     self.vis, timeslice="auto", jones_type=jones_type
                 )
-                log.info("Created gain table: %s" % (gaintable_summary(gt)))
+                log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
                 gt = simulate_gaintable(gt, phase_error=0.1, amplitude_error=0.01)
-                original = copy_visibility(self.vis)
+                original = self.vis.copy(deep=True)
                 vis = apply_gaintable(self.vis, gt)
                 assert numpy.max(numpy.abs(vis.vis.data - original.vis.data)) > 0.0
 
@@ -148,9 +146,9 @@ class TestCalibrationOperations(unittest.TestCase):
                 gt = create_gaintable_from_visibility(
                     self.vis, timeslice="auto", jones_type=jones_type
                 )
-                log.info("Created gain table: %s" % (gaintable_summary(gt)))
+                log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
                 gt = simulate_gaintable(gt, phase_error=0.1)
-                original = copy_visibility(self.vis)
+                original = self.vis.copy(deep=True)
                 vis = apply_gaintable(self.vis, gt)
                 corrected_vis = apply_gaintable(vis, gt, inverse=True)
                 assert (
@@ -169,9 +167,9 @@ class TestCalibrationOperations(unittest.TestCase):
                 gt = create_gaintable_from_visibility(
                     self.vis, timeslice="auto", jones_type=jones_type
                 )
-                log.info("Created gain table: %s" % (gaintable_summary(gt)))
+                log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
                 gt = simulate_gaintable(gt, phase_error=0.1, amplitude_error=0.1)
-                original = copy_visibility(self.vis)
+                original = self.vis.copy(deep=True)
                 vis = apply_gaintable(self.vis, gt)
                 corrected_vis = apply_gaintable(vis, gt, inverse=True)
                 assert (

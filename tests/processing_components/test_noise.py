@@ -16,7 +16,6 @@ from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation.noise import addnoise_visibility
 from rascil.processing_components.visibility.base import (
     create_visibility,
-    copy_visibility,
 )
 
 log = logging.getLogger("rascil-logger")
@@ -56,7 +55,7 @@ class TestNoise(unittest.TestCase):
             polarisation_frame=PolarisationFrame("stokesIQUV"),
             channel_bandwidth=self.channel_bandwidth,
         )
-        original = copy_visibility(self.vis)
+        original = self.vis.copy(deep=True)
         self.vis = addnoise_visibility(self.vis)
         actual = numpy.std(numpy.abs(self.vis.vis - original.vis))
         assert abs(actual - 0.0006225400451837758) < 1e-4, actual
