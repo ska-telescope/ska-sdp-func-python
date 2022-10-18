@@ -22,7 +22,7 @@ from rascil.apps.imaging_qa_main import (
     correct_primary_beam,
     read_skycomponent_from_txt,
 )
-from rascil.data_models.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image import (
     create_image,
 )

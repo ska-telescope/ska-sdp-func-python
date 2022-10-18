@@ -9,7 +9,7 @@ import unittest
 
 import numpy
 
-from rascil.data_models import Visibility
+from ska_sdp_datamodels import Visibility
 from rascil.processing_components.parameters import rascil_path, rascil_data_path
 from rascil.processing_components.visibility.base import (
     create_visibility_from_ms,

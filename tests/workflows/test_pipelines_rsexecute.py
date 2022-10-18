@@ -10,9 +10,9 @@ import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.data_convert_persist import export_gaintable_to_hdf5
-from rascil.data_models.memory_data_models import SkyModel
-from rascil.data_models.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.data_convert_persist import export_gaintable_to_hdf5
+from ska_sdp_datamodels.memory_data_models import SkyModel
+from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.calibration.chain_calibration import (
     create_calibration_controls,
 )

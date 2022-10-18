@@ -12,7 +12,7 @@ import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import weight_visibility
 from rascil.processing_components.griddata.kernels import (
     create_awterm_convolutionfunction,

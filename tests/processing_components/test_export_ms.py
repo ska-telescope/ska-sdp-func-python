@@ -13,8 +13,8 @@ import numpy
 from astropy.coordinates import EarthLocation
 from astropy.time import Time
 
-from rascil.data_models.memory_data_models import Configuration
-from rascil.data_models.polarisation_data_models import ReceptorFrame
+from ska_sdp_datamodels.memory_data_models import Configuration
+from ska_sdp_datamodels.polarisation_data_models import ReceptorFrame
 
 try:
     import casacore

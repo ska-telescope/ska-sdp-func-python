@@ -10,8 +10,8 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.memory_data_models import SkyComponent
-from rascil.data_models.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.memory_data_models import SkyComponent
+from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     apply_gaintable,
     create_gaintable_from_visibility,

@@ -10,7 +10,7 @@ import numpy
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_array_almost_equal
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image.operations import (
     create_image,
 )

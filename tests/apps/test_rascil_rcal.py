@@ -23,12 +23,12 @@ from rascil.apps.rascil_rcal import (
     apply_beam_correction,
     realtime_single_bvis_solver,
 )
-from rascil.data_models import (
+from ska_sdp_datamodels import (
     SkyComponent,
     import_gaintable_from_hdf5,
     export_skycomponent_to_hdf5,
 )
-from rascil.data_models.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     export_visibility_to_ms,
     dft_skycomponent_visibility,

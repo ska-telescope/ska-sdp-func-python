@@ -8,8 +8,8 @@ import unittest
 import numpy
 from numpy.testing import assert_array_almost_equal
 
-from rascil.data_models.polarisation_convert import convert_pol_frame
-from rascil.data_models.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.polarisation_convert import convert_pol_frame
+from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.calibration import apply_jones
 
 log = logging.getLogger("rascil-logger")

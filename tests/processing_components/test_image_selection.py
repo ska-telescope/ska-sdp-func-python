@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_test_image,
     show_image,

@@ -10,8 +10,8 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.data_models import SkyComponent
-from rascil.data_models.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels import SkyComponent
+from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     restore_list,
     deconvolve_cube,
