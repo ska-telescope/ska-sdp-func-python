@@ -11,7 +11,7 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components import create_image
 from rascil.processing_components.griddata.kernels import (
     create_vpterm_convolutionfunction,

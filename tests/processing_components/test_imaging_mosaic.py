@@ -10,7 +10,7 @@ import unittest
 
 from matplotlib import pyplot as plt
 
-from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components import (
     create_visibility_from_ms,
     show_image,

@@ -10,7 +10,7 @@ import numpy.testing
 import pytest
 from astropy.coordinates import SkyCoord
 
-from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation.rfi import (
     apply_beam_gain_for_low,

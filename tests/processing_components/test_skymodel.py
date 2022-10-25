@@ -9,8 +9,8 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from ska_sdp_datamodels.memory_data_models import SkyModel
-from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels import SkyModel
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import create_test_image
 from rascil.processing_components.skycomponent.operations import create_skycomponent

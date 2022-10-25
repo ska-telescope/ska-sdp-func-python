@@ -8,7 +8,7 @@ import unittest
 
 import numpy
 
-from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components.image.gather_scatter import (
     image_gather_channels,
     image_scatter_channels,

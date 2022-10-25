@@ -16,9 +16,11 @@ import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from ska_sdp_datamodels.data_convert_persist import export_gaintable_to_hdf5
-from ska_sdp_datamodels.memory_data_models import SkyModel
-from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.calibration.calibration_functions import (
+    export_gaintable_to_hdf5,
+)
+from ska_sdp_datamodels import SkyModel
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components.calibration.chain_calibration import (
     create_calibration_controls,
 )

@@ -5,7 +5,7 @@
 import logging
 import unittest
 
-from ska_sdp_datamodels.memory_data_models import QualityAssessment
+from ska_sdp_datamodels import QualityAssessment
 
 log = logging.getLogger("rascil-logger")
 

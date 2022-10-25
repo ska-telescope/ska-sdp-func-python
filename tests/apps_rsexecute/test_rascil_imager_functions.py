@@ -12,7 +12,7 @@ from ska_sdp_datamodels import (
     SkyComponent,
     export_skycomponent_to_hdf5,
 )
-from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components.image.operations import create_image
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.skycomponent import fit_skycomponent_spectral_index

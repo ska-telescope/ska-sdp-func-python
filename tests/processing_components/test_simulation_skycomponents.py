@@ -11,7 +11,7 @@ import numpy
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_almost_equal
 
-from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components.simulation import (
     create_low_test_skycomponents_from_gleam,
 )

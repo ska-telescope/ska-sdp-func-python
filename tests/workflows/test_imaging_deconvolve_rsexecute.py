@@ -12,7 +12,7 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 
 from rascil.apps.rascil_imager import get_cellsize
-from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components import (
     smooth_image,
     image_gather_channels,

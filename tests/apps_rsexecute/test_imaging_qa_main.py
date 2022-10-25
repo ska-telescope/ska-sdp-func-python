@@ -28,8 +28,8 @@ from rascil.apps.imaging_qa_main import (
     cli_parser,
     analyze_image,
 )
-from ska_sdp_datamodels.data_convert_persist import export_skycomponent_to_hdf5
-from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.sky_model.sky_functions import export_skycomponent_to_hdf5
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components.image import (
     create_image,
     restore_cube,

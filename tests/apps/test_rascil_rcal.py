@@ -28,7 +28,7 @@ from ska_sdp_datamodels import (
     import_gaintable_from_hdf5,
     export_skycomponent_to_hdf5,
 )
-from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components import (
     export_visibility_to_ms,
     dft_skycomponent_visibility,

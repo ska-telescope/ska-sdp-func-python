@@ -10,9 +10,9 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 
 from rascil.apps.rascil_imager import cli_parser, imager
-from ska_sdp_datamodels import SkyModel
-from ska_sdp_datamodels.data_convert_persist import export_skymodel_to_hdf5
-from ska_sdp_datamodels.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.sky_models.sky_models import SkyModel
+from ska_sdp_datamodels.sky_models.sky_functions import export_skymodel_to_hdf5
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components import (
     export_visibility_to_ms,
     concatenate_visibility_frequency,
