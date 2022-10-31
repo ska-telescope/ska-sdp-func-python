@@ -12,8 +12,7 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import EarthLocation
 from astropy.time import Time
-
-from ska_sdp_datamodels import Configuration
+from ska_sdp_datamodels.configuration.config_model import Configuration
 from ska_sdp_datamodels.science_data_model.polarisation_model import ReceptorFrame
 
 try:

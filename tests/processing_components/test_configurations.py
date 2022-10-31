@@ -10,8 +10,8 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
-
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import (
     create_visibility,

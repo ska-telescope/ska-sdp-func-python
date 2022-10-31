@@ -9,12 +9,11 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_array_almost_equal
-
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+
 from rascil.processing_components.image.operations import (
     create_image,
 )
-
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.imaging.imaging import (
     predict_visibility,

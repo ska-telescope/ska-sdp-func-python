@@ -15,6 +15,7 @@ import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_array_almost_equal
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
 from rascil.apps.imaging_qa_main import (
     cli_parser,
@@ -22,7 +23,6 @@ from rascil.apps.imaging_qa_main import (
     correct_primary_beam,
     read_skycomponent_from_txt,
 )
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components.image import (
     create_image,
 )

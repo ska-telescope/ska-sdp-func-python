@@ -23,18 +23,17 @@ import numpy
 import pytest
 from astropy.coordinates import SkyCoord
 from numpy.random import default_rng
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.sky_model.sky_functions import export_skycomponent_to_hdf5
 
 from rascil.apps.imaging_qa_main import (
     cli_parser,
     analyze_image,
 )
-from ska_sdp_datamodels.sky_model.sky_functions import export_skycomponent_to_hdf5
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components.image import (
     create_image,
     restore_cube,
 )
-
 from rascil.processing_components.imaging.primary_beams import create_pb
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import (

@@ -10,8 +10,8 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
-
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+
 from rascil.processing_components import create_image
 from rascil.processing_components.griddata import (
     apply_bounding_box_convolutionfunction,
@@ -25,7 +25,6 @@ from rascil.processing_components.griddata.kernels import (
     create_awterm_convolutionfunction,
     create_box_convolutionfunction,
 )
-
 from rascil.processing_components.imaging.primary_beams import create_pb_generic
 
 log = logging.getLogger("rascil-logger")

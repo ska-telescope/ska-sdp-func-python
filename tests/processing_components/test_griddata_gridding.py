@@ -11,8 +11,8 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
-
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+
 from rascil.processing_components.griddata.gridding import (
     fft_griddata_to_image,
     fft_image_to_griddata,
@@ -32,7 +32,6 @@ from rascil.processing_components.image.operations import (
     convert_stokes_to_polimage,
     convert_polimage_to_stokes,
 )
-
 from rascil.processing_components.image.operations import smooth_image
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.imaging.base import normalise_sumwt

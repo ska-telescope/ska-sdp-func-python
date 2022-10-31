@@ -7,8 +7,8 @@ import os
 import unittest
 
 import numpy
-
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+
 from rascil.processing_components.image.gather_scatter import (
     image_gather_facets,
     image_scatter_facets,
@@ -16,7 +16,6 @@ from rascil.processing_components.image.gather_scatter import (
     image_scatter_channels,
 )
 from rascil.processing_components.image.operations import create_empty_image_like
-
 from rascil.processing_components.simulation import create_test_image
 
 log = logging.getLogger("rascil-logger")

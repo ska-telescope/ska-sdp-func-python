@@ -8,8 +8,8 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
-
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+
 from rascil.processing_components import (
     create_image,
     create_image_from_array,
@@ -33,7 +33,6 @@ from rascil.processing_components.image.operations import (
     fft_image_to_griddata,
     ifft_griddata_to_image,
 )
-
 from rascil.processing_components.parameters import rascil_data_path
 from rascil.processing_components.simulation import (
     create_test_image,

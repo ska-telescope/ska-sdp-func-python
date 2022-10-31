@@ -8,10 +8,9 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
-
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
-from rascil.processing_components import create_image
 
+from rascil.processing_components import create_image
 from rascil.processing_components.imaging.primary_beams import create_low_test_beam
 from rascil.processing_components.parameters import rascil_path, rascil_data_path
 from rascil.processing_components.simulation import (

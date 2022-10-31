@@ -14,7 +14,6 @@ from astropy.coordinates import SkyCoord
 from rascil.processing_components import (
     create_image,
 )
-
 from rascil.processing_components.imaging.imaging_helpers import sum_invert_results
 from rascil.workflows import sum_invert_results_rsexecute
 from rascil.workflows.rsexecute.execution_support.rsexecute import rsexecute

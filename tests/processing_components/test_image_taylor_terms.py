@@ -11,7 +11,6 @@ from rascil.processing_components import (
     create_empty_image_like,
     image_scatter_channels,
 )
-
 from rascil.processing_components.image.taylor_terms import (
     calculate_image_frequency_moments,
     calculate_image_from_frequency_taylor_terms,

@@ -7,8 +7,8 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
-
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+
 from rascil.processing_components import (
     create_visibility,
     create_named_configuration,
@@ -18,7 +18,6 @@ from rascil.processing_components import (
     export_visibility_to_ms,
     create_visibility_from_ms,
 )
-
 from rascil.processing_components.imaging.imaging import (
     predict_visibility,
     invert_visibility,

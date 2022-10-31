@@ -6,13 +6,11 @@ import pytest
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_almost_equal
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.sky_model.sky_functions import export_skycomponent_to_hdf5
+from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
 from rascil.apps.rascil_imager import generate_skymodel_list
-from ska_sdp_datamodels import (
-    SkyComponent,
-    export_skycomponent_to_hdf5,
-)
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components.image.operations import create_image
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.skycomponent import fit_skycomponent_spectral_index

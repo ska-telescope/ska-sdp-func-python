@@ -12,6 +12,12 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.calibration.calibration_functions import (
+    import_gaintable_from_hdf5,
+)
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.sky_model.sky_functions import export_skycomponent_to_hdf5
+from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
 from rascil.apps.rascil_rcal import (
     cli_parser,
@@ -23,12 +29,6 @@ from rascil.apps.rascil_rcal import (
     apply_beam_correction,
     realtime_single_bvis_solver,
 )
-from ska_sdp_datamodels import (
-    SkyComponent,
-    import_gaintable_from_hdf5,
-    export_skycomponent_to_hdf5,
-)
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components import (
     export_visibility_to_ms,
     dft_skycomponent_visibility,
@@ -36,7 +36,6 @@ from rascil.processing_components import (
     simulate_gaintable,
     apply_gaintable,
 )
-
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import ingest_unittest_visibility

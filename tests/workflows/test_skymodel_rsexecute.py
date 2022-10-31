@@ -7,8 +7,8 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
-
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+
 from rascil.processing_components import (
     create_named_configuration,
     decimate_configuration,
@@ -20,7 +20,6 @@ from rascil.processing_components import (
     create_low_test_beam,
     convert_azelvp_to_radec,
 )
-
 from rascil.workflows.rsexecute.execution_support.rsexecute import rsexecute
 from rascil.workflows.rsexecute.skymodel.skymodel_rsexecute import (
     predict_skymodel_list_rsexecute_workflow,

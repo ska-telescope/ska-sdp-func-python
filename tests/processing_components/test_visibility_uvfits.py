@@ -8,8 +8,8 @@ import sys
 import unittest
 
 import numpy
-
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+
 from rascil.processing_components import (
     invert_visibility,
     create_image_from_visibility,

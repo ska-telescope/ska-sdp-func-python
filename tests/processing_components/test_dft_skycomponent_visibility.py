@@ -9,9 +9,9 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_allclose, assert_array_almost_equal
-
-from ska_sdp_datamodels import SkyComponent
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
+
 from rascil.processing_components.imaging.dft import (
     dft_skycomponent_visibility,
     idft_visibility_skycomponent,

@@ -8,11 +8,11 @@ import numpy
 import pytest
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.sky_models.sky_functions import export_skymodel_to_hdf5
+from ska_sdp_datamodels.sky_models.sky_models import SkyModel
 
 from rascil.apps.rascil_imager import cli_parser, imager
-from ska_sdp_datamodels.sky_models.sky_models import SkyModel
-from ska_sdp_datamodels.sky_models.sky_functions import export_skymodel_to_hdf5
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components import (
     export_visibility_to_ms,
     concatenate_visibility_frequency,
@@ -26,7 +26,6 @@ from rascil.processing_components.calibration.operations import (
 from rascil.processing_components.image.operations import (
     smooth_image,
 )
-
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import create_named_configuration
