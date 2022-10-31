@@ -88,7 +88,7 @@ class TestPrimaryBeams(unittest.TestCase):
             vp_data = vp["pixels"].data
             vp["pixels"].data = numpy.real(vp_data)
             if self.persist:
-                vp.export_to_fits(
+                vp.image_acc.export_to_fits(
                     "%s/test_voltage_pattern_real_%s_NOLL%d.fits"
                     % (self.results_dir, "MID_ZERNIKES", noll),
                 )

@@ -136,14 +136,16 @@ class TestGridDataGridding(unittest.TestCase):
         # Calculate the model convolved with a Gaussian.
         self.cmodel = smooth_image(self.model)
         if self.persist:
-            self.model.export_to_fits("%s/test_gridding_model.fits" % self.results_dir)
-            self.cmodel.export_to_fits(
+            self.model.image_acc.export_to_fits(
+                "%s/test_gridding_model.fits" % self.results_dir
+            )
+            self.cmodel.image_acc.export_to_fits(
                 "%s/test_gridding_cmodel.fits" % self.results_dir
             )
         pb = create_pb_generic(self.model, diameter=35.0, blockage=0.0, use_local=False)
         self.cmodel["pixels"].data *= pb["pixels"].data
         if self.persist:
-            self.cmodel.export_to_fits(
+            self.cmodel.image_acc.export_to_fits(
                 "%s/test_gridding_cmodel_pb.fits" % self.results_dir
             )
         self.peak = numpy.unravel_index(
@@ -166,7 +168,9 @@ class TestGridDataGridding(unittest.TestCase):
         cim = normalise_sumwt(cim, sumwt)
         im = convert_polimage_to_stokes(cim)
         if self.persist:
-            im.export_to_fits("%s/test_gridding_dirty_pswf.fits" % self.results_dir)
+            im.image_acc.export_to_fits(
+                "%s/test_gridding_dirty_pswf.fits" % self.results_dir
+            )
         self.check_peaks(im, 97.10594988, tol=1e-7)
 
     def test_griddata_invert_pswf_stokesIQ(self):
@@ -184,7 +188,9 @@ class TestGridDataGridding(unittest.TestCase):
         cim = normalise_sumwt(cim, sumwt)
         im = convert_polimage_to_stokes(cim)
         if self.persist:
-            im.export_to_fits("%s/test_gridding_dirty_pswf.fits" % self.results_dir)
+            im.image_acc.export_to_fits(
+                "%s/test_gridding_dirty_pswf.fits" % self.results_dir
+            )
         self.check_peaks(im, 97.10594988, tol=1e-7)
 
     def test_griddata_invert_aterm(self):
@@ -194,7 +200,9 @@ class TestGridDataGridding(unittest.TestCase):
         )
         pb = make_pb(self.model)
         if self.persist:
-            pb.export_to_fits("%s/test_gridding_aterm_pb.fits" % self.results_dir)
+            pb.image_acc.export_to_fits(
+                "%s/test_gridding_aterm_pb.fits" % self.results_dir
+            )
         gcf, cf = create_awterm_convolutionfunction(
             self.model,
             make_pb=make_pb,
@@ -215,7 +223,9 @@ class TestGridDataGridding(unittest.TestCase):
         cim = normalise_sumwt(cim, sumwt)
         im = convert_polimage_to_stokes(cim)
         if self.persist:
-            im.export_to_fits("%s/test_gridding_dirty_aterm.fits" % self.results_dir)
+            im.image_acc.export_to_fits(
+                "%s/test_gridding_dirty_aterm.fits" % self.results_dir
+            )
         self.check_peaks(im, 97.10594988, tol=1e-7)
 
     def test_griddata_invert_aterm_noover(self):
@@ -225,7 +235,9 @@ class TestGridDataGridding(unittest.TestCase):
         )
         pb = make_pb(self.model)
         if self.persist:
-            pb.export_to_fits("%s/test_gridding_aterm_pb.fits" % self.results_dir)
+            pb.image_acc.export_to_fits(
+                "%s/test_gridding_aterm_pb.fits" % self.results_dir
+            )
         gcf, cf = create_awterm_convolutionfunction(
             self.model,
             make_pb=make_pb,
@@ -245,7 +257,7 @@ class TestGridDataGridding(unittest.TestCase):
         cim = normalise_sumwt(cim, sumwt)
         im = convert_polimage_to_stokes(cim)
         if self.persist:
-            im.export_to_fits(
+            im.image_acc.export_to_fits(
                 "%s/test_gridding_dirty_aterm_noover.fits" % self.results_dir
             )
         self.check_peaks(im, 97.10594988489598)
@@ -265,7 +277,9 @@ class TestGridDataGridding(unittest.TestCase):
         cim = normalise_sumwt(cim, sumwt)
         im = convert_polimage_to_stokes(cim)
         if self.persist:
-            im.export_to_fits("%s/test_gridding_dirty_box.fits" % self.results_dir)
+            im.image_acc.export_to_fits(
+                "%s/test_gridding_dirty_box.fits" % self.results_dir
+            )
         self.check_peaks(im, 97.10594988489598, tol=1e-7)
 
     def check_peaks(self, im, peak, tol=1e-6):
@@ -295,7 +309,9 @@ class TestGridDataGridding(unittest.TestCase):
         cim = normalise_sumwt(cim, sumwt)
         im = convert_polimage_to_stokes(cim)
         if self.persist:
-            im.export_to_fits("%s/test_gridding_dirty_wterm.fits" % self.results_dir)
+            im.image_acc.export_to_fits(
+                "%s/test_gridding_dirty_wterm.fits" % self.results_dir
+            )
         self.check_peaks(im, 97.13206509100314)
 
     def test_griddata_invert_wterm_noover(self):
@@ -320,7 +336,9 @@ class TestGridDataGridding(unittest.TestCase):
         cim = normalise_sumwt(cim, sumwt)
         im = convert_polimage_to_stokes(cim)
         if self.persist:
-            im.export_to_fits("%s/test_gridding_dirty_wterm.fits" % self.results_dir)
+            im.image_acc.export_to_fits(
+                "%s/test_gridding_dirty_wterm.fits" % self.results_dir
+            )
         self.check_peaks(im, 97.1343833)
 
     def test_griddata_check_cf_grid_wcs(self):
@@ -372,7 +390,7 @@ class TestGridDataGridding(unittest.TestCase):
         )
         griddata = fft_image_to_griddata(modelIQUV, griddata, gcf)
         newvis = degrid_visibility_from_griddata(self.vis, griddata=griddata, cf=cf)
-        qa = newvis.qa_visibility()
+        qa = newvis.visibility_acc.qa_visibility()
         numpy.testing.assert_allclose(
             qa.data["maxabs"], 1091.515280627418, atol=1e-7, err_msg=f"{qa}"
         )
@@ -401,7 +419,7 @@ class TestGridDataGridding(unittest.TestCase):
         newvis = degrid_visibility_from_griddata(self.vis, griddata=griddata, cf=cf)
         newvis["vis"].data[...] -= self.vis["vis"].data[...]
         self.plot_vis(newvis, "wterm")
-        qa = newvis.qa_visibility()
+        qa = newvis.visibility_acc.qa_visibility()
         numpy.testing.assert_allclose(
             qa.data["maxabs"], 224.28478109440636, atol=1e-7, err_msg=f"{qa}"
         )
@@ -419,7 +437,9 @@ class TestGridDataGridding(unittest.TestCase):
         )
         pb = make_pb(modelIQUV)
         if self.persist:
-            pb.export_to_fits("%s/test_gridding_awterm_pb.fits" % self.results_dir)
+            pb.image_acc.export_to_fits(
+                "%s/test_gridding_awterm_pb.fits" % self.results_dir
+            )
         gcf, cf = create_awterm_convolutionfunction(
             self.model,
             make_pb=make_pb,
@@ -435,7 +455,7 @@ class TestGridDataGridding(unittest.TestCase):
         )
         griddata = fft_image_to_griddata(modelIQUV, griddata, gcf)
         newvis = degrid_visibility_from_griddata(self.vis, griddata=griddata, cf=cf)
-        qa = newvis.qa_visibility()
+        qa = newvis.visibility_acc.qa_visibility()
         numpy.testing.assert_allclose(
             qa.data["maxabs"], 1086.4705273529883, atol=1e-7, err_msg=f"{qa}"
         )
@@ -459,7 +479,7 @@ class TestGridDataGridding(unittest.TestCase):
         cim = normalise_sumwt(cim, sumwt)
         im = convert_polimage_to_stokes(cim)
         if self.persist:
-            im.export_to_fits(
+            im.image_acc.export_to_fits(
                 "%s/test_gridding_dirty_2d_uniform_block.fits" % self.results_dir
             )
         self.check_peaks(im, 99.40822097)
@@ -479,7 +499,7 @@ class TestGridDataGridding(unittest.TestCase):
         cim = normalise_sumwt(cim, sumwt)
         im = convert_polimage_to_stokes(cim)
         if self.persist:
-            im.export_to_fits(
+            im.image_acc.export_to_fits(
                 "%s/test_gridding_dirty_2d_IQ_uniform_block.fits" % self.results_dir
             )
         self.check_peaks(im, 99.40822097)
@@ -499,7 +519,7 @@ class TestGridDataGridding(unittest.TestCase):
         cim = normalise_sumwt(cim, sumwt)
         im = convert_polimage_to_stokes(cim)
         if self.persist:
-            im.export_to_fits(
+            im.image_acc.export_to_fits(
                 "%s/test_gridding_dirty_2d_IQ_uniform_block.fits" % self.results_dir
             )
         self.check_peaks(im, 99.40822097)

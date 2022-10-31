@@ -87,7 +87,7 @@ class TestFitSkyComponent(unittest.TestCase):
         assert separation < 1e-7, separation
 
         if self.persist:
-            self.model.export_to_fits(
+            self.model.image_acc.export_to_fits(
                 "%s/test_fit_skycomponent.fits" % (self.results_dir)
             )
             export_skycomponent_to_hdf5(

@@ -163,12 +163,12 @@ class TestImageGatherScatters(unittest.TestCase):
                     return_flat=True,
                 )
                 if self.persist:
-                    m31reconstructed.export_to_fits(
+                    m31reconstructed.image_acc.export_to_fits(
                         "%s/test_image_gather_scatter_%dnraster_%doverlap_%s_reconstructed.fits"
                         % (self.results_dir, nraster, overlap, taper),
                     )
                 if self.persist:
-                    flat.export_to_fits(
+                    flat.image_acc.export_to_fits(
                         "%s/test_image_gather_scatter_%dnraster_%doverlap_%s_flat.fits"
                         % (self.results_dir, nraster, overlap, taper),
                     )

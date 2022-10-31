@@ -88,7 +88,9 @@ class TestImaging2D(unittest.TestCase):
         plt.show()
 
         if self.persist:
-            mosaic.export_to_fits("{}/test_mosaic_dirty.fits".format(results_dir))
+            mosaic.image_acc.export_to_fits(
+                "{}/test_mosaic_dirty.fits".format(results_dir)
+            )
             export_convolutionfunction_to_fits(
                 gcfcf(model)[1], "{}/test_mosaic_cf.fits".format(results_dir)
             )

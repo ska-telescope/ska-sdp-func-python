@@ -172,9 +172,13 @@ class TestImaging(unittest.TestCase):
 
         self.cmodel = smooth_image(self.model)
         if self.persist:
-            self.model.export_to_fits("%s/test_imaging_model.fits" % self.results_dir)
+            self.model.image_acc.export_to_fits(
+                "%s/test_imaging_model.fits" % self.results_dir
+            )
         if self.persist:
-            self.cmodel.export_to_fits("%s/test_imaging_cmodel.fits" % self.results_dir)
+            self.cmodel.image_acc.export_to_fits(
+                "%s/test_imaging_cmodel.fits" % self.results_dir
+            )
 
         if add_errors:
             self.bvis_list = [
@@ -241,7 +245,7 @@ class TestImaging(unittest.TestCase):
 
         assert numpy.max(numpy.abs(dirty[0]["pixels"].data)), "Residual image is empty"
         if self.persist:
-            dirty[0].export_to_fits(
+            dirty[0].image_acc.export_to_fits(
                 "%s/test_imaging_predict_%s%s_%s_dirty.fits"
                 % (self.results_dir, context, extra, rsexecute.type()),
             )
@@ -278,12 +282,12 @@ class TestImaging(unittest.TestCase):
 
         if self.persist:
             if dopsf:
-                dirty[0].export_to_fits(
+                dirty[0].image_acc.export_to_fits(
                     "%s/test_imaging_invert_%s%s_%s_psf.fits"
                     % (self.results_dir, context, extra, rsexecute.type()),
                 )
             else:
-                dirty[0].export_to_fits(
+                dirty[0].image_acc.export_to_fits(
                     "%s/test_imaging_invert_%s%s_%s_dirty.fits"
                     % (self.results_dir, context, extra, rsexecute.type()),
                 )
@@ -414,7 +418,7 @@ class TestImaging(unittest.TestCase):
             context="2d",
         )
         residual_image_list = rsexecute.compute(residual_image_list, sync=True)
-        qa = residual_image_list[centre][0].qa_image()
+        qa = residual_image_list[centre][0].image_acc.qa_image()
         assert numpy.abs(qa.data["max"] - 0.32584463456508744) < 1.0, str(qa)
         assert numpy.abs(qa.data["min"] + 0.4559162232699305) < 1.0, str(qa)
 
@@ -437,12 +441,12 @@ class TestImaging(unittest.TestCase):
         restored_image_list = rsexecute.compute(restored_image_list, sync=True)
 
         if self.persist:
-            restored_image_list[centre].export_to_fits(
+            restored_image_list[centre].image_acc.export_to_fits(
                 "%s/test_imaging_invert_%s_restored.fits"
                 % (self.results_dir, rsexecute.type()),
             )
 
-        qa = restored_image_list[centre].qa_image()
+        qa = restored_image_list[centre].image_acc.qa_image()
         assert numpy.abs(qa.data["max"] - 100.00000000000163) < 1e-7, str(qa)
         assert numpy.abs(qa.data["min"] + 5.555050064664968e-12) < 1e-7, str(qa)
 
@@ -461,12 +465,12 @@ class TestImaging(unittest.TestCase):
         )
         restored_image_list = rsexecute.compute(restored_image_list, sync=True)
         if self.persist:
-            restored_image_list[centre].export_to_fits(
+            restored_image_list[centre].image_acc.export_to_fits(
                 "%s/test_imaging_invert_%s_restored_noresidual.fits"
                 % (self.results_dir, rsexecute.type()),
             )
 
-        qa = restored_image_list[centre].qa_image()
+        qa = restored_image_list[centre].image_acc.qa_image()
         assert numpy.abs(qa.data["max"] - 100.0) < 1e-7, str(qa)
         assert numpy.abs(qa.data["min"]) < 1e-7, str(qa)
 
@@ -524,16 +528,16 @@ class TestImaging(unittest.TestCase):
         )
 
         if self.persist:
-            restored_1facets_image_list[0].export_to_fits(
+            restored_1facets_image_list[0].image_acc.export_to_fits(
                 "%s/test_imaging_invert_%s_restored_1facets.fits"
                 % (self.results_dir, rsexecute.type()),
             )
-            restored_2facets_image_list[0].export_to_fits(
+            restored_2facets_image_list[0].image_acc.export_to_fits(
                 "%s/test_imaging_invert_%s_restored_2facets.fits"
                 % (self.results_dir, rsexecute.type()),
             )
 
-        qa = restored_2facets_image_list[centre].qa_image()
+        qa = restored_2facets_image_list[centre].image_acc.qa_image()
         assert numpy.abs(qa.data["max"] - 100.00000000000163) < 1e-7, str(qa)
         assert numpy.abs(qa.data["min"] + 8.72234065230259e-12) < 1e-7, str(qa)
 
@@ -541,11 +545,11 @@ class TestImaging(unittest.TestCase):
             "pixels"
         ].data -= restored_1facets_image_list[centre]["pixels"].data
         if self.persist:
-            restored_2facets_image_list[centre].export_to_fits(
+            restored_2facets_image_list[centre].image_acc.export_to_fits(
                 "%s/test_imaging_invert_%s_restored_2facets_error.fits"
                 % (self.results_dir, rsexecute.type()),
             )
-        qa = restored_2facets_image_list[centre].qa_image()
+        qa = restored_2facets_image_list[centre].image_acc.qa_image()
         assert numpy.abs(qa.data["max"] - 0.012401241830647329) < 1e-7, str(qa)
         assert numpy.abs(qa.data["min"] + 0.0010159473717538114) < 1e-7, str(qa)
 
@@ -563,7 +567,7 @@ class TestImaging(unittest.TestCase):
         route1 = rsexecute.compute(route1, sync=True)
         for r in route1, route2:
             assert len(r) == 2
-            qa = r[0].qa_image()
+            qa = r[0].image_acc.qa_image()
             assert numpy.abs(qa.data["max"] - 0.15513038832438183) < 1.0, str(qa)
             assert numpy.abs(qa.data["min"] + 0.4607090445091728) < 1.0, str(qa)
             assert numpy.abs(r[1] - 11700.0) < 1e-7, r

@@ -397,8 +397,10 @@ def test_rascil_imager(
 
         model = model_imagelist[0]
         cmodel = smooth_image(model)
-        model.export_to_fits(rascil_path("test_results/test_rascil_imager_model.fits"))
-        cmodel.export_to_fits(
+        model.image_acc.export_to_fits(
+            rascil_path("test_results/test_rascil_imager_model.fits")
+        )
+        cmodel.image_acc.export_to_fits(
             rascil_path("test_results/test_rascil_imager_cmodel.fits")
         )
         found_components = find_skycomponents(cmodel)
@@ -551,15 +553,15 @@ def test_rascil_imager(
     if mode == "invert":
         dirtyname = imager(args)
         dirty = import_image_from_fits(dirtyname)
-        qa = dirty.qa_image()
+        qa = dirty.image_acc.qa_image()
     elif mode == "cip":
         restoredname = imager(args)[2]
         dirty = import_image_from_fits(restoredname)
-        qa = dirty.qa_image()
+        qa = dirty.image_acc.qa_image()
     elif mode == "ical":
         restoredname = imager(args)[2]
         dirty = import_image_from_fits(restoredname)
-        qa = dirty.qa_image()
+        qa = dirty.image_acc.qa_image()
     else:
         return ValueError(f"rascil-imager: Unknown mode {mode}")
 

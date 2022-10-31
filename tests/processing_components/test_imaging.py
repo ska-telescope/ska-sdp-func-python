@@ -132,9 +132,13 @@ class TestImaging2D(unittest.TestCase):
 
         self.cmodel = smooth_image(self.model)
         if self.persist:
-            self.model.export_to_fits("%s/test_imaging_model.fits" % self.results_dir)
+            self.model.image_acc.export_to_fits(
+                "%s/test_imaging_model.fits" % self.results_dir
+            )
         if self.persist:
-            self.cmodel.export_to_fits("%s/test_imaging_cmodel.fits" % self.results_dir)
+            self.cmodel.image_acc.export_to_fits(
+                "%s/test_imaging_cmodel.fits" % self.results_dir
+            )
 
     def _checkcomponents(self, dirty, fluxthreshold=0.6, positionthreshold=0.1):
         comps = find_skycomponents(
@@ -184,7 +188,7 @@ class TestImaging2D(unittest.TestCase):
         )
 
         if self.persist:
-            dirty[0].export_to_fits(
+            dirty[0].image_acc.export_to_fits(
                 "%s/test_imaging_%s_residual.fits" % (self.results_dir, context),
             )
         for pol in range(dirty[0].image_acc.npol):
@@ -197,7 +201,7 @@ class TestImaging2D(unittest.TestCase):
             maxabs,
             fluxthreshold,
         )
-        qa = dirty[0].qa_image()
+        qa = dirty[0].image_acc.qa_image()
         numpy.testing.assert_allclose(
             qa.data["max"], flux_max, atol=1e-7, err_msg=f"{qa}"
         )
@@ -231,7 +235,7 @@ class TestImaging2D(unittest.TestCase):
         )
 
         if self.persist:
-            dirty[0].export_to_fits(
+            dirty[0].image_acc.export_to_fits(
                 "%s/test_imaging_%s_dirty.fits" % (self.results_dir, context)
             )
 
@@ -247,7 +251,7 @@ class TestImaging2D(unittest.TestCase):
         if check_components:
             self._checkcomponents(dirty[0], fluxthreshold, positionthreshold)
 
-        qa = dirty[0].qa_image()
+        qa = dirty[0].image_acc.qa_image()
         numpy.testing.assert_allclose(
             qa.data["max"], flux_max, atol=1e-7, err_msg=f"{qa}"
         )
@@ -596,7 +600,7 @@ class TestImaging2D(unittest.TestCase):
         error = numpy.max(psf[0]["pixels"].data) - 1.0
         assert abs(error) < 1.0e-12, error
         if self.persist:
-            psf[0].export_to_fits(
+            psf[0].image_acc.export_to_fits(
                 "%s/test_imaging_visibility_psf.fits" % self.results_dir
             )
 
@@ -610,7 +614,7 @@ class TestImaging2D(unittest.TestCase):
             error = numpy.max(psf[0]["pixels"].data) - 1.0
             assert abs(error) < 1.0e-12, error
             if self.persist:
-                psf[0].export_to_fits(
+                psf[0].image_acc.export_to_fits(
                     "%s/test_imaging_visibility_psf_%s.fits"
                     % (self.results_dir, weighting),
                 )

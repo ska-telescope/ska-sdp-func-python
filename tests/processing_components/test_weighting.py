@@ -114,7 +114,7 @@ class TestWeighting(unittest.TestCase):
             self.componentvis, self.model, dopsf=True, context="2d"
         )
         if self.persist:
-            psf.export_to_fits(
+            psf.image_acc.export_to_fits(
                 "%s/test_weighting_gaussian_taper_psf.fits" % (self.results_dir),
             )
         fit = fit_psf(psf)
@@ -137,7 +137,7 @@ class TestWeighting(unittest.TestCase):
             self.componentvis, self.model, dopsf=True, context="2d"
         )
         if self.persist:
-            psf.export_to_fits(
+            psf.image_acc.export_to_fits(
                 "%s/test_weighting_tukey_taper_psf.fits" % (self.results_dir),
             )
         fit = fit_psf(psf)

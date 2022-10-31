@@ -108,7 +108,9 @@ class TestImageDeconvolution(unittest.TestCase):
             self.cmodel["pixels"].data
         )
         if self.persist:
-            self.cmodel.export_to_fits("%s/test_restore.fits" % (self.results_dir))
+            self.cmodel.image_acc.export_to_fits(
+                "%s/test_restore.fits" % (self.results_dir)
+            )
 
     def test_restore_list(self):
         self.model["pixels"].data[0, 0, 256, 256] = 1.0
@@ -117,7 +119,9 @@ class TestImageDeconvolution(unittest.TestCase):
             self.cmodel["pixels"].data
         )
         if self.persist:
-            self.cmodel.export_to_fits("%s/test_restore.fits" % (self.results_dir))
+            self.cmodel.image_acc.export_to_fits(
+                "%s/test_restore.fits" % (self.results_dir)
+            )
 
     def test_restore_clean_beam(self):
         """Test restoration with specified beam beam
@@ -136,7 +140,7 @@ class TestImageDeconvolution(unittest.TestCase):
             self.cmodel["pixels"].data
         )
         if self.persist:
-            self.cmodel.export_to_fits(
+            self.cmodel.image_acc.export_to_fits(
                 "%s/test_restore_6mrad_beam.fits" % (self.results_dir)
             )
 
@@ -158,7 +162,7 @@ class TestImageDeconvolution(unittest.TestCase):
         self.cmodel = restore_cube(self.model, clean_beam=clean_beam)
         self.cmodel = restore_skycomponent(self.cmodel, sc, clean_beam=clean_beam)
         if self.persist:
-            self.cmodel.export_to_fits(
+            self.cmodel.image_acc.export_to_fits(
                 "%s/test_restore_skycomponent.fits" % (self.results_dir)
             )
         assert (
@@ -168,7 +172,9 @@ class TestImageDeconvolution(unittest.TestCase):
     def test_fit_psf(self):
         clean_beam = fit_psf(self.psf)
         if self.persist:
-            self.psf.export_to_fits("%s/test_fit_psf.fits" % (self.results_dir))
+            self.psf.image_acc.export_to_fits(
+                "%s/test_fit_psf.fits" % (self.results_dir)
+            )
         # Sanity check: by eyeball the FHWM = 4 pixels = 0.004 rad = 0.229 deg
         assert numpy.abs(clean_beam["bmaj"] - 0.24790689057765794) < 1.0e-7, clean_beam
         assert numpy.abs(clean_beam["bmin"] - 0.2371401153972545) < 1.0e-7, clean_beam
@@ -204,13 +210,13 @@ class TestImageDeconvolution(unittest.TestCase):
         assert numpy.max(self.residual["pixels"].data) < 1.2
 
     def save_results(self, tag):
-        self.comp.export_to_fits(
+        self.comp.image_acc.export_to_fits(
             f"{self.results_dir}/test_deconvolve_{tag}-deconvolved.fits"
         )
-        self.residual.export_to_fits(
+        self.residual.image_acc.export_to_fits(
             f"{self.results_dir}/test_deconvolve_{tag}-residual.fits",
         )
-        self.cmodel.export_to_fits(
+        self.cmodel.image_acc.export_to_fits(
             f"{self.results_dir}/test_deconvolve_{tag}-restored.fits"
         )
 
@@ -229,7 +235,7 @@ class TestImageDeconvolution(unittest.TestCase):
         if self.persist:
             self.save_results("msclean-sensitivity")
 
-        qa = self.residual.qa_image()
+        qa = self.residual.image_acc.qa_image()
         numpy.testing.assert_allclose(
             qa.data["max"], 0.8040729590477751, atol=1e-7, err_msg=f"{qa}"
         )

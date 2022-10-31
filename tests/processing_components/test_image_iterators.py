@@ -79,10 +79,10 @@ class TestImageIterators(unittest.TestCase):
                             log.warning(
                                 f"Raster set failed for {npixel}, {nraster}, {overlap}: error {err}"
                             )
-                        m31model.export_to_fits(
+                        m31model.image_acc.export_to_fits(
                             f"{testdir}/test_image_iterators_model_{npixel}_{nraster}_{overlap}.fits",
                         )
-                        diff.export_to_fits(
+                        diff.image_acc.export_to_fits(
                             f"{testdir}/test_image_iterators_diff_{npixel}_{nraster}_{overlap}.fits",
                         )
                     except ValueError as err:

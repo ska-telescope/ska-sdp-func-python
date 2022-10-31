@@ -96,7 +96,7 @@ class measurementset_tests(unittest.TestCase):
 
         model = create_image_from_visibility(vt, cellsize=cellsize, npixel=512)
         dirty_before, sumwt = invert_visibility(vt, model, context="2d")
-        dirty_before.export_to_fits(
+        dirty_before.image_acc.export_to_fits(
             "{dir}/test_roundtrip_dirty_before.fits".format(dir=results_dir),
         )
 
@@ -114,7 +114,7 @@ class measurementset_tests(unittest.TestCase):
         # Make the dirty image and point spread function
         model = create_image_from_visibility(vt_after, cellsize=cellsize, npixel=512)
         dirty_after, sumwt = invert_visibility(vt_after, model, context="2d")
-        dirty_after.export_to_fits(
+        dirty_after.image_acc.export_to_fits(
             "{dir}/test_roundtrip_dirty_after.fits".format(dir=results_dir)
         )
 

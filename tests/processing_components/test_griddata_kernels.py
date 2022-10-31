@@ -56,7 +56,7 @@ class TestGridDataKernels(unittest.TestCase):
         assert gcf["pixels"].data.dtype == "float", gcf["pixels"].data.dtype
         assert numpy.max(numpy.abs(cf["pixels"].data)) > 0.0
         if self.persist:
-            gcf.export_to_fits(
+            gcf.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_box_gcf.fits" % self.results_dir
             )
             export_convolutionfunction_to_fits(
@@ -83,7 +83,7 @@ class TestGridDataKernels(unittest.TestCase):
         assert gcf["pixels"].data.dtype == "float", gcf["pixels"].data.dtype
         assert numpy.max(numpy.abs(cf["pixels"].data)) > 0.0
         if self.persist:
-            gcf.export_to_fits(
+            gcf.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_pswf_gcf.fits" % self.results_dir
             )
             export_convolutionfunction_to_fits(
@@ -118,7 +118,7 @@ class TestGridDataKernels(unittest.TestCase):
         )
         assert gcf["pixels"].data.dtype == "float", gcf["pixels"].data.dtype
         if self.persist:
-            gcf.export_to_fits(
+            gcf.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_wterm_gcf.fits" % self.results_dir
             )
             export_convolutionfunction_to_fits(
@@ -162,7 +162,7 @@ class TestGridDataKernels(unittest.TestCase):
         )
         pb = make_pb(self.image)
         if self.persist:
-            pb.export_to_fits(
+            pb.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_awterm_pb.fits" % self.results_dir
             )
         gcf, cf = create_awterm_convolutionfunction(
@@ -178,7 +178,7 @@ class TestGridDataKernels(unittest.TestCase):
         assert gcf["pixels"].data.dtype == "float", gcf["pixels"].data.dtype
         assert numpy.max(numpy.abs(cf["pixels"].data)) > 0.0
         if self.persist:
-            gcf.export_to_fits(
+            gcf.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_awterm_gcf.fits" % self.results_dir
             )
             export_convolutionfunction_to_fits(
@@ -222,7 +222,7 @@ class TestGridDataKernels(unittest.TestCase):
         )
         pb = make_pb(self.image)
         if self.persist:
-            pb.export_to_fits(
+            pb.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_aterm_pb.fits" % self.results_dir
             )
         gcf, cf = create_awterm_convolutionfunction(
@@ -236,7 +236,7 @@ class TestGridDataKernels(unittest.TestCase):
             polarisation_frame=PolarisationFrame("linear"),
         )
         if self.persist:
-            gcf.export_to_fits(
+            gcf.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_aterm_gcf.fits" % self.results_dir
             )
             export_convolutionfunction_to_fits(

@@ -82,10 +82,10 @@ class TestImageGraph(unittest.TestCase):
         beam_2 = rsexecute.compute(beam_2, sync=True)
 
         if self.persist:
-            beam_2.export_to_fits(
+            beam_2.image_acc.export_to_fits(
                 "%s/test_image_map_create_pb_beam_2.fits" % (self.results_dir)
             )
-            beam_4.export_to_fits(
+            beam_4.image_acc.export_to_fits(
                 "%s/test_image_map_create_pb_beam_4.fits" % (self.results_dir)
             )
 

@@ -93,7 +93,7 @@ class TestPlotSkyComponent(unittest.TestCase):
             self.model, self.components, clean_beam=self.clean_beam
         )
         if self.persist:
-            self.model.export_to_fits(
+            self.model.image_acc.export_to_fits(
                 self.results_dir + "/test_plot_skycomponents_model.fits"
             )
 

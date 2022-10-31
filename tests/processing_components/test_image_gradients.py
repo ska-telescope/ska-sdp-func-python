@@ -54,10 +54,10 @@ class TestGradients(unittest.TestCase):
             show_image(grady, title="grady")
             plt.show(block=False)
         if self.persist:
-            gradx.export_to_fits(
+            gradx.image_acc.export_to_fits(
                 "%s/test_image_gradients_gradx.fits" % (self.results_dir)
             )
-            grady.export_to_fits(
+            grady.image_acc.export_to_fits(
                 "%s/test_image_gradients_grady.fits" % (self.results_dir)
             )
 
@@ -77,16 +77,16 @@ class TestGradients(unittest.TestCase):
             show_image(gradyy, title="gradyy")
             plt.show(block=False)
         if self.persist:
-            gradxx.export_to_fits(
+            gradxx.image_acc.export_to_fits(
                 "%s/test_image_gradients_gradxx.fits" % (self.results_dir)
             )
-            gradxy.export_to_fits(
+            gradxy.image_acc.export_to_fits(
                 "%s/test_image_gradients_gradxy.fits" % (self.results_dir)
             )
-            gradyx.export_to_fits(
+            gradyx.image_acc.export_to_fits(
                 "%s/test_image_gradients_gradyx.fits" % (self.results_dir)
             )
-            gradyy.export_to_fits(
+            gradyy.image_acc.export_to_fits(
                 "%s/test_image_gradients_gradyy.fits" % (self.results_dir)
             )
 

@@ -93,12 +93,12 @@ class TestCreateMS(unittest.TestCase):
                 show_image(dirty)
                 plt.show(block=False)
             if self.persist:
-                dirty.export_to_fits(
+                dirty.image_acc.export_to_fits(
                     "%s/test_visibility_uvfits_dirty.fits" % self.results_dir
                 )
 
             if schan == 0:
-                qa = dirty.qa_image()
+                qa = dirty.image_acc.qa_image()
                 numpy.testing.assert_allclose(
                     qa.data["max"], 1.0668020958044764, atol=1e-7, err_msg=f"{qa}"
                 )

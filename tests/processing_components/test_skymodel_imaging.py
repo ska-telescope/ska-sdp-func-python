@@ -111,7 +111,7 @@ class TestSkyModel(unittest.TestCase):
         ), "Image is empty"
 
         skymodel_vis = skymodel_predict_calibrate(self.vis, self.skymodel, context="ng")
-        qa = skymodel_vis.qa_visibility()
+        qa = skymodel_vis.visibility_acc.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 60.35140880932053, err_msg=str(qa)
         )
@@ -149,7 +149,7 @@ class TestSkyModel(unittest.TestCase):
             context="ng",
             get_pb=get_pb,
         )
-        qa = skymodel_vis.qa_visibility()
+        qa = skymodel_vis.visibility_acc.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 32.20530966848842, err_msg=str(qa)
         )
@@ -189,10 +189,10 @@ class TestSkyModel(unittest.TestCase):
             flat_sky=False,
         )
         if self.persist:
-            dirty.export_to_fits(
+            dirty.image_acc.export_to_fits(
                 "%s/test_skymodel_invert_dirty.fits" % (self.results_dir),
             )
-        qa = dirty.qa_image()
+        qa = dirty.image_acc.qa_image()
 
         numpy.testing.assert_allclose(
             qa.data["max"], 4.179714181498791, atol=1e-7, err_msg=f"{qa}"
@@ -244,14 +244,14 @@ class TestSkyModel(unittest.TestCase):
             flat_sky=False,
         )
         if self.persist:
-            skymodel[0].export_to_fits(
+            skymodel[0].image_acc.export_to_fits(
                 "%s/test_skymodel_invert_flat_noise_dirty.fits" % (self.results_dir),
             )
-            skymodel[1].export_to_fits(
+            skymodel[1].image_acc.export_to_fits(
                 "%s/test_skymodel_invert_flat_noise_sensitivity.fits"
                 % (self.results_dir),
             )
-        qa = skymodel[0].qa_image()
+        qa = skymodel[0].image_acc.qa_image()
 
         numpy.testing.assert_allclose(
             qa.data["max"], 3.767454977596991, atol=1e-7, err_msg=f"{qa}"
@@ -269,14 +269,14 @@ class TestSkyModel(unittest.TestCase):
             flat_sky=True,
         )
         if self.persist:
-            skymodel[0].export_to_fits(
+            skymodel[0].image_acc.export_to_fits(
                 "%s/test_skymodel_invert_flat_sky_dirty.fits" % (self.results_dir),
             )
-            skymodel[1].export_to_fits(
+            skymodel[1].image_acc.export_to_fits(
                 "%s/test_skymodel_invert_flat_sky_sensitivity.fits"
                 % (self.results_dir),
             )
-        qa = skymodel[0].qa_image()
+        qa = skymodel[0].image_acc.qa_image()
 
         numpy.testing.assert_allclose(
             qa.data["max"], 4.025153684707801, atol=1e-7, err_msg=f"{qa}"
@@ -309,7 +309,7 @@ class TestSkyModel(unittest.TestCase):
         ), "Image is empty"
 
         skymodel_vis = skymodel_predict_calibrate(self.vis, self.skymodel, context="ng")
-        qa = skymodel_vis.qa_visibility()
+        qa = skymodel_vis.visibility_acc.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 39.916746503252156, err_msg=str(qa)
         )
@@ -336,7 +336,7 @@ class TestSkyModel(unittest.TestCase):
         assert len(self.skymodel.components) == 11, len(self.skymodel.components)
 
         skymodel_vis = skymodel_predict_calibrate(self.vis, self.skymodel, context="ng")
-        qa = skymodel_vis.qa_visibility()
+        qa = skymodel_vis.visibility_acc.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 20.434662306068372, err_msg=str(qa)
         )

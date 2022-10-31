@@ -112,10 +112,10 @@ class TestRFIRegression(unittest.TestCase):
         dirty, sumwt = invert_ng(bvis, model)
         dirty["pixels"].data[numpy.abs(dirty["pixels"].data) > 1e6] = 0.0
         if self.persist:
-            dirty.export_to_fits(
+            dirty.image_acc.export_to_fits(
                 rascil_path(f"test_results/test_rfi_image_withPBTrue.fits"),
             )
-        qa = dirty.qa_image()
+        qa = dirty.image_acc.qa_image()
 
         numpy.testing.assert_approx_equal(
             qa.data["max"],
@@ -151,10 +151,10 @@ class TestRFIRegression(unittest.TestCase):
         dirty, sumwt = invert_ng(bvis, model)
         dirty["pixels"].data[numpy.abs(dirty["pixels"].data) > 1e6] = 0.0
         if self.persist:
-            dirty.export_to_fits(
+            dirty.image_acc.export_to_fits(
                 rascil_path(f"test_results/test_rfi_image_withPBFalse.fits"),
             )
-        qa = dirty.qa_image()
+        qa = dirty.image_acc.qa_image()
 
         numpy.testing.assert_approx_equal(
             qa.data["max"], 999979.7305620918, 8, err_msg=str(qa)

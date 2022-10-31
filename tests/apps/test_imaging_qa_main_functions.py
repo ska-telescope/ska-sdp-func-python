@@ -147,7 +147,7 @@ class TestCIChecker(unittest.TestCase):
         sensitivity_image = (
             self.results_dir + "/test_imaging_qa_functions_sensitivity.fits"
         )
-        self.pb_mid.export_to_fits(sensitivity_image)
+        self.pb_mid.image_acc.export_to_fits(sensitivity_image)
 
         reversed_comp = correct_primary_beam(
             None, sensitivity_image, self.components_with_pb_mid, "MID"
@@ -160,7 +160,7 @@ class TestCIChecker(unittest.TestCase):
 
     def test_correct_primary_beam_restored_mid(self):
 
-        self.multi_chan_image.export_to_fits(self.restored_image_multi)
+        self.multi_chan_image.image_acc.export_to_fits(self.restored_image_multi)
         # Test using restored image
         reversed_comp_rest = correct_primary_beam(
             self.restored_image_multi,
@@ -178,7 +178,7 @@ class TestCIChecker(unittest.TestCase):
 
     def test_correct_primary_beam_restored_low(self):
 
-        self.multi_chan_image.export_to_fits(self.restored_image_multi)
+        self.multi_chan_image.image_acc.export_to_fits(self.restored_image_multi)
         # Test using restored image
         reversed_comp_rest = correct_primary_beam(
             self.restored_image_multi,
@@ -277,7 +277,7 @@ class TestCIChecker(unittest.TestCase):
         self.args.ingest_fitsname_restored = self.restored_image_multi
         self.args.restart = "False"
 
-        self.multi_chan_image.export_to_fits(self.restored_image_multi)
+        self.multi_chan_image.image_acc.export_to_fits(self.restored_image_multi)
 
         result = analyze_image(self.args)
 
