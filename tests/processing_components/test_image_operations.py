@@ -219,7 +219,7 @@ class TestImage(unittest.TestCase):
         vp["pixels"].data = vp["pixels"].data + 1j * imag_vp["pixels"].data
 
         polframe = polarisation_frame_from_wcs(vp.image_acc.wcs, vp.image_acc.shape)
-        permute = polframe.fits_to_rascil[polframe.type]
+        permute = polframe.fits_to_datamodels[polframe.type]
 
         newvp_data = vp["pixels"].data.copy()
         for ip, p in enumerate(permute):
