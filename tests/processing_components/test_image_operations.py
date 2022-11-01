@@ -98,7 +98,7 @@ class TestImage(unittest.TestCase):
             clean_beam,
         )
         m31model_by_array.image_acc.export_to_fits(
-            fitsfile="%s/test_model.fits" % (self.results_dir)
+            "%s/test_model.fits" % (self.results_dir)
         )
         m31image_by_fits = import_image_from_fits(
             fitsfile="%s/test_model.fits" % (self.results_dir)
