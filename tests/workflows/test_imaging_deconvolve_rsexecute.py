@@ -10,9 +10,9 @@ from types import SimpleNamespace
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
 from rascil.apps.rascil_imager import get_cellsize
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     smooth_image,
     image_gather_channels,
@@ -137,10 +137,10 @@ class TestImagingDeconvolveGraph(unittest.TestCase):
             model = image_gather_channels(self.model_imagelist)
 
             self.cmodel = smooth_image(model)
-            model.export_to_fits(
+            model.image_acc.export_to_fits(
                 "%s/test_imaging_deconvolve_rsexecute_model.fits" % self.results_dir,
             )
-            self.cmodel.export_to_fits(
+            self.cmodel.image_acc.export_to_fits(
                 "%s/test_imaging_deconvolve_rsexecute_cmodel.fits" % self.results_dir,
             )
 
@@ -388,10 +388,10 @@ class TestImagingDeconvolveGraph(unittest.TestCase):
 
     def save_and_check(self, flux_max, flux_min, restored, tag):
         if self.persist:
-            restored.export_to_fits(
+            restored.image_acc.export_to_fits(
                 f"{self.results_dir}/test_imaging_deconvolve_rsexecute_{tag}_restored.fits",
             )
-        qa = restored.qa_image()
+        qa = restored.image_acc.qa_image()
         numpy.testing.assert_allclose(
             qa.data["max"], flux_max, atol=1e-7, err_msg=f"{qa}"
         )

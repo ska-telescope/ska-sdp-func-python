@@ -8,11 +8,11 @@ import numpy
 import pytest
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.sky_model.sky_functions import export_skymodel_to_hdf5
+from ska_sdp_datamodels.sky_model.sky_model import SkyModel
 
 from rascil.apps.rascil_imager import cli_parser, imager
-from rascil.data_models import SkyModel
-from rascil.data_models.data_convert_persist import export_skymodel_to_hdf5
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     export_visibility_to_ms,
     concatenate_visibility_frequency,
@@ -26,7 +26,6 @@ from rascil.processing_components.calibration.operations import (
 from rascil.processing_components.image.operations import (
     smooth_image,
 )
-
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import create_named_configuration
@@ -398,8 +397,10 @@ def test_rascil_imager(
 
         model = model_imagelist[0]
         cmodel = smooth_image(model)
-        model.export_to_fits(rascil_path("test_results/test_rascil_imager_model.fits"))
-        cmodel.export_to_fits(
+        model.image_acc.export_to_fits(
+            rascil_path("test_results/test_rascil_imager_model.fits")
+        )
+        cmodel.image_acc.export_to_fits(
             rascil_path("test_results/test_rascil_imager_cmodel.fits")
         )
         found_components = find_skycomponents(cmodel)
@@ -552,15 +553,15 @@ def test_rascil_imager(
     if mode == "invert":
         dirtyname = imager(args)
         dirty = import_image_from_fits(dirtyname)
-        qa = dirty.qa_image()
+        qa = dirty.image_acc.qa_image()
     elif mode == "cip":
         restoredname = imager(args)[2]
         dirty = import_image_from_fits(restoredname)
-        qa = dirty.qa_image()
+        qa = dirty.image_acc.qa_image()
     elif mode == "ical":
         restoredname = imager(args)[2]
         dirty = import_image_from_fits(restoredname)
-        qa = dirty.qa_image()
+        qa = dirty.image_acc.qa_image()
     else:
         return ValueError(f"rascil-imager: Unknown mode {mode}")
 

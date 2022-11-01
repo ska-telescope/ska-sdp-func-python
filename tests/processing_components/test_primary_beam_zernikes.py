@@ -11,8 +11,7 @@ import matplotlib.pyplot as plt
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
-
-from rascil.data_models.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
 from rascil.processing_components.imaging.base import create_image_from_visibility
 from rascil.processing_components.imaging.primary_beams import (
@@ -89,7 +88,7 @@ class TestPrimaryBeams(unittest.TestCase):
             vp_data = vp["pixels"].data
             vp["pixels"].data = numpy.real(vp_data)
             if self.persist:
-                vp.export_to_fits(
+                vp.image_acc.export_to_fits(
                     "%s/test_voltage_pattern_real_%s_NOLL%d.fits"
                     % (self.results_dir, "MID_ZERNIKES", noll),
                 )

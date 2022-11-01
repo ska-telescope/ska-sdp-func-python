@@ -7,8 +7,8 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_named_configuration,
     decimate_configuration,
@@ -20,7 +20,6 @@ from rascil.processing_components import (
     create_low_test_beam,
     convert_azelvp_to_radec,
 )
-
 from rascil.workflows.rsexecute.execution_support.rsexecute import rsexecute
 from rascil.workflows.rsexecute.skymodel.skymodel_rsexecute import (
     predict_skymodel_list_rsexecute_workflow,
@@ -131,7 +130,7 @@ class TestSkyModel(unittest.TestCase):
             self.vis_list[0], self.skymodel_list, context="ng"
         )
         skymodel_vislist = rsexecute.compute(skymodel_vislist, sync=True)
-        qa = skymodel_vislist[0].qa_visibility()
+        qa = skymodel_vislist[0].visibility_acc.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 60.35140880932053, err_msg=str(qa)
         )
@@ -178,7 +177,7 @@ class TestSkyModel(unittest.TestCase):
             get_pb=get_pb,
         )
         skymodel_vislist = rsexecute.compute(skymodel_vislist, sync=True)
-        qa = skymodel_vislist[0].qa_visibility()
+        qa = skymodel_vislist[0].visibility_acc.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 32.20530966848842, err_msg=str(qa)
         )
@@ -236,14 +235,14 @@ class TestSkyModel(unittest.TestCase):
         )
         skymodel_list = rsexecute.compute(skymodel_list, sync=True)
         if self.persist:
-            skymodel_list[0][0].export_to_fits(
+            skymodel_list[0][0].image_acc.export_to_fits(
                 "%s/test_skymodel_invert_flat_noise_dirty.fits" % (self.results_dir),
             )
-            skymodel_list[0][1].export_to_fits(
+            skymodel_list[0][1].image_acc.export_to_fits(
                 "%s/test_skymodel_invert_flat_noise_sensitivity.fits"
                 % (self.results_dir),
             )
-        qa = skymodel_list[0][0].qa_image()
+        qa = skymodel_list[0][0].image_acc.qa_image()
 
         numpy.testing.assert_allclose(
             qa.data["max"], 3.7166391470621285, atol=1e-7, err_msg=f"{qa}"
@@ -262,14 +261,14 @@ class TestSkyModel(unittest.TestCase):
         )
         skymodel_list = rsexecute.compute(skymodel_list, sync=True)
         if self.persist:
-            skymodel_list[0][0].export_to_fits(
+            skymodel_list[0][0].image_acc.export_to_fits(
                 "%s/test_skymodel_invert_flat_sky_dirty.fits" % (self.results_dir),
             )
-            skymodel_list[0][0].export_to_fits(
+            skymodel_list[0][0].image_acc.export_to_fits(
                 "%s/test_skymodel_invert_flat_sky_sensitivity.fits"
                 % (self.results_dir),
             )
-        qa = skymodel_list[0][0].qa_image()
+        qa = skymodel_list[0][0].image_acc.qa_image()
 
         numpy.testing.assert_allclose(
             qa.data["max"], 3.970861986801607, atol=1e-7, err_msg=f"{qa}"
@@ -310,7 +309,7 @@ class TestSkyModel(unittest.TestCase):
             self.vis_list[0], self.skymodel_list, context="ng"
         )
         skymodel_vislist = rsexecute.compute(skymodel_vislist, sync=True)
-        qa = skymodel_vislist[0].qa_visibility()
+        qa = skymodel_vislist[0].visibility_acc.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 39.916746503252156, err_msg=str(qa)
         )
@@ -347,7 +346,7 @@ class TestSkyModel(unittest.TestCase):
             self.vis_list[0], self.skymodel_list, context="ng"
         )
         skymodel_vislist = rsexecute.compute(skymodel_vislist, sync=True)
-        qa = skymodel_vislist[0].qa_visibility()
+        qa = skymodel_vislist[0].visibility_acc.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 20.434662306068372, err_msg=str(qa)
         )

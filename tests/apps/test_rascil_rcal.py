@@ -12,6 +12,12 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.calibration.calibration_functions import (
+    import_gaintable_from_hdf5,
+)
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.sky_model.sky_functions import export_skycomponent_to_hdf5
+from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
 from rascil.apps.rascil_rcal import (
     cli_parser,
@@ -23,12 +29,6 @@ from rascil.apps.rascil_rcal import (
     apply_beam_correction,
     realtime_single_bvis_solver,
 )
-from rascil.data_models import (
-    SkyComponent,
-    import_gaintable_from_hdf5,
-    export_skycomponent_to_hdf5,
-)
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     export_visibility_to_ms,
     dft_skycomponent_visibility,
@@ -36,7 +36,6 @@ from rascil.processing_components import (
     simulate_gaintable,
     apply_gaintable,
 )
-
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import ingest_unittest_visibility
@@ -154,7 +153,7 @@ class TestRASCILRcal(unittest.TestCase):
         """
         self.gt = create_gaintable_from_visibility(self.bvis_original, jones_type="B")
         self.gt = simulate_gaintable(self.gt, phase_error=0.1)
-        qa_gt = self.gt.qa_gain_table()
+        qa_gt = self.gt.gaintable_acc.qa_gain_table()
         assert qa_gt.data["rms-amp"] < 1e-12, str(qa_gt)
         assert qa_gt.data["rms-phase"] > 0.0, str(qa_gt)
         bvis_error = apply_gaintable(self.bvis_original, self.gt)
@@ -206,13 +205,13 @@ class TestRASCILRcal(unittest.TestCase):
         ).all()  # un-flagged data, all weights are non-zero
         log.info(f"\nFinal gaintable: {gain_table}")
 
-        qa_gt = gain_table.qa_gain_table()
+        qa_gt = gain_table.gaintable_acc.qa_gain_table()
         log.info(qa_gt)
         assert qa_gt.data["rms-phase"] > 0.0, str(qa_gt)
 
         bvis_difference = apply_gaintable(self.bvis_error, gain_table, inverse=True)
         bvis_difference["vis"] -= self.bvis_original["vis"]
-        qa = bvis_difference.qa_visibility()
+        qa = bvis_difference.visibility_acc.qa_visibility()
         assert qa.data["maxabs"] < 1e-12, str(qa)
         assert qa.data["minabs"] < 1e-12, str(qa)
 

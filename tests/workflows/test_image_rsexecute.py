@@ -9,8 +9,8 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.imaging.base import create_image_from_visibility
 from rascil.processing_components.imaging.primary_beams import create_pb
 from rascil.processing_components.parameters import rascil_path
@@ -82,10 +82,10 @@ class TestImageGraph(unittest.TestCase):
         beam_2 = rsexecute.compute(beam_2, sync=True)
 
         if self.persist:
-            beam_2.export_to_fits(
+            beam_2.image_acc.export_to_fits(
                 "%s/test_image_map_create_pb_beam_2.fits" % (self.results_dir)
             )
-            beam_4.export_to_fits(
+            beam_4.image_acc.export_to_fits(
                 "%s/test_image_map_create_pb_beam_4.fits" % (self.results_dir)
             )
 

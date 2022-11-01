@@ -11,7 +11,6 @@ from rascil.processing_components import (
     create_empty_image_like,
     image_scatter_channels,
 )
-
 from rascil.processing_components.image.taylor_terms import (
     calculate_image_frequency_moments,
     calculate_image_from_frequency_taylor_terms,
@@ -46,13 +45,13 @@ class TestImage(unittest.TestCase):
             npixel=512, cellsize=0.0001, frequency=frequency, flux_limit=1.0
         )
         if self.persist:
-            original_cube.export_to_fits(
+            original_cube.image_acc.export_to_fits(
                 fitsfile="%s/test_moments_cube.fits" % (self.results_dir)
             )
         cube = create_empty_image_like(original_cube)
         moment_cube = calculate_image_frequency_moments(cube, nmoment=3)
         if self.persist:
-            moment_cube.export_to_fits(
+            moment_cube.image_acc.export_to_fits(
                 fitsfile="%s/test_moments_moment_cube.fits" % (self.results_dir),
             )
         reconstructed_cube = calculate_image_from_frequency_taylor_terms(
@@ -60,7 +59,7 @@ class TestImage(unittest.TestCase):
         )
         print(reconstructed_cube.image_acc.wcs)
         if self.persist:
-            reconstructed_cube.export_to_fits(
+            reconstructed_cube.image_acc.export_to_fits(
                 fitsfile="%s/test_moments_reconstructed_cube.fits" % (self.results_dir),
             )
         error = numpy.std(
@@ -74,20 +73,20 @@ class TestImage(unittest.TestCase):
             npixel=512, cellsize=0.0001, frequency=frequency, flux_limit=1.0
         )
         if self.persist:
-            original_cube.export_to_fits(
+            original_cube.image_acc.export_to_fits(
                 fitsfile="%s/test_moments_1_cube.fits" % (self.results_dir),
             )
         cube = create_empty_image_like(original_cube)
         moment_cube = calculate_image_frequency_moments(cube, nmoment=1)
         if self.persist:
-            moment_cube.export_to_fits(
+            moment_cube.image_acc.export_to_fits(
                 fitsfile="%s/test_moments_1_moment_cube.fits" % (self.results_dir),
             )
         reconstructed_cube = calculate_image_from_frequency_taylor_terms(
             cube, moment_cube
         )
         if self.persist:
-            reconstructed_cube.export_to_fits(
+            reconstructed_cube.image_acc.export_to_fits(
                 fitsfile="%s/test_moments_1_reconstructed_cube.fits"
                 % (self.results_dir),
             )

@@ -10,8 +10,8 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     smooth_image,
 )
@@ -178,8 +178,10 @@ class TestImaging(unittest.TestCase):
 
         self.cmodel = smooth_image(self.model)
         if self.persist:
-            self.model.export_to_fits("%s/test_imaging_model.fits" % self.test_dir)
-            self.cmodel.export_to_fits(
+            self.model.image_acc.export_to_fits(
+                "%s/test_imaging_model.fits" % self.test_dir
+            )
+            self.cmodel.image_acc.export_to_fits(
                 self.cmodel, "%s/test_imaging_cmodel.fits" % self.test_dir
             )
 
@@ -252,7 +254,7 @@ class TestImaging(unittest.TestCase):
 
         assert numpy.max(numpy.abs(dirty[0]["pixels"].data)), "Residual image is empty"
         if self.persist:
-            dirty[0].export_to_fits(
+            dirty[0].image_acc.export_to_fits(
                 "%s/test_imaging_predict_%s%s_%s_dirty.fits"
                 % (self.test_dir, context, extra, rsexecute.type()),
             )
@@ -290,12 +292,12 @@ class TestImaging(unittest.TestCase):
 
         if self.persist:
             if dopsf:
-                dirty[0].export_to_fits(
+                dirty[0].image_acc.export_to_fits(
                     "%s/test_imaging_invert_%s%s_%s_psf.fits"
                     % (self.test_dir, context, extra, rsexecute.type()),
                 )
             else:
-                dirty[0].export_to_fits(
+                dirty[0].image_acc.export_to_fits(
                     "%s/test_imaging_invert_%s%s_%s_dirty.fits"
                     % (self.test_dir, context, extra, rsexecute.type()),
                 )

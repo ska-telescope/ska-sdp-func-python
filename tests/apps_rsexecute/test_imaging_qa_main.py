@@ -23,18 +23,17 @@ import numpy
 import pytest
 from astropy.coordinates import SkyCoord
 from numpy.random import default_rng
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.sky_model.sky_functions import export_skycomponent_to_hdf5
 
 from rascil.apps.imaging_qa_main import (
     cli_parser,
     analyze_image,
 )
-from rascil.data_models.data_convert_persist import export_skycomponent_to_hdf5
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image import (
     create_image,
     restore_cube,
 )
-
 from rascil.processing_components.imaging.primary_beams import create_pb
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import (
@@ -200,7 +199,7 @@ def test_continuum_imaging_checker(
     sensitivity_file = rascil_path(
         f"test_results/test_imaging_qa_{tag}_sensitivity.fits"
     )
-    pb.export_to_fits(sensitivity_file)
+    pb.image_acc.export_to_fits(sensitivity_file)
 
     # Write out the original components
     components = original_components[0]
@@ -228,7 +227,7 @@ def test_continuum_imaging_checker(
     model.attrs["clean_beam"] = clean_beam
 
     restored_file = rascil_path(f"test_results/test_imaging_qa_{tag}.fits")
-    model.export_to_fits(restored_file)
+    model.image_acc.export_to_fits(restored_file)
 
     # Generate residual file: No skycomponents, just noise
     residual_model = create_image(
@@ -248,7 +247,7 @@ def test_continuum_imaging_checker(
     residual_model.attrs["clean_beam"] = clean_beam
 
     residual_file = rascil_path(f"test_results/test_imaging_qa_{tag}_residual.fits")
-    residual_model.export_to_fits(residual_file)
+    residual_model.image_acc.export_to_fits(residual_file)
 
     # Create frequency moment image
     taylor_model = create_image(
@@ -273,7 +272,7 @@ def test_continuum_imaging_checker(
         )
 
     taylor_file = rascil_path(f"test_results/test_imaging_qa_{tag}_taylor1.fits")
-    taylor_model.export_to_fits(taylor_file)
+    taylor_model.image_acc.export_to_fits(taylor_file)
 
     parser = cli_parser()
     args = parser.parse_args(

@@ -15,6 +15,7 @@ import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_array_almost_equal
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
 from rascil.apps.imaging_qa_main import (
     cli_parser,
@@ -22,7 +23,6 @@ from rascil.apps.imaging_qa_main import (
     correct_primary_beam,
     read_skycomponent_from_txt,
 )
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image import (
     create_image,
 )
@@ -147,7 +147,7 @@ class TestCIChecker(unittest.TestCase):
         sensitivity_image = (
             self.results_dir + "/test_imaging_qa_functions_sensitivity.fits"
         )
-        self.pb_mid.export_to_fits(sensitivity_image)
+        self.pb_mid.image_acc.export_to_fits(sensitivity_image)
 
         reversed_comp = correct_primary_beam(
             None, sensitivity_image, self.components_with_pb_mid, "MID"
@@ -160,7 +160,7 @@ class TestCIChecker(unittest.TestCase):
 
     def test_correct_primary_beam_restored_mid(self):
 
-        self.multi_chan_image.export_to_fits(self.restored_image_multi)
+        self.multi_chan_image.image_acc.export_to_fits(self.restored_image_multi)
         # Test using restored image
         reversed_comp_rest = correct_primary_beam(
             self.restored_image_multi,
@@ -178,7 +178,7 @@ class TestCIChecker(unittest.TestCase):
 
     def test_correct_primary_beam_restored_low(self):
 
-        self.multi_chan_image.export_to_fits(self.restored_image_multi)
+        self.multi_chan_image.image_acc.export_to_fits(self.restored_image_multi)
         # Test using restored image
         reversed_comp_rest = correct_primary_beam(
             self.restored_image_multi,
@@ -277,7 +277,7 @@ class TestCIChecker(unittest.TestCase):
         self.args.ingest_fitsname_restored = self.restored_image_multi
         self.args.restart = "False"
 
-        self.multi_chan_image.export_to_fits(self.restored_image_multi)
+        self.multi_chan_image.image_acc.export_to_fits(self.restored_image_multi)
 
         result = analyze_image(self.args)
 

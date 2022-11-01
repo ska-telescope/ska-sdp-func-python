@@ -5,7 +5,6 @@ API
 
 Here is a quick guide to the layout of the package:
 
- - rascil.data_models.memory_data_models: Data models such as Image, Visibility, GainTable
  - rascil.processing_components: Processing functions used in algorithms
  - rascil.workflows: Distributed processing workflows
  - rascil.apps: CLI apps

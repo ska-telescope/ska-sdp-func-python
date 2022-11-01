@@ -9,8 +9,8 @@ import sys
 import unittest
 
 from matplotlib import pyplot as plt
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_visibility_from_ms,
     show_image,
@@ -88,7 +88,9 @@ class TestImaging2D(unittest.TestCase):
         plt.show()
 
         if self.persist:
-            mosaic.export_to_fits("{}/test_mosaic_dirty.fits".format(results_dir))
+            mosaic.image_acc.export_to_fits(
+                "{}/test_mosaic_dirty.fits".format(results_dir)
+            )
             export_convolutionfunction_to_fits(
                 gcfcf(model)[1], "{}/test_mosaic_cf.fits".format(results_dir)
             )

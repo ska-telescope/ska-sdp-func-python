@@ -9,9 +9,9 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_allclose
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
-from rascil.data_models.memory_data_models import SkyComponent
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.visibility.base import (
@@ -314,7 +314,7 @@ class TestVisibilityOperations(unittest.TestCase):
         )
         vis2["vis"].data[...] = 1.0
         zerovis = subtract_visibility(vis1, vis2)
-        qa = zerovis.qa_visibility(context="test_qa")
+        qa = zerovis.visibility_acc.qa_visibility(context="test_qa")
         self.assertAlmostEqual(qa.data["maxabs"], 0.0, 7)
 
     def test_qa(self):
@@ -328,7 +328,7 @@ class TestVisibilityOperations(unittest.TestCase):
             polarisation_frame=PolarisationFrame("stokesIQUV"),
         )
         self.vismodel = dft_skycomponent_visibility(self.vis, self.comp)
-        qa = self.vis.qa_visibility(context="test_qa")
+        qa = self.vis.visibility_acc.qa_visibility(context="test_qa")
         self.assertAlmostEqual(qa.data["maxabs"], 100.0, 7)
         self.assertAlmostEqual(qa.data["medianabs"], 11.0, 7)
         assert qa.context == "test_qa"

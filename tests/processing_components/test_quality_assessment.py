@@ -5,7 +5,7 @@
 import logging
 import unittest
 
-from rascil.data_models.memory_data_models import QualityAssessment
+from ska_sdp_datamodels.science_data_model.qa_model import QualityAssessment
 
 log = logging.getLogger("rascil-logger")
 

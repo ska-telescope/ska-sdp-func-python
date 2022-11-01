@@ -8,10 +8,9 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import create_image
-
 from rascil.processing_components.imaging.primary_beams import create_low_test_beam
 from rascil.processing_components.parameters import rascil_path, rascil_data_path
 from rascil.processing_components.simulation import (
@@ -201,11 +200,11 @@ class TestAtmosphericScreen(unittest.TestCase):
         newscreen, weights = grid_gaintable_to_screen(self.vis, gaintables, newscreen)
         assert numpy.max(numpy.abs(screen["pixels"].data)) > 0.0
         if self.persist:
-            newscreen.export_to_fits(
+            newscreen.image_acc.export_to_fits(
                 rascil_path("test_results/test_mpc_screen_gridded.fits")
             )
         if self.persist:
-            weights.export_to_fits(
+            weights.image_acc.export_to_fits(
                 rascil_path("test_results/test_mpc_screen_gridded_weights.fits"),
             )
 

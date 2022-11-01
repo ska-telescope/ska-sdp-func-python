@@ -8,9 +8,9 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
-from rascil.data_models.memory_data_models import SkyComponent
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import create_named_configuration
 from rascil.processing_components.imaging.dft import dft_skycomponent_visibility
 from rascil.processing_components.visibility.base import create_visibility
@@ -77,7 +77,7 @@ class TestVisibilityDFTOperationsKernels(unittest.TestCase):
             )
             # vis_size = vis[dft_compute_kernel]["vis"].nbytes / 1024 / 1024 / 1024
             # print(f"{dft_compute_kernel} {time.time() - start:.3}s Vis size {vis_size:.3}GB")
-            qa = vis[dft_compute_kernel].qa_visibility()
+            qa = vis[dft_compute_kernel].visibility_acc.qa_visibility()
             numpy.testing.assert_almost_equal(qa.data["maxabs"], 12000.0000000000)
             numpy.testing.assert_almost_equal(qa.data["minabs"], 1004.987562112086)
             numpy.testing.assert_almost_equal(qa.data["rms"], 4714.611562943335)
@@ -118,7 +118,7 @@ class TestVisibilityDFTOperationsKernels(unittest.TestCase):
             self.vismodel = dft_skycomponent_visibility(
                 self.vis, self.comp, dft_compute_kernel=dft_compute_kernel
             )
-            qa = self.vismodel.qa_visibility()
+            qa = self.vismodel.visibility_acc.qa_visibility()
             numpy.testing.assert_almost_equal(qa.data["maxabs"], 240.0000000000)
             numpy.testing.assert_almost_equal(qa.data["minabs"], 20.099751242241776)
             numpy.testing.assert_almost_equal(qa.data["rms"], 94.29223125886809)

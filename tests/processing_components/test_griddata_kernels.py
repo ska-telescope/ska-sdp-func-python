@@ -10,8 +10,8 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import create_image
 from rascil.processing_components.griddata import (
     apply_bounding_box_convolutionfunction,
@@ -25,7 +25,6 @@ from rascil.processing_components.griddata.kernels import (
     create_awterm_convolutionfunction,
     create_box_convolutionfunction,
 )
-
 from rascil.processing_components.imaging.primary_beams import create_pb_generic
 
 log = logging.getLogger("rascil-logger")
@@ -57,7 +56,7 @@ class TestGridDataKernels(unittest.TestCase):
         assert gcf["pixels"].data.dtype == "float", gcf["pixels"].data.dtype
         assert numpy.max(numpy.abs(cf["pixels"].data)) > 0.0
         if self.persist:
-            gcf.export_to_fits(
+            gcf.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_box_gcf.fits" % self.results_dir
             )
             export_convolutionfunction_to_fits(
@@ -84,7 +83,7 @@ class TestGridDataKernels(unittest.TestCase):
         assert gcf["pixels"].data.dtype == "float", gcf["pixels"].data.dtype
         assert numpy.max(numpy.abs(cf["pixels"].data)) > 0.0
         if self.persist:
-            gcf.export_to_fits(
+            gcf.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_pswf_gcf.fits" % self.results_dir
             )
             export_convolutionfunction_to_fits(
@@ -119,7 +118,7 @@ class TestGridDataKernels(unittest.TestCase):
         )
         assert gcf["pixels"].data.dtype == "float", gcf["pixels"].data.dtype
         if self.persist:
-            gcf.export_to_fits(
+            gcf.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_wterm_gcf.fits" % self.results_dir
             )
             export_convolutionfunction_to_fits(
@@ -163,7 +162,7 @@ class TestGridDataKernels(unittest.TestCase):
         )
         pb = make_pb(self.image)
         if self.persist:
-            pb.export_to_fits(
+            pb.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_awterm_pb.fits" % self.results_dir
             )
         gcf, cf = create_awterm_convolutionfunction(
@@ -179,7 +178,7 @@ class TestGridDataKernels(unittest.TestCase):
         assert gcf["pixels"].data.dtype == "float", gcf["pixels"].data.dtype
         assert numpy.max(numpy.abs(cf["pixels"].data)) > 0.0
         if self.persist:
-            gcf.export_to_fits(
+            gcf.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_awterm_gcf.fits" % self.results_dir
             )
             export_convolutionfunction_to_fits(
@@ -223,7 +222,7 @@ class TestGridDataKernels(unittest.TestCase):
         )
         pb = make_pb(self.image)
         if self.persist:
-            pb.export_to_fits(
+            pb.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_aterm_pb.fits" % self.results_dir
             )
         gcf, cf = create_awterm_convolutionfunction(
@@ -237,7 +236,7 @@ class TestGridDataKernels(unittest.TestCase):
             polarisation_frame=PolarisationFrame("linear"),
         )
         if self.persist:
-            gcf.export_to_fits(
+            gcf.image_acc.export_to_fits(
                 "%s/test_convolutionfunction_aterm_gcf.fits" % self.results_dir
             )
             export_convolutionfunction_to_fits(

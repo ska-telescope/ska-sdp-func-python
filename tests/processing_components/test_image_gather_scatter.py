@@ -7,8 +7,8 @@ import os
 import unittest
 
 import numpy
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image.gather_scatter import (
     image_gather_facets,
     image_scatter_facets,
@@ -16,7 +16,6 @@ from rascil.processing_components.image.gather_scatter import (
     image_scatter_channels,
 )
 from rascil.processing_components.image.operations import create_empty_image_like
-
 from rascil.processing_components.simulation import create_test_image
 
 log = logging.getLogger("rascil-logger")
@@ -164,12 +163,12 @@ class TestImageGatherScatters(unittest.TestCase):
                     return_flat=True,
                 )
                 if self.persist:
-                    m31reconstructed.export_to_fits(
+                    m31reconstructed.image_acc.export_to_fits(
                         "%s/test_image_gather_scatter_%dnraster_%doverlap_%s_reconstructed.fits"
                         % (self.results_dir, nraster, overlap, taper),
                     )
                 if self.persist:
-                    flat.export_to_fits(
+                    flat.image_acc.export_to_fits(
                         "%s/test_image_gather_scatter_%dnraster_%doverlap_%s_flat.fits"
                         % (self.results_dir, nraster, overlap, taper),
                     )

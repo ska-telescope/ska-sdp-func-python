@@ -8,9 +8,9 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
 from rascil.apps.rascil_advise import cli_parser, advise
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     export_visibility_to_ms,
     concatenate_visibility_frequency,

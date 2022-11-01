@@ -9,12 +9,11 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image.operations import (
     smooth_image,
 )
-
 from rascil.processing_components.imaging import dft_skycomponent_visibility
 from rascil.processing_components.simulation import create_named_configuration
 from rascil.processing_components.simulation import (
@@ -121,11 +120,11 @@ class TestImagingNG(unittest.TestCase):
 
         self.cmodel = smooth_image(self.model)
         if self.persist:
-            self.model.export_to_fits(
+            self.model.image_acc.export_to_fits(
                 "%s/test_imaging_ng_model.fits" % self.results_dir
             )
         if self.persist:
-            self.cmodel.export_to_fits(
+            self.cmodel.image_acc.export_to_fits(
                 "%s/test_imaging_ng_cmodel.fits" % self.results_dir
             )
 
@@ -189,7 +188,7 @@ class TestImagingNG(unittest.TestCase):
         #     plt.show(block=False)
 
         if self.persist:
-            dirty[0].export_to_fits(
+            dirty[0].image_acc.export_to_fits(
                 "%s/test_imaging_ng_%s_residual.fits" % (self.results_dir, name),
             )
 
@@ -222,7 +221,7 @@ class TestImagingNG(unittest.TestCase):
         )
 
         if self.persist:
-            dirty[0].export_to_fits(
+            dirty[0].image_acc.export_to_fits(
                 "%s/test_imaging_ng_%s_dirty.fits" % (self.results_dir, name)
             )
 

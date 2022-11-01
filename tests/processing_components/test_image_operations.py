@@ -8,8 +8,8 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components import (
     create_image,
     create_image_from_array,
@@ -33,7 +33,6 @@ from rascil.processing_components.image.operations import (
     fft_image_to_griddata,
     ifft_griddata_to_image,
 )
-
 from rascil.processing_components.parameters import rascil_data_path
 from rascil.processing_components.simulation import (
     create_test_image,
@@ -98,8 +97,8 @@ class TestImage(unittest.TestCase):
             self.m31image.image_acc.polarisation_frame,
             clean_beam,
         )
-        m31model_by_array.export_to_fits(
-            fitsfile="%s/test_model.fits" % (self.results_dir)
+        m31model_by_array.image_acc.export_to_fits(
+            "%s/test_model.fits" % (self.results_dir)
         )
         m31image_by_fits = import_image_from_fits(
             fitsfile="%s/test_model.fits" % (self.results_dir)
@@ -107,7 +106,9 @@ class TestImage(unittest.TestCase):
         new_clean_beam = m31image_by_fits.attrs["clean_beam"]
         assert new_clean_beam == clean_beam, new_clean_beam
 
-        log.debug(m31model_by_array.qa_image(context="test_create_from_image"))
+        log.debug(
+            m31model_by_array.image_acc.qa_image(context="test_create_from_image")
+        )
 
     def test_create_image_from_array_raises(self):
         with self.assertRaises(KeyError):
@@ -220,7 +221,7 @@ class TestImage(unittest.TestCase):
         vp["pixels"].data = vp["pixels"].data + 1j * imag_vp["pixels"].data
 
         polframe = polarisation_frame_from_wcs(vp.image_acc.wcs, vp.image_acc.shape)
-        permute = polframe.fits_to_rascil[polframe.type]
+        permute = polframe.fits_to_datamodels[polframe.type]
 
         newvp_data = vp["pixels"].data.copy()
         for ip, p in enumerate(permute):
@@ -272,7 +273,7 @@ class TestImage(unittest.TestCase):
                     im["pixels"].data[0, 0, y, x], -0.46042631800538464, 7
                 )
         if self.persist:
-            im.export_to_fits("%s/test_wterm.fits" % self.results_dir)
+            im.image_acc.export_to_fits("%s/test_wterm.fits" % self.results_dir)
         assert im["pixels"].data.shape == (5, 4, 1024, 1024), im["pixels"].data.shape
         self.assertAlmostEqual(numpy.max(im["pixels"].real), 1.0, 7)
 
@@ -281,7 +282,7 @@ class TestImage(unittest.TestCase):
         m31_fft_ifft = ifft_griddata_to_image(m31_fft, self.m31image)
         m31_fft_ifft["pixels"] = m31_fft_ifft["pixels"].real
         if self.persist:
-            m31_fft_ifft.export_to_fits(
+            m31_fft_ifft.image_acc.export_to_fits(
                 fitsfile="%s/test_m31_fft_fft.fits" % (self.results_dir)
             )
         err = numpy.max(
@@ -304,7 +305,7 @@ class TestImage(unittest.TestCase):
             assert err < 1e-7, err
             padded_fft["pixels"].data = numpy.abs(padded_fft["pixels"].data)
             if self.persist:
-                padded_fft.export_to_fits(
+                padded_fft.image_acc.export_to_fits(
                     fitsfile="%s/test_m31_fft_%d.fits" % (self.results_dir, npixel),
                 )
 
@@ -331,7 +332,7 @@ class TestImage(unittest.TestCase):
         if self.persist:
             vp["pixels"].data = vp["pixels"].data.real
             fitsfile = "{}/test_vp_rotate_real.fits".format(self.results_dir)
-            vp.export_to_fits(fitsfile=fitsfile)
+            vp.image_acc.export_to_fits(fitsfile=fitsfile)
 
     def test_apply_voltage_pattern(self):
 
@@ -353,12 +354,12 @@ class TestImage(unittest.TestCase):
             fitsfile = "{}/test_apply_voltage_pattern_real.fits".format(
                 self.results_dir
             )
-            applied.export_to_fits(fitsfile=fitsfile)
+            applied.image_acc.export_to_fits(fitsfile=fitsfile)
             unapplied["pixels"].data = unapplied["pixels"].data.real
             fitsfile = "{}/test_apply_voltage_pattern_inv_real.fits".format(
                 self.results_dir
             )
-            unapplied.export_to_fits(fitsfile=fitsfile)
+            unapplied.image_acc.export_to_fits(fitsfile=fitsfile)
 
         err = numpy.max(numpy.abs(unapplied["pixels"].data - padded["pixels"].data))
         assert err < 1e-12, err

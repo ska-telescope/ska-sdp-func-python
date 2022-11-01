@@ -26,7 +26,7 @@ from astropy.coordinates import SkyCoord
 matplotlib.use("Agg")
 from numpy.testing import assert_array_almost_equal
 from rascil.processing_components.parameters import rascil_path
-from rascil.data_models.polarisation_data_models import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from rascil.processing_components.simulation import (
     create_low_test_skycomponents_from_gleam,
     addnoise_skycomponent,
@@ -93,7 +93,7 @@ class TestPlotSkyComponent(unittest.TestCase):
             self.model, self.components, clean_beam=self.clean_beam
         )
         if self.persist:
-            self.model.export_to_fits(
+            self.model.image_acc.export_to_fits(
                 self.results_dir + "/test_plot_skycomponents_model.fits"
             )
 

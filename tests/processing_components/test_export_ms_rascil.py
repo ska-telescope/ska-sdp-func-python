@@ -66,7 +66,9 @@ class export_ms_RASCIL_test(unittest.TestCase):
         from rascil.processing_components.simulation import create_test_image
         from rascil.processing_components.imaging.base import advise_wide_field
 
-        from rascil.data_models.polarisation_data_models import PolarisationFrame
+        from ska_sdp_datamodels.science_data_model.polarisation_model import (
+            PolarisationFrame,
+        )
 
         lowr3 = create_named_configuration("LOWBD2", rmax=750.0)
 

@@ -8,7 +8,7 @@ Polarisation handling is intended to implement the Hamaker-Bregman-Sault formali
 For imaging:
 
  * Types of polarisation allowed are stokesIQUV, stokesI, linear, circular.
- * These are defined in :py:class:`rascil.data_models.polarisation.PolarisationFrame`
+ * These are defined in `ska-sdp-datamodels <https://gitlab.com/ska-telescope/sdp/ska-sdp-datamodels.git>`_
  * Images may be defined as stokesI, stokesIQUV, linear, or circular
  * To convert from Stokes image to polarised image see :py:func:`rascil.processing_components.image.operations.convert_stokes_to_polimage`
  * To convert from polarised image to Stokes image :py:func:`rascil.processing_components.image.operations.convert_polimage_to_stokes`

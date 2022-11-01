@@ -6,8 +6,8 @@ import logging
 import unittest
 
 import numpy
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.data_models.polarisation_data_models import PolarisationFrame
 from rascil.processing_components.image.iterators import (
     image_raster_iter,
     image_channel_iter,
@@ -15,7 +15,6 @@ from rascil.processing_components.image.iterators import (
 from rascil.processing_components.image.operations import (
     pad_image,
 )
-
 from rascil.processing_components.parameters import rascil_path
 from rascil.processing_components.simulation import create_test_image
 
@@ -80,10 +79,10 @@ class TestImageIterators(unittest.TestCase):
                             log.warning(
                                 f"Raster set failed for {npixel}, {nraster}, {overlap}: error {err}"
                             )
-                        m31model.export_to_fits(
+                        m31model.image_acc.export_to_fits(
                             f"{testdir}/test_image_iterators_model_{npixel}_{nraster}_{overlap}.fits",
                         )
-                        diff.export_to_fits(
+                        diff.image_acc.export_to_fits(
                             f"{testdir}/test_image_iterators_diff_{npixel}_{nraster}_{overlap}.fits",
                         )
                     except ValueError as err:
