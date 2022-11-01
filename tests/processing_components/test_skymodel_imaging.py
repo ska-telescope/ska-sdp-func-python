@@ -10,10 +10,10 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.processing_components import (
+from src.ska_sdp_func_python import (
     create_named_configuration,
 )
-from rascil.processing_components import (
+from src.ska_sdp_func_python import (
     ingest_unittest_visibility,
     create_low_test_skymodel_from_gleam,
     calculate_visibility_parallactic_angles,
@@ -32,7 +32,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 class TestSkyModel(unittest.TestCase):
     def setUp(self):
 
-        from rascil.processing_components.parameters import rascil_path
+        from src.ska_sdp_func_python.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

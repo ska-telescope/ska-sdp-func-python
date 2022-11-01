@@ -11,15 +11,15 @@ from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
-from rascil.processing_components.calibration.operations import (
+from src.ska_sdp_func_python.calibration.operations import (
     apply_gaintable,
     create_gaintable_from_visibility,
 )
-from rascil.processing_components.calibration.solvers import solve_gaintable
-from rascil.processing_components.imaging import dft_skycomponent_visibility
-from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.simulation import simulate_gaintable
-from rascil.processing_components.visibility.base import (
+from src.ska_sdp_func_python.calibration.solvers import solve_gaintable
+from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
+from src.ska_sdp_func_python.simulation import create_named_configuration
+from src.ska_sdp_func_python.simulation import simulate_gaintable
+from src.ska_sdp_func_python.visibility.base import (
     create_visibility,
 )
 

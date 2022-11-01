@@ -7,7 +7,7 @@ import unittest
 import numpy
 from numpy.testing import assert_allclose
 
-from rascil.processing_components.fourier_transforms.fft_coordinates import (
+from src.ska_sdp_func_python.fourier_transforms.fft_coordinates import (
     w_beam,
     coordinates,
     coordinates2,

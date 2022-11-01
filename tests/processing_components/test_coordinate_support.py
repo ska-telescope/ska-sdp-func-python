@@ -9,7 +9,7 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_allclose
 
-from rascil.processing_components.util.coordinate_support import (
+from src.ska_sdp_func_python.util.coordinate_support import (
     xyz_to_uvw,
     xyz_at_latitude,
     simulate_point,

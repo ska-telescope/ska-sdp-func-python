@@ -11,16 +11,16 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.processing_components import create_image_from_visibility
-from rascil.processing_components import (
+from src.ska_sdp_func_python import create_image_from_visibility
+from src.ska_sdp_func_python import (
     weight_visibility,
     taper_visibility_gaussian,
     taper_visibility_tukey,
     fit_psf,
 )
-from rascil.processing_components.imaging.imaging import invert_visibility
-from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility.base import create_visibility
+from src.ska_sdp_func_python.imaging.imaging import invert_visibility
+from src.ska_sdp_func_python.simulation import create_named_configuration
+from src.ska_sdp_func_python.visibility.base import create_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -29,7 +29,7 @@ log.setLevel(logging.WARNING)
 
 class TestWeighting(unittest.TestCase):
     def setUp(self):
-        from rascil.processing_components.parameters import rascil_path
+        from src.ska_sdp_func_python.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
         self.npixel = 512

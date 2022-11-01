@@ -9,12 +9,12 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
-from rascil.processing_components import (
+from src.ska_sdp_func_python import (
     create_low_test_skycomponents_from_gleam,
     create_low_test_image_from_gleam,
     smooth_image,
 )
-from rascil.processing_components.skycomponent.taylor_terms import (
+from src.ska_sdp_func_python.skycomponent.taylor_terms import (
     calculate_skycomponent_list_taylor_terms,
     find_skycomponents_frequency_taylor_terms,
 )

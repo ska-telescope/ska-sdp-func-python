@@ -7,16 +7,16 @@ import unittest
 
 import numpy
 
-from rascil.processing_components import (
+from src.ska_sdp_func_python import (
     create_empty_image_like,
     image_scatter_channels,
 )
-from rascil.processing_components.image.taylor_terms import (
+from src.ska_sdp_func_python.image.taylor_terms import (
     calculate_image_frequency_moments,
     calculate_image_from_frequency_taylor_terms,
     calculate_frequency_taylor_terms_from_image_list,
 )
-from rascil.processing_components.simulation import (
+from src.ska_sdp_func_python.simulation import (
     create_test_image,
     create_low_test_image_from_gleam,
 )
@@ -29,7 +29,7 @@ log.setLevel(logging.WARNING)
 class TestImage(unittest.TestCase):
     def setUp(self):
 
-        from rascil.processing_components.parameters import rascil_path
+        from src.ska_sdp_func_python.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

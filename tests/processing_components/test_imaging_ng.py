@@ -11,17 +11,17 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.processing_components.image.operations import (
+from src.ska_sdp_func_python.image.operations import (
     smooth_image,
 )
-from rascil.processing_components.imaging import dft_skycomponent_visibility
-from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.simulation import (
+from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
+from src.ska_sdp_func_python.simulation import create_named_configuration
+from src.ska_sdp_func_python.simulation import (
     ingest_unittest_visibility,
     create_unittest_model,
     create_unittest_components,
 )
-from rascil.processing_components.skycomponent.operations import (
+from src.ska_sdp_func_python.skycomponent.operations import (
     find_skycomponents,
     find_nearest_skycomponent,
     insert_skycomponent,
@@ -36,7 +36,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 class TestImagingNG(unittest.TestCase):
     def setUp(self):
 
-        from rascil.processing_components.parameters import rascil_path
+        from src.ska_sdp_func_python.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 
@@ -165,7 +165,7 @@ class TestImagingNG(unittest.TestCase):
 
     def _predict_base(self, fluxthreshold=1.0, name="predict_ng", **kwargs):
 
-        from rascil.processing_components.imaging.ng import predict_ng, invert_ng
+        from src.ska_sdp_func_python.imaging.ng import predict_ng, invert_ng
 
         original_vis = self.vis.copy(deep=True)
         vis = predict_ng(self.vis, self.model, verbosity=self.verbosity, **kwargs)
@@ -210,7 +210,7 @@ class TestImagingNG(unittest.TestCase):
     ):
 
         # dirty = invert_ng(self.vis, self.model, dopsf=False, normalise=True, **kwargs)
-        from rascil.processing_components.imaging.ng import invert_ng
+        from src.ska_sdp_func_python.imaging.ng import invert_ng
 
         dirty = invert_ng(
             self.vis,

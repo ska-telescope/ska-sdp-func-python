@@ -9,12 +9,10 @@ Processing Components
    :maxdepth: 1
 
    calibration/index
-   flagging/index
    fourier_transforms/index
    griddata/index
    image/index
    imaging/index
-   simulation/index
    skycomponent/index
    skymodel/index
    util/index

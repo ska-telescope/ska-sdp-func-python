@@ -7,7 +7,7 @@ import unittest
 
 import numpy
 
-from rascil.processing_components.image.cleaners import (
+from src.ska_sdp_func_python.image.cleaners import (
     create_scalestack,
     convolve_scalestack,
     convolve_convolve_scalestack,

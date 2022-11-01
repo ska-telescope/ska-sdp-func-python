@@ -9,9 +9,9 @@ import numpy
 from astropy.coordinates import SkyCoord
 from astropy.time import Time
 
-from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility import create_visibility
-from rascil.processing_components.visibility.visibility_geometry import (
+from src.ska_sdp_func_python.simulation import create_named_configuration
+from src.ska_sdp_func_python.visibility import create_visibility
+from src.ska_sdp_func_python.visibility.visibility_geometry import (
     calculate_visibility_azel,
     calculate_visibility_hourangles,
     calculate_visibility_transit_time,

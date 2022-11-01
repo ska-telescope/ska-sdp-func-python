@@ -7,7 +7,7 @@ import unittest
 
 import numpy
 
-from rascil.processing_components.util.array_functions import (
+from src.ska_sdp_func_python.util.array_functions import (
     average_chunks,
     average_chunks2,
 )

@@ -13,29 +13,29 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.processing_components import weight_visibility
-from rascil.processing_components.griddata.kernels import (
+from src.ska_sdp_func_python import weight_visibility
+from src.ska_sdp_func_python.griddata.kernels import (
     create_awterm_convolutionfunction,
 )
-from rascil.processing_components.image.operations import (
+from src.ska_sdp_func_python.image.operations import (
     smooth_image,
 )
-from rascil.processing_components.imaging.dft import dft_skycomponent_visibility
-from rascil.processing_components.imaging.imaging import (
+from src.ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
+from src.ska_sdp_func_python.imaging.imaging import (
     predict_visibility,
     invert_visibility,
 )
-from rascil.processing_components.imaging.primary_beams import create_pb_generic
-from rascil.processing_components.simulation import (
+from src.ska_sdp_func_python.imaging.primary_beams import create_pb_generic
+from src.ska_sdp_func_python.simulation import (
     create_named_configuration,
     decimate_configuration,
 )
-from rascil.processing_components.simulation import (
+from src.ska_sdp_func_python.simulation import (
     ingest_unittest_visibility,
     create_unittest_model,
     create_unittest_components,
 )
-from rascil.processing_components.skycomponent.operations import (
+from src.ska_sdp_func_python.skycomponent.operations import (
     find_skycomponents,
     find_nearest_skycomponent,
     insert_skycomponent,
@@ -50,7 +50,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 class TestImaging2D(unittest.TestCase):
     def setUp(self):
 
-        from rascil.processing_components.parameters import rascil_path
+        from src.ska_sdp_func_python.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
 

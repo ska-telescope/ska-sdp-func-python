@@ -11,9 +11,9 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.processing_components.imaging.base import create_image_from_visibility
-from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.simulation import (
+from src.ska_sdp_func_python.imaging.base import create_image_from_visibility
+from src.ska_sdp_func_python.simulation import create_named_configuration
+from src.ska_sdp_func_python.simulation import (
     ingest_unittest_visibility,
     create_unittest_model,
 )
@@ -26,7 +26,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 
 class TestImagingFunctions(unittest.TestCase):
     def setUp(self):
-        from rascil.processing_components.parameters import (
+        from src.ska_sdp_func_python.parameters import (
             rascil_path,
         )
 

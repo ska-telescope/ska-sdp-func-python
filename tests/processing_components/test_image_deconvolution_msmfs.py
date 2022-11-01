@@ -11,7 +11,7 @@ import numpy
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.processing_components import (
+from src.ska_sdp_func_python import (
     deconvolve_list,
     restore_list,
     create_pb,
@@ -20,19 +20,19 @@ from rascil.processing_components import (
     weight_visibility,
     taper_visibility_gaussian,
 )
-from rascil.processing_components.image.operations import create_image_from_array
-from rascil.processing_components.imaging.base import create_image_from_visibility
-from rascil.processing_components.imaging.imaging import (
+from src.ska_sdp_func_python.image.operations import create_image_from_array
+from src.ska_sdp_func_python.imaging.base import create_image_from_visibility
+from src.ska_sdp_func_python.imaging.imaging import (
     predict_visibility,
     invert_visibility,
 )
-from rascil.processing_components.imaging.primary_beams import create_low_test_beam
-from rascil.processing_components.simulation import create_low_test_image_from_gleam
-from rascil.processing_components.simulation import (
+from src.ska_sdp_func_python.imaging.primary_beams import create_low_test_beam
+from src.ska_sdp_func_python.simulation import create_low_test_image_from_gleam
+from src.ska_sdp_func_python.simulation import (
     create_named_configuration,
     decimate_configuration,
 )
-from rascil.processing_components.visibility.base import create_visibility
+from src.ska_sdp_func_python.visibility.base import create_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -41,7 +41,7 @@ log.setLevel(logging.INFO)
 
 class TestImageDeconvolutionMSMFS(unittest.TestCase):
     def setUp(self):
-        from rascil.processing_components.parameters import rascil_path
+        from src.ska_sdp_func_python.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
         self.persist = os.getenv("RASCIL_PERSIST", False)

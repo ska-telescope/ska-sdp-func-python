@@ -12,27 +12,27 @@ from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
-from rascil.processing_components import (
+from src.ska_sdp_func_python import (
     restore_list,
     deconvolve_cube,
     restore_cube,
     fit_psf,
     create_pb,
 )
-from rascil.processing_components.image.cleaners import overlapIndices
-from rascil.processing_components.image.deconvolution import (
+from src.ska_sdp_func_python.image.cleaners import overlapIndices
+from src.ska_sdp_func_python.image.deconvolution import (
     hogbom_kernel_list,
     find_window_list,
 )
-from rascil.processing_components.imaging.base import create_image_from_visibility
-from rascil.processing_components.imaging.imaging import (
+from src.ska_sdp_func_python.imaging.base import create_image_from_visibility
+from src.ska_sdp_func_python.imaging.imaging import (
     predict_visibility,
     invert_visibility,
 )
-from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.simulation import create_test_image
-from rascil.processing_components.skycomponent.operations import restore_skycomponent
-from rascil.processing_components.visibility.base import create_visibility
+from src.ska_sdp_func_python.simulation import create_named_configuration
+from src.ska_sdp_func_python.simulation import create_test_image
+from src.ska_sdp_func_python.skycomponent.operations import restore_skycomponent
+from src.ska_sdp_func_python.visibility.base import create_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -44,7 +44,7 @@ class TestImageDeconvolution(unittest.TestCase):
 
         self.persist = os.getenv("RASCIL_PERSIST", False)
 
-        from rascil.processing_components.parameters import (
+        from src.ska_sdp_func_python.parameters import (
             rascil_path,
         )
 

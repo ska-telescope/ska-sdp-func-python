@@ -9,7 +9,7 @@ import numpy
 from astropy.coordinates import SkyCoord, EarthLocation
 from astropy.time import Time
 
-from rascil.processing_components.util.geometry import (
+from src.ska_sdp_func_python.util.geometry import (
     calculate_azel,
     calculate_hourangles,
     calculate_transit_time,

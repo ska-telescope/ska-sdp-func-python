@@ -13,7 +13,7 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.processing_components.griddata.gridding import (
+from src.ska_sdp_func_python.griddata.gridding import (
     fft_griddata_to_image,
     fft_image_to_griddata,
     griddata_merge_weights,
@@ -22,27 +22,27 @@ from rascil.processing_components.griddata.gridding import (
     grid_visibility_weight_to_griddata,
     degrid_visibility_from_griddata,
 )
-from rascil.processing_components.griddata.kernels import (
+from src.ska_sdp_func_python.griddata.kernels import (
     create_awterm_convolutionfunction,
     create_pswf_convolutionfunction,
     create_box_convolutionfunction,
 )
-from rascil.processing_components.griddata.operations import create_griddata_from_image
-from rascil.processing_components.image.operations import (
+from src.ska_sdp_func_python.griddata.operations import create_griddata_from_image
+from src.ska_sdp_func_python.image.operations import (
     convert_stokes_to_polimage,
     convert_polimage_to_stokes,
 )
-from rascil.processing_components.image.operations import smooth_image
-from rascil.processing_components.imaging import dft_skycomponent_visibility
-from rascil.processing_components.imaging.base import normalise_sumwt
-from rascil.processing_components.imaging.primary_beams import create_pb_generic
-from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.simulation import (
+from src.ska_sdp_func_python.image.operations import smooth_image
+from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
+from src.ska_sdp_func_python.imaging.base import normalise_sumwt
+from src.ska_sdp_func_python.imaging.primary_beams import create_pb_generic
+from src.ska_sdp_func_python.simulation import create_named_configuration
+from src.ska_sdp_func_python.simulation import (
     create_unittest_model,
     create_unittest_components,
     ingest_unittest_visibility,
 )
-from rascil.processing_components.skycomponent.operations import insert_skycomponent
+from src.ska_sdp_func_python.skycomponent.operations import insert_skycomponent
 
 log = logging.getLogger("rascil-logger")
 
@@ -52,7 +52,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 
 class TestGridDataGridding(unittest.TestCase):
     def setUp(self):
-        from rascil.processing_components.parameters import rascil_path
+        from src.ska_sdp_func_python.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
         self.persist = os.getenv("RASCIL_PERSIST", False)

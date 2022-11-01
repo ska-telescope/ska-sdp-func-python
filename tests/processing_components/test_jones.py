@@ -12,7 +12,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
 )
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.processing_components.calibration import apply_jones
+from src.ska_sdp_func_python.calibration import apply_jones
 
 log = logging.getLogger("rascil-logger")
 

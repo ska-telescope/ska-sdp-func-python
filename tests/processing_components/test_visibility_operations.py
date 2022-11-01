@@ -12,14 +12,14 @@ from numpy.testing import assert_allclose
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
-from rascil.processing_components.imaging import dft_skycomponent_visibility
-from rascil.processing_components.simulation import create_named_configuration
-from rascil.processing_components.visibility.base import (
+from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
+from src.ska_sdp_func_python.simulation import create_named_configuration
+from src.ska_sdp_func_python.visibility.base import (
     create_visibility,
     phaserotate_visibility,
     generate_baselines,
 )
-from rascil.processing_components.visibility.operations import (
+from src.ska_sdp_func_python.visibility.operations import (
     subtract_visibility,
     divide_visibility,
     concatenate_visibility,

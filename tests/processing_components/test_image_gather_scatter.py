@@ -9,14 +9,14 @@ import unittest
 import numpy
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
-from rascil.processing_components.image.gather_scatter import (
+from src.ska_sdp_func_python.image.gather_scatter import (
     image_gather_facets,
     image_scatter_facets,
     image_gather_channels,
     image_scatter_channels,
 )
-from rascil.processing_components.image.operations import create_empty_image_like
-from rascil.processing_components.simulation import create_test_image
+from src.ska_sdp_func_python.image.operations import create_empty_image_like
+from src.ska_sdp_func_python.simulation import create_test_image
 
 log = logging.getLogger("rascil-logger")
 
@@ -25,7 +25,7 @@ log.setLevel(logging.WARNING)
 
 class TestImageGatherScatters(unittest.TestCase):
     def setUp(self):
-        from rascil.processing_components.parameters import rascil_path
+        from src.ska_sdp_func_python.parameters import rascil_path
 
         self.results_dir = rascil_path("test_results")
         self.persist = os.getenv("RASCIL_PERSIST", False)
