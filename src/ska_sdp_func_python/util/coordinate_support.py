@@ -1,4 +1,5 @@
 # pylint: disable=invalid-name, too-many-locals, unused-argument
+# pylint: disable=unbalanced-tuple-unpacking
 # pylint: disable=import-error
 """Coordinate support
 
