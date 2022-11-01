@@ -1,5 +1,9 @@
+# pylint: disable=invalid-name, too-many-locals
+# pylint: disable=unused-variable, too-many-statements
+# pylint: disable=import-error, no-name-in-module
 """
-Functions that implement prediction of and imaging from visibilities using the nifty gridder (DUCC version).
+Functions that implement prediction of and imaging
+from visibilities using the nifty gridder (DUCC version).
 
 https://gitlab.mpcdf.mpg.de/mtr/ducc.git
 
@@ -24,8 +28,8 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
 from ska_sdp_datamodels.visibility.vis_model import Visibility
 
 from src.ska_sdp_func_python.imaging.base import (
-    shift_vis_to_image,
     normalise_sumwt,
+    shift_vis_to_image,
 )
 from src.ska_sdp_func_python.parameters import get_parameter
 
@@ -35,9 +39,9 @@ log = logging.getLogger("rascil-logger")
 def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     """Predict using convolutional degridding.
 
-    Nifty-gridder version. https://gitlab.mpcdf.mpg.de/ift/nifty_gridder
+     Nifty-gridder version. https://gitlab.mpcdf.mpg.de/ift/nifty_gridder
 
-    In the imaging and pipeline workflows, this may be invoked using context='ng'.
+     In the imaging and pipeline workflows, this may be invoked using context='ng'.
 
     :param bvis: Visibility to be predicted
     :param model: model image
@@ -53,7 +57,7 @@ def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     nthreads = get_parameter(kwargs, "threads", 4)
     epsilon = get_parameter(kwargs, "epsilon", 1e-12)
     do_wstacking = get_parameter(kwargs, "do_wstacking", True)
-    verbosity = get_parameter(kwargs, "verbosity", 0)
+    verbosity = get_parameter(kwargs, "verbosity", 0)  # noqa: F841
 
     newbvis = bvis.copy(deep=True, zero=True)
 
@@ -144,11 +148,12 @@ def invert_ng(
 ) -> (Image, numpy.ndarray):
     """Invert using nifty-gridder module
 
-    https://gitlab.mpcdf.mpg.de/ift/nifty_gridder
+     https://gitlab.mpcdf.mpg.de/ift/nifty_gridder
 
-    Use the image im as a template. Do PSF in a separate call.
+     Use the image im as a template. Do PSF in a separate call.
 
-    In the imaging and pipeline workflows, this may be invoked using context='ng'. It is the default
+     In the imaging and pipeline workflows,
+     this may be invoked using context='ng'. It is the default
 
     :param dopsf: Make the PSF instead of the dirty image
     :param bvis: Visibility to be inverted
@@ -212,9 +217,6 @@ def invert_ng(
     im["pixels"].data[...] = 0.0
     sumwt = numpy.zeros([nchan, npol])
 
-    # There's a latent problem here with the weights.
-    # wgt = numpy.real(convert_pol_frame(wgt, bvis.visibility_acc.polarisation_frame, im.image_acc.polarisation_frame, polaxis=2))
-
     # Set up the conversion from visibility channels to image channels
     vis_to_im = numpy.round(
         model.image_acc.wcs.sub([4]).wcs_world2pix(freq, 0)[0]
@@ -258,9 +260,13 @@ def invert_ng(
             for vchan in range(vnchan):
                 ichan = vis_to_im[vchan]
                 frequency = numpy.array(freq[vchan : vchan + 1]).astype(float)
-                lms = numpy.ascontiguousarray(mst[pol, vchan, :, numpy.newaxis])
+                lms = numpy.ascontiguousarray(
+                    mst[pol, vchan, :, numpy.newaxis]
+                )
                 if numpy.max(numpy.abs(lms)) > 0.0:
-                    lwt = numpy.ascontiguousarray(wgtt[pol, vchan, :, numpy.newaxis])
+                    lwt = numpy.ascontiguousarray(
+                        wgtt[pol, vchan, :, numpy.newaxis]
+                    )
                     dirty = ng.ms2dirty(
                         fuvw,
                         frequency,

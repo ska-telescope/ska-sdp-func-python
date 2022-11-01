@@ -1,3 +1,10 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable=too-many-public-methods, too-many-locals
+# pylint: disable=attribute-defined-outside-init, unused-variable
+# pylint: disable=too-many-instance-attributes, invalid-envvar-default
+# pylint: disable=consider-using-f-string, logging-not-lazy
+# pylint: disable=missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Unit tests for calibration solution
 
 
@@ -8,7 +15,9 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
 from src.ska_sdp_func_python.calibration.operations import (
@@ -17,11 +26,11 @@ from src.ska_sdp_func_python.calibration.operations import (
 )
 from src.ska_sdp_func_python.calibration.solvers import solve_gaintable
 from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
-from src.ska_sdp_func_python.simulation import create_named_configuration
-from src.ska_sdp_func_python.simulation import simulate_gaintable
-from src.ska_sdp_func_python.visibility.base import (
-    create_visibility,
+from src.ska_sdp_func_python.simulation import (
+    create_named_configuration,
+    simulate_gaintable,
 )
+from src.ska_sdp_func_python.visibility.base import create_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -42,7 +51,9 @@ class TestCalibrationSolvers(unittest.TestCase):
         rmax=300.0,
     ):
         self.lowcore = create_named_configuration("LOWBD2", rmax=rmax)
-        self.times = (numpy.pi / 43200.0) * numpy.linspace(0.0, 30.0, 1 + ntimes)
+        self.times = (numpy.pi / 43200.0) * numpy.linspace(
+            0.0, 30.0, 1 + ntimes
+        )
         if vnchan > 1:
             self.frequency = numpy.linspace(1.0e8, 1.1e8, vnchan)
             self.channel_bandwidth = numpy.array(
@@ -59,7 +70,10 @@ class TestCalibrationSolvers(unittest.TestCase):
             f = [100.0]
 
         self.flux = numpy.outer(
-            numpy.array([numpy.power(freq / 1e8, -0.7) for freq in self.frequency]), f
+            numpy.array(
+                [numpy.power(freq / 1e8, -0.7) for freq in self.frequency]
+            ),
+            f,
         )
 
         # The phase centre is absolute and the component is specified relative (for now).
@@ -198,7 +212,9 @@ class TestCalibrationSolvers(unittest.TestCase):
 
         if f is None:
             f = [100.0, 50.0, -10.0, 40.0]
-        self.actualSetup(spf, dpf, f=f, vnchan=vnchan, ntimes=ntimes, rmax=rmax)
+        self.actualSetup(
+            spf, dpf, f=f, vnchan=vnchan, ntimes=ntimes, rmax=rmax
+        )
         gt = create_gaintable_from_visibility(
             self.vis, timeslice=timeslice, jones_type=jones_type
         )

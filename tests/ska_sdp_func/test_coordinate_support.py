@@ -1,3 +1,7 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable=too-many-locals, unused-variable
+# pylint: disable= missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module
 """ Unit processing_components for coordinate support
 
 """
@@ -10,14 +14,14 @@ from astropy.coordinates import SkyCoord
 from numpy.testing import assert_allclose
 
 from src.ska_sdp_func_python.util.coordinate_support import (
-    xyz_to_uvw,
-    xyz_at_latitude,
-    simulate_point,
-    baselines,
-    uvw_to_xyz,
-    skycoord_to_lmn,
     azel_to_hadec,
+    baselines,
     hadec_to_azel,
+    simulate_point,
+    skycoord_to_lmn,
+    uvw_to_xyz,
+    xyz_at_latitude,
+    xyz_to_uvw,
 )
 
 
@@ -33,7 +37,9 @@ class TestCoordinates(unittest.TestCase):
             :return:
             """
             res = xyz_at_latitude(numpy.array([x, y, z]), numpy.radians(lat))
-            assert_allclose(numpy.linalg.norm(res), numpy.linalg.norm([x, y, z]))
+            assert_allclose(
+                numpy.linalg.norm(res), numpy.linalg.norm([x, y, z])
+            )
             return res
 
         # At the north pole the zenith is the celestial north
@@ -65,9 +71,12 @@ class TestCoordinates(unittest.TestCase):
             res = xyz_to_uvw(
                 numpy.array([x, y, z]), numpy.radians(ha), numpy.radians(dec)
             )
-            assert_allclose(numpy.linalg.norm(res), numpy.linalg.norm([x, y, z]))
             assert_allclose(
-                uvw_to_xyz(res, numpy.radians(ha), numpy.radians(dec)), [x, y, z]
+                numpy.linalg.norm(res), numpy.linalg.norm([x, y, z])
+            )
+            assert_allclose(
+                uvw_to_xyz(res, numpy.radians(ha), numpy.radians(dec)),
+                [x, y, z],
             )
             return res
 
@@ -107,7 +116,7 @@ class TestCoordinates(unittest.TestCase):
             :param ants_uvw:
             """
             bls = baselines(ants_uvw)
-            l = len(ants_uvw)
+            l = len(ants_uvw)  # noqa: E741
             self.assertEqual(len(bls), l * (l - 1) // 2)
 
         for i in range(10):

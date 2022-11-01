@@ -3,30 +3,30 @@
 .. py:currentmodule:: rascil.processing_components.util
 
 .. toctree::
-   :maxdepth: 2
+  :maxdepth: 2
 
 Utility
 *******
 
 .. automodapi::    rascil.processing_components.util.array_functions
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.util.compass_bearing
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.util.coordinate_support
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.util.geometry
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.util.installation_checks
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.util.sizeof
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.util.performance
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 

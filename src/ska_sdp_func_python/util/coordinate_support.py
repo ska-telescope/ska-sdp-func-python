@@ -1,12 +1,14 @@
+# pylint: disable=invalid-name, too-many-locals, unused-argument
+# pylint: disable=import-error
 """Coordinate support
 
-We follow the casa definition of coordinate systems http://casa.nrao.edu/Memos/CoordConvention.pdf :
+We follow the casa definition of coordinate systems http://casa.nrao.edu/Memos/CoordConvention.pdf:
 
 UVW is a right-handed coordinate system, with W pointing towards the
-source, and a baseline convention of :math:`ant2 - ant1` where
+source, and a baseline convention of:math:`ant2 - ant1` where
 :math:`index(ant1) < index(ant2)`.  Consider an XYZ Celestial
 coordinate system centered at the location of the interferometer, with
-:math:`X` towards the East, :math:`Z` towards the NCP and :math:`Y` to
+:math:`X` towards the East,:math:`Z` towards the NCP and:math:`Y` to
 complete a right-handed system. The UVW coordinate system is then
 defined by the hour-angle and declination of the phase-reference
 direction such that
@@ -21,9 +23,9 @@ direction such that
 4. when the direction of observation is at zero declination, an
    hour-angle of -6 hours makes W point due East.
 
-The :math:`(l,m,n)` coordinates are parallel to :math:`(u,v,w)` such
-that :math:`l` increases with Right-Ascension (or increasing longitude
-coordinate), :math:`m` increases with Declination, and :math:`n` is
+The:math:`(l,m,n)` coordinates are parallel to:math:`(u,v,w)` such
+that:math:`l` increases with Right-Ascension (or increasing longitude
+coordinate),:math:`m` increases with Declination, and:math:`n` is
 towards the source. With this convention, images will have Right
 Ascension increasing from Right to Left, and Declination increasing
 from Bottom to Top.
@@ -58,7 +60,7 @@ __all__ = [
 
 import numpy
 from astropy import units
-from astropy.coordinates import SkyCoord, CartesianRepresentation
+from astropy.coordinates import CartesianRepresentation, SkyCoord
 
 
 def lla_to_ecef(lat, lon, alt):
@@ -123,18 +125,15 @@ def enu_to_eci(enu, lat):
     for that baseline [x, y, z].
 
     """
-    e, n, u = numpy.hsplit(enu, 3)  # pylint: disable=unbalanced-tuple-unpacking
+    e, n, u = numpy.hsplit(
+        enu, 3
+    )  # pylint: disable=unbalanced-tuple-unpacking
 
     x = -numpy.sin(lat) * n + u * numpy.cos(lat)
     y = e
     z = n * numpy.cos(lat) + u * numpy.sin(lat)
 
     return numpy.hstack([x, y, z])
-
-    # rot_matrix = numpy.array([[0.0, -numpy.sin(lat), numpy.cos(lat)],
-    #                     [1.0, 0.0, 0.0],
-    #                     [0.0, numpy.cos(lat), numpy.sin(lat)]])
-    # return numpy.einsum('ij,jk->ik',enu, numpy.transpose(rot_matrix))
 
 
 def eci_to_enu(eci, lat):
@@ -144,7 +143,9 @@ def eci_to_enu(eci, lat):
 
     """
 
-    x, y, z = numpy.hsplit(eci, 3)  # pylint: disable=unbalanced-tuple-unpacking
+    x, y, z = numpy.hsplit(
+        eci, 3
+    )  # pylint: disable=unbalanced-tuple-unpacking
 
     e = y
     n = -numpy.sin(lat) * x + z * numpy.cos(lat)
@@ -152,23 +153,18 @@ def eci_to_enu(eci, lat):
 
     return numpy.hstack([e, n, u])
 
-    # rot_matrix = numpy.array([[0.0, 1.0, 0.0],
-    #                     [-numpy.sin(lat), 0.0, numpy.cos(lat)],
-    #                     [numpy.cos(lat), 0.0, numpy.sin(lat)]])
-    # if len(eci.shape) == 1:
-    #     enu = eci.reshape(1, -1)
-    # return numpy.einsum('ij,jk->ik', eci, numpy.transpose(rot_matrix))
-
 
 def enu_to_ecef(location, enu):
     """Convert ENU coordinates relative to reference location to ECEF coordinates.
     :param location: Current WGS84 coordinate
     :param enu: local xyz coordinate
-    :result : ECEF
+    :result: ECEF
     """
     # ECEF coordinates of reference point
 
-    e, n, u = numpy.hsplit(enu, 3)  # pylint: disable=unbalanced-tuple-unpacking
+    e, n, u = numpy.hsplit(
+        enu, 3
+    )  # pylint: disable=unbalanced-tuple-unpacking
 
     lon = location.geodetic[0].to(units.rad).value
     lat = location.geodetic[1].to(units.rad).value
@@ -189,13 +185,15 @@ def ecef_to_enu(location, xyz):
     """Convert ECEF coordinates to ENU coordinates relative to reference location.
     :param location: Current WGS84 coordinate
     :param xyz: ECEF coordinate
-    :result : enu
+    :result: enu
     """
     # ECEF coordinates of reference point
     lon = location.geodetic[0].to(units.rad).value
     lat = location.geodetic[1].to(units.rad).value
     alt = location.geodetic[2].to(units.m).value
-    x, y, z = numpy.hsplit(xyz, 3)  # pylint: disable=unbalanced-tuple-unpacking
+    x, y, z = numpy.hsplit(
+        xyz, 3
+    )  # pylint: disable=unbalanced-tuple-unpacking
 
     center_x, center_y, center_z = lla_to_ecef(lat, lon, alt)
 
@@ -204,8 +202,16 @@ def ecef_to_enu(location, xyz):
     sin_lon, cos_lon = numpy.sin(lon), numpy.cos(lon)
 
     e = -sin_lon * delta_x + cos_lon * delta_y
-    n = -sin_lat * cos_lon * delta_x - sin_lat * sin_lon * delta_y + cos_lat * delta_z
-    u = cos_lat * cos_lon * delta_x + cos_lat * sin_lon * delta_y + sin_lat * delta_z
+    n = (
+        -sin_lat * cos_lon * delta_x
+        - sin_lat * sin_lon * delta_y
+        + cos_lat * delta_z
+    )
+    u = (
+        cos_lat * cos_lon * delta_x
+        + cos_lat * sin_lon * delta_y
+        + sin_lat * delta_z
+    )
 
     return numpy.hstack([e, n, u])
 
@@ -213,8 +219,8 @@ def ecef_to_enu(location, xyz):
 def enu_to_xyz(e, n, u, lat):
     """Convert ENU to XYZ coordinates.
 
-    [TMS] Thompson, Moran, Swenson, "Interferometry and Synthesis in Radio
-    Astronomy," 2nd ed., Wiley-VCH, 2004, pp. 86-89.
+     [TMS] Thompson, Moran, Swenson, "Interferometry and Synthesis in Radio
+     Astronomy," 2nd ed., Wiley-VCH, 2004, pp. 86-89.
 
     :param e: East
     :param n: North
@@ -228,11 +234,11 @@ def enu_to_xyz(e, n, u, lat):
 
 def xyz_at_latitude(local_xyz, lat):
     """
-    Rotate local XYZ coordinates into celestial XYZ coordinates. These
-    coordinate systems are very similar, with X pointing towards the
-    geographical east in both cases. However, before the rotation Z
-    points towards the zenith, whereas afterwards it will point towards
-    celestial north (parallel to the earth axis).
+     Rotate local XYZ coordinates into celestial XYZ coordinates. These
+     coordinate systems are very similar, with X pointing towards the
+     geographical east in both cases. However, before the rotation Z
+     points towards the zenith, whereas afterwards it will point towards
+     celestial north (parallel to the earth axis).
 
     :param lat: target latitude (radians or astropy quantity)
     :param local_xyz: Array of local XYZ coordinates
@@ -240,7 +246,9 @@ def xyz_at_latitude(local_xyz, lat):
     """
 
     # return enu_to_eci(local_xyz, lat)
-    x, y, z = numpy.hsplit(local_xyz, 3)  # pylint: disable=unbalanced-tuple-unpacking
+    x, y, z = numpy.hsplit(
+        local_xyz, 3
+    )  # pylint: disable=unbalanced-tuple-unpacking
 
     lat2 = numpy.pi / 2 - lat
     y2 = -z * numpy.sin(lat2) + y * numpy.cos(lat2)
@@ -251,27 +259,23 @@ def xyz_at_latitude(local_xyz, lat):
 
 def eci_to_uvw(xyz, ha, dec):
     """
-    Rotate :math:`(x,y,z)` positions in earth coordinates to
+     Rotate:math:`(x,y,z)` positions in earth coordinates to
     :math:`(u,v,w)` coordinates relative to astronomical source
-    position :math:`(ha, dec)`. Can be used for both antenna positions
-    as well as for baselines.
+     position:math:`(ha, dec)`. Can be used for both antenna positions
+     as well as for baselines.
 
-    Hour angle and declination can be given as single values or arrays
-    of the same length. Angles can be given as radians or astropy
-    quantities with a valid conversion.
+     Hour angle and declination can be given as single values or arrays
+     of the same length. Angles can be given as radians or astropy
+     quantities with a valid conversion.
 
-    :param xyz: :math:`(x,y,z)` co-ordinates of antennas in array
+    :param xyz::math:`(x,y,z)` co-ordinates of antennas in array
     :param ha: hour angle of phase tracking centre (:math:`ha = ra - lst`)
     :param dec: declination of phase tracking centre.
     """
 
-    # trans = numpy.array([[ numpy.sin(ha),                  numpy.cos(ha),                 0],
-    #                 [-numpy.sin(dec)*numpy.cos(ha),  numpy.sin(dec)*numpy.sin(ha), numpy.cos(dec)],
-    #                 [ numpy.cos(dec)*numpy.cos(ha), -numpy.cos(dec)*numpy.sin(ha), numpy.sin(dec)]])
-
-    # return numpy.einsum('ij,jk->ik', xyz, numpy.transpose(trans))
-
-    x, y, z = numpy.hsplit(xyz, 3)  # pylint: disable=unbalanced-tuple-unpacking
+    x, y, z = numpy.hsplit(
+        xyz, 3
+    )  # pylint: disable=unbalanced-tuple-unpacking
     u = numpy.sin(ha) * x + numpy.cos(ha) * y
     v = (
         -numpy.sin(dec) * numpy.cos(ha) * x
@@ -284,89 +288,50 @@ def eci_to_uvw(xyz, ha, dec):
         + numpy.sin(dec) * z
     )
     return numpy.hstack([u, v, w])
-    # Two rotations:
-    #  1. by 'ha' along the z axis
-    #  2. by '90-dec' along the u axis
-    # u = x * numpy.cos(ha) - y * numpy.sin(ha)
-    # v0 = x * numpy.sin(ha) + y * numpy.cos(ha)
-    # w = z * numpy.sin(dec) - v0 * numpy.cos(dec)
-    # v = z * numpy.cos(dec) + v0 * numpy.sin(dec)
-    # return numpy.hstack([u, v, w])
-
-    # trans = numpy.array([[ numpy.sin(ha),                  numpy.cos(ha),                 0],
-    #                 [-numpy.sin(dec)*numpy.cos(ha),  numpy.sin(dec)*numpy.sin(ha), numpy.cos(dec)],
-    #                 [ numpy.cos(dec)*numpy.cos(ha), -numpy.cos(dec)*numpy.sin(ha), numpy.sin(dec)]])
 
 
 def uvw_to_eci(uvw, ha, dec):
     """
-    Rotate :math:`(x,y,z)` positions relative to a sky position at
+     Rotate:math:`(x,y,z)` positions relative to a sky position at
     :math:`(ha, dec)` to earth coordinates. Can be used for both
-    antenna positions as well as for baselines.
+     antenna positions as well as for baselines.
 
-    Hour angle and declination can be given as single values or arrays
-    of the same length. Angles can be given as radians or astropy
-    quantities with a valid conversion.
+     Hour angle and declination can be given as single values or arrays
+     of the same length. Angles can be given as radians or astropy
+     quantities with a valid conversion.
 
-    :param uvw: :math:`(u,v,w)` co-ordinates of antennas in array
+    :param uvw::math:`(u,v,w)` co-ordinates of antennas in array
     :param ha: hour angle of phase tracking centre (:math:`ha = ra - lst`)
     :param dec: declination of phase tracking centre
     """
-    # trans = numpy.array([[numpy.sin(ha), -numpy.cos(ha) * numpy.sin(dec), numpy.cos(ha) * numpy.cos(dec)],
-    #                        [numpy.cos(ha), numpy.sin(dec) * numpy.sin(ha), -numpy.sin(ha) * numpy.cos(dec)],
-    #                        [0, numpy.cos(dec), numpy.sin(dec)]])
-    #
 
-    u, v, w = numpy.hsplit(uvw, 3)  # pylint: disable=unbalanced-tuple-unpacking
-    e = (
-        numpy.sin(ha) * u
-        - numpy.cos(ha) * numpy.sin(dec) * v
-        + numpy.cos(ha) * numpy.cos(dec) * w
-    )
-    c = (
-        numpy.cos(ha) * u
-        + numpy.sin(dec) * numpy.sin(ha) * v
-        - numpy.sin(ha) * numpy.cos(dec) * w
-    )
-    i = numpy.cos(dec) * v + numpy.sin(dec) * w
+    u, v, w = numpy.hsplit(
+        uvw, 3
+    )  # pylint: disable=unbalanced-tuple-unpacking
+
     return numpy.hstack([u, v, w])
-
-    # trans = numpy.array([[numpy.sin(ha), numpy.cos(ha), 0],
-    #                      [-numpy.sin(dec) * numpy.cos(ha), numpy.sin(dec) * numpy.sin(ha), numpy.cos(dec)],
-    #                      [numpy.cos(dec) * numpy.cos(ha), -numpy.cos(dec) * numpy.sin(ha), numpy.sin(dec)]])
-    #
-    # return numpy.einsum('ij,jk->ik', uvw, numpy.transpose(trans))
-
-    # u, v, w = numpy.hsplit(uvw, 3)  # pylint: disable=unbalanced-tuple-unpacking
-
-    # Two rotations:
-    #  1. by 'dec-90' along the u axis
-    #  2. by '-ha' along the z axis
-    # v0 = v * numpy.sin(dec) - w * numpy.cos(dec)
-    # z = v * numpy.cos(dec) + w * numpy.sin(dec)
-    # x = u * numpy.cos(ha) + v0 * numpy.sin(ha)
-    # y = -u * numpy.sin(ha) + v0 * numpy.cos(ha)
-    # return numpy.hstack([x, y, z])
 
 
 def xyz_to_uvw(xyz, ha, dec):
     """
-    Rotate :math:`(x,y,z)` positions in earth coordinates to
+     Rotate:math:`(x,y,z)` positions in earth coordinates to
     :math:`(u,v,w)` coordinates relative to astronomical source
-    position :math:`(ha, dec)`. Can be used for both antenna positions
-    as well as for baselines.
+     position:math:`(ha, dec)`. Can be used for both antenna positions
+     as well as for baselines.
 
-    Hour angle and declination can be given as single values or arrays
-    of the same length. Angles can be given as radians or astropy
-    quantities with a valid conversion.
+     Hour angle and declination can be given as single values or arrays
+     of the same length. Angles can be given as radians or astropy
+     quantities with a valid conversion.
 
-    :param xyz: :math:`(x,y,z)` co-ordinates of antennas in array
+    :param xyz::math:`(x,y,z)` co-ordinates of antennas in array
     :param ha: hour angle of phase tracking centre (:math:`ha = ra - lst`)
     :param dec: declination of phase tracking centre.
     """
 
     # return eci_to_uvw(xyz, ha, dec)
-    x, y, z = numpy.hsplit(xyz, 3)  # pylint: disable=unbalanced-tuple-unpacking
+    x, y, z = numpy.hsplit(
+        xyz, 3
+    )  # pylint: disable=unbalanced-tuple-unpacking
 
     # Two rotations:
     #  1. by 'ha' along the z axis
@@ -381,20 +346,22 @@ def xyz_to_uvw(xyz, ha, dec):
 
 def uvw_to_xyz(uvw, ha, dec):
     """
-    Rotate :math:`(x,y,z)` positions relative to a sky position at
+     Rotate:math:`(x,y,z)` positions relative to a sky position at
     :math:`(ha, dec)` to earth coordinates. Can be used for both
-    antenna positions as well as for baselines.
+     antenna positions as well as for baselines.
 
-    Hour angle and declination can be given as single values or arrays
-    of the same length. Angles can be given as radians or astropy
-    quantities with a valid conversion.
+     Hour angle and declination can be given as single values or arrays
+     of the same length. Angles can be given as radians or astropy
+     quantities with a valid conversion.
 
-    :param uvw: :math:`(u,v,w)` co-ordinates of antennas in array
+    :param uvw::math:`(u,v,w)` co-ordinates of antennas in array
     :param ha: hour angle of phase tracking centre (:math:`ha = ra - lst`)
     :param dec: declination of phase tracking centre
     """
     # return uvw_to_eci(uvw, ha, dec)
-    u, v, w = numpy.hsplit(uvw, 3)  # pylint: disable=unbalanced-tuple-unpacking
+    u, v, w = numpy.hsplit(
+        uvw, 3
+    )  # pylint: disable=unbalanced-tuple-unpacking
 
     # Two rotations:
     #  1. by 'dec-90' along the u axis
@@ -409,8 +376,8 @@ def uvw_to_xyz(uvw, ha, dec):
 
 def baselines(ants_uvw):
     """
-    Compute baselines in uvw co-ordinate system from
-    uvw co-ordinate system station positions
+     Compute baselines in uvw co-ordinate system from
+     uvw co-ordinate system station positions
 
     :param ants_uvw: `(u,v,w)` co-ordinates of antennas in array
     """
@@ -428,13 +395,13 @@ def baselines(ants_uvw):
 
 def xyz_to_baselines(ants_xyz, ha_range, dec):
     """
-    Calculate baselines in :math:`(u,v,w)` co-ordinate system
-    for a range of hour angles (i.e. non-snapshot observation)
-    to create a uvw sampling distribution
+     Calculate baselines in:math:`(u,v,w)` co-ordinate system
+     for a range of hour angles (i.e. non-snapshot observation)
+     to create a uvw sampling distribution
 
-    :param ants_xyz: :math:`(x,y,z)` co-ordinates of antennas in array
+    :param ants_xyz::math:`(x,y,z)` co-ordinates of antennas in array
     :param ha_range: list of hour angle values for astronomical source as function of time
-    :param dec: declination of astronomical source [constant, not :math:`f(t)`]
+    :param dec: declination of astronomical source [constant, not:math:`f(t)`]
     """
 
     dist_uvw = numpy.concatenate(
@@ -491,19 +458,19 @@ def lmn_to_skycoord(lmn, phasecentre: SkyCoord):
     return target.transform_to(phasecentre.frame)
 
 
-def simulate_point(dist_uvw, l, m):
+def simulate_point(dist_uvw, l, m):  # noqa: E741
     """
-    Simulate visibilities for unit amplitude point source at
-    direction cosines (l,m) relative to the phase centre.
+     Simulate visibilities for unit amplitude point source at
+     direction cosines (l,m) relative to the phase centre.
 
-    This includes phase tracking to the centre of the field (hence the minus 1
-    in the exponent.)
+     This includes phase tracking to the centre of the field (hence the minus 1
+     in the exponent.)
 
-    Note that point source is delta function, therefore the
-    FT relationship becomes an exponential, evaluated at
-    (uvw.lmn)
+     Note that point source is delta function, therefore the
+     FT relationship becomes an exponential, evaluated at
+     (uvw.lmn)
 
-    :param dist_uvw: :math:`(u,v,w)` distribution of projected baselines (in wavelengths)
+    :param dist_uvw::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
     :param l: horizontal direction cosine relative to phase tracking centre
     :param m: orthogonal directon cosine relative to phase tracking centre
     """
@@ -511,23 +478,25 @@ def simulate_point(dist_uvw, l, m):
     # vector direction to source
     s = numpy.array([l, m, numpy.sqrt(1 - l**2 - m**2) - 1.0])
     # complex valued Visibility data_models
-    return numpy.exp(-2j * numpy.pi * numpy.einsum("...fs,s->...f", dist_uvw, s))
+    return numpy.exp(
+        -2j * numpy.pi * numpy.einsum("...fs,s->...f", dist_uvw, s)
+    )
 
 
-def simulate_point_antenna(dist_uvw, l, m):
+def simulate_point_antenna(dist_uvw, l, m):  # noqa: E741
     """
-    Simulate visibility phasor for unit amplitude point source at
-    direction cosines (l,m) relative to the phase centre. This provides
-    the phasor for one antenna
+     Simulate visibility phasor for unit amplitude point source at
+     direction cosines (l,m) relative to the phase centre. This provides
+     the phasor for one antenna
 
-    This includes phase tracking to the centre of the field (hence the minus 1
-    in the exponent.)
+     This includes phase tracking to the centre of the field (hence the minus 1
+     in the exponent.)
 
-    Note that point source is delta function, therefore the
-    FT relationship becomes an exponential, evaluated at
-    (uvw.lmn)
+     Note that point source is delta function, therefore the
+     FT relationship becomes an exponential, evaluated at
+     (uvw.lmn)
 
-    :param dist_uvw: :math:`(u,v,w)` distribution of projected baselines (in wavelengths)
+    :param dist_uvw::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
     :param l: horizontal direction cosine relative to phase tracking centre
     :param m: orthogonal directon cosine relative to phase tracking centre
     """
@@ -540,12 +509,12 @@ def simulate_point_antenna(dist_uvw, l, m):
 
 def visibility_shift(uvw, vis, dl, dm):
     """
-    Shift visibilities by the given image-space distance. This is
-    based on simple FFT laws. It will require kernels to be suitably
-    shifted as well to work correctly.
+     Shift visibilities by the given image-space distance. This is
+     based on simple FFT laws. It will require kernels to be suitably
+     shifted as well to work correctly.
 
     :param uvw:
-    :param vis: :math:`(u,v,w)` distribution of projected baselines (in wavelengths)
+    :param vis::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
     :param vis: Input visibilities
     :param dl: Horizontal shift distance as directional cosine
     :param dm: Vertical shift distance as directional cosine
@@ -559,15 +528,15 @@ def visibility_shift(uvw, vis, dl, dm):
 
 def uvw_transform(uvw, transform_matrix):
     """
-    Transforms UVW baseline coordinates such that the image is
-    transformed with the given matrix. Will require kernels to be
-    suitably transformed to work correctly.
+     Transforms UVW baseline coordinates such that the image is
+     transformed with the given matrix. Will require kernels to be
+     suitably transformed to work correctly.
 
-    Reference: Sault, R. J., L. Staveley-Smith, and W. N. Brouw. "An
-    approach to interferometric mosaicing." Astronomy and Astrophysics
-    Supplement Series 120 (1996): 375-384.
+     Reference: Sault, R. J., L. Staveley-Smith, and W. N. Brouw. "An
+     approach to interferometric mosaicing." Astronomy and Astrophysics
+     Supplement Series 120 (1996): 375-384.
 
-    :param uvw: :math:`(u,v,w)` distribution of projected baselines (in wavelengths)
+    :param uvw::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
     :param transform_matrix: 2x2 matrix for image transformation
     :return: New baseline coordinates
     """
@@ -581,10 +550,10 @@ def uvw_transform(uvw, transform_matrix):
 def parallactic_angle(ha, dec, lat):
     """Calculate parallactic angle of source at ha, dec observed from site at latitude dec
 
-    H = t - α
-    sin(a) = sin(δ) sin(φ) + cos(δ) cos(φ) cos(H)
-    sin(A) = - sin(H) cos(δ) / cos(a)
-    cos(A) = { sin(δ) - sin(φ) sin(a) } / cos(φ) cos(a)
+     H = t - α
+     sin(a) = sin(δ) sin(φ) + cos(δ) cos(φ) cos(H)
+     sin(A) = - sin(H) cos(δ) / cos(a)
+     cos(A) = { sin(δ) - sin(φ) sin(a) } / cos(φ) cos(a)
 
     :param ha: Hour angle (radians)
     :param dec: Declination (radians)
@@ -601,12 +570,13 @@ def parallactic_angle(ha, dec, lat):
 
 
 def pa_z(ha, dec, lat):
-    """Calculate parallactic angle and zenith angle of source at ha, dec observed from site at latitude dec
+    """Calculate parallactic angle and zenith angle of source
+        at ha, dec observed from site at latitude dec
 
-    H = t - α
-    sin(a) = sin(δ) sin(φ) + cos(δ) cos(φ) cos(H)
-    sin(A) = - sin(H) cos(δ) / cos(a)
-    cos(A) = { sin(δ) - sin(φ) sin(a) } / cos(φ) cos(a)
+     H = t - α
+     sin(a) = sin(δ) sin(φ) + cos(δ) cos(φ) cos(H)
+     sin(A) = - sin(H) cos(δ) / cos(a)
+     cos(A) = { sin(δ) - sin(φ) sin(a) } / cos(φ) cos(a)
 
     :param ha: Hour angle (radians)
     :param dec: Declination (radians)
@@ -631,11 +601,11 @@ def pa_z(ha, dec, lat):
 def hadec_to_azel(ha, dec, latitude):
     """Convert HA Dec to Az El
 
-    TMS Appendix 4.1
+     TMS Appendix 4.1
 
-    sinel = sinlat sindec + coslat cosdec cosha
-    cosel cosaz = coslat sindec - sinlat cosdec cosha
-    cosel sinaz = - cosdec sinha
+     sinel = sinlat sindec + coslat cosdec cosha
+     cosel cosaz = coslat sindec - sinlat cosdec cosha
+     cosel sinaz = - cosdec sinha
 
     :param ha:
     :param dec:
@@ -649,7 +619,9 @@ def hadec_to_azel(ha, dec, latitude):
     cosha = numpy.cos(ha)
     sinha = numpy.sin(ha)
 
-    az = numpy.arctan2(-cosdec * sinha, (coslat * sindec - sinlat * cosdec * cosha))
+    az = numpy.arctan2(
+        -cosdec * sinha, (coslat * sindec - sinlat * cosdec * cosha)
+    )
     el = numpy.arcsin(sinlat * sindec + coslat * cosdec * cosha)
     return az, el
 
@@ -657,11 +629,11 @@ def hadec_to_azel(ha, dec, latitude):
 def azel_to_hadec(az, el, latitude):
     """Converting Az El to HA Dec
 
-    TMS Appendix 4.1
+     TMS Appendix 4.1
 
-    sindec = sinlat sinel + coslat cosel cosaz
-    cosdec cosha = coslat sinel - sinlat cosel cosaz
-    cosdec sinha = -cosel sinaz
+     sindec = sinlat sinel + coslat cosel cosaz
+     cosdec cosha = coslat sinel - sinlat cosel cosaz
+     cosdec sinha = -cosel sinaz
 
     :param az:
     :param el:

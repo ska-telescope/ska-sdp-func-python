@@ -1,3 +1,7 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable=consider-using-f-string
+# pylint: disable= missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module
 """ Unit processing_components for FFT support
 
 
@@ -7,11 +11,13 @@ import unittest
 import numpy
 from numpy.testing import assert_allclose
 
-from src.ska_sdp_func_python.fourier_transforms.fft_coordinates import coordinates2
+from src.ska_sdp_func_python.fourier_transforms.fft_coordinates import (
+    coordinates2,
+)
 from src.ska_sdp_func_python.fourier_transforms.fft_support import (
     extract_mid,
-    pad_mid,
     extract_oversampled,
+    pad_mid,
 )
 
 
@@ -37,7 +43,13 @@ class TestFFTSupport(unittest.TestCase):
             assert_allclose(extract_mid(cs_pad, npixel), cs)
 
     def test_extract_oversampled(self):
-        for npixel, kernel_oversampling in [(1, 2), (2, 3), (3, 2), (4, 2), (5, 3)]:
+        for npixel, kernel_oversampling in [
+            (1, 2),
+            (2, 3),
+            (3, 2),
+            (4, 2),
+            (5, 3),
+        ]:
             a = 1 + self._pattern(npixel * kernel_oversampling)
             ex = (
                 extract_oversampled(a, 0, 0, kernel_oversampling, npixel)

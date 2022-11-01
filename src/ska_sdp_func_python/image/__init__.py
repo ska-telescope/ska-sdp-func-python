@@ -1,6 +1,9 @@
-""" Functions for operations on Images, including creation, iteration, gather/scatter, FFTs, deconvolution, import/export, polarisation conversion, display, and frequency moments.
+# flake8: noqa
+""" Functions for operations on Images, including
+iteration, gather/scatter, FFTs, deconvolution and cleaning.
 
-Some of these functions operate only on canonical images. A canonical image has 4 dimensional data array, and 4 axes: RA---SIN, DEC---SIN, STOKES, and FREQ.
+Some of these functions operate only on canonical images.
+A canonical image has 4 dimensional data array, and 4 axes: RA---SIN, DEC---SIN, STOKES, and FREQ.
 
 """
 from .cleaners import *

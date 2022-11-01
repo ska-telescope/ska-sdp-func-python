@@ -16,21 +16,21 @@ The least squares fit algorithm uses an iterative substitution (or relaxation) a
 late seventies.
 
 .. toctree::
-   :maxdepth: 3
+  :maxdepth: 3
 
 .. automodapi::    rascil.processing_components.calibration.chain_calibration
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.calibration.iterators
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.calibration.operations
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.calibration.pointing
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.calibration.solvers
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 

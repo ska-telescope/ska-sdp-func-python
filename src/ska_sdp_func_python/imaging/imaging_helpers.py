@@ -1,3 +1,6 @@
+# pylint: disable=invalid-name, unused-variable
+# pylint: disable=unsubscriptable-object, logging-fstring-interpolation
+# pylint: disable=import-error, no-name-in-module
 """ Functions to aid operations on imaging results
 
 """
@@ -25,22 +28,22 @@ def sum_invert_results(image_list):
         im = image_list[0][0].copy(deep=True)
         sumwt = image_list[0][1]
         return im, sumwt
-    else:
 
-        im = create_empty_image_like(image_list[0][0])
-        sumwt = image_list[0][1].copy()
-        sumwt *= 0.0
+    im = create_empty_image_like(image_list[0][0])
+    sumwt = image_list[0][1].copy()
+    sumwt *= 0.0
 
-        for i, arg in enumerate(image_list):
-            if arg is not None:
-                im["pixels"].data += (
-                    arg[1][..., numpy.newaxis, numpy.newaxis] * arg[0]["pixels"].data
-                )
-                sumwt += arg[1]
+    for i, arg in enumerate(image_list):
+        if arg is not None:
+            im["pixels"].data += (
+                arg[1][..., numpy.newaxis, numpy.newaxis]
+                * arg[0]["pixels"].data
+            )
+            sumwt += arg[1]
 
-        im = normalise_sumwt(im, sumwt)
+    im = normalise_sumwt(im, sumwt)
 
-        return im, sumwt
+    return im, sumwt
 
 
 def remove_sumwt(results):
@@ -67,7 +70,9 @@ def sum_predict_results(results):
             if sum_results is None:
                 sum_results = result
             else:
-                assert sum_results["vis"].data.shape == result["vis"].data.shape
+                assert (
+                    sum_results["vis"].data.shape == result["vis"].data.shape
+                )
                 sum_results["vis"].data += result["vis"].data
 
     return sum_results
@@ -90,33 +95,33 @@ def threshold_list(
         if use_moment0:
             moments = calculate_image_frequency_moments(result)
             this_peak = numpy.max(
-                numpy.abs(moments["pixels"].data[0, ...] / result["pixels"].shape[0])
+                numpy.abs(
+                    moments["pixels"].data[0, ...] / result["pixels"].shape[0]
+                )
             )
             peak = max(peak, this_peak)
             log.info(
-                "threshold_list: using moment 0, sub_image %d, peak = %f,"
-                % (i, this_peak)
+                f"threshold_list: using moment 0, sub_image {i}, peak = {this_peak}"
             )
         else:
             ref_chan = result["pixels"].data.shape[0] // 2
             this_peak = numpy.max(numpy.abs(result["pixels"].data[ref_chan]))
             peak = max(peak, this_peak)
             log.info(
-                "threshold_list: using refchan %d , sub_image %d, peak = %f,"
-                % (ref_chan, i, this_peak)
+                f"threshold_list: using refchan {ref_chan} , sub_image {i}, peak = {this_peak}"
             )
 
     actual = max(peak * fractional_threshold, threshold)
 
     if use_moment0:
         log.info(
-            "threshold_list %s: Global peak in moment 0 = %.6f, sub-image clean threshold will be %.6f"
-            % (prefix, peak, actual)
+            f"threshold_list {prefix}: Global peak in moment 0 = {peak}, "
+            "sub-image clean threshold will be {actual}"
         )
     else:
         log.info(
-            "threshold_list %s: Global peak = %.6f, sub-image clean threshold will be %.6f"
-            % (prefix, peak, actual)
+            "threshold_list {prefix}: Global peak = {peak}, "
+            "sub-image clean threshold will be {actual}"
         )
 
     return actual

@@ -1,3 +1,6 @@
+# pylint: disable=invalid-name, unused-variable
+# pylint: disable=import-outside-toplevel, import-error
+# pylint: disable=too-many-arguments, too-many-locals
 """Useful array functions.
 
 """
@@ -18,7 +21,7 @@ import numpy
 def average_chunks(arr, wts, chunksize):
     """Average the array arr with weights by chunks
 
-    Array len does not have to be multiple of chunksize
+     Array len does not have to be multiple of chunksize
 
     :param arr: 1D array of values
     :param wts: 1D array of weights
@@ -36,7 +39,9 @@ def average_chunks(arr, wts, chunksize):
 
     # Codes optimized
 
-    mask = numpy.zeros(((len(arr) - 1) // chunksize + 1, arr.shape[0]), dtype=bool)
+    mask = numpy.zeros(
+        ((len(arr) - 1) // chunksize + 1, arr.shape[0]), dtype=bool
+    )
     for enumerate_id, i in enumerate(range(0, len(arr), chunksize)):
         mask[enumerate_id, i : i + chunksize] = 1
     chunks = mask.dot(wts * arr)
@@ -50,7 +55,7 @@ def average_chunks(arr, wts, chunksize):
 def average_chunks2(arr, wts, chunksize):
     """Average the two dimensional array arr with weights by chunks
 
-    Array len does not have to be multiple of chunksize.
+     Array len does not have to be multiple of chunksize.
 
     :param arr: 2D array of values
     :param wts: 2D array of weights
@@ -71,7 +76,10 @@ def average_chunks2(arr, wts, chunksize):
     tempchunks *= tempwt
     for i in range(arr.shape[0]):
         result = average_chunks(arr[i, :], wts[i, :], chunksize[1])
-        tempchunks[i, :], tempwt[i, :] = result[0].flatten(), result[1].flatten()
+        tempchunks[i, :], tempwt[i, :] = (
+            result[0].flatten(),
+            result[1].flatten(),
+        )
 
     chunks = numpy.zeros([l0, l1], dtype=arr.dtype)
     weights = numpy.zeros([l0, l1])
@@ -86,7 +94,7 @@ def average_chunks2(arr, wts, chunksize):
 def tukey_filter(x, r):
     """Calculate the Tukey (tapered cosine) filter
 
-    See e.g. https://uk.mathworks.com/help/signal/ref/tukeywin.html
+     See e.g. https://uk.mathworks.com/help/signal/ref/tukeywin.html
 
     :param x: x coordinate (float)
     :param r: transition point of filter (float)
@@ -94,10 +102,10 @@ def tukey_filter(x, r):
     """
     if 0.0 <= x < r / 2.0:
         return 0.5 * (1.0 + numpy.cos(2.0 * numpy.pi * (x - r / 2.0) / r))
-    elif 1 - r / 2.0 <= x <= 1.0:
+    if 1 - r / 2.0 <= x <= 1.0:
         return 0.5 * (1.0 + numpy.cos(2.0 * numpy.pi * (x - 1 + r / 2.0) / r))
-    else:
-        return 1.0
+
+    return 1.0
 
 
 def insert_function_sinc(x):
@@ -130,7 +138,9 @@ def insert_function_pswf(x, a=5):
     :return: 1d vector
     """
 
-    from rascil.processing_components.fourier_transforms.fft_coordinates import grdsf
+    from rascil.processing_components.fourier_transforms.fft_coordinates import (
+        grdsf,
+    )
 
     return grdsf(abs(x) / a)[1]
 
@@ -163,7 +173,7 @@ def insert_array(
     )
 
     insertsum = numpy.sum(insert)
-    assert insertsum > 0, "Sum of interpolation coefficients %g" % insertsum
+    assert insertsum > 0, f"Sum of interpolation coefficients {insertsum}."
     insert = insert / insertsum
 
     for chan in range(nchan):

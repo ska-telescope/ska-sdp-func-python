@@ -10,8 +10,8 @@ It is installed via pip as part of the RASCIL install process.See more informati
 
 Nifty Gridder is supported at the processing component level via:
 
- * :py:func:`rascil.processing_components.imaging.ng.invert_ng`
- * :py:func:`rascil.processing_components.imaging.ng.predict_ng`
+ *:py:func:`rascil.processing_components.imaging.ng.invert_ng`
+ *:py:func:`rascil.processing_components.imaging.ng.predict_ng`
 
 At the workflow level, such as imaging and pipeline workflows, use context='ng'.
 
@@ -35,6 +35,6 @@ framework decomposes the overall transform into suitable linear combinations of 
 
 The full layering is:
 
-+ The core imaging functions are defined in :py:mod:`processing_components.imaging.base`.
++ The core imaging functions are defined in:py:mod:`processing_components.imaging.base`.
 + Nifty Gridder provides optimised wstack/wprojection imaging and should be the default.
 + AW projection is also possible using the 2d gridder and a suitable gridding convolution function.

@@ -1,3 +1,8 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable=consider-using-f-string, logging-not-lazy, unused-variable
+# pylint: disable=attribute-defined-outside-init, too-many-instance-attributes
+# pylint: disable= missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module
 """ Unit tests for calibration solution
 
 
@@ -8,23 +13,25 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
 from src.ska_sdp_func_python.calibration import apply_gaintable
 from src.ska_sdp_func_python.calibration.chain_calibration import (
-    create_calibration_controls,
     calibrate_chain,
+    create_calibration_controls,
 )
 from src.ska_sdp_func_python.calibration.operations import (
     create_gaintable_from_visibility,
 )
 from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
-from src.ska_sdp_func_python.simulation import create_named_configuration
-from src.ska_sdp_func_python.simulation import simulate_gaintable
-from src.ska_sdp_func_python.visibility.base import (
-    create_visibility,
+from src.ska_sdp_func_python.simulation import (
+    create_named_configuration,
+    simulate_gaintable,
 )
+from src.ska_sdp_func_python.visibility.base import create_visibility
 
 log = logging.getLogger("rascil-logger")
 
@@ -36,7 +43,11 @@ class TestCalibrationChain(unittest.TestCase):
         numpy.random.seed(1805550721)
 
     def actualSetup(
-        self, sky_pol_frame="stokesIQUV", data_pol_frame="linear", f=None, vnchan=1
+        self,
+        sky_pol_frame="stokesIQUV",
+        data_pol_frame="linear",
+        f=None,
+        vnchan=1,
     ):
         self.lowcore = create_named_configuration("LOWBD2-CORE")
         self.times = (numpy.pi / 43200.0) * numpy.linspace(0.0, 30.0, 3)
@@ -55,7 +66,10 @@ class TestCalibrationChain(unittest.TestCase):
             f = [100.0]
 
         self.flux = numpy.outer(
-            numpy.array([numpy.power(freq / 1e8, -0.7) for freq in self.frequency]), f
+            numpy.array(
+                [numpy.power(freq / 1e8, -0.7) for freq in self.frequency]
+            ),
+            f,
         )
 
         # The phase centre is absolute and the component is specified relative (for now).
@@ -168,7 +182,9 @@ class TestCalibrationChain(unittest.TestCase):
         assert residual < 1e-6, "Max T residual = %s" % residual
 
     def test_calibrate_B_function(self):
-        self.actualSetup("stokesIQUV", "linear", f=[100.0, 50, 0.0, 0.0], vnchan=32)
+        self.actualSetup(
+            "stokesIQUV", "linear", f=[100.0, 50, 0.0, 0.0], vnchan=32
+        )
         # Prepare the corrupted visibility data_models
         gt = create_gaintable_from_visibility(self.vis)
         log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))

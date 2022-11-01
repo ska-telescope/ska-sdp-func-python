@@ -1,13 +1,24 @@
-""" Imaging is based on used of the FFT to perform Fourier transforms efficiently. Since the observed visibility data_models
-do not arrive naturally on grid points, the sampled points are resampled on the FFT grid using a convolution function to
-smear out the sample points. The resulting grid points are then FFT'ed. The result can be corrected for the griddata
+# pylint: disable=invalid-name, unused-argument, too-many-locals
+# pylint: disable=unnecessary-dunder-call, unused-variable
+# pylint: disable=unbalanced-tuple-unpacking, no-else-return
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=consider-using-f-string, logging-not-lazy, logging-format-interpolation
+# pylint: disable=import-error, no-name-in-module
+""" Imaging is based on used of the FFT to
+perform Fourier transforms efficiently. Since the observed visibility data_models
+do not arrive naturally on grid points, the sampled points are
+resampled on the FFT grid using a convolution function to
+smear out the sample points. The resulting grid points are then FFT'ed.
+The result can be corrected for the griddata
 convolution function by division in the image plane of the transform.
 
-This module contains functions for performing the griddata process and the inverse degridding process.
+This module contains functions for performing the
+griddata process and the inverse degridding process.
 
 The GridData data model is used to hold the specification of the desired result.
 
-GridData, ConvolutionFunction and Vis/BlockVis always have the same PolarisationFrame. Conversion to
+GridData, ConvolutionFunction and Vis
+always have the same PolarisationFrame. Conversion to
 stokesIQUV is only done in the image plane.
 """
 
@@ -30,7 +41,7 @@ import numpy
 import numpy.testing
 from ska_sdp_datamodels.gridded_visibility.grid_vis_model import GridData
 
-from src.ska_sdp_func_python.fourier_transforms import ifft, fft
+from src.ska_sdp_func_python.fourier_transforms import fft, ifft
 from src.ska_sdp_func_python.image.operations import create_image_from_array
 
 log = logging.getLogger("rascil-logger")
@@ -80,8 +91,12 @@ def spatial_mapping(griddata, u, v, w, cf=None):
 
         grid_wcs = griddata.griddata_acc.griddata_wcs
         cf_wcs = cf.convolutionfunction_acc.cf_wcs
-        numpy.testing.assert_almost_equal(grid_wcs.wcs.cdelt[0], cf_wcs.wcs.cdelt[0], 7)
-        numpy.testing.assert_almost_equal(grid_wcs.wcs.cdelt[1], cf_wcs.wcs.cdelt[1], 7)
+        numpy.testing.assert_almost_equal(
+            grid_wcs.wcs.cdelt[0], cf_wcs.wcs.cdelt[0], 7
+        )
+        numpy.testing.assert_almost_equal(
+            grid_wcs.wcs.cdelt[1], cf_wcs.wcs.cdelt[1], 7
+        )
         # UV mapping:
         # We use the grid_wcs's to do the coordinate conversion
         # Find the nearest grid points
@@ -94,20 +109,26 @@ def spatial_mapping(griddata, u, v, w, cf=None):
             # We now have the location of grid points, convert back to uv space and
             # find the remainder (in wavelengths). We then use this to calculate the
             # subsampling indices (DUU, DVV)
-            wu_grid, wv_grid = grid_wcs.sub([1, 2]).wcs_pix2world(pu_grid, pv_grid, 0)
+            wu_grid, wv_grid = grid_wcs.sub([1, 2]).wcs_pix2world(
+                pu_grid, pv_grid, 0
+            )
             wu_subsample, wv_subsample = u - wu_grid, v - wv_grid
             pu_offset, pv_offset = numpy.round(
                 cf_wcs.sub([3, 4]).wcs_world2pix(wu_subsample, wv_subsample, 0)
             ).astype("int")
             assert (
                 numpy.min(pu_offset) >= 0
-            ), "image sampling wrong: DU axis underflows: %f" % numpy.min(pu_offset)
+            ), "image sampling wrong: DU axis underflows: %f" % numpy.min(
+                pu_offset
+            )
             assert (
                 numpy.max(pu_offset) < cf["pixels"].data.shape[3]
             ), "DU axis overflows: %f" % numpy.max(pu_offset)
             assert (
                 numpy.min(pv_offset) >= 0
-            ), "image sampling wrong: DV axis underflows: %f" % numpy.min(pv_offset)
+            ), "image sampling wrong: DV axis underflows: %f" % numpy.min(
+                pv_offset
+            )
             assert (
                 numpy.max(pv_offset) < cf["pixels"].data.shape[4]
             ), "DV axis overflows: %f" % numpy.max(pv_offset)
@@ -122,9 +143,9 @@ def spatial_mapping(griddata, u, v, w, cf=None):
             if numpy.min(pwc_grid) < 0:
                 print(w[0:10])
                 print(cf.convolutionfunction_acc.cf_wcs.sub([5]).__repr__())
-            assert numpy.min(pwc_grid) >= 0, "W axis underflows: %f" % numpy.min(
-                pwc_grid
-            )
+            assert (
+                numpy.min(pwc_grid) >= 0
+            ), "W axis underflows: %f" % numpy.min(pwc_grid)
             assert (
                 numpy.max(pwc_grid) < cf["pixels"].data.shape[2]
             ), "W axis overflows: %f" % numpy.max(pwc_grid)
@@ -173,7 +194,9 @@ def grid_visibility_to_griddata(vis, griddata, cf):
     nichan, nipol, _, _ = griddata["pixels"].data.shape
 
     fvist = numpy.nan_to_num(
-        vis.visibility_acc.flagged_vis.reshape([nrows * nbaselines, nvchan, nvpol]).T
+        vis.visibility_acc.flagged_vis.reshape(
+            [nrows * nbaselines, nvchan, nvpol]
+        ).T
     )
     fwtt = numpy.nan_to_num(
         vis.visibility_acc.flagged_imaging_weight.reshape(
@@ -206,7 +229,13 @@ def grid_visibility_to_griddata(vis, griddata, cf):
             num_skipped = 0
             for row in range(nrows * nbaselines):
                 subcf = ccf[
-                    imchan, pol, pwc_grid[row], pv_offset[row], pu_offset[row], :, :
+                    imchan,
+                    pol,
+                    pwc_grid[row],
+                    pv_offset[row],
+                    pu_offset[row],
+                    :,
+                    :,
                 ]
                 # skipped over underflows
                 if (
@@ -325,10 +354,12 @@ def griddata_merge_weights(gd_list):
     return (gd, sumwt)
 
 
-def griddata_visibility_reweight(vis, griddata, weighting="uniform", robustness=0.0):
+def griddata_visibility_reweight(
+    vis, griddata, weighting="uniform", robustness=0.0
+):
     """Reweight visibility weight using the weights in griddata
-       The fundamental equations are from
-       https://casadocs.readthedocs.io/en/latest/notebooks/synthesis_imaging.html
+        The fundamental equations are from
+        https://casadocs.readthedocs.io/en/latest/notebooks/synthesis_imaging.html
 
     :param weighting:
     :param vis: visibility to be reweighted
@@ -349,14 +380,13 @@ def griddata_visibility_reweight(vis, griddata, weighting="uniform", robustness=
     real_gd = numpy.real(griddata["pixels"].data)
 
     vis_to_im = numpy.round(
-        griddata.griddata_acc.griddata_wcs.sub([4]).wcs_world2pix(vis.frequency, 0)[0]
+        griddata.griddata_acc.griddata_wcs.sub([4]).wcs_world2pix(
+            vis.frequency, 0
+        )[0]
     ).astype("int")
 
     nrows, nbaselines, nvchan, nvpol = vis.vis.shape
     fimwtt = vis.visibility_acc.flagged_imaging_weight.reshape(
-        [nrows * nbaselines, nvchan, nvpol]
-    ).T
-    fwtt = vis.visibility_acc.flagged_weight.reshape(
         [nrows * nbaselines, nvchan, nvpol]
     ).T
 
@@ -391,12 +421,14 @@ def griddata_visibility_reweight(vis, griddata, weighting="uniform", robustness=
             u_overflows_mask = numpy.logical_or(
                 pu_grid >= real_gd.shape[3], pu_grid < 0
             )
-            uv_ingrid_mask = ~numpy.logical_or(u_overflows_mask, v_overflows_mask)
+            uv_ingrid_mask = ~numpy.logical_or(
+                u_overflows_mask, v_overflows_mask
+            )
 
-            if len(uv_ingrid_mask[uv_ingrid_mask == False]) > 0:
+            if len(uv_ingrid_mask[uv_ingrid_mask is False]) > 0:
                 log.warning(
                     "warning weighting gridding: skipped %d visbility",
-                    len(uv_ingrid_mask[uv_ingrid_mask == False]),
+                    len(uv_ingrid_mask[uv_ingrid_mask is False]),
                 )
 
             gdwt_all = numpy.zeros((nrows * nbaselines,), dtype=real_gd.dtype)
@@ -439,15 +471,17 @@ def griddata_visibility_reweight(vis, griddata, weighting="uniform", robustness=
                 numpy.logical_and(uv_ingrid_mask, gdwt_all <= 0.0)
             ] = 0.0
 
-    vis.imaging_weight.data[...] = fimwtt.T.reshape([nrows, nbaselines, nvchan, nvpol])
+    vis.imaging_weight.data[...] = fimwtt.T.reshape(
+        [nrows, nbaselines, nvchan, nvpol]
+    )
 
     return vis
 
 
 def degrid_visibility_from_griddata(vis, griddata, cf, **kwargs):
     """Degrid blockVisibility from a GridData
-       Note: if parameter oversampling_synthesised_beam in advise_wide_field()
-             has been set less than 2, some visibilities would be discarded.
+        Note: if parameter oversampling_synthesised_beam in advise_wide_field()
+              has been set less than 2, some visibilities would be discarded.
 
     :param vis: visibility to be degridded
     :param griddata: GridData containing image
@@ -514,13 +548,23 @@ def degrid_visibility_from_griddata(vis, griddata, cf, **kwargs):
                 ]
 
                 subcf = scf[
-                    imchan, pol, pwc_grid[row], pv_offset[row], pu_offset[row], :, :
+                    imchan,
+                    pol,
+                    pwc_grid[row],
+                    pv_offset[row],
+                    pu_offset[row],
+                    :,
+                    :,
                 ]
                 fvist[pol, vchan, row] = numpy.einsum("ij,ij", subgrid, subcf)
             if num_skipped > 0:
-                log.warning("warning gridding: skipped %d visbility", num_skipped)
+                log.warning(
+                    "warning gridding: skipped %d visbility", num_skipped
+                )
 
-    newvis["vis"].data[...] = fvist.T.reshape([nrows, nbaselines, nvchan, nvpol])
+    newvis["vis"].data[...] = fvist.T.reshape(
+        [nrows, nbaselines, nvchan, nvpol]
+    )
 
     return newvis
 
@@ -528,7 +572,7 @@ def degrid_visibility_from_griddata(vis, griddata, cf, **kwargs):
 def fft_griddata_to_image(griddata, template, gcf=None):
     """FFT griddata after applying gcf
 
-    If imaginary is true the data array is complex
+     If imaginary is true the data array is complex
 
     :param griddata:
     :param gcf: Grid correction image
@@ -536,17 +580,25 @@ def fft_griddata_to_image(griddata, template, gcf=None):
     """
     # assert isinstance(griddata, GridData)
 
-    ny, nx = griddata["pixels"].data.shape[-2], griddata["pixels"].data.shape[-1]
+    ny, nx = (
+        griddata["pixels"].data.shape[-2],
+        griddata["pixels"].data.shape[-1],
+    )
 
     if gcf is None:
         im_data = ifft(griddata["pixels"].data) * float(nx) * float(ny)
     else:
         im_data = (
-            ifft(griddata["pixels"].data) * gcf["pixels"].data * float(nx) * float(ny)
+            ifft(griddata["pixels"].data)
+            * gcf["pixels"].data
+            * float(nx)
+            * float(ny)
         )
 
     return create_image_from_array(
-        im_data, template.image_acc.wcs, griddata.griddata_acc.polarisation_frame
+        im_data,
+        template.image_acc.wcs,
+        griddata.griddata_acc.polarisation_frame,
     )
 
 
@@ -558,11 +610,16 @@ def fft_image_to_griddata(im, griddata, gcf=None):
     :return:
     """
     # chan, pol, z, u, v, w
-    assert im.image_acc.polarisation_frame == griddata.griddata_acc.polarisation_frame
+    assert (
+        im.image_acc.polarisation_frame
+        == griddata.griddata_acc.polarisation_frame
+    )
 
     if gcf is None:
         griddata["pixels"].data[...] = fft(im["pixels"].data)[...]
     else:
-        griddata["pixels"].data[...] = fft(im["pixels"].data * gcf["pixels"].data)[...]
+        griddata["pixels"].data[...] = fft(
+            im["pixels"].data * gcf["pixels"].data
+        )[...]
 
     return griddata

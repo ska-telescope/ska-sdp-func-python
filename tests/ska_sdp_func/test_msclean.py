@@ -1,3 +1,6 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable= missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module
 """ Unit processing_components for image deconvolution via MSClean
 
 
@@ -8,10 +11,10 @@ import unittest
 import numpy
 
 from src.ska_sdp_func_python.image.cleaners import (
-    create_scalestack,
-    convolve_scalestack,
-    convolve_convolve_scalestack,
     argmax,
+    convolve_convolve_scalestack,
+    convolve_scalestack,
+    create_scalestack,
 )
 
 log = logging.getLogger("rascil-logger")
@@ -32,13 +35,19 @@ class TestImageMSClean(unittest.TestCase):
         result = convolve_scalestack(self.scalestack, img)
         assert argmax(result)[1:] == (75, 31)
         numpy.testing.assert_array_almost_equal(
-            result[0, 75, 31], self.scalestack[0, self.npixel // 2, self.npixel // 2], 7
+            result[0, 75, 31],
+            self.scalestack[0, self.npixel // 2, self.npixel // 2],
+            7,
         )
         numpy.testing.assert_array_almost_equal(
-            result[1, 75, 31], self.scalestack[1, self.npixel // 2, self.npixel // 2], 7
+            result[1, 75, 31],
+            self.scalestack[1, self.npixel // 2, self.npixel // 2],
+            7,
         )
         numpy.testing.assert_array_almost_equal(
-            result[2, 75, 31], self.scalestack[2, self.npixel // 2, self.npixel // 2], 7
+            result[2, 75, 31],
+            self.scalestack[2, self.npixel // 2, self.npixel // 2],
+            7,
         )
 
     def test_convolve_convolve(self):
@@ -61,7 +70,8 @@ class TestImageMSClean(unittest.TestCase):
             self.scalestack[2, self.npixel // 2, self.npixel // 2],
             7,
         )
-        # This is a coarse test since the scales do not having the property of widths adding incoherently under
+        # This is a coarse test since the scales do not
+        # having the property of widths adding incoherently under
         # convolution
         numpy.testing.assert_array_almost_equal(
             result[1, 1, 75, 31],

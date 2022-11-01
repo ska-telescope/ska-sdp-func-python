@@ -1,3 +1,9 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable=attribute-defined-outside-init, unused-variable
+# pylint: disable=too-many-instance-attributes, invalid-envvar-default
+# pylint: disable=consider-using-f-string, logging-not-lazy
+# pylint: disable=missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """Unit tests for image deconvolution vis MSMFS
 
 
@@ -9,26 +15,28 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 
 from src.ska_sdp_func_python import (
-    deconvolve_list,
-    restore_list,
     create_pb,
-    image_scatter_channels,
+    deconvolve_list,
     image_gather_channels,
-    weight_visibility,
+    image_scatter_channels,
+    restore_list,
     taper_visibility_gaussian,
+    weight_visibility,
 )
 from src.ska_sdp_func_python.image.operations import create_image_from_array
 from src.ska_sdp_func_python.imaging.base import create_image_from_visibility
 from src.ska_sdp_func_python.imaging.imaging import (
-    predict_visibility,
     invert_visibility,
+    predict_visibility,
 )
 from src.ska_sdp_func_python.imaging.primary_beams import create_low_test_beam
-from src.ska_sdp_func_python.simulation import create_low_test_image_from_gleam
 from src.ska_sdp_func_python.simulation import (
+    create_low_test_image_from_gleam,
     create_named_configuration,
     decimate_configuration,
 )
@@ -98,7 +106,9 @@ class TestImageDeconvolutionMSMFS(unittest.TestCase):
         )
         self.vis = weight_visibility(self.vis, self.model)
         self.vis = taper_visibility_gaussian(self.vis, 0.002)
-        self.dirty, sumwt = invert_visibility(self.vis, self.model, context="2d")
+        self.dirty, sumwt = invert_visibility(
+            self.vis, self.model, context="2d"
+        )
         self.psf, sumwt = invert_visibility(
             self.vis, self.model, context="2d", dopsf=True
         )
@@ -178,7 +188,9 @@ class TestImageDeconvolutionMSMFS(unittest.TestCase):
         )
         self.cmodel = restore_list(self.comp, self.psf, self.residual)
         self.save_and_check_images(
-            "mmclean_notaylor_noscales", 12.874215203967717, -0.14419436344642067
+            "mmclean_notaylor_noscales",
+            12.874215203967717,
+            -0.14419436344642067,
         )
 
     def test_deconvolve_mmclean_linear(self):
@@ -218,11 +230,14 @@ class TestImageDeconvolutionMSMFS(unittest.TestCase):
         if self.persist:
             sensitivity = image_gather_channels(self.sensitivity)
             sensitivity.image_acc.export_to_fits(
-                "%s/test_deconvolve_mmclean_linear_sensitivity.fits" % self.results_dir,
+                "%s/test_deconvolve_mmclean_linear_sensitivity.fits"
+                % self.results_dir,
             )
         self.cmodel = restore_list(self.comp, self.psf, self.residual)
         self.save_and_check_images(
-            "mmclean_linear_sensitivity", 15.207396524333546, -0.14224980487729716
+            "mmclean_linear_sensitivity",
+            15.207396524333546,
+            -0.14224980487729716,
         )
 
     def test_deconvolve_mmclean_linear_noscales(self):
@@ -279,7 +294,9 @@ class TestImageDeconvolutionMSMFS(unittest.TestCase):
         )
         self.cmodel = restore_list(self.comp, self.psf, self.residual)
         self.save_and_check_images(
-            "mmclean_quadratic_noscales", 15.69172353540307, -0.1654330930047646
+            "mmclean_quadratic_noscales",
+            15.69172353540307,
+            -0.1654330930047646,
         )
 
     def save_and_check_images(self, tag, flux_max=0.0, flux_min=0.0):

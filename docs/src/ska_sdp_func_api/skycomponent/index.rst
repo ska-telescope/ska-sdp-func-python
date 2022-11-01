@@ -7,7 +7,7 @@ Sky components
 
 
 .. automodapi::    rascil.processing_components.skycomponent.base
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.skycomponent.operations
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:

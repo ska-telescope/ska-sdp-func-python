@@ -1,3 +1,7 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable=invalid-envvar-default
+# pylint: disable= missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module
 """ Unit tests for image Taylor terms
 
 """
@@ -10,8 +14,8 @@ import numpy
 from astropy.coordinates import SkyCoord
 
 from src.ska_sdp_func_python import (
-    create_low_test_skycomponents_from_gleam,
     create_low_test_image_from_gleam,
+    create_low_test_skycomponents_from_gleam,
     smooth_image,
 )
 from src.ska_sdp_func_python.skycomponent.taylor_terms import (
@@ -37,7 +41,9 @@ class TestSkyComponentTaylorTerm(unittest.TestCase):
             phasecentre=phasecentre, frequency=frequency, flux_limit=10.0
         )[0:10]
 
-        taylor_term_list = calculate_skycomponent_list_taylor_terms(sc, nmoment=3)
+        taylor_term_list = calculate_skycomponent_list_taylor_terms(
+            sc, nmoment=3
+        )
         assert len(taylor_term_list) == 10
 
     def test_find_skycomponents_frequency_taylor_terms(self):

@@ -1,3 +1,6 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable= missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module
 """ Unit tests for coordinate calculations
 
 """
@@ -6,14 +9,14 @@ import unittest
 
 import astropy.units as u
 import numpy
-from astropy.coordinates import SkyCoord, EarthLocation
+from astropy.coordinates import EarthLocation, SkyCoord
 from astropy.time import Time
 
 from src.ska_sdp_func_python.util.geometry import (
     calculate_azel,
     calculate_hourangles,
-    calculate_transit_time,
     calculate_parallactic_angles,
+    calculate_transit_time,
     utc_to_ms_epoch,
 )
 
@@ -23,15 +26,21 @@ class TestGeometry(unittest.TestCase):
         self.location = EarthLocation(
             lon=116.76444824 * u.deg, lat=-26.824722084 * u.deg, height=300.0
         )
-        self.times = (numpy.pi / 43200.0) * numpy.arange(-43200, +43200, 3600.0)
+        self.times = (numpy.pi / 43200.0) * numpy.arange(
+            -43200, +43200, 3600.0
+        )
         self.phasecentre = SkyCoord(
             ra=+180.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.utc_time = Time(["2020-01-01T00:00:00"], format="isot", scale="utc")
+        self.utc_time = Time(
+            ["2020-01-01T00:00:00"], format="isot", scale="utc"
+        )
 
     def test_azel(self):
         utc_times = Time(
-            numpy.arange(0.0, 1.0, 0.1) + self.utc_time.mjd, format="mjd", scale="utc"
+            numpy.arange(0.0, 1.0, 0.1) + self.utc_time.mjd,
+            format="mjd",
+            scale="utc",
         )
         azel = calculate_azel(self.location, utc_times, self.phasecentre)
         numpy.testing.assert_array_almost_equal(azel[0][0].deg, -113.964241)
@@ -40,7 +49,9 @@ class TestGeometry(unittest.TestCase):
         numpy.testing.assert_array_almost_equal(azel[1][-1].deg, 81.617363)
 
     def test_hourangles(self):
-        ha = calculate_hourangles(self.location, self.utc_time, self.phasecentre)
+        ha = calculate_hourangles(
+            self.location, self.utc_time, self.phasecentre
+        )
         numpy.testing.assert_array_almost_equal(ha[0].deg, 36.881315)
 
     def test_parallacticangles(self):

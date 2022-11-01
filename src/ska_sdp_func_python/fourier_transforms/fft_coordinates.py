@@ -1,3 +1,5 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable=import-error
 """ Support for coordinates in FFTs
 
 All grids and images are considered quadratic and centered around
@@ -20,11 +22,11 @@ log = logging.getLogger("rascil-logger")
 def coordinateBounds(npixel):
     r"""Returns lowest and highest coordinates of an image/grid given:
 
-    1. Step size is :math:`1/npixel`:
+    1. Step size is:math:`1/npixel`:
 
        .. math:: \frac{high-low}{npixel-1} = \frac{1}{npixel}
 
-    2. The coordinate :math:`\lfloor npixel/2\rfloor` falls exactly on zero:
+    2. The coordinate:math:`\lfloor npixel/2\rfloor` falls exactly on zero:
 
        .. math:: low + \left\lfloor\frac{npixel}{2}\right\rfloor * (high-low) = 0
 
@@ -32,8 +34,8 @@ def coordinateBounds(npixel):
     """
     if npixel % 2 == 0:
         return -0.5, 0.5 * (npixel - 2) / npixel
-    else:
-        return -0.5 * (npixel - 1) / npixel, 0.5 * (npixel - 1) / npixel
+
+    return -0.5 * (npixel - 1) / npixel, 0.5 * (npixel - 1) / npixel
 
 
 def coordinates(npixel: int):
@@ -83,8 +85,20 @@ def grdsf(nu):
     """
     p = numpy.array(
         [
-            [8.203343e-2, -3.644705e-1, 6.278660e-1, -5.335581e-1, 2.312756e-1],
-            [4.028559e-3, -3.697768e-2, 1.021332e-1, -1.201436e-1, 6.412774e-2],
+            [
+                8.203343e-2,
+                -3.644705e-1,
+                6.278660e-1,
+                -5.335581e-1,
+                2.312756e-1,
+            ],
+            [
+                4.028559e-3,
+                -3.697768e-2,
+                1.021332e-1,
+                -1.201436e-1,
+                6.412774e-2,
+            ],
         ]
     )
     q = numpy.array(
@@ -116,14 +130,14 @@ def grdsf(nu):
     for k in range(1, nq):
         bot += q[part, k] * numpy.power(delnusq, k)
 
-    grdsf = numpy.zeros_like(nu)
+    grdsf_arr = numpy.zeros_like(nu)
     ok = bot > 0.0
-    grdsf[ok] = top[ok] / bot[ok]
+    grdsf_arr[ok] = top[ok] / bot[ok]
     ok = numpy.abs(nu > 1.0)
-    grdsf[ok] = 0.0
+    grdsf_arr[ok] = 0.0
 
     # Return the griddata function and the grid correction function
-    return grdsf, (1 - nu**2) * grdsf
+    return grdsf_arr, (1 - nu**2) * grdsf_arr
 
 
 def w_beam(npixel, field_of_view, w, cx=None, cy=None, remove_shift=False):
@@ -132,8 +146,8 @@ def w_beam(npixel, field_of_view, w, cx=None, cy=None, remove_shift=False):
     :param npixel: Size of the grid in pixels
     :param field_of_view: Field of view
     :param w: Baseline distance to the projection plane
-    :param cx: location of delay centre def :npixel//2
-    :param cy: location of delay centre def :npixel//2
+    :param cx: location of delay centre def:npixel//2
+    :param cy: location of delay centre def:npixel//2
     :param remove_shift: Remove overall phase shift at the centre of the image
     :return: npixel x npixel array with the far field
     """
@@ -141,41 +155,6 @@ def w_beam(npixel, field_of_view, w, cx=None, cy=None, remove_shift=False):
         cx = npixel // 2
     if cy is None:
         cy = npixel // 2
-
-    # Original codes
-    # ly, mx = coordinates2Offset(npixel, cx, cy)
-    # r2 = field_of_view**2*(ly ** 2 + mx ** 2)
-    # ph = numpy.zeros_like(r2)
-    # ph[r2 < 1.0] = -2 * numpy.pi * w * (1 - numpy.sqrt(1.0 - r2[r2 < 1.0]))
-    # cp = numpy.zeros_like(r2, dtype='complex')
-    # cp[r2 < 1.0] = numpy.exp(1j * ph[r2 < 1.0])
-    # cp[r2 == 0] = 1.0 + 0j
-    # if remove_shift:
-    #     cp /= cp[npixel // 2, npixel // 2]
-
-    # numpy.putmask
-    # ly, mx = coordinates2Offset(npixel, cx, cy)
-    # r2 = field_of_view**2*(ly ** 2 + mx ** 2)
-    # ph = numpy.zeros_like(r2)
-    # m = r2 < 1.0
-    # cp = numpy.zeros_like(r2, dtype='complex')
-    # numpy.putmask(ph, m, -2 * numpy.pi * w * (1 - numpy.sqrt(1.0 - r2)))
-    # numpy.putmask(cp, m, numpy.exp(1j * ph))
-    # numpy.putmask(cp, r2 == 0, 1.0 + 0j)
-    # if remove_shift:
-    #     cp /= cp[npixel // 2, npixel // 2]
-
-    # numpy.putmask - 2
-    # ly, mx = coordinates2Offset(npixel, cx, cy)
-    # r2 = field_of_view ** 2 * (ly ** 2 + mx ** 2)
-    # ph = -2 * numpy.pi * w * (1 - numpy.sqrt(1.0 - r2))
-    # numpy.putmask(ph, r2 >= 1.0, 0)
-    # cp = numpy.zeros_like(r2, dtype='complex')
-    # cp = numpy.exp(1j * ph)
-    # numpy.putmask(cp, r2 >= 1.0, 0 + 0j)
-    # numpy.putmask(cp, r2 == 0, 1.0 + 0j)
-    # if remove_shift:
-    #     cp /= cp[npixel // 2, npixel // 2]
 
     # SubArray Copy Symmetrically
     ly, mx = coordinates2Offset(npixel, cx, cy, quadrant=True)
@@ -191,9 +170,9 @@ def w_beam(npixel, field_of_view, w, cx=None, cy=None, remove_shift=False):
         cp /= cp[-1, -1]
 
     cp = numpy.pad(
-        cp, ((0, int(cx) + npixel % 2 - 1), (0, int(cy) + npixel % 2 - 1)), "reflect"
+        cp,
+        ((0, int(cx) + npixel % 2 - 1), (0, int(cy) + npixel % 2 - 1)),
+        "reflect",
     )
-
-    # assert((cp==cp1).all())
 
     return cp

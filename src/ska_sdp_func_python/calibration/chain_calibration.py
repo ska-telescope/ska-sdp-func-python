@@ -1,6 +1,11 @@
+# pylint: disable=invalid-name, too-many-arguments, unused-argument
+# pylint: disable=logging-format-interpolation,consider-using-f-string,logging-fstring-interpolation
+# pylint: disable=import-error, no-name-in-module
 """ Functions to solve for and apply chains of antenna/station gain tables.
 
-Calibration control is via a calibration_controls dictionary created by :py:func:`rascil.processing_components.calibration.chain_calibration.create_calibration_controls`. This supports the following Jones matrices::
+Calibration control is via a calibration_controls dictionary
+created by:py:func:`chain_calibration.create_calibration_controls`.
+This supports the following Jones matrices::
 
    . T - Atmospheric phase
    . G - Electronics gain
@@ -10,11 +15,16 @@ Calibration control is via a calibration_controls dictionary created by :py:func
 
 This is specified via a dictionary::
 
-    contexts = {'T': {'shape': 'scalar', 'timeslice': 'auto', 'phase_only': True, 'first_iteration': 0},
-                'G': {'shape': 'vector', 'timeslice': 60.0, 'phase_only': False, 'first_iteration': 0},
-                'P': {'shape': 'matrix', 'timeslice': 1e4, 'phase_only': False, 'first_iteration': 0},
-                'B': {'shape': 'vector', 'timeslice': 1e5, 'phase_only': False, 'first_iteration': 0},
-                'I': {'shape': 'vector', 'timeslice': 1.0, 'phase_only': True, 'first_iteration': 0}}
+    contexts = {'T': {'shape': 'scalar', 'timeslice': 'auto',
+                        'phase_only': True, 'first_iteration': 0},
+                'G': {'shape': 'vector', 'timeslice': 60.0,
+                        'phase_only': False, 'first_iteration': 0},
+                'P': {'shape': 'matrix', 'timeslice': 1e4,
+                        'phase_only': False, 'first_iteration': 0},
+                'B': {'shape': 'vector', 'timeslice': 1e5,
+                        'phase_only': False, 'first_iteration': 0},
+                'I': {'shape': 'vector', 'timeslice': 1.0,
+                        'phase_only': True, 'first_iteration': 0}}
 
 Currently P and I are not supported.
 
@@ -73,28 +83,23 @@ log = logging.getLogger("rascil-logger")
 def create_calibration_controls():
     """Create a dictionary containing default chanin calibration controls
 
-    The fields are
+     The fields are
 
-        T: Atmospheric phase
-        G: Electronic gains
-        P: Polarisation
-        B: Bandpass
-        I: Ionosphere
+         T: Atmospheric phase
+         G: Electronic gains
+         P: Polarisation
+         B: Bandpass
+         I: Ionosphere
 
-    Therefore first get this default dictionary and then adjust parameters as desired. The calibrate function takes a context string e.g. TGB. It then calibrates each of these Jones matrices in turn
+     Therefore first get this default dictionary and then adjust parameters as desired.
+     The calibrate function takes a context string e.g. TGB.
+     It then calibrates each of these Jones matrices in turn
 
-    Note that P and I calibration require off diagonal terms producing non-commutation of the Jones matrices. This is
-    not handled yet.
+     Note that P and I calibration require off diagonal terms producing n
+     on-commutation of the Jones matrices. This is not handled yet.
 
     :return: dictionary
     """
-
-    # controls = {'T': {'shape': 'scalar', 'timeslice': 'auto', 'phase_only': True, 'first_selfcal': 0},
-    #             'G': {'shape': 'vector', 'timeslice': 60.0, 'phase_only': False, 'first_selfcal': 0},
-    #             'P': {'shape': 'matrix', 'timeslice': 1e4, 'phase_only': False, 'first_selfcal': 0},
-    #             'B': {'shape': 'vector', 'timeslice': 1e5, 'phase_only': False, 'first_selfcal': 0},
-    #             'I': {'shape': 'vector', 'timeslice': 1.0, 'phase_only': True, 'first_selfcal': 0}}
-
     controls = {
         "T": {
             "shape": "scalar",
@@ -130,7 +135,7 @@ def apply_calibration_chain(
 ):
     """Calibrate using algorithm specified by calibration_context and the calibration controls
 
-    The context string can denote a sequence of calibrations e.g. TGB with different timescales.
+     The context string can denote a sequence of calibrations e.g. TGB with different timescales.
 
     :param vis:
     :param model_vis:
@@ -147,12 +152,12 @@ def apply_calibration_chain(
     # Check to see if changes are required
     changes = False
     for c in calibration_context:
-        if (iteration >= controls[c]["first_selfcal"]) and (c in gaintables.keys()):
+        if (iteration >= controls[c]["first_selfcal"]) and (
+            c in gaintables.keys()
+        ):
             changes = True
 
     if changes:
-
-        ##assert isinstance(vis, Visibility), vis
 
         for c in calibration_context:
             if iteration >= controls[c]["first_selfcal"]:
@@ -161,8 +166,8 @@ def apply_calibration_chain(
                 )
 
         return avis
-    else:
-        return vis
+
+    return vis
 
 
 def calibrate_chain(
@@ -177,7 +182,7 @@ def calibrate_chain(
 ):
     """Calibrate using algorithm specified by calibration_context
 
-    The context string can denote a sequence of calibrations e.g. TGB with different timescales.
+     The context string can denote a sequence of calibrations e.g. TGB with different timescales.
 
     :param vis:
     :param model_vis:
@@ -201,10 +206,8 @@ def calibrate_chain(
         avis = vis
         amvis = model_vis
 
-        ##assert isinstance(avis, Visibility), avis
-
         if gaintables is None:
-            gaintables = dict()
+            gaintables = {}
 
         for c in calibration_context:
             if iteration >= controls[c]["first_selfcal"]:
@@ -223,11 +226,15 @@ def calibrate_chain(
                     tol=tol,
                 )
                 log.debug(
-                    "calibrate_chain: Jones matrix %s, iteration %d" % (c, iteration)
+                    "calibrate_chain: Jones matrix {}, iteration {}".format(
+                        c, iteration
+                    )
                 )
                 log.debug(
                     gaintables[c].gaintable_acc.qa_gain_table(
-                        context="Jones matrix %s, iteration %d" % (c, iteration),
+                        context="Jones matrix {}, iteration {}".format(
+                            c, iteration
+                        )
                     )
                 )
                 avis = apply_gaintable(
@@ -238,13 +245,14 @@ def calibrate_chain(
                 )
             else:
                 log.debug(
-                    "calibrate_chain: Jones matrix %s not solved, iteration %d"
-                    % (c, iteration)
+                    "calibrate_chain: Jones matrix {} not solved, iteration {}".format(
+                        c, iteration
+                    )
                 )
 
         return avis, gaintables
-    else:
-        return vis, gaintables
+
+    return vis, gaintables
 
 
 def solve_calibrate_chain(
@@ -259,7 +267,8 @@ def solve_calibrate_chain(
 ):
     """Calibrate using algorithm specified by calibration_context
 
-    The context string can denote a sequence of calibrations e.g. TGB with different timescales.
+     The context string can denote a sequence of calibrations
+     e.g. TGB with different timescales.
 
     :param vis:
     :param model_vis:
@@ -273,17 +282,11 @@ def solve_calibrate_chain(
         controls = create_calibration_controls()
 
     avis = vis
-
     amvis = model_vis
 
-    ##assert isinstance(avis, Visibility), avis
-
-    # assert amvis.__repr__() != avis.__repr__(), "Vis and model vis are the same object: convert problem"
-
     # Always return a gain table, even if null
-
     if gaintables is None:
-        gaintables = dict()
+        gaintables = {}
 
     for c in calibration_context:
         if c not in gaintables.keys():
@@ -293,7 +296,9 @@ def solve_calibrate_chain(
         fmin = gaintables[c].frequency.data[0]
         fmax = gaintables[c].frequency.data[-1]
         if iteration >= controls[c]["first_selfcal"]:
-            if numpy.max(numpy.abs(vis.visibility_acc.flagged_weight)) > 0.0 and (
+            if numpy.max(
+                numpy.abs(vis.visibility_acc.flagged_weight)
+            ) > 0.0 and (
                 amvis is None or numpy.max(numpy.abs(amvis.vis)) > 0.0
             ):
                 gaintables[c] = solve_gaintable(
@@ -309,7 +314,9 @@ def solve_calibrate_chain(
                     f"Model is non-zero: solving for Jones matrix {c}, "
                     f"iteration {iteration}, frequency {fmin:4g} - {fmax:4g} Hz"
                 )
-                qa = gaintables[c].gaintable_acc.qa_gain_table(context=context_message)
+                qa = gaintables[c].gaintable_acc.qa_gain_table(
+                    context=context_message
+                )
                 log.info(f"calibrate_chain: {qa}")
             else:
                 log.info(

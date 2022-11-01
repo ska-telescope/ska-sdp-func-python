@@ -1,3 +1,7 @@
+# pylint: disable=invalid-name, too-many-locals, unused-argument
+# pylint: disable=too-many-branches, too-many-statements
+# pylint: disable=inconsistent-return-statements, unused-variable
+# pylint: disable=import-error, no-name-in-module
 """
 Functions that define and manipulate images. Images are just data and a World Coordinate System.
 """
@@ -11,8 +15,8 @@ import numpy
 from ska_sdp_datamodels.image.image_model import Image
 
 from src.ska_sdp_func_python.image.operations import (
-    create_image_from_array,
     create_empty_image_like,
+    create_image_from_array,
 )
 from src.ska_sdp_func_python.util.array_functions import tukey_filter
 
@@ -22,40 +26,44 @@ log = logging.getLogger("rascil-logger")
 def image_raster_iter(
     im: Image, facets=1, overlap=0, taper="flat", make_flat=False
 ) -> collections.abc.Iterable:
-    """Create an image_raster_iter generator, returning a list of subimages, optionally with overlaps
+    """Create an image_raster_iter generator,
+    returning a list of subimages, optionally with overlaps
 
-    The WCS is adjusted appropriately for each raster element. Hence this is a coordinate-aware
-    way to iterate through an image.
+     The WCS is adjusted appropriately for each raster element. Hence this is a coordinate-aware
+     way to iterate through an image.
 
-    The argument make_flat means that the subimages contain constant values. This is useful for
-    dealing with overlaps in gather operations.
+     The argument make_flat means that the subimages contain constant values. This is useful for
+     dealing with overlaps in gather operations.
 
-    Provided we don't break reference semantics, memory should be conserved. However make_flat
-    creates a new set of images and thus reference semantics dont hold.
+     Provided we don't break reference semantics, memory should be conserved. However make_flat
+     creates a new set of images and thus reference semantics dont hold.
 
-    To update the image in place::
+     To update the image in place::
 
-        for r in image_raster_iter(im, facets=2):
-            r["pixels"].data[...] = numpy.sqrt(r["pixels"].data[...])
+         for r in image_raster_iter(im, facets=2):
+             r["pixels"].data[...] = numpy.sqrt(r["pixels"].data[...])
 
-    Note that some combinations of image size, facets, and overlap are invalid. In these cases,
-    an exception (ValueError) is raised.
+     Note that some combinations of image size, facets, and overlap are invalid. In these cases,
+     an exception (ValueError) is raised.
 
-    In the case where make_flat is true, the subimages returned have tapers applied in the overlap
-    region. This is used by py:func:`rascil.processing_components.image.gather_scatter.image_gather_facets`
-    to merge subimages into one image.
+     In the case where make_flat is true, the subimages returned
+     have tapers applied in the overlap region.
+     This is used by py:func:`gather_scatter.image_gather_facets`
+     to merge subimages into one image.
 
-    A taper is applied in the overlap regions. None implies a constant value, linear is a ramp,
-    quadratic is parabolic at the ends, and tukey is the tukey function.
+     A taper is applied in the overlap regions.
+     None implies a constant value, linear is a ramp,
+     quadratic is parabolic at the ends, and tukey is the tukey function.
 
     :param im: Image
     :param facets: Number of image partitions on each axis (2)
     :param overlap: overlap in pixels
-    :param taper: method of tapering at the edges: 'flat' or 'linear' or 'quadratic' or 'tukey'
+    :param taper: method of tapering at the edges:
+                    'flat' or 'linear' or 'quadratic' or 'tukey'
     :param make_flat: Make the flat images
     :returns: Generator of images
 
-    See also
+     See also
         :py:func:`rascil.processing_components.image.gather_scatter.image_gather_facets`
         :py:func:`rascil.processing_components.image.gather_scatter.image_scatter_facets`
         :py:func:`rascil.processing_components.util.array_functions.tukey_filter`
@@ -105,7 +113,9 @@ def image_raster_iter(
 
             quadratic_ramp = numpy.ones(over)
             quadratic_ramp[0 : over // 2] = 2.0 * ramp[0 : over // 2] ** 2
-            quadratic_ramp[over // 2 :] = 1 - 2.0 * ramp[over // 2 : 0 : -1] ** 2
+            quadratic_ramp[over // 2 :] = (
+                1 - 2.0 * ramp[over // 2 : 0 : -1] ** 2
+            )
 
             taper1d[:over] = quadratic_ramp
             taper1d[(npixels - over) : npixels] = 1.0 - quadratic_ramp
@@ -142,11 +152,13 @@ def image_raster_iter(
                     flat = create_empty_image_like(subim)
                     if taper == "linear":
                         flat["pixels"].data[..., :, :] = numpy.outer(
-                            taper_linear(dy, overlap), taper_linear(dx, overlap)
+                            taper_linear(dy, overlap),
+                            taper_linear(dx, overlap),
                         )
                     elif taper == "quadratic":
                         flat["pixels"].data[..., :, :] = numpy.outer(
-                            taper_quadratic(dy, overlap), taper_quadratic(dx, overlap)
+                            taper_quadratic(dy, overlap),
+                            taper_quadratic(dx, overlap),
                         )
                     elif taper == "tukey":
                         flat["pixels"].data[..., :, :] = numpy.outer(
@@ -165,21 +177,21 @@ def image_raster_iter(
 def image_channel_iter(im: Image, subimages=1) -> collections.abc.Iterable:
     """Create a image_channel_iter generator, returning images
 
-    The WCS is adjusted appropriately for each raster element. Hence this is a coordinate-aware
-    way to iterate through an image.
+     The WCS is adjusted appropriately for each raster element. Hence this is a coordinate-aware
+     way to iterate through an image.
 
-    Provided we don't break reference semantics, memory should be conserved
+     Provided we don't break reference semantics, memory should be conserved
 
-    To update the image in place::
+     To update the image in place::
 
-        for r in image_channel_iter(im, subimages=nchan):
-            r.data[...] = numpy.sqrt(r.data[...])
+         for r in image_channel_iter(im, subimages=nchan):
+             r.data[...] = numpy.sqrt(r.data[...])
 
     :param im: Image
     :param subimages: Number of subimages
     :returns: Generator of images
 
-    See also
+     See also
         :py:func:`rascil.processing_components.image.gather_scatter.image_gather_channels`
         :py:func:`rascil.processing_components.image.gather_scatter.image_scatter_channels`
     """
@@ -189,12 +201,14 @@ def image_channel_iter(im: Image, subimages=1) -> collections.abc.Iterable:
 
     nchan, npol, ny, nx = im["pixels"].data.shape
 
-    assert subimages <= nchan, "More subimages %d than channels %d" % (subimages, nchan)
+    assert (
+        subimages <= nchan
+    ), f"More subimages {subimages} than channels {nchan}"
     step = nchan // subimages
     channels = numpy.array(range(0, nchan, step), dtype="int")
     assert (
         len(channels) == subimages
-    ), "subimages %d does not match length of channels %d" % (subimages, len(channels))
+    ), f"subimages {subimages} does not match length of channels {len(channels)}"
 
     for i, channel in enumerate(channels):
         if i + 1 < len(channels):

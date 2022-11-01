@@ -1,3 +1,4 @@
+# flake8: noqa
 """FFT support functions
 
 The include FFTs or arrays, and convolutional gridding.

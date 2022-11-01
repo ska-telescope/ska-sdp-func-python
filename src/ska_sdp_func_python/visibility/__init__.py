@@ -1,3 +1,4 @@
+# flake8: noqa
 """ Functions for processing visibility. These operate on Visibility
 
 """

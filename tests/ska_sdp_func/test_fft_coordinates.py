@@ -1,3 +1,6 @@
+# pylint: disable=invalid-name, expression-not-assigned, unused-argument
+# pylint: disable= missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module
 """ Unit processing_components for convolutional Gridding
 
 
@@ -8,10 +11,10 @@ import numpy
 from numpy.testing import assert_allclose
 
 from src.ska_sdp_func_python.fourier_transforms.fft_coordinates import (
-    w_beam,
+    coordinateBounds,
     coordinates,
     coordinates2,
-    coordinateBounds,
+    w_beam,
 )
 
 

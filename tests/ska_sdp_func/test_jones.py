@@ -1,3 +1,7 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable=consider-using-f-string
+# pylint: disable= missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module
 """ Unit tests for Jones matrix application
 
 """
@@ -10,7 +14,9 @@ from numpy.testing import assert_array_almost_equal
 from ska_sdp_datamodels.science_data_model.polarisation_functions import (
     convert_pol_frame,
 )
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 
 from src.ska_sdp_func_python.calibration import apply_jones
 
@@ -37,9 +43,15 @@ class TestJones(unittest.TestCase):
             cpol = PolarisationFrame("stokesIQUV")
             cflux = convert_pol_frame(flux, cpol, vpol, 0).reshape([2, 2])
 
-            diagonal = numpy.array([[1.0 + 0.0j, 0.0 + 0.0j], [0.0 + 0.0j, 1.0 + 0.0]])
-            skew = numpy.array([[0.0 + 0.0j, 1.0 + 0.0j], [1.0 + 0.0j, 0.0 + 0.0]])
-            leakage = numpy.array([[1.0 + 0.0j, 0.0 + 0.1j], [0.0 - 0.1j, 1.0 + 0.0]])
+            diagonal = numpy.array(
+                [[1.0 + 0.0j, 0.0 + 0.0j], [0.0 + 0.0j, 1.0 + 0.0]]
+            )
+            skew = numpy.array(
+                [[0.0 + 0.0j, 1.0 + 0.0j], [1.0 + 0.0j, 0.0 + 0.0]]
+            )
+            leakage = numpy.array(
+                [[1.0 + 0.0j, 0.0 + 0.1j], [0.0 - 0.1j, 1.0 + 0.0]]
+            )
             unbalanced = numpy.array(
                 [[100.0 + 0.0j, 0.0 + 0.0j], [0.0 + 0.0j, 0.03 + 0.0]]
             )
@@ -54,7 +66,9 @@ class TestJones(unittest.TestCase):
                     nsucceeded += 1
                 except AssertionError as e:
                     print(e)
-                    print("{0} {1} {2} failed".format(vpol, str(ej), str(flux)))
+                    print(
+                        "{0} {1} {2} failed".format(vpol, str(ej), str(flux))
+                    )
                     nfailures += 1
         assert nfailures == 0, "{0} tests succeeded, {1} failed".format(
             nsucceeded, nfailures

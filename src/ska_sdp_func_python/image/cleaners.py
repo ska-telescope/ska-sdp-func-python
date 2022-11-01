@@ -1,8 +1,20 @@
+# pylint: disable=invalid-name, too-many-lines, too-many-locals
+# pylint: disable=unused-argument, unused-variable, too-many-branches
+# pylint: disable=too-many-statements, too-many-arguments
+# pylint: disable=unbalanced-tuple-unpacking, bad-string-format-type
+# pylint: disable=consider-using-f-string, logging-not-lazy, logging-format-interpolation
+# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Image Deconvolution functions
 
 """
 
-__all__ = ["hogbom", "hogbom_complex", "msclean", "msmfsclean", "spheroidal_function"]
+__all__ = [
+    "hogbom",
+    "hogbom_complex",
+    "msclean",
+    "msmfsclean",
+    "spheroidal_function",
+]
 
 import logging
 import time
@@ -15,17 +27,20 @@ log = logging.getLogger("rascil-logger")
 def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):
     """Clean the point spread function from a dirty image
 
-    See Hogbom CLEAN (1974A&AS...15..417H)
+     See Hogbom CLEAN (1974A&AS...15..417H)
 
-    This version operates on numpy arrays. deconvolve_cube provides a version for Images.
+     This version operates on numpy arrays. deconvolve_cube provides a version for Images.
 
     :param fracthresh:
     :param prefix:
     :param dirty: The dirty Image, i.e., the Image to be deconvolved
     :param psf: The point spread-function
-    :param window: Regions where clean components are allowed. If True, entire dirty Image is allowed
-    :param gain: The "loop gain", i.e., the fraction of the brightest pixel that is removed in each iteration
-    :param thresh: Cleaning stops when the maximum of the absolute deviation of the residual is less than this value
+    :param window: Regions where clean components are allowed.
+                    If True, entire dirty Image is allowed
+    :param gain: The "loop gain", i.e., the fraction of the brightest pixel
+                    that is removed in each iteration
+    :param thresh: Cleaning stops when the maximum of the absolute deviation
+                    of the residual is less than this value
     :param niter: Maximum number of components to make if the threshold `thresh` is not hit
     :return: clean component Image, residual Image
     """
@@ -64,7 +79,9 @@ def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):
                 (numpy.fabs(res * window)).argmax(), dirty.shape
             )
         else:
-            mx, my = numpy.unravel_index((numpy.fabs(res)).argmax(), dirty.shape)
+            mx, my = numpy.unravel_index(
+                (numpy.fabs(res)).argmax(), dirty.shape
+            )
         mval = res[mx, my] * gain / pmax
         comps[mx, my] += mval
         a1o, a2o = overlapIndices(dirty, psf, mx, my)
@@ -86,7 +103,8 @@ def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):
 
     dtime = time.time() - starttime
     log.info(
-        "%s Timing for clean: %.3f (s) for dirty %s, PSF %s , %d iterations, time per clean %.3f (ms)"
+        "%s Timing for clean: %.3f (s) for dirty %s, PSF %s , "
+        "%d iterations, time per clean %.3f (ms)"
         % (
             prefix,
             dtime,
@@ -105,22 +123,25 @@ def hogbom_complex(
 ):
     """Clean the point spread function from a dirty Q+iU image
 
-    This uses the complex Hogbom CLEAN for polarised data (2016MNRAS.462.3483P)
+     This uses the complex Hogbom CLEAN for polarised data (2016MNRAS.462.3483P)
 
-    The starting-point for the code was the standard Hogbom clean algorithm available in RASCIL.
+     The starting-point for the code was the standard Hogbom clean algorithm available in RASCIL.
 
-    Args:
+     Args:
     :param dirty_q: (numpy array): The dirty Q Image, i.e., the Q Image to be deconvolved.
     :param dirty_u: (numpy array): The dirty U Image, i.e., the U Image to be deconvolved.
     :param psf_q: (numpy array): The point spread-function in Stokes Q.
     :param psf_u: (numpy array): The point spread-function in Stokes U.
-    :param window: (float): Regions where clean components are allowed. If True, entire dirty Image is allowed.
-    :param gain: (float): The "loop gain", i.e., the fraction of the brightest pixel that is removed in each iteration.
-    :param thresh: (float): Cleaning stops when the maximum of the absolute deviation of the residual is less than this value.
+    :param window: (float): Regions where clean components are allowed.
+                            If True, entire dirty Image is allowed.
+    :param gain: (float): The "loop gain", i.e., the fraction of the brightest pixel
+                            that is removed in each iteration.
+    :param thresh: (float): Cleaning stops when the maximum of the absolute deviation
+                            of the residual is less than this value.
     :param niter: (int): Maximum number of components to make if the threshold `thresh` is not hit.
     :param fracthresh: (float): The predefined fractional threshold at which to stop cleaning.
 
-    Returns:
+     Returns:
     :return (comps.real, comps.imag, res.real, res.imag)
     """
 
@@ -134,7 +155,9 @@ def hogbom_complex(
         "hogbom_mod: Max abs in dirty image = %.6f"
         % numpy.max(numpy.abs(dirty_complex))
     )
-    absolutethresh = max(thresh, fracthresh * numpy.absolute(dirty_complex).max())
+    absolutethresh = max(
+        thresh, fracthresh * numpy.absolute(dirty_complex).max()
+    )
     log.info("hogbom_mod: Start of minor cycle")
     log.info(
         "hogbom_mod: This minor cycle will stop at %d iterations or peak < %s"
@@ -148,7 +171,9 @@ def hogbom_complex(
 
     pmax = psf_q.max()
     assert pmax > 0.0
-    log.info("hogbom: Max abs in dirty Image = %.6f" % numpy.absolute(res).max())
+    log.info(
+        "hogbom: Max abs in dirty Image = %.6f" % numpy.absolute(res).max()
+    )
     for i in range(niter):
         if window is not None:
             mx, my = numpy.unravel_index(
@@ -163,7 +188,8 @@ def hogbom_complex(
         a1o, a2o = overlapIndices(dirty_complex, psf_q, mx, my)
         if niter < 10 or i % (niter // 10) == 0:
             log.info(
-                "hogbom: Minor cycle %d, peak %s at [%d, %d]" % (i, res[mx, my], mx, my)
+                "hogbom: Minor cycle %d, peak %s at [%d, %d]"
+                % (i, res[mx, my], mx, my)
             )
         res[a1o[0] : a1o[1], a1o[2] : a1o[3]] -= (
             psf_q[a2o[0] : a2o[1], a2o[2] : a2o[3]] * mval
@@ -222,22 +248,35 @@ def argmax(a):
 
 
 def msclean(
-    dirty, psf, window, sensitivity, gain, thresh, niter, scales, fracthresh, prefix=""
+    dirty,
+    psf,
+    window,
+    sensitivity,
+    gain,
+    thresh,
+    niter,
+    scales,
+    fracthresh,
+    prefix="",
 ):
     """Perform multiscale clean
 
-    Multiscale CLEAN (IEEE Journal of Selected Topics in Sig Proc, 2008 vol. 2 pp. 793-801)
+     Multiscale CLEAN (IEEE Journal of Selected Topics in Sig Proc, 2008 vol. 2 pp. 793-801)
 
-    This version operates on numpy arrays.
+     This version operates on numpy arrays.
 
     :param prefix: Informational prefix for log messages
     :param dirty: The dirty image, i.e., the image to be deconvolved
     :param psf: The point spread-function
-    :param window: Regions where clean components are allowed. If True, all of the dirty image is allowed
+    :param window: Regions where clean components are allowed.
+                    If True, all of the dirty image is allowed
     :param sensitivity: Inverse noise image, scaled to peak 1.0
-    :param gain: The "loop gain", i.e., the fraction of the brightest pixel that is removed in each iteration
-    :param thresh: Cleaning stops when the maximum of the absolute deviation of the residual is less than this value
-    :param fracthresh: Cleaning stops when the (maximum of the absolute deviation of the residual)/peak residual is less than this value
+    :param gain: The "loop gain", i.e., the fraction of the brightest pixel
+                    that is removed in each iteration
+    :param thresh: Cleaning stops when the maximum of the absolute deviation
+                    of the residual is less than this value
+    :param fracthresh: Cleaning stops when the (maximum of the absolute deviation
+                    of the residual)/peak residual is less than this value
     :param niter: Maximum number of components to make if the threshold "thresh" is not hit
     :param scales: Scales (in pixels width) to be used
     :return: clean component image, residual image
@@ -258,7 +297,10 @@ def msclean(
     log.info("msclean %s: Peak of PSF = %s at %s" % (prefix, pmax, psfpeak))
     dmax = dirty.max()
     dpeak = argmax(dirty)
-    log.info("msclean %s: Peak of Dirty = %.6f Jy/beam at %s " % (prefix, dmax, dpeak))
+    log.info(
+        "msclean %s: Peak of Dirty = %.6f Jy/beam at %s "
+        % (prefix, dmax, dpeak)
+    )
     lpsf = psf / pmax
     ldirty = dirty / pmax
 
@@ -274,7 +316,9 @@ def msclean(
     pscalestack = create_scalestack(pscaleshape, scales, norm=True)
 
     res_scalestack = convolve_scalestack(scalestack, numpy.array(ldirty))
-    psf_scalescalestack = convolve_convolve_scalestack(pscalestack, numpy.array(lpsf))
+    psf_scalescalestack = convolve_convolve_scalestack(
+        pscalestack, numpy.array(lpsf)
+    )
 
     # Evaluate the coupling matrix between the various scale sizes.
     coupling_matrix = numpy.zeros([len(scales), len(scales)])
@@ -299,7 +343,9 @@ def msclean(
         assert numpy.sum(windowstack) > 0
 
     maxabs = numpy.max(numpy.abs(res_scalestack[0, :, :]))
-    log.info("msclean %s: Max abs in dirty Image = %.6f Jy/beam" % (prefix, maxabs))
+    log.info(
+        "msclean %s: Max abs in dirty Image = %.6f Jy/beam" % (prefix, maxabs)
+    )
     absolutethresh = max(thresh, fracthresh * maxabs)
     log.info("msclean %s: Start of minor cycle" % prefix)
     log.info(
@@ -336,7 +382,8 @@ def msclean(
 
         if maxabs < 0.9 * absolutethresh:
             log.info(
-                "msclean %s: At iteration %d, absolute value of peak %.6f is below stopping threshold %.6f"
+                "msclean %s: At iteration %d, "
+                "absolute value of peak %.6f is below stopping threshold %.6f"
                 % (prefix, i, maxabs, absolutethresh)
             )
             break
@@ -354,7 +401,9 @@ def msclean(
                     * mval
                 )
             comps[lhs[0] : lhs[1], lhs[2] : lhs[3]] += (
-                pscalestack[mscale, rhs[0] : rhs[1], rhs[2] : rhs[3]] * gain * mval
+                pscalestack[mscale, rhs[0] : rhs[1], rhs[2] : rhs[3]]
+                * gain
+                * mval
             )
         else:
             break
@@ -363,7 +412,8 @@ def msclean(
 
     dtime = time.time() - starttime
     log.info(
-        "msclean %s: Timing for clean: %.3f (s) for dirty shape %s, PSF shape %s , scales %s, %d iterations, "
+        "msclean %s: Timing for clean: %.3f (s) for "
+        "dirty shape %s, PSF shape %s , scales %s, %d iterations, "
         "time per clean %.3f (ms)"
         % (
             prefix,
@@ -406,7 +456,9 @@ def create_scalestack(scaleshape, scales, norm=True):
                     fy = float(y - ycen)
                     r2 = rscale2 * (fx * fx + fy * fy)
                     r = numpy.sqrt(r2)
-                    basis[iscale, x, y] = spheroidal_function(r) * (1.0 - r**2)
+                    basis[iscale, x, y] = spheroidal_function(r) * (
+                        1.0 - r**2
+                    )
             basis[basis < 0.0] = 0.0
             if norm:
                 basis[iscale, :, :] /= numpy.sum(basis[iscale, :, :])
@@ -462,7 +514,9 @@ def convolve_convolve_scalestack(scalestack, img):
         for p in range(nscales):
             xmult = ximg * xscale[p] * numpy.conjugate(xscale[s])
             convolved[s, p, ...] = numpy.real(
-                numpy.fft.ifftshift(numpy.fft.ifft2(numpy.fft.ifftshift(xmult)))
+                numpy.fft.ifftshift(
+                    numpy.fft.ifft2(numpy.fft.ifftshift(xmult))
+                )
             )
     return convolved
 
@@ -551,10 +605,10 @@ def spheroidal_function(vnu):
     q[1, 1] = 9.599102e-1
     q[1, 2] = 2.918724e-1
 
-    if (vnu >= 0.0) and (vnu < 0.75):
+    if 0.0 <= vnu < 0.75:
         part = 0
         nuend = 0.75
-    elif (vnu >= 0.75) and (vnu <= 1.0):
+    elif 0.75 <= vnu <= 1.0:
         part = 1
         nuend = 1.0
     else:
@@ -579,8 +633,7 @@ def spheroidal_function(vnu):
     else:
         value = 0.0
 
-    if value < 0.0:
-        value = 0.0
+    value = max(value, 0.0)
 
     return value
 
@@ -600,25 +653,31 @@ def msmfsclean(
 ):
     """Perform image plane multiscale multi frequency clean
 
-    This algorithm is documented as Algorithm 1 in: U. Rau and T. J. Cornwell, “A multi-scale multi-frequency
-    deconvolution algorithm for synthesis imaging in radio interferometry,” A&A 532, A71 (2011). Note that
-    this is only the image plane parts.
+     This algorithm is documented as Algorithm 1 in:
+     U. Rau and T. J. Cornwell, “A multi-scale multi-frequency
+     deconvolution algorithm for synthesis imaging in radio interferometry,”
+     A&A 532, A71 (2011). Note that
+     this is only the image plane parts.
 
-    Specific code is linked to specific lines in that algorithm description.
+     Specific code is linked to specific lines in that algorithm description.
 
-    This version operates on numpy arrays that have been converted to moments on the last axis.
+     This version operates on numpy arrays that have been converted to moments on the last axis.
 
     :param fracthresh:
     :param dirty: The dirty image, i.e., the image to be deconvolved
     :param psf: The point spread-function
-    :param window: Regions where clean components are allowed. If True, all of the dirty image is allowed
+    :param window: Regions where clean components are allowed.
+            If True, all of the dirty image is allowed
     :param sensitivity: Inverse noise image, scaled to peak 1.0
-    :param gain: The "loop gain", i.e., the fraction of the brightest pixel that is removed in each iteration
-    :param thresh: Cleaning stops when the maximum of the absolute deviation of the residual is less than this value
+    :param gain: The "loop gain", i.e., the fraction of the brightest pixel
+                that is removed in each iteration
+    :param thresh: Cleaning stops when the maximum of the absolute deviation
+                of the residual is less than this value
     :param niter: Maximum number of components to make if the threshold "thresh" is not hit
     :param scales: Scales (in pixels width) to be used
     :param fracthresh: Fractional stopping threshold
-    :param findpeak: Method of finding peak in mfsclean: 'Algorithm1'|'CASA'|'RASCIL', Default is RASCIL.
+    :param findpeak: Method of finding peak in mfsclean:
+                'Algorithm1'|'CASA'|'RASCIL', Default is RASCIL.
     :param prefix: Prefix to log messages to provide context
     :return: clean component image, residual image
     """
@@ -636,7 +695,9 @@ def msmfsclean(
     assert pmax > 0.0
 
     psfpeak = argmax(numpy.fabs(psf[0]))
-    log.info("mmclean %s: Peak of PSF moment0 = %s at %s" % (prefix, pmax, psfpeak))
+    log.info(
+        "mmclean %s: Peak of PSF moment0 = %s at %s" % (prefix, pmax, psfpeak)
+    )
     dmax = numpy.abs(dirty[0]).max()
     dpeak = argmax(numpy.abs(dirty[0]))
     log.info(
@@ -685,12 +746,14 @@ def msmfsclean(
 
     maxabs = numpy.max(numpy.abs((smresidual[0, 0, :, :])))
     log.info(
-        "mmclean %s: Max abs in dirty Image moment0 = %.6f Jy/beam" % (prefix, maxabs)
+        "mmclean %s: Max abs in dirty Image moment0 = %.6f Jy/beam"
+        % (prefix, maxabs)
     )
     absolutethresh = max(thresh, fracthresh * maxabs)
     log.info("mmclean %s: Start of minor cycle" % prefix)
     log.info(
-        "mmclean %s: This minor cycle will stop at %d iterations or peak < %.6f (Jy/beam)"
+        "mmclean %s: This minor cycle "
+        "will stop at %d iterations or peak < %.6f (Jy/beam)"
         % (prefix, niter, absolutethresh)
     )
 
@@ -700,7 +763,8 @@ def msmfsclean(
 
     aiter = 0
     log.info(
-        "mmclean %s: Timing for setup: %.3f (s) for dirty shape %s, PSF shape %s , scales %s, %d moments"
+        "mmclean %s: Timing for setup: %.3f (s) "
+        "for dirty shape %s, PSF shape %s , scales %s, %d moments"
         % (
             prefix,
             time.time() - starttime,
@@ -732,7 +796,8 @@ def msmfsclean(
         peak = numpy.fabs(mval[0])
         if peak < absolutethresh:
             log.info(
-                "mmclean %s: At iteration %d, absolute value of peak moment0 %.6f is below stopping threshold %.6f"
+                "mmclean %s: At iteration %d, absolute value of "
+                "peak moment0 %.6f is below stopping threshold %.6f"
                 % (prefix, i, peak, absolutethresh)
             )
             break
@@ -755,7 +820,8 @@ def msmfsclean(
 
     dtime = time.time() - starttime
     log.info(
-        "mmclean %s: Timing for clean: %.3f (s) for dirty shape %s, PSF shape %s , scales %s, %d moments, "
+        "mmclean %s: Timing for clean: %.3f (s) for "
+        "dirty shape %s, PSF shape %s , scales %s, %d moments, "
         "%d iterations, time per clean %.3f (ms)"
         % (
             prefix,
@@ -776,15 +842,15 @@ def find_global_optimum(
     hsmmpsf, ihsmmpsf, smresidual, windowstack, sensitivity, findpeak
 ):
     """Find the optimum component using one of a number of different algorithms. These
-    are discussed in detail in Urvashi/s thesis.
+     are discussed in detail in Urvashi/s thesis.
 
-        # Calculate scale convolutions of moment residuals
-    smresidual = calculate_scale_moment_residual(ldirty, scalestack)
+         # Calculate scale convolutions of moment residuals
+     smresidual = calculate_scale_moment_residual(ldirty, scalestack)
 
-    # Calculate scale scale moment moment psf, Hessian, and inverse of Hessian
-    # scale scale moment moment psf is needed for update of scale-moment residuals
-    # Hessian is needed in calculation of optimum for any iteration
-    # Inverse Hessian is needed to calculate principal solution in moment-space
+     # Calculate scale scale moment moment psf, Hessian, and inverse of Hessian
+     # scale scale moment moment psf is needed for update of scale-moment residuals
+     # Hessian is needed in calculation of optimum for any iteration
+     # Inverse Hessian is needed to calculate principal solution in moment-space
 
 
     :param hsmmpsf: scale scale moment moment psf
@@ -797,7 +863,9 @@ def find_global_optimum(
     """
     if findpeak == "Algorithm1":
         # Calculate the principal solution in moment-moment axes. This decouples the moments
-        smpsol = calculate_scale_moment_principal_solution(smresidual, ihsmmpsf)
+        smpsol = calculate_scale_moment_principal_solution(
+            smresidual, ihsmmpsf
+        )
         # Now find the location and scale
         mx, my, mscale = find_optimum_scale_zero_moment(
             smpsol, sensitivity, windowstack
@@ -805,14 +873,18 @@ def find_global_optimum(
         mval = smpsol[mscale, :, mx, my]
     elif findpeak == "CASA":
         # CASA 4.7 version
-        smpsol = calculate_scale_moment_principal_solution(smresidual, ihsmmpsf)
+        smpsol = calculate_scale_moment_principal_solution(
+            smresidual, ihsmmpsf
+        )
         #        smpsol = calculate_scale_moment_approximate_principal_solution(smresidual, hsmmpsf)
         nscales, nmoment, nx, ny = smpsol.shape  # pylint: disable=no-member
         dchisq = numpy.zeros([nscales, 1, nx, ny])
         for scale in range(nscales):
             for moment1 in range(nmoment):
                 dchisq[scale, 0, ...] += (
-                    2.0 * smpsol[scale, moment1, ...] * smresidual[scale, moment1, ...]
+                    2.0
+                    * smpsol[scale, moment1, ...]
+                    * smresidual[scale, moment1, ...]
                 )
                 for moment2 in range(nmoment):
                     dchisq[scale, 0, ...] -= (
@@ -829,7 +901,9 @@ def find_global_optimum(
     else:
         # RASCIL (or anything else) ends up here: find the peak in the frequency moment 0
         # residual image
-        smpsol = calculate_scale_moment_principal_solution(smresidual, ihsmmpsf)
+        smpsol = calculate_scale_moment_principal_solution(
+            smresidual, ihsmmpsf
+        )
         mx, my, mscale = find_optimum_scale_zero_moment(
             smpsol, sensitivity, windowstack
         )
@@ -838,7 +912,9 @@ def find_global_optimum(
     return mscale, mx, my, mval
 
 
-def update_scale_moment_residual(smresidual, ssmmpsf, lhs, rhs, gain, mscale, mval):
+def update_scale_moment_residual(
+    smresidual, ssmmpsf, lhs, rhs, gain, mscale, mval
+):
     """Update residual by subtracting the effect of model update for each moment"""
     # Lines 30 - 32 of Algorithm 1.
     nscales, nmoment, _, _ = smresidual.shape
@@ -859,7 +935,9 @@ def update_moment_model(m_model, scalestack, lhs, rhs, gain, mscale, mval):
         # Line 29 of Algorithm 1. Note that the convolution is implemented here as an
         # appropriate shift.
         m_model[t, lhs[0] : lhs[1], lhs[2] : lhs[3]] += (
-            scalestack[mscale, rhs[0] : rhs[1], rhs[2] : rhs[3]] * gain * mval[t]
+            scalestack[mscale, rhs[0] : rhs[1], rhs[2] : rhs[3]]
+            * gain
+            * mval[t]
         )
 
     return m_model
@@ -868,7 +946,7 @@ def update_moment_model(m_model, scalestack, lhs, rhs, gain, mscale, mval):
 def calculate_scale_moment_residual(residual, scalestack):
     """Calculate scale-dependent moment residuals
 
-    Part of the initialisation for Algorithm 1: lines 12 - 17
+     Part of the initialisation for Algorithm 1: lines 12 - 17
 
     :param scalestack:
     :param residual: residual [nmoment, nx, ny]
@@ -889,7 +967,7 @@ def calculate_scale_moment_residual(residual, scalestack):
 def calculate_scale_scale_moment_moment_psf(psf, scalestack):
     """Calculate scale-dependent moment psfs
 
-    Part of the initialisation for Algorithm 1
+     Part of the initialisation for Algorithm 1
 
     :param scalestack:
     :param psf: psf
@@ -905,16 +983,18 @@ def calculate_scale_scale_moment_moment_psf(psf, scalestack):
     )
     for t in range(nmoment):
         for q in range(nmoment):
-            scale_scale_moment_moment_psf[:, :, t, q] = convolve_convolve_scalestack(
-                scalestack, psf[t + q]
-            )
+            scale_scale_moment_moment_psf[
+                :, :, t, q
+            ] = convolve_convolve_scalestack(scalestack, psf[t + q])
     return scale_scale_moment_moment_psf
 
 
-def calculate_scale_inverse_moment_moment_hessian(scale_scale_moment_moment_psf):
+def calculate_scale_inverse_moment_moment_hessian(
+    scale_scale_moment_moment_psf,
+):
     """Calculate inverse_scale dependent moment moment hessian
 
-    Part of the initialisation for Algorithm 1. Lines 7 - 9
+     Part of the initialisation for Algorithm 1. Lines 7 - 9
 
     :param scale_scale_moment_moment_psf: scale_moment_psf [nscales, nscales, nmoment, nmoment]
     :return: scale-dependent moment-moment inverse hessian
@@ -937,7 +1017,7 @@ def calculate_scale_inverse_moment_moment_hessian(scale_scale_moment_moment_psf)
 def calculate_scale_moment_principal_solution(smresidual, ihsmmpsf):
     """Calculate the principal solution in moment space for each scale
 
-    Lines 20 - 26
+     Lines 20 - 26
 
     :param smresidual: scale-dependent moment residual [nscales, nmoment, nx, ny]
     :param ihsmmpsf: Inverse of scale dependent moment moment Hessian
@@ -953,7 +1033,7 @@ def calculate_scale_moment_principal_solution(smresidual, ihsmmpsf):
 def find_optimum_scale_zero_moment(smpsol, sensitivity, windowstack):
     """Find the optimum scale for moment zero
 
-    Line 27 of Algorithm 1
+     Line 27 of Algorithm 1
 
     :param windowstack:
     :param smpsol: Decoupled residual images for each scale and moment
