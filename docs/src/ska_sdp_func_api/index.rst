@@ -1,7 +1,3 @@
-.. _rascil_processing_components:
-
-.. py:currentmodule:: rascil.processing_components
-
 Processing Components
 *********************
 
