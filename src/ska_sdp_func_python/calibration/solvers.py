@@ -31,7 +31,7 @@ from src.ska_sdp_func_python.calibration.operations import (
 )
 from src.ska_sdp_func_python.visibility.operations import divide_visibility
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def solve_gaintable(

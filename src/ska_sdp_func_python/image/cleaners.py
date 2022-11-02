@@ -21,7 +21,7 @@ import time
 
 import numpy
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):

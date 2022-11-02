@@ -13,7 +13,7 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_allclose
 
-from src.ska_sdp_func_python.util.coordinate_support import (
+from ska_sdp_func_python.util.coordinate_support import (
     azel_to_hadec,
     baselines,
     hadec_to_azel,

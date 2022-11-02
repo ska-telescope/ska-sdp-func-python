@@ -13,17 +13,19 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 
+from ska_sdp_func_python.skycomponent.taylor_terms import (
+    calculate_skycomponent_list_taylor_terms,
+    find_skycomponents_frequency_taylor_terms,
+)
+
+# fix the below imports
 from src.ska_sdp_func_python import (
     create_low_test_image_from_gleam,
     create_low_test_skycomponents_from_gleam,
     smooth_image,
 )
-from src.ska_sdp_func_python.skycomponent.taylor_terms import (
-    calculate_skycomponent_list_taylor_terms,
-    find_skycomponents_frequency_taylor_terms,
-)
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
 

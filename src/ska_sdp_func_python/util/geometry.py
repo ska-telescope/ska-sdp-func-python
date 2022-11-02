@@ -18,7 +18,7 @@ from astroplan import Observer
 from astropy.coordinates import EarthLocation, SkyCoord
 from astropy.time import Time
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def calculate_parallactic_angles(location, utc_time, direction):

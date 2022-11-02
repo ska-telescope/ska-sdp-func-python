@@ -18,6 +18,12 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
 
+from ska_sdp_func_python.skymodel.skymodel_imaging import (
+    skymodel_calibrate_invert,
+    skymodel_predict_calibrate,
+)
+
+# fix the below imports
 from src.ska_sdp_func_python import (
     calculate_visibility_parallactic_angles,
     convert_azelvp_to_radec,
@@ -25,11 +31,9 @@ from src.ska_sdp_func_python import (
     create_low_test_skymodel_from_gleam,
     create_named_configuration,
     ingest_unittest_visibility,
-    skymodel_calibrate_invert,
-    skymodel_predict_calibrate,
 )
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
 log.addHandler(logging.StreamHandler(sys.stdout))

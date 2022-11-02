@@ -21,7 +21,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
 
-from src.ska_sdp_func_python.griddata.gridding import (
+from ska_sdp_func_python.griddata.gridding import (
     degrid_visibility_from_griddata,
     fft_griddata_to_image,
     fft_image_to_griddata,
@@ -30,6 +30,8 @@ from src.ska_sdp_func_python.griddata.gridding import (
     griddata_merge_weights,
     griddata_visibility_reweight,
 )
+
+# fix the below imports
 from src.ska_sdp_func_python.griddata.kernels import (
     create_awterm_convolutionfunction,
     create_box_convolutionfunction,
@@ -54,7 +56,7 @@ from src.ska_sdp_func_python.simulation import (
 )
 from src.ska_sdp_func_python.skycomponent.operations import insert_skycomponent
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
 log.addHandler(logging.StreamHandler(sys.stdout))

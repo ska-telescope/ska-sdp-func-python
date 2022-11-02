@@ -16,7 +16,7 @@ import logging
 
 import numpy
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def coordinateBounds(npixel):

@@ -32,7 +32,7 @@ from src.ska_sdp_func_python.imaging.base import (
 )
 from src.ska_sdp_func_python.parameters import get_parameter
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:

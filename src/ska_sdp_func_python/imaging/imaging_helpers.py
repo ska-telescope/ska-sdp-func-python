@@ -15,7 +15,7 @@ from src.ska_sdp_func_python.image.taylor_terms import (
 )
 from src.ska_sdp_func_python.imaging.base import normalise_sumwt
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def sum_invert_results(image_list):

@@ -20,7 +20,7 @@ from src.ska_sdp_func_python.image.operations import (
 )
 from src.ska_sdp_func_python.util.array_functions import tukey_filter
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def image_raster_iter(

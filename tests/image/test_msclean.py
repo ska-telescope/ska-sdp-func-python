@@ -10,14 +10,14 @@ import unittest
 
 import numpy
 
-from src.ska_sdp_func_python.image.cleaners import (
+from ska_sdp_func_python.image.cleaners import (
     argmax,
     convolve_convolve_scalestack,
     convolve_scalestack,
     create_scalestack,
 )
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
 

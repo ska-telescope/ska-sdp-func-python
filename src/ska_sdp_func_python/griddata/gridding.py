@@ -44,7 +44,7 @@ from ska_sdp_datamodels.gridded_visibility.grid_vis_model import GridData
 from src.ska_sdp_func_python.fourier_transforms import fft, ifft
 from src.ska_sdp_func_python.image.operations import create_image_from_array
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def convolution_mapping_visibility(

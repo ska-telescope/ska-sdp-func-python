@@ -18,11 +18,13 @@ from src.ska_sdp_func_python.image.iterators import (
     image_channel_iter,
     image_raster_iter,
 )
+
+# fix the below imports
 from src.ska_sdp_func_python.image.operations import pad_image
 from src.ska_sdp_func_python.parameters import rascil_path
 from src.ska_sdp_func_python.simulation import create_test_image
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 log.setLevel(logging.WARNING)
 
 log.setLevel(logging.WARNING)

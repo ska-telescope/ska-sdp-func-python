@@ -19,6 +19,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
 
+# fix the below imports
 from src.ska_sdp_func_python.image.operations import smooth_image
 from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
 from src.ska_sdp_func_python.simulation import (
@@ -33,7 +34,7 @@ from src.ska_sdp_func_python.skycomponent.operations import (
     insert_skycomponent,
 )
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
 log.addHandler(logging.StreamHandler(sys.stdout))

@@ -23,7 +23,7 @@ from ska_sdp_datamodels.image.image_model import Image
 
 from src.ska_sdp_func_python.image.operations import create_image_from_array
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def calculate_image_frequency_moments(

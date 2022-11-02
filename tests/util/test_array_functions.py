@@ -10,12 +10,12 @@ import unittest
 
 import numpy
 
-from src.ska_sdp_func_python.util.array_functions import (
+from ska_sdp_func_python.util.array_functions import (
     average_chunks,
     average_chunks2,
 )
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
 

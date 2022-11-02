@@ -23,7 +23,7 @@ from src.ska_sdp_func_python.imaging.base import (
 from src.ska_sdp_func_python.imaging.ng import invert_ng, predict_ng
 from src.ska_sdp_func_python.imaging.wg import invert_wg, predict_wg
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def predict_visibility(
