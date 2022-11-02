@@ -1,3 +1,9 @@
+# pylint: disable=invalid-name, too-many-arguments, too-many-public-methods
+# pylint: disable=attribute-defined-outside-init, unused-variable
+# pylint: disable=too-many-instance-attributes, invalid-envvar-default
+# pylint: disable=consider-using-f-string, logging-not-lazy
+# pylint: disable=missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Unit tests for imaging functions
 
 
@@ -11,33 +17,31 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 
 from src.ska_sdp_func_python import weight_visibility
 from src.ska_sdp_func_python.griddata.kernels import (
     create_awterm_convolutionfunction,
 )
-from src.ska_sdp_func_python.image.operations import (
-    smooth_image,
-)
+from src.ska_sdp_func_python.image.operations import smooth_image
 from src.ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 from src.ska_sdp_func_python.imaging.imaging import (
-    predict_visibility,
     invert_visibility,
+    predict_visibility,
 )
 from src.ska_sdp_func_python.imaging.primary_beams import create_pb_generic
 from src.ska_sdp_func_python.simulation import (
     create_named_configuration,
-    decimate_configuration,
-)
-from src.ska_sdp_func_python.simulation import (
-    ingest_unittest_visibility,
-    create_unittest_model,
     create_unittest_components,
+    create_unittest_model,
+    decimate_configuration,
+    ingest_unittest_visibility,
 )
 from src.ska_sdp_func_python.skycomponent.operations import (
-    find_skycomponents,
     find_nearest_skycomponent,
+    find_skycomponents,
     insert_skycomponent,
 )
 
@@ -140,15 +144,18 @@ class TestImaging2D(unittest.TestCase):
                 "%s/test_imaging_cmodel.fits" % self.results_dir
             )
 
-    def _checkcomponents(self, dirty, fluxthreshold=0.6, positionthreshold=0.1):
+    def _checkcomponents(
+        self, dirty, fluxthreshold=0.6, positionthreshold=0.1
+    ):
         comps = find_skycomponents(
             dirty, fwhm=1.0, threshold=10 * fluxthreshold, npixels=5
         )
-        assert len(comps) == len(
-            self.components
-        ), "Different number of components found: original %d, recovered %d" % (
-            len(self.components),
-            len(comps),
+        assert len(comps) == len(self.components), (
+            "Different number of components found: original %d, recovered %d"
+            % (
+                len(self.components),
+                len(comps),
+            )
         )
         cellsize = numpy.deg2rad(abs(dirty.image_acc.wcs.wcs.cdelt[0]))
 
@@ -158,7 +165,9 @@ class TestImaging2D(unittest.TestCase):
                 comp.direction, self.components
             )
             assert separation / cellsize < positionthreshold, (
-                "Component differs in position %.3f pixels" % separation / cellsize
+                "Component differs in position %.3f pixels"
+                % separation
+                / cellsize
             )
 
     def _predict_base(
@@ -189,7 +198,8 @@ class TestImaging2D(unittest.TestCase):
 
         if self.persist:
             dirty[0].image_acc.export_to_fits(
-                "%s/test_imaging_%s_residual.fits" % (self.results_dir, context),
+                "%s/test_imaging_%s_residual.fits"
+                % (self.results_dir, context),
             )
         for pol in range(dirty[0].image_acc.npol):
             assert numpy.max(
@@ -197,7 +207,9 @@ class TestImaging2D(unittest.TestCase):
             ), "Residual image pol {} is empty".format(pol)
 
         maxabs = numpy.max(numpy.abs(dirty[0]["pixels"].data))
-        assert maxabs < fluxthreshold, "Error %.3f greater than fluxthreshold %.3f " % (
+        assert (
+            maxabs < fluxthreshold
+        ), "Error %.3f greater than fluxthreshold %.3f " % (
             maxabs,
             fluxthreshold,
         )
@@ -609,7 +621,9 @@ class TestImaging2D(unittest.TestCase):
     def test_invert_psf_weighting(self):
         self.actualSetUp(zerow=False)
         for weighting in ["natural", "uniform", "robust"]:
-            self.vis = weight_visibility(self.vis, self.model, weighting=weighting)
+            self.vis = weight_visibility(
+                self.vis, self.model, weighting=weighting
+            )
             psf = invert_visibility(self.vis, self.model, dopsf=True)
             error = numpy.max(psf[0]["pixels"].data) - 1.0
             assert abs(error) < 1.0e-12, error
@@ -618,7 +632,9 @@ class TestImaging2D(unittest.TestCase):
                     "%s/test_imaging_visibility_psf_%s.fits"
                     % (self.results_dir, weighting),
                 )
-            assert numpy.max(numpy.abs(psf[0]["pixels"].data)), "Image is empty"
+            assert numpy.max(
+                numpy.abs(psf[0]["pixels"].data)
+            ), "Image is empty"
 
 
 if __name__ == "__main__":

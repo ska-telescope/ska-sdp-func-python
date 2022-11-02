@@ -1,3 +1,7 @@
+# pylint: disable=invalid-name, too-many-arguments, duplicate-code
+# pylint: disable=invalid-envvar-default, consider-using-f-string
+# pylint: disable= missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Unit tests for image Taylor terms
 
 """
@@ -12,13 +16,13 @@ from src.ska_sdp_func_python import (
     image_scatter_channels,
 )
 from src.ska_sdp_func_python.image.taylor_terms import (
+    calculate_frequency_taylor_terms_from_image_list,
     calculate_image_frequency_moments,
     calculate_image_from_frequency_taylor_terms,
-    calculate_frequency_taylor_terms_from_image_list,
 )
 from src.ska_sdp_func_python.simulation import (
-    create_test_image,
     create_low_test_image_from_gleam,
+    create_test_image,
 )
 
 log = logging.getLogger("rascil-logger")
@@ -52,7 +56,8 @@ class TestImage(unittest.TestCase):
         moment_cube = calculate_image_frequency_moments(cube, nmoment=3)
         if self.persist:
             moment_cube.image_acc.export_to_fits(
-                fitsfile="%s/test_moments_moment_cube.fits" % (self.results_dir),
+                fitsfile="%s/test_moments_moment_cube.fits"
+                % (self.results_dir),
             )
         reconstructed_cube = calculate_image_from_frequency_taylor_terms(
             cube, moment_cube
@@ -60,7 +65,8 @@ class TestImage(unittest.TestCase):
         print(reconstructed_cube.image_acc.wcs)
         if self.persist:
             reconstructed_cube.image_acc.export_to_fits(
-                fitsfile="%s/test_moments_reconstructed_cube.fits" % (self.results_dir),
+                fitsfile="%s/test_moments_reconstructed_cube.fits"
+                % (self.results_dir),
             )
         error = numpy.std(
             reconstructed_cube["pixels"].data - original_cube["pixels"].data
@@ -80,7 +86,8 @@ class TestImage(unittest.TestCase):
         moment_cube = calculate_image_frequency_moments(cube, nmoment=1)
         if self.persist:
             moment_cube.image_acc.export_to_fits(
-                fitsfile="%s/test_moments_1_moment_cube.fits" % (self.results_dir),
+                fitsfile="%s/test_moments_1_moment_cube.fits"
+                % (self.results_dir),
             )
         reconstructed_cube = calculate_image_from_frequency_taylor_terms(
             cube, moment_cube

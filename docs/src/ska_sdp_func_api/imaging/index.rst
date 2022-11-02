@@ -6,27 +6,27 @@ Imaging
 *******
 
 .. toctree::
-   :maxdepth: 3
+  :maxdepth: 3
 
 .. automodapi::    rascil.processing_components.imaging.base
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.imaging.dft
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.imaging.imaging_params
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.imaging.ng
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.imaging.primary_beams
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.imaging.weighting
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.imaging.wg
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 

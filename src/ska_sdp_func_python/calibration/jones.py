@@ -1,3 +1,5 @@
+# pylint: disable=invalid-name
+# pylint: disable=import-error, missing-module-docstring
 import numpy
 
 
@@ -15,8 +17,8 @@ def apply_jones(ej, cfs, inverse=False, min_det=1e-6):
             inv_ej = numpy.linalg.inv(ej)
             inv_cej = numpy.conjugate(inv_ej).T
             return inv_ej @ cfs @ inv_cej
-        else:
-            return 0.0 * cfs
-    else:
-        cej = numpy.conjugate(ej).T
-        return ej @ cfs @ cej
+
+        return 0.0 * cfs
+
+    cej = numpy.conjugate(ej).T
+    return ej @ cfs @ cej

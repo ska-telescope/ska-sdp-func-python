@@ -7,22 +7,22 @@ Images
 ******
 
 .. toctree::
-   :maxdepth: 3
+  :maxdepth: 3
 
 .. automodapi::    rascil.processing_components.image.cleaners
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.image.deconvolution
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.image.gather_scatter
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.image.gradients
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.image.iterators
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.image.operations
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:

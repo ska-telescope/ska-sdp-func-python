@@ -1,3 +1,8 @@
+# pylint: disable=invalid-name, too-many-lines, too-many-locals
+# pylint: disable=unused-argument, unused-variable, too-many-branches
+# pylint: disable=too-many-statements
+# pylint: disable=consider-using-f-string, logging-not-lazy, logging-format-interpolation
+# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Image functions using taylor terms in frequency
 
 """
@@ -16,9 +21,7 @@ from typing import List
 import numpy
 from ska_sdp_datamodels.image.image_model import Image
 
-from src.ska_sdp_func_python.image.operations import (
-    create_image_from_array,
-)
+from src.ska_sdp_func_python.image.operations import create_image_from_array
 
 log = logging.getLogger("rascil-logger")
 
@@ -28,18 +31,18 @@ def calculate_image_frequency_moments(
 ) -> Image:
     """Calculate frequency weighted moments of an image cube
 
-    The frequency moments are calculated using:
+     The frequency moments are calculated using:
 
-    .. math::
+     .. math::
 
-        w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
+         w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
 
 
-    Note that the spectral axis is replaced by a MOMENT axis.
+     Note that the spectral axis is replaced by a MOMENT axis.
 
-    For example, to find the moments and then reconstruct from just the moments::
+     For example, to find the moments and then reconstruct from just the moments::
 
-        moment_cube = calculate_image_frequency_moments(model_multichannel, nmoment=5)
+         moment_cube = calculate_image_frequency_moments(model_multichannel, nmoment=5)
 
     :param im: Image cube
     :param reference_frequency: Reference frequency (default None uses average)
@@ -56,7 +59,10 @@ def calculate_image_frequency_moments(
 
     assert (
         nmoment <= nchan
-    ), "Number of moments %d cannot exceed the number of channels %d" % (nmoment, nchan)
+    ), "Number of moments %d cannot exceed the number of channels %d" % (
+        nmoment,
+        nchan,
+    )
 
     if reference_frequency is None:
         reference_frequency = freq.data[nchan // 2]
@@ -67,16 +73,21 @@ def calculate_image_frequency_moments(
 
     moment_data = numpy.zeros([nmoment, npol, ny, nx])
 
-    assert not numpy.isnan(numpy.sum(im["pixels"].data)), "NaNs present in image data"
+    assert not numpy.isnan(
+        numpy.sum(im["pixels"].data)
+    ), "NaNs present in image data"
 
     for moment in range(nmoment):
         for chan in range(nchan):
             weight = numpy.power(
-                (freq[chan] - reference_frequency) / reference_frequency, moment
+                (freq[chan] - reference_frequency) / reference_frequency,
+                moment,
             )
             moment_data[moment, ...] += im["pixels"].data[chan, ...] * weight
 
-    assert not numpy.isnan(numpy.sum(moment_data)), "NaNs present in moment data"
+    assert not numpy.isnan(
+        numpy.sum(moment_data)
+    ), "NaNs present in moment data"
 
     moment_wcs = copy.deepcopy(im.image_acc.wcs)
 
@@ -96,13 +107,13 @@ def calculate_image_from_frequency_taylor_terms(
 ) -> Image:
     """Calculate channel image from Taylor term expansion in frequency
 
-    .. math::
+     .. math::
 
-        w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
+         w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
 
-    Note that a new image is created.
+     Note that a new image is created.
 
-    The Taylor term representation can be generated using MSMFS in deconvolve.
+     The Taylor term representation can be generated using MSMFS in deconvolve.
 
     :param im: Image cube to be reconstructed
     :param taylor_terms_image: Taylor terms cube
@@ -114,7 +125,8 @@ def calculate_image_from_frequency_taylor_terms(
     n_taylor_terms, mnpol, mny, mnx = taylor_terms_image["pixels"].data.shape
     if n_taylor_terms <= 0:
         raise ValueError(
-            "calculate_image_from_frequency_taylor_terms: the number of taylor terms must be greater than zero"
+            "calculate_image_from_frequency_taylor_terms: "
+            "the number of taylor terms must be greater than zero"
         )
 
     assert npol == mnpol
@@ -132,7 +144,8 @@ def calculate_image_from_frequency_taylor_terms(
     for taylor_term in range(n_taylor_terms):
         for chan in range(nchan):
             weight = numpy.power(
-                (im.frequency[chan].data - reference_frequency) / reference_frequency,
+                (im.frequency[chan].data - reference_frequency)
+                / reference_frequency,
                 taylor_term,
             )
             newim_data[chan, ...] += (
@@ -152,19 +165,21 @@ def calculate_image_list_frequency_moments(
 ) -> Image:
     """Calculate frequency weighted moments of an image list
 
-    The frequency moments are calculated using:
+     The frequency moments are calculated using:
 
-    .. math::
+     .. math::
 
-        w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
+         w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
 
 
-    Note that the spectral axis is replaced by a MOMENT axis.
+     Note that the spectral axis is replaced by a MOMENT axis.
 
-    For example, to find the moments and then reconstruct from just the moments::
+     For example, to find the moments and then reconstruct from just the moments::
 
-        moment_cube = calculate_image_frequency_moments(model_multichannel, nmoment=5)
-        reconstructed_cube = calculate_image_from_frequency_moments(model_multichannel, moment_cube)
+         moment_cube =
+            calculate_image_frequency_moments(model_multichannel, nmoment=5)
+         reconstructed_cube =
+            calculate_image_from_frequency_moments(model_multichannel, moment_cube)
 
     :param im_list: List of images
     :param reference_frequency: Reference frequency (default None uses average)
@@ -181,7 +196,8 @@ def calculate_image_list_frequency_moments(
     nchan = len(im_list)
     _, npol, ny, nx = im_list[0]["pixels"].data.shape
     freq = [
-        im.image_acc.wcs.sub(["spectral"]).wcs_pix2world([0], 0)[0] for im in im_list
+        im.image_acc.wcs.sub(["spectral"]).wcs_pix2world([0], 0)[0]
+        for im in im_list
     ]
 
     if nmoment > nchan:
@@ -202,7 +218,8 @@ def calculate_image_list_frequency_moments(
     for moment in range(nmoment):
         for chan, im in enumerate(im_list):
             weight = numpy.power(
-                (freq[chan] - reference_frequency) / reference_frequency, moment
+                (freq[chan] - reference_frequency) / reference_frequency,
+                moment,
             )
             moment_data[moment, ...] += im["pixels"].data[0, ...] * weight
 
@@ -224,9 +241,9 @@ def calculate_image_list_from_frequency_taylor_terms(
 ) -> List[Image]:
     """Calculate image list from frequency weighted moments
 
-    .. math::
+     .. math::
 
-        w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
+         w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
 
     :param im: Image cube to be reconstructed
     :param moment_image: Moment cube (constructed using calculate_image_frequency_moments)
@@ -246,7 +263,7 @@ def calculate_image_list_from_frequency_taylor_terms(
         % (1e-6 * reference_frequency)
     )
 
-    newims = list()
+    newims = []
     for chan in range(nchan):
         newim_data = numpy.zeros_like(im_list[chan]["pixels"].data[...])
         for moment in range(nmoment):
@@ -254,7 +271,9 @@ def calculate_image_list_from_frequency_taylor_terms(
                 (frequency[chan] - reference_frequency) / reference_frequency,
                 moment,
             )
-            newim_data[0, ...] += moment_image["pixels"].data[moment, ...] * weight
+            newim_data[0, ...] += (
+                moment_image["pixels"].data[moment, ...] * weight
+            )
 
         newim = create_image_from_array(
             newim_data,
@@ -272,9 +291,9 @@ def calculate_frequency_taylor_terms_from_image_list(
 ) -> List[Image]:
     """Calculate frequency taylor terms
 
-    .. math::
+     .. math::
 
-        w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
+         w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
 
     :param im_list: Image list to be reconstructed
     :param moment_image: Moment cube (constructed using calculate_image_frequency_moments)
@@ -317,11 +336,13 @@ def calculate_frequency_taylor_terms_from_image_list(
 
     pinv = numpy.linalg.pinv(channel_moment_coupling, rcond=1e-7)
 
-    decoupled_images = list()
+    decoupled_images = []
     for moment in range(nmoment):
         decoupled_data = numpy.zeros([1, npol, ny, nx])
         for chan in range(nchan):
-            decoupled_data[0] += pinv[moment, chan] * im_list[chan]["pixels"][0, ...]
+            decoupled_data[0] += (
+                pinv[moment, chan] * im_list[chan]["pixels"][0, ...]
+            )
         decoupled_image = Image.constructor(
             data=decoupled_data,
             wcs=wcs,

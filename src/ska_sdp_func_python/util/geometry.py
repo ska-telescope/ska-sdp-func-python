@@ -1,3 +1,5 @@
+# pylint: disable=invalid-name, unused-variable, unused-argument
+# pylint: disable=import-error
 """ geometry
 
 """
@@ -13,7 +15,7 @@ __all__ = [
 import logging
 
 from astroplan import Observer
-from astropy.coordinates import SkyCoord, EarthLocation
+from astropy.coordinates import EarthLocation, SkyCoord
 from astropy.time import Time
 
 log = logging.getLogger("rascil-logger")
@@ -83,7 +85,7 @@ def calculate_azel(location, utc_time, direction):
 
 def utc_to_ms_epoch(ts):
     """Convert an timestamp to seconds (epoch values)
-        epoch suitable for using in a Measurement Set
+         epoch suitable for using in a Measurement Set
 
     :param ts:  An astropy Time object.
     :result: The epoch time ``t`` in seconds suitable for fields in measurement sets.

@@ -1,3 +1,9 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable=attribute-defined-outside-init, unused-variable
+# pylint: disable=too-many-instance-attributes, invalid-envvar-default
+# pylint: disable=consider-using-f-string, logging-not-lazy
+# pylint: disable=missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Unit tests for visibility weighting
 """
 # pylint: disable=bad-string-format-type
@@ -9,14 +15,16 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 
-from src.ska_sdp_func_python import create_image_from_visibility
 from src.ska_sdp_func_python import (
-    weight_visibility,
+    create_image_from_visibility,
+    fit_psf,
     taper_visibility_gaussian,
     taper_visibility_tukey,
-    fit_psf,
+    weight_visibility,
 )
 from src.ska_sdp_func_python.imaging.imaging import invert_visibility
 from src.ska_sdp_func_python.simulation import create_named_configuration
@@ -37,7 +45,10 @@ class TestWeighting(unittest.TestCase):
         self.persist = os.getenv("RASCIL_PERSIST", False)
 
     def actualSetUp(
-        self, time=None, dospectral=False, image_pol=PolarisationFrame("stokesI")
+        self,
+        time=None,
+        dospectral=False,
+        image_pol=PolarisationFrame("stokesI"),
     ):
         self.lowcore = create_named_configuration("LOWBD2", rmax=600)
         self.times = (numpy.pi / 12.0) * numpy.linspace(-3.0, 3.0, 5)
@@ -115,13 +126,17 @@ class TestWeighting(unittest.TestCase):
         )
         if self.persist:
             psf.image_acc.export_to_fits(
-                "%s/test_weighting_gaussian_taper_psf.fits" % (self.results_dir),
+                "%s/test_weighting_gaussian_taper_psf.fits"
+                % (self.results_dir),
             )
         fit = fit_psf(psf)
 
         assert (
             numpy.abs(fit["bmaj"] - 1.279952050682638) < 1
-        ), "Fit should be %f, actually is %f" % (1.279952050682638, fit["bmaj"])
+        ), "Fit should be %f, actually is %f" % (
+            1.279952050682638,
+            fit["bmaj"],
+        )
 
     def test_tapering_tukey(self):
         """Apply a Tukey window taper and output the psf and FT of the PSF. No quantitative check.
@@ -132,7 +147,9 @@ class TestWeighting(unittest.TestCase):
         self.componentvis = weight_visibility(
             self.componentvis, self.model, algorithm="uniform"
         )
-        self.componentvis = taper_visibility_tukey(self.componentvis, tukey=0.1)
+        self.componentvis = taper_visibility_tukey(
+            self.componentvis, tukey=0.1
+        )
         psf, sumwt = invert_visibility(
             self.componentvis, self.model, dopsf=True, context="2d"
         )
@@ -143,7 +160,10 @@ class TestWeighting(unittest.TestCase):
         fit = fit_psf(psf)
         assert (
             numpy.abs(fit["bmaj"] - 0.14492670913355402) < 1.0
-        ), "Fit should be %f, actually is %f" % (0.14492670913355402, fit["bmaj"])
+        ), "Fit should be %f, actually is %f" % (
+            0.14492670913355402,
+            fit["bmaj"],
+        )
 
 
 if __name__ == "__main__":

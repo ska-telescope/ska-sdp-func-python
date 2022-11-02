@@ -1,3 +1,9 @@
+# pylint: disable=invalid-name, too-many-arguments, too-many-locals
+# pylint: disable=too-many-branches, too-many-statements, redefined-builtin
+# pylint: disable=unused-variable, unused-argument, missing-function-docstring
+# pylint: disable=logging-fstring-interpolation
+# pylint: disable=import-error, no-name-in-module
+
 """ Functions to solve for antenna/station gain
 
 This uses an iterative substitution algorithm due to Larry D'Addario c 1980'ish. Used
@@ -6,9 +12,9 @@ in the original VLA Dec-10 Antsol.
 
 For example::
 
-    gtsol = solve_gaintable(vis, originalvis, phase_only=True, niter=niter, crosspol=False, tol=1e-6)
+    gtsol = solve_gaintable(vis, originalvis,
+            phase_only=True, niter=niter, crosspol=False, tol=1e-6)
     vis = apply_gaintable(vis, gtsol, inverse=True)
- 
 
 """
 
@@ -40,25 +46,29 @@ def solve_gaintable(
     jones_type="T",
     **kwargs,
 ) -> GainTable:
-    """Solve a gain table by fitting an observed visibility to a model visibility
+    """Solve a gain table by fitting an observed visibility
+         to a model visibility
 
-    If modelvis is None, a point source model is assumed.
+     If modelvis is None, a point source model is assumed.
 
     :param vis: Visibility containing the observed data_models
     :param modelvis: Visibility containing the visibility predicted by a model
     :param gt: Existing gaintable
     :param phase_only: Solve only for the phases (default=True)
     :param niter: Number of iterations (default 30)
-    :param tol: Iteration stops when the fractional change in the gain solution is below this tolerance
+    :param tol: Iteration stops when the fractional change
+                 in the gain solution is below this tolerance
     :param crosspol: Do solutions including cross polarisations i.e. XY, YX or RL, LR
     :param jones_type: Type of calibration matrix T or G or B
     :return: GainTable containing solution
 
     """
-    # assert isinstance(vis, Visibility), vis
+
     if modelvis is not None:
-        # assert isinstance(modelvis, Visibility), modelvis
-        assert numpy.max(numpy.abs(modelvis.vis)) > 0.0, "Model visibility is zero"
+
+        assert (
+            numpy.max(numpy.abs(modelvis.vis)) > 0.0
+        ), "Model visibility is zero"
 
     if phase_only:
         log.debug("solve_gaintable: Solving for phase only")
@@ -67,7 +77,9 @@ def solve_gaintable(
 
     if gt is None:
         log.debug("solve_gaintable: creating new gaintable")
-        gt = create_gaintable_from_visibility(vis, jones_type=jones_type, **kwargs)
+        gt = create_gaintable_from_visibility(
+            vis, jones_type=jones_type, **kwargs
+        )
     else:
         log.debug("solve_gaintable: starting from existing gaintable")
 
@@ -87,7 +99,9 @@ def solve_gaintable(
 
     for row, time in enumerate(gt.time):
         time_slice = {
-            "time": slice(time - gt.interval[row] / 2, time + gt.interval[row] / 2)
+            "time": slice(
+                time - gt.interval[row] / 2, time + gt.interval[row] / 2
+            )
         }
         pointvis_sel = pointvis.sel(time_slice)
         if pointvis_sel.visibility_acc.ntimes > 0:
@@ -97,7 +111,8 @@ def solve_gaintable(
                 axis=axes,
             )
             xwt_b = numpy.sum(
-                pointvis_sel.weight.data * (1 - pointvis_sel.flags.data), axis=axes
+                pointvis_sel.weight.data * (1 - pointvis_sel.flags.data),
+                axis=axes,
             )
             x = numpy.zeros([nants, nants, nchan, npol], dtype="complex")
             xwt = numpy.zeros([nants, nants, nchan, npol])
@@ -198,25 +213,29 @@ def solve_gaintable(
                 gt["residual"].data[row, ...] = 0.0
 
         else:
-            log.warning(
-                "Gaintable {0}, vis time mismatch {1}".format(gt.time, vis.time)
-            )
-
-    # assert isinstance(gt, GainTable), "gt is not a GainTable: %r" % gt
+            log.warning(f"Gaintable {gt.time}, vis time mismatch {vis.time}")
 
     return gt
 
 
 def solve_antenna_gains_itsubs_scalar(
-    gain, gwt, x, xwt, niter=200, tol=1e-6, phase_only=True, refant=0, damping=0.5
+    gain,
+    gwt,
+    x,
+    xwt,
+    niter=200,
+    tol=1e-6,
+    phase_only=True,
+    refant=0,
+    damping=0.5,
 ):
     """Solve for the antenna gains
 
-    x(antenna2, antenna1) = gain(antenna1) conj(gain(antenna2))
+     x(antenna2, antenna1) = gain(antenna1) conj(gain(antenna2))
 
-    This uses an iterative substitution algorithm due to Larry
-    D'Addario c 1980'ish (see ThompsonDaddario1982 Appendix 1). Used
-    in the original VLA Dec-10 Antsol.
+     This uses an iterative substitution algorithm due to Larry
+     D'Addario c 1980'ish (see ThompsonDaddario1982 Appendix 1). Used
+     in the original VLA Dec-10 Antsol.
 
     :param gain: gains
     :param gwt: gain weight
@@ -239,13 +258,6 @@ def solve_antenna_gains_itsubs_scalar(
     i_upper = (i_lower[1], i_lower[0])
     x[i_upper] = numpy.conjugate(x[i_lower])
     xwt[i_upper] = xwt[i_lower]
-    # Original
-    # for ant1 in range(nants):
-    #     x[ant1, ant1, ...] = 0.0
-    #     xwt[ant1, ant1, ...] = 0.0
-    #     for ant2 in range(ant1 + 1, nants):
-    #         x[ant1, ant2, ...] = numpy.conjugate(x[ant2, ant1, ...])
-    #         xwt[ant1, ant2, ...] = xwt[ant2, ant1, ...]
 
     for iter in range(niter):
         gainLast = gain
@@ -264,7 +276,8 @@ def solve_antenna_gains_itsubs_scalar(
             return gain, gwt, solution_residual_scalar(gain, x, xwt)
 
     log.warning(
-        "solve_antenna_gains_itsubs_scalar: gain solution failed, retaining gain solutions"
+        "solve_antenna_gains_itsubs_scalar: "
+        "gain solution failed, retaining gain solutions"
     )
 
     if phase_only:
@@ -276,8 +289,7 @@ def solve_antenna_gains_itsubs_scalar(
 
 def gain_substitution_scalar(gain, x, xwt):
     nants, nchan, nrec, _ = gain.shape
-    # newgain = numpy.ones_like(gain, dtype='complex128')
-    # gwt = numpy.zeros_like(gain, dtype='double')
+
     newgain1 = numpy.ones_like(gain, dtype="complex128")
     gwt1 = numpy.zeros_like(gain, dtype="double")
 
@@ -289,49 +301,32 @@ def gain_substitution_scalar(gain, x, xwt):
     n_bot = numpy.einsum("ik...,ijk...->jk...", gcg, xwt).real
 
     # Convert mask to putmask
-    # mask = n_bot > 0.0
-    # notmask = n_bot <= 0.0
-    # newgain1[:, :][mask] = n_top[mask] / n_bot[mask]
-    # newgain1[:, :][notmask] = 0.0
     numpy.putmask(newgain1, n_bot > 0.0, n_top / n_bot)
     numpy.putmask(newgain1, n_bot <= 0.0, 0.0)
 
     gwt1[:, :] = n_bot
-    # gwt1[:, :][notmask] = 0.0
     numpy.putmask(gwt1, n_bot <= 0.0, 0.0)
 
     newgain1 = newgain1.reshape([nants, nchan, nrec, nrec])
     gwt1 = gwt1.reshape([nants, nchan, nrec, nrec])
     return newgain1, gwt1
-    # Original scripts
-    # for ant1 in range(nants):
-    #     ntt = gain[:, :, 0, 0] * xxwt[:, ant1, :]
-    #     top = numpy.sum(gain[:, :, 0, 0] * xxwt[:, ant1, :], axis=0)
-    #     bot = numpy.sum((gcg[:, :] * xwt[:, ant1, :, 0, 0]).real, axis=0)
-    #
-    #     if bot.all() > 0.0:
-    #         newgain[ant1, :, 0, 0] = top / bot
-    #         gwt[ant1, :, 0, 0] = bot
-    #     else:
-    #         newgain[ant1, :, 0, 0] = 0.0
-    #         gwt[ant1, :, 0, 0] = 0.0
-    # assert(newgain == newgain1).all()
-    # assert(gwt == gwt1).all()
-    # return newgain, gwt
 
 
 def solve_antenna_gains_itsubs_nocrossdata(
     gain, gwt, x, xwt, niter=200, tol=1e-6, phase_only=True, refant=0
 ):
-    """Solve for the antenna gains using full matrix expressions, but no cross hands
+    """Solve for the antenna gains using full matrix expressions,
+         but no cross hands
 
-    x(antenna2, antenna1) = gain(antenna1) conj(gain(antenna2))
+     x(antenna2, antenna1) = gain(antenna1) conj(gain(antenna2))
 
-    See Appendix D, section D.1 in:
+     See Appendix D, section D.1 in:
 
-    J. P. Hamaker, “Understanding radio polarimetry - IV. The full-coherency analogue of
-    scalar self-calibration: Self-alignment, dynamic range and polarimetric fidelity,” Astronomy
-    and Astrophysics Supplement Series, vol. 143, no. 3, pp. 515–534, May 2000.
+     J. P. Hamaker, “Understanding radio polarimetry - IV.
+     The full-coherency analogue of scalar self-calibration:
+     Self-alignment, dynamic range and polarimetric fidelity,”
+     Astronomy and Astrophysics Supplement Series, vol. 143,
+     no. 3, pp. 515–534, May 2000.
 
     :param gain: gains
     :param gwt: gain weight
@@ -379,13 +374,15 @@ def solve_antenna_gains_itsubs_matrix(
 ):
     """Solve for the antenna gains using full matrix expressions
 
-    x(antenna2, antenna1) = gain(antenna1) conj(gain(antenna2))
+     x(antenna2, antenna1) = gain(antenna1) conj(gain(antenna2))
 
-    See Appendix D, section D.1 in:
+     See Appendix D, section D.1 in:
 
-    J. P. Hamaker, “Understanding radio polarimetry - IV. The full-coherency analogue of
-    scalar self-calibration: Self-alignment, dynamic range and polarimetric fidelity,” Astronomy
-    and Astrophysics Supplement Series, vol. 143, no. 3, pp. 515–534, May 2000.
+     J. P. Hamaker, “Understanding radio polarimetry -
+     IV. The full-coherency analogue of scalar self-calibration:
+     Self-alignment, dynamic range and polarimetric fidelity,”
+     Astronomy and Astrophysics Supplement Series, vol. 143,
+     no. 3, pp. 515–534, May 2000.
 
     :param gain: gains
     :param gwt: gain weight
@@ -412,13 +409,6 @@ def solve_antenna_gains_itsubs_matrix(
     i_upper = (i_lower[1], i_lower[0])
     x[i_upper] = numpy.conjugate(x[i_lower])
     xwt[i_upper] = xwt[i_lower]
-    # Original
-    # for ant1 in range(nants):
-    #     x[ant1, ant1, ...] = 0.0
-    #     xwt[ant1, ant1, ...] = 0.0
-    #     for ant2 in range(ant1 + 1, nants):
-    #         x[ant1, ant2, ...] = numpy.conjugate(x[ant2, ant1, ...])
-    #         xwt[ant1, ant2, ...] = xwt[ant2, ant1, ...]
 
     gain[..., 0, 1] = 0.0
     gain[..., 1, 0] = 0.0
@@ -435,7 +425,8 @@ def solve_antenna_gains_itsubs_matrix(
             return gain, gwt, solution_residual_matrix(gain, x, xwt)
 
     log.warning(
-        "solve_antenna_gains_itsubs_scalar: gain solution failed, retaining gain solutions"
+        "solve_antenna_gains_itsubs_scalar: "
+        "gain solution failed, retaining gain solutions"
     )
 
     return gain, gwt, solution_residual_matrix(gain, x, xwt)
@@ -443,34 +434,25 @@ def solve_antenna_gains_itsubs_matrix(
 
 def gain_substitution_matrix(gain, x, xwt):
     nants, nchan, nrec, _ = gain.shape
-    # newgain = numpy.ones_like(gain, dtype='complex128')
-    newgain1 = numpy.ones_like(gain, dtype="complex128")
-    # gwt = numpy.zeros_like(gain, dtype='double')
-    gwt1 = numpy.zeros_like(gain, dtype="double")
 
-    # We are going to work with Jones 2x2 matrix formalism so everything has to be
-    # converted to that format
+    # We are going to work with Jones 2x2 matrix formalism
+    # so everything has to be converted to that format
     x = x.reshape([nants, nants, nchan, nrec, nrec])
     diag = numpy.ones_like(x)
     xwt = xwt.reshape([nants, nants, nchan, nrec, nrec])
-    # Write these loops out explicitly. Derivation of these vector equations is tedious but they are
+    # Write these loops out explicitly.
+    # Derivation of these vector equations is tedious but they are
     # structurally identical to the scalar case with the following changes
-    # Vis -> 2x2 coherency vector, g-> 2x2 Jones matrix, *-> matmul, conjugate->Hermitean transpose (.H)
-    #
+    # Vis -> 2x2 coherency vector, g-> 2x2 Jones matrix,
+    # *-> matmul, conjugate->Hermitean transpose (.H)
     gain_conj = numpy.conjugate(gain)
     for ant in range(nants):
         diag[ant, ant, ...] = 0
     n_top1 = numpy.einsum("ij...->j...", xwt * diag * x * gain[:, None, ...])
-    # n_top1 *= gain
-    # n_top1 = numpy.conjugate(n_top1)
     n_bot = diag * xwt * gain_conj * gain
     n_bot1 = numpy.einsum("ij...->i...", n_bot)
 
-    # Using Boolean Index - 158 ms
-    # newgain1[:, :][n_bot1[:,:] > 0.0] = n_top1[n_bot1[:,:] > 0.0] / n_bot1[n_bot1[:,:] > 0.0]
-    # newgain1[:,:][n_bot1[:,:] <= 0.0] = 0.0
-
-    # Using putmask: 121 ms
+    # Using putmask: faster than using Boolen Index
     n_top2 = n_top1.copy()
     numpy.putmask(n_top2, n_bot1[...] <= 0, 0.0)
     n_bot2 = n_bot1.copy()
@@ -480,29 +462,10 @@ def gain_substitution_matrix(gain, x, xwt):
     gwt1 = n_bot1.real
     return newgain1, gwt1
 
-    # Original Scripts translated from Fortran
-    #
-    # for ant1 in range(nants):
-    #     for chan in range(nchan):
-    #         top = 0.0
-    #         bot = 0.0
-    #         for ant2 in range(nants):
-    #             if ant1 != ant2:
-    #                 xmat = x[ant2, ant1, chan]
-    #                 xwtmat = xwt[ant2, ant1, chan]
-    #                 g2 = gain[ant2, chan]
-    #                 top += xmat * xwtmat * g2
-    #                 bot += numpy.conjugate(g2) * xwtmat * g2
-    #         newgain[ant1, chan][bot > 0.0] = top[bot > 0.0] / bot[bot > 0.0]
-    #         newgain[ant1, chan][bot <= 0.0] = 0.0
-    #         gwt[ant1, chan] = bot.real
-    # assert(newgain==newgain1).all()
-    # assert(gwt == gwt1).all()
-    # return newgain, gwt
-
 
 def solution_residual_scalar(gain, x, xwt):
-    """Calculate residual across all baselines of gain for point source equivalent visibilities
+    """Calculate residual across all baselines of gain
+         for point source equivalent visibilities
 
     :param gain: gain [nant, ...]
     :param x: Point source equivalent visibility [nant, ...]
@@ -530,14 +493,17 @@ def solution_residual_scalar(gain, x, xwt):
         ).real
         sumwt[chan] += numpy.sum(xwt[:, :, chan, 0, 0])
 
-    residual[sumwt > 0.0] = numpy.sqrt(residual[sumwt > 0.0] / sumwt[sumwt > 0.0])
+    residual[sumwt > 0.0] = numpy.sqrt(
+        residual[sumwt > 0.0] / sumwt[sumwt > 0.0]
+    )
     residual[sumwt <= 0.0] = 0.0
 
     return residual
 
 
 def solution_residual_matrix(gain, x, xwt):
-    """Calculate residual across all baselines of gain for point source equivalent visibilities
+    """Calculate residual across all baselines of gain
+         for point source equivalent visibilities
 
     :param gain: gain [nant, ...]
     :param x: Point source equivalent visibility [nant, ...]
@@ -546,12 +512,6 @@ def solution_residual_matrix(gain, x, xwt):
     """
 
     nants, _, nchan, nrec, _ = x.shape
-
-    # residual = numpy.zeros([nchan, nrec, nrec])
-    # sumwt = numpy.zeros([nchan, nrec, nrec])
-
-    n_residual = numpy.zeros([nchan, nrec, nrec])
-    n_sumwt = numpy.zeros([nchan, nrec, nrec])
 
     n_gain = numpy.einsum("i...,j...->ij...", numpy.conjugate(gain), gain)
     n_error = numpy.conjugate(x - n_gain)
@@ -565,21 +525,3 @@ def solution_residual_matrix(gain, x, xwt):
     n_residual[n_sumwt <= 0.0] = 0.0
 
     return n_residual
-
-    # This is written out in long winded form but should e optimised for
-    # production code!
-    # for ant1 in range(nants):
-    #     for ant2 in range(nants):
-    #         for chan in range(nchan):
-    #             for rec1 in range(nrec):
-    #                 for rec2 in range(nrec):
-    #                     error = x[ant2, ant1, chan, rec2, rec1] - \
-    #                             gain[ant1, chan, rec2, rec1] * numpy.conjugate(gain[ant2, chan, rec2, rec1])
-    #                     residual[chan, rec2, rec1] += (error * xwt[ant2, ant1, chan, rec2, rec1] * numpy.conjugate(
-    #                         error)).real
-    #                     sumwt[chan, rec2, rec1] += xwt[ant2, ant1, chan, rec2, rec1]
-    #
-    # residual[sumwt > 0.0] = numpy.sqrt(residual[sumwt > 0.0] / sumwt[sumwt > 0.0])
-    # residual[sumwt <= 0.0] = 0.0
-    # # assert (residual == n_residual).all()
-    # return residual

@@ -1,14 +1,21 @@
+# pylint: disable=invalid-name, too-many-lines, too-many-locals
+# pylint: disable=unused-argument, unused-variable, too-many-branches
+# pylint: disable=too-many-statements
+# pylint: disable=consider-using-f-string, logging-not-lazy,logging-format-interpolation
+# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Image deconvolution functions
 
 The standard deconvolution algorithms are provided:
 
     hogbom: Hogbom CLEAN See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
-    
-    msclean: MultiScale CLEAN See: Cornwell, T.J., Multiscale CLEAN (IEEE Journal of Selected Topics in Sig Proc,
+    msclean: MultiScale CLEAN See: Cornwell, T.J., Multiscale CLEAN
+    (IEEE Journal of Selected Topics in Sig Proc,
     2008 vol. 2 pp. 793-801)
 
-    mfsmsclean: MultiScale Multi-Frequency See: U. Rau and T. J. Cornwell, “A multi-scale multi-frequency
-    deconvolution algorithm for synthesis imaging in radio interferometry,” A&A 532, A71 (2011).
+    mfsmsclean: MultiScale Multi-Frequency
+    See: U. Rau and T. J. Cornwell, “A multi-scale multi-frequency
+    deconvolution algorithm for synthesis imaging in radio interferometry,”
+    A&A 532, A71 (2011).
 
 For example to make dirty image and PSF, deconvolve, and then restore::
 
@@ -16,13 +23,13 @@ For example to make dirty image and PSF, deconvolve, and then restore::
     dirty, sumwt = invert_visibility(vt, model, context="2d")
     psf, sumwt = invert_visibility(vt, model, context="2d", dopsf=True)
 
-    comp, residual = deconvolve_cube(dirty, psf, niter=1000, threshold=0.001, fracthresh=0.01, window_shape='quarter',
-                                 gain=0.7, algorithm='msclean', scales=[0, 3, 10, 30])
+    comp, residual = deconvolve_cube(dirty, psf, niter=1000, threshold=0.001,
+                        fracthresh=0.01, window_shape='quarter',
+                        gain=0.7, algorithm='msclean', scales=[0, 3, 10, 30])
 
     restored = restore_cube(comp, psf, residual)
-    
-All functions return an image holding clean components and residual image
 
+All functions return an image holding clean components and residual image
 """
 
 __all__ = [
@@ -39,9 +46,11 @@ from typing import List
 
 import numpy
 from astropy.convolution import Gaussian2DKernel, convolve_fft
-from astropy.modeling import models, fitting
+from astropy.modeling import fitting, models
 from ska_sdp_datamodels.image.image_model import Image
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 
 from src.ska_sdp_func_python.image.cleaners import (
     hogbom,
@@ -57,8 +66,8 @@ from src.ska_sdp_func_python.image.operations import (
     convert_clean_beam_to_degrees,
     convert_clean_beam_to_pixels,
     create_empty_image_like,
+    create_image_from_array,
 )
-from src.ska_sdp_func_python.image.operations import create_image_from_array
 from src.ska_sdp_func_python.image.taylor_terms import (
     calculate_image_list_frequency_moments,
     calculate_image_list_from_frequency_taylor_terms,
@@ -77,25 +86,28 @@ def deconvolve_list(
 ) -> (List[Image], List[Image]):
     """Clean using a variety of algorithms
 
-    The algorithms available are:
+     The algorithms available are:
 
-    hogbom: Hogbom CLEAN See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
+     hogbom: Hogbom CLEAN See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
 
-    hogbom-complex: Complex Hogbom CLEAN of stokesIQUV image
+     hogbom-complex: Complex Hogbom CLEAN of stokesIQUV image
 
-    msclean: MultiScale CLEAN See: Cornwell, T.J., Multiscale CLEAN (IEEE Journal of Selected Topics in Sig Proc,
-    2008 vol. 2 pp. 793-801)
+     msclean: MultiScale CLEAN See: Cornwell, T.J., Multiscale CLEAN
+     (IEEE Journal of Selected Topics in Sig Proc,
+     2008 vol. 2 pp. 793-801)
 
-    mfsmsclean, msmfsclean, mmclean: MultiScale Multi-Frequency See: U. Rau and T. J. Cornwell,
-    “A multi-scale multi-frequency deconvolution algorithm for synthesis imaging in radio interferometry,” A&A 532,
-    A71 (2011).
+     mfsmsclean, msmfsclean, mmclean: MultiScale Multi-Frequency
+      See: U. Rau and T. J. Cornwell,
+     “A multi-scale multi-frequency deconvolution algorithm for synthesis imaging
+     in radio interferometry,” A&A 532, A71 (2011).
 
-    For example::
+     For example::
 
-        comp, residual = deconvolve_list(dirty_list, psf_list, niter=1000, gain=0.7, algorithm='msclean',
-                                         scales=[0, 3, 10, 30], threshold=0.01)
+         comp, residual = deconvolve_list(dirty_list, psf_list, niter=1000,
+                                gain=0.7, algorithm='msclean',
+                                scales=[0, 3, 10, 30], threshold=0.01)
 
-    For the MFS clean, the psf must have number of channels >= 2 * nmoment
+     For the MFS clean, the psf must have number of channels >= 2 * nmoment
 
     :param dirty_list: list of dirty image
     :param psf_list: list of point spread function
@@ -109,10 +121,11 @@ def deconvolve_list(
     :param fractional_threshold: Fractional threshold (0.01)
     :param scales: Scales (in pixels) for multiscale ([0, 3, 10, 30])
     :param nmoment: Number of frequency moments (default 3)
-    :param findpeak: Method of finding peak in mfsclean: 'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
+    :param findpeak: Method of finding peak in mfsclean:
+                    'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
     :return: component image_list, residual image_list
 
-    See also
+     See also
         :py:func:`rascil.processing_components.arrays.cleaners.hogbom`
         :py:func:`rascil.processing_components.arrays.cleaners.hogbom_complex`
         :py:func:`rascil.processing_components.arrays.cleaners.msclean`
@@ -121,7 +134,9 @@ def deconvolve_list(
     """
 
     window_shape = get_parameter(kwargs, "window_shape", None)
-    window_list = find_window_list(dirty_list, prefix, window_shape=window_shape)
+    window_list = find_window_list(
+        dirty_list, prefix, window_shape=window_shape
+    )
 
     check_psf_peak(psf_list)
 
@@ -132,13 +147,21 @@ def deconvolve_list(
     algorithm = get_parameter(kwargs, "algorithm", "msclean")
     if algorithm == "msclean":
         comp_image_list, residual_image_list = msclean_kernel_list(
-            dirty_list, prefix, psf_list, window_list, sensitivity_list, **kwargs
+            dirty_list,
+            prefix,
+            psf_list,
+            window_list,
+            sensitivity_list,
+            **kwargs,
         )
-    elif (
-        algorithm == "msmfsclean" or algorithm == "mfsmsclean" or algorithm == "mmclean"
-    ):
+    elif algorithm in ("msmfsclean", "mfsmsclean", "mmclean"):
         comp_image_list, residual_image_list = mmclean_kernel_list(
-            dirty_list, prefix, psf_list, window_list, sensitivity_list, **kwargs
+            dirty_list,
+            prefix,
+            psf_list,
+            window_list,
+            sensitivity_list,
+            **kwargs,
         )
     elif algorithm == "hogbom":
         comp_image_list, residual_image_list = hogbom_kernel_list(
@@ -167,17 +190,19 @@ def radler_deconvolve_list(
 
     """Clean using the Radler module, using various algorithms.
 
-    The algorithms available are (see: https://radler.readthedocs.io/en/latest/tree/cpp/algorithms.html):
+     The algorithms available are
+     (see: https://radler.readthedocs.io/en/latest/tree/cpp/algorithms.html):
 
-    msclean
-    iuwt
-    more_sane
-    generic_clean
+     msclean
+     iuwt
+     more_sane
+     generic_clean
 
-    For example::
+     For example::
 
-        comp = radler_deconvolve_list(dirty_list, psf_list, niter=1000, gain=0.7, algorithm='msclean',
-                                         scales=[0, 3, 10, 30], threshold=0.01)
+         comp = radler_deconvolve_list(dirty_list, psf_list, niter=1000,
+                        gain=0.7, algorithm='msclean',
+                        scales=[0, 3, 10, 30], threshold=0.01)
 
     :param dirty_list: list of dirty image
     :param psf_list: list of point spread function
@@ -220,13 +245,16 @@ def radler_deconvolve_list(
         settings.algorithm_type = rd.AlgorithmType.generic_clean
     else:
         raise ValueError(
-            "imaging_deconvolve with radler: Unknown algorithm %s" % (algorithm)
+            "imaging_deconvolve with radler: Unknown algorithm %s"
+            % (algorithm)
         )
 
     comp_image_list = []
-    for i in range(len(dirty_list)):
-        psf_radler = psf_list[i].pixels.to_numpy().astype(numpy.float32).squeeze()
-        dirty_radler = dirty_list[i].pixels.to_numpy().astype(numpy.float32).squeeze()
+    for i, dirty in enumerate(dirty_list):
+        psf_radler = (
+            psf_list[i].pixels.to_numpy().astype(numpy.float32).squeeze()
+        )
+        dirty_radler = dirty.pixels.to_numpy().astype(numpy.float32).squeeze()
         restored_radler = numpy.zeros_like(dirty_radler)
 
         radler_object = rd.Radler(
@@ -240,9 +268,10 @@ def radler_deconvolve_list(
         reached_threshold = False
         reached_threshold = radler_object.perform(reached_threshold, 0)
 
-        x_im = create_empty_image_like(dirty_list[i])
+        x_im = create_empty_image_like(dirty)
         x_im["pixels"].data = numpy.expand_dims(restored_radler, axis=(0, 1))
         comp_image_list.append(x_im)
+
     return comp_image_list
 
 
@@ -264,11 +293,11 @@ def check_psf_peak(psf_list):
 def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
     """Find a clean window from a dirty image
 
-    The values for window_shape are:
-        "quarter" - Inner quarter of image
-        "no_edge" - all but window_edge pixels around the perimeter
-        mask - If an Image, use as the window (overrides other options)
-        None - Entire image
+     The values for window_shape are:
+         "quarter" - Inner quarter of image
+         "no_edge" - all but window_edge pixels around the perimeter
+         mask - If an Image, use as the window (overrides other options)
+         None - Entire image
 
     :param dirty_list: Image of the dirty image
     :param prefix: Informational prefix for log messages
@@ -280,7 +309,7 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
         log.info("deconvolve_cube %s: Cleaning entire image" % prefix)
         return None
 
-    windows = list()
+    windows = []
     for channel, dirty in enumerate(dirty_list):
         if window_shape == "quarter":
             log.info("deconvolve_cube %s: window is inner quarter" % prefix)
@@ -289,20 +318,25 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
             window_array = numpy.zeros_like(dirty["pixels"].data)
             window_array[..., (qy + 1) : 3 * qy, (qx + 1) : 3 * qx] = 1.0
             log.info(
-                "deconvolve_cube %s: Cleaning inner quarter of each sky plane" % prefix
+                "deconvolve_cube %s: Cleaning inner quarter of each sky plane"
+                % prefix
             )
         elif window_shape == "no_edge":
             edge = get_parameter(kwargs, "window_edge", 16)
             nx = dirty["pixels"].shape[3]
             ny = dirty["pixels"].shape[2]
             window_array = numpy.zeros_like(dirty["pixels"].data)
-            window_array[..., (edge + 1) : (ny - edge), (edge + 1) : (nx - edge)] = 1.0
+            window_array[
+                ..., (edge + 1) : (ny - edge), (edge + 1) : (nx - edge)
+            ] = 1.0
             log.info(
                 "deconvolve_cube %s: Window omits %d-pixel edge of each sky plane"
                 % (prefix, edge)
             )
         else:
-            raise ValueError("Window shape %s is not recognized" % window_shape)
+            raise ValueError(
+                "Window shape %s is not recognized" % window_shape
+            )
 
         mask = get_parameter(kwargs, "mask", None)
         if isinstance(mask, Image):
@@ -335,7 +369,7 @@ def bound_psf_list(dirty_list, prefix, psf_list, psf_support=None, **kwargs):
     :param kwargs:
     :return: psf: bounded point spread function (i.e. with smaller size in x and y)
     """
-    psfs = list()
+    psfs = []
     for channel, dirty in enumerate(dirty_list):
         psf = psf_list[channel]
         if psf_support is None:
@@ -366,7 +400,10 @@ def bound_psf_list(dirty_list, prefix, psf_list, psf_support=None, **kwargs):
 
 
 def complex_hogbom_kernel_list(
-    dirty_list: List[Image], psf_list: List[Image], window_list: List[Image], **kwargs
+    dirty_list: List[Image],
+    psf_list: List[Image],
+    window_list: List[Image],
+    **kwargs,
 ):
     """Complex Hogbom CLEAN of stokesIQUV image, operating of lists of single frequency images
 
@@ -385,8 +422,8 @@ def complex_hogbom_kernel_list(
 
     fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
 
-    comp_images = list()
-    residual_images = list()
+    comp_images = []
+    residual_images = []
 
     # Clean each dirty image in the list
     for channel, dirty in enumerate(dirty_list):
@@ -395,7 +432,7 @@ def complex_hogbom_kernel_list(
         comp_array = numpy.zeros(dirty["pixels"].data.shape)
         residual_array = numpy.zeros(dirty["pixels"].data.shape)
         for pol in range(dirty["pixels"].data.shape[1]):
-            if pol == 0 or pol == 3:
+            if pol in (0, 3):
                 if psf["pixels"].data[0, pol, :, :].max():
                     log.info(
                         "complex_hogbom_kernel_list: Processing pol %d, channel %d"
@@ -533,7 +570,7 @@ def hogbom_kernel_list(
 ):
     """Hogbom Clean, operating of lists of single frequency images
 
-     See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
+      See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
 
     :param dirty_list: List of dirty images
      :param prefix: Informational string to be used in log messages e.g. "cycle 1, subimage 42"
@@ -545,7 +582,8 @@ def hogbom_kernel_list(
      :param fractional_threshold: Fractional threshold (0.01)
      :param scales: Scales (in pixels) for multiscale ([0, 3, 10, 30])
      :param nmoment: Number of frequency moments (default 3)
-     :param findpeak: Method of finding peak in mfsclean: 'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
+     :param findpeak: Method of finding peak in mfsclean:
+                    'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
 
      :return: component image_list, residual image_list
     """
@@ -571,7 +609,10 @@ def hogbom_kernel_list(
                     % (prefix, pol, channel)
                 )
                 if window_list is None or window_list[channel] is None:
-                    (comp_array[0, pol, :, :], residual_array[0, pol, :, :],) = hogbom(
+                    (
+                        comp_array[0, pol, :, :],
+                        residual_array[0, pol, :, :],
+                    ) = hogbom(
                         dirty["pixels"].data[0, pol, :, :],
                         psf["pixels"].data[0, pol, :, :],
                         None,
@@ -582,7 +623,10 @@ def hogbom_kernel_list(
                         prefix,
                     )
                 else:
-                    (comp_array[0, pol, :, :], residual_array[0, pol, :, :],) = hogbom(
+                    (
+                        comp_array[0, pol, :, :],
+                        residual_array[0, pol, :, :],
+                    ) = hogbom(
                         dirty["pixels"].data[0, pol, :, :],
                         psf["pixels"].data[0, pol, :, :],
                         window_list[channel]["pixels"].data[0, pol, :, :],
@@ -601,7 +645,9 @@ def hogbom_kernel_list(
             comp_array, dirty.image_acc.wcs, dirty.image_acc.polarisation_frame
         )
         residual_image = create_image_from_array(
-            residual_array, dirty.image_acc.wcs, dirty.image_acc.polarisation_frame
+            residual_array,
+            dirty.image_acc.wcs,
+            dirty.image_acc.polarisation_frame,
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)
@@ -619,11 +665,11 @@ def mmclean_kernel_list(
 ):
     """mfsmsclean, msmfsclean, mmclean: MultiScale Multi-Frequency CLEAN
 
-    See: U. Rau and T. J. Cornwell,
-    “A multi-scale multi-frequency deconvolution algorithm for synthesis imaging in radio interferometry,” A&A 532,
-    A71 (2011).
+     See: U. Rau and T. J. Cornwell,
+     “A multi-scale multi-frequency deconvolution algorithm
+     for synthesis imaging in radio interferometry,” A&A 532, A71 (2011).
 
-    For the MFS clean, the psf must have number of channels >= 2 * nmoment
+     For the MFS clean, the psf must have number of channels >= 2 * nmoment
 
     :param dirty_list: List of dirty images
     :param prefix: Informational string to be used in log messages e.g. "cycle 1, subimage 42"
@@ -634,7 +680,7 @@ def mmclean_kernel_list(
 
     :return: component image_list, residual image_list
 
-    The following optional arguments can be passed via kwargs:
+     The following optional arguments can be passed via kwargs:
 
     :param fractional_threshold: Fractional threshold (0.01)
     :param gain: loop gain (float) 0.7
@@ -642,27 +688,32 @@ def mmclean_kernel_list(
     :param threshold: Clean threshold (0.0)
     :param scales: Scales (in pixels) for multiscale ([0, 3, 10, 30])
     :param nmoment: Number of frequency moments (default 3)
-    :param findpeak: Method of finding peak in mfsclean: 'Algorithm1'|'CASA'|'RASCIL', Default is RASCIL.
+    :param findpeak: Method of finding peak in mfsclean:
+                    'Algorithm1'|'CASA'|'RASCIL', Default is RASCIL.
 
     """
 
     findpeak = get_parameter(kwargs, "findpeak", "RASCIL")
     log.info(
-        "mmclean_kernel_list %s: Starting Multi-scale multi-frequency clean of each polarisation separately"
+        "mmclean_kernel_list %s: "
+        "Starting Multi-scale multi-frequency clean of each polarisation separately"
         % prefix
     )
     nmoment = get_parameter(kwargs, "nmoment", 3)
-    if not (nmoment >= 1):
+    if not nmoment >= 1:
         raise ValueError(
             "Number of frequency moments must be greater than or equal to one"
         )
 
     nchan = len(dirty_list)
-    if not (nchan > 2 * (nmoment - 1)):
+    if not nchan > 2 * (nmoment - 1):
         raise ValueError(
-            "Requires nchan %d > 2 * (nmoment %d - 1)" % (nchan, 2 * (nmoment - 1))
+            "Requires nchan %d > 2 * (nmoment %d - 1)"
+            % (nchan, 2 * (nmoment - 1))
         )
-    dirty_taylor = calculate_image_list_frequency_moments(dirty_list, nmoment=nmoment)
+    dirty_taylor = calculate_image_list_frequency_moments(
+        dirty_list, nmoment=nmoment
+    )
 
     if sensitivity_list is not None:
         sensitivity_taylor = calculate_image_list_frequency_moments(
@@ -686,7 +737,9 @@ def mmclean_kernel_list(
             psf_list, nmoment=2 * nmoment
         )
     else:
-        psf_taylor = calculate_image_list_frequency_moments(psf_list, nmoment=1)
+        psf_taylor = calculate_image_list_frequency_moments(
+            psf_list, nmoment=1
+        )
 
     psf_peak = numpy.max(psf_taylor["pixels"].data)
     dirty_taylor["pixels"].data /= psf_peak
@@ -703,7 +756,7 @@ def mmclean_kernel_list(
     fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
 
     gain = get_parameter(kwargs, "gain", 0.7)
-    if not (0.0 < gain < 2.0):
+    if not 0.0 < gain < 2.0:
         raise ValueError("Loop gain must be between 0 and 2")
 
     comp_array = numpy.zeros(dirty_taylor["pixels"].data.shape)
@@ -715,9 +768,14 @@ def mmclean_kernel_list(
             sens = None
         # Always use the moment 0, Stokes I PSF
         if psf_taylor["pixels"].data[0, 0, :, :].max():
-            log.info("mmclean_kernel_list %s: Processing pol %d" % (prefix, pol))
+            log.info(
+                "mmclean_kernel_list %s: Processing pol %d" % (prefix, pol)
+            )
             if window_taylor is None:
-                comp_array[:, pol, :, :], residual_array[:, pol, :, :] = msmfsclean(
+                (
+                    comp_array[:, pol, :, :],
+                    residual_array[:, pol, :, :],
+                ) = msmfsclean(
                     dirty_taylor["pixels"].data[:, pol, :, :],
                     psf_taylor["pixels"].data[:, 0, :, :],
                     None,
@@ -733,9 +791,15 @@ def mmclean_kernel_list(
             else:
                 log.info(
                     "deconvolve_cube %s: Clean window has %d valid pixels"
-                    % (prefix, int(numpy.sum(window_taylor["pixels"].data[0, pol])))
+                    % (
+                        prefix,
+                        int(numpy.sum(window_taylor["pixels"].data[0, pol])),
+                    )
                 )
-                comp_array[:, pol, :, :], residual_array[:, pol, :, :] = msmfsclean(
+                (
+                    comp_array[:, pol, :, :],
+                    residual_array[:, pol, :, :],
+                ) = msmfsclean(
                     dirty_taylor["pixels"].data[:, pol, :, :],
                     psf_taylor["pixels"].data[:, 0, :, :],
                     window_taylor["pixels"].data[0, pol, :, :],
@@ -783,11 +847,11 @@ def msclean_kernel_list(
 ):
     """MultiScale CLEAN, operating of lists of single frequency images
 
-    See: Cornwell, T.J., Multiscale CLEAN (IEEE Journal of Selected Topics in Sig Proc,
-    2008 vol. 2 pp. 793-801)
+     See: Cornwell, T.J., Multiscale CLEAN (IEEE Journal of Selected Topics in Sig Proc,
+     2008 vol. 2 pp. 793-801)
 
-    The clean search is performed on the product of the sensitivity image (if supplied) and
-    the residual image. This gives a way to bias against high noise.
+     The clean search is performed on the product of the sensitivity image (if supplied) and
+     the residual image. This gives a way to bias against high noise.
 
     :param dirty_list: List of dirty images
     :param prefix: Informational string to be used in log messages e.g. "cycle 1, subimage 42"
@@ -796,7 +860,7 @@ def msclean_kernel_list(
     :param sensitivity_list: List of sensitivity images
     :return: component image_list, residual image_list
 
-    The following optional arguments can be passed via kwargs:
+     The following optional arguments can be passed via kwargs:
 
     :param fractional_threshold: Fractional threshold (0.01)
     :param gain: loop gain (float) 0.7
@@ -805,7 +869,8 @@ def msclean_kernel_list(
     :param scales: Scales (in pixels) for multiscale ([0, 3, 10, 30])
     """
     log.info(
-        "msclean_kernel_list %s: Starting Multi-scale clean of each polarisation and channel separately"
+        "msclean_kernel_list %s: "
+        "Starting Multi-scale clean of each polarisation and channel separately"
         % prefix
     )
 
@@ -821,7 +886,10 @@ def msclean_kernel_list(
         residual_array = numpy.zeros_like(dirty["pixels"].data)
 
         for pol in range(dirty["pixels"].data.shape[1]):
-            if sensitivity_list is not None and sensitivity_list[channel] is not None:
+            if (
+                sensitivity_list is not None
+                and sensitivity_list[channel] is not None
+            ):
                 sens = sensitivity_list[channel]["pixels"].data[0, pol, :, :]
             else:
                 sens = None
@@ -831,7 +899,10 @@ def msclean_kernel_list(
                     % (prefix, pol, channel)
                 )
                 if window_list is None or window_list[channel] is None:
-                    (comp_array[0, pol, :, :], residual_array[0, pol, :, :],) = msclean(
+                    (
+                        comp_array[0, pol, :, :],
+                        residual_array[0, pol, :, :],
+                    ) = msclean(
                         dirty["pixels"].data[0, pol, :, :],
                         psf["pixels"].data[0, pol, :, :],
                         None,
@@ -844,7 +915,10 @@ def msclean_kernel_list(
                         prefix,
                     )
                 else:
-                    (comp_array[0, pol, :, :], residual_array[0, pol, :, :],) = msclean(
+                    (
+                        comp_array[0, pol, :, :],
+                        residual_array[0, pol, :, :],
+                    ) = msclean(
                         dirty["pixels"].data[0, pol, :, :],
                         psf["pixels"].data[0, pol, :, :],
                         window_list[channel]["pixels"].data[0, pol, :, :],
@@ -865,7 +939,9 @@ def msclean_kernel_list(
             comp_array, dirty.image_acc.wcs, dirty.image_acc.polarisation_frame
         )
         residual_image = create_image_from_array(
-            residual_array, dirty.image_acc.wcs, dirty.image_acc.polarisation_frame
+            residual_array,
+            dirty.image_acc.wcs,
+            dirty.image_acc.polarisation_frame,
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)
@@ -881,13 +957,15 @@ def restore_list(
 ):
     """Restore the model image to the residuals
 
-    The clean beam can be specified as a dictionary with
-    fields "bmaj", "bmin" (both in arcsec) "bpa" in degrees.
+     The clean beam can be specified as a dictionary with
+     fields "bmaj", "bmin" (both in arcsec) "bpa" in degrees.
 
     :param model_list: Model image list (i.e. deconvolved)
     :param psf_list: Input PSF list (nchan)
     :param residual_list: Residual image
-    :param clean_beam: Clean beam e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}. Units are deg, deg, deg
+    :param clean_beam: Clean beam
+                        e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}.
+                        Units are deg, deg, deg
     :return: restored_list
 
     """
@@ -942,9 +1020,12 @@ def restore_list(
         beam_pixels = convert_clean_beam_to_pixels(model, clean_beam)
 
         gk = Gaussian2DKernel(
-            x_stddev=beam_pixels[0], y_stddev=beam_pixels[1], theta=beam_pixels[2]
+            x_stddev=beam_pixels[0],
+            y_stddev=beam_pixels[1],
+            theta=beam_pixels[2],
         )
-        # By convention, we normalise the peak not the integral so this is the volume of the Gaussian
+        # By convention, we normalise the peak not the integral
+        # so this is the volume of the Gaussian
         norm = 2.0 * numpy.pi * beam_pixels[0] * beam_pixels[1]
         # gk = Gaussian2DKernel(size)
         for chan in range(model["pixels"].shape[0]):
@@ -973,25 +1054,28 @@ def deconvolve_cube(
 ) -> (Image, Image):
     """Clean using a variety of algorithms
 
-    The algorithms available are:
+     The algorithms available are:
 
-    hogbom: Hogbom CLEAN See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
+     hogbom: Hogbom CLEAN See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
 
-    hogbom-complex: Complex Hogbom CLEAN of stokesIQUV image
+     hogbom-complex: Complex Hogbom CLEAN of stokesIQUV image
 
-    msclean: MultiScale CLEAN See: Cornwell, T.J., Multiscale CLEAN (IEEE Journal of Selected Topics in Sig Proc,
-    2008 vol. 2 pp. 793-801)
+     msclean: MultiScale CLEAN See: Cornwell, T.J.,
+     Multiscale CLEAN (IEEE Journal of Selected Topics in Sig Proc,
+     2008 vol. 2 pp. 793-801)
 
-    mfsmsclean, msmfsclean, mmclean: MultiScale Multi-Frequency See: U. Rau and T. J. Cornwell,
-    “A multi-scale multi-frequency deconvolution algorithm for synthesis imaging in radio interferometry,” A&A 532,
-    A71 (2011).
+     mfsmsclean, msmfsclean, mmclean: MultiScale Multi-Frequency
+     See: U. Rau and T. J. Cornwell,
+     “A multi-scale multi-frequency deconvolution algorithm
+     for synthesis imaging in radio interferometry,” A&A 532, A71 (2011).
 
-    For example::
+     For example::
 
-        comp, residual = deconvolve_cube(dirty, psf, niter=1000, gain=0.7, algorithm='msclean',
-                                         scales=[0, 3, 10, 30], threshold=0.01)
+         comp, residual = deconvolve_cube(dirty, psf, niter=1000,
+                            gain=0.7, algorithm='msclean',
+                            scales=[0, 3, 10, 30], threshold=0.01)
 
-    For the MFS clean, the psf must have number of channels >= 2 * nmoment
+     For the MFS clean, the psf must have number of channels >= 2 * nmoment
 
     :param dirty: Image dirty image
     :param psf: Image Point Spread Function
@@ -1005,10 +1089,11 @@ def deconvolve_cube(
     :param fractional_threshold: Fractional threshold (0.01)
     :param scales: Scales (in pixels) for multiscale ([0, 3, 10, 30])
     :param nmoment: Number of frequency moments (default 3)
-    :param findpeak: Method of finding peak in mfsclean: 'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
+    :param findpeak: Method of finding peak in mfsclean:
+                    'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
     :return: component image, residual image
 
-    See also
+     See also
         :py:func:`rascil.processing_components.arrays.cleaners.hogbom`
         :py:func:`rascil.processing_components.arrays.cleaners.hogbom_complex`
         :py:func:`rascil.processing_components.arrays.cleaners.msclean`
@@ -1023,7 +1108,11 @@ def deconvolve_cube(
         sensitivity_list = None
 
     comp_list, residual_list = deconvolve_list(
-        dirty_list, psf_list, sensitivity=sensitivity_list, prefix=prefix, **kwargs
+        dirty_list,
+        psf_list,
+        sensitivity=sensitivity_list,
+        prefix=prefix,
+        **kwargs,
     )
     comp = image_gather_channels(comp_list)
     residual = image_gather_channels(residual_list)
@@ -1054,32 +1143,41 @@ def fit_psf(psf: Image, **kwargs):
             warnings.simplefilter("ignore")
             fit = fit_p(p_init, x, y, z)
         if fit.x_stddev <= 0.0 or fit.y_stddev <= 0.0:
-            log.warning("fit_psf: error in fitting to psf, using 1 pixel stddev")
+            log.warning(
+                "fit_psf: error in fitting to psf, using 1 pixel stddev"
+            )
             beam_pixels = (1.0, 1.0, 0.0)
         else:
             # Note that the order here is minor, major, pa
-            beam_pixels = (fit.x_stddev.value, fit.y_stddev.value, fit.theta.value)
+            beam_pixels = (
+                fit.x_stddev.value,
+                fit.y_stddev.value,
+                fit.theta.value,
+            )
             # log.debug('fit_psf: fitted (pixels, pixels, rad) = {}'.format(beam_pixels))
-    except minpack.error as err:
+    except minpack.error:
         log.warning("fit_psf: minpack error, using 1 pixel stddev")
         beam_pixels = (1.0, 1.0, 0.0)
-    except ValueError as err:
+    except ValueError:
         log.warning("fit_psf: warning in fit to psf, using 1 pixel stddev")
         beam_pixels = (1.0, 1.0, 0.0)
 
     return convert_clean_beam_to_degrees(psf, beam_pixels)
 
 
-def restore_cube(model: Image, psf=None, residual=None, clean_beam=None) -> Image:
+def restore_cube(
+    model: Image, psf=None, residual=None, clean_beam=None
+) -> Image:
     """Restore the model image to the residuals
 
-    The clean beam can be specified as a dictionary with
-    fields "bmaj", "bmin" (both in arcsec) "bpa" in degrees.
+     The clean beam can be specified as a dictionary with
+     fields "bmaj", "bmin" (both in arcsec) "bpa" in degrees.
 
     :param model: Model image (i.e. deconvolved)
     :param psf: Input PSF
     :param residual: Residual image
-    :param clean_beam: Clean beam e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}. Units are deg, deg, deg
+    :param clean_beam: Clean beam e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}.
+                        Units are deg, deg, deg
     :return: restored image
 
     """

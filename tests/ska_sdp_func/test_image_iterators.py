@@ -1,3 +1,7 @@
+# pylint: disable=invalid-name, too-many-arguments,line-too-long
+# pylint: disable=consider-using-f-string, logging-fstring-interpolation
+# pylint: disable= missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module
 """Unit tests for image iteration
 
 
@@ -6,15 +10,15 @@ import logging
 import unittest
 
 import numpy
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 
 from src.ska_sdp_func_python.image.iterators import (
-    image_raster_iter,
     image_channel_iter,
+    image_raster_iter,
 )
-from src.ska_sdp_func_python.image.operations import (
-    pad_image,
-)
+from src.ska_sdp_func_python.image.operations import pad_image
 from src.ska_sdp_func_python.parameters import rascil_path
 from src.ska_sdp_func_python.simulation import create_test_image
 
@@ -26,7 +30,9 @@ log.setLevel(logging.WARNING)
 
 class TestImageIterators(unittest.TestCase):
     def get_test_image(self, npixel=512):
-        testim = create_test_image(polarisation_frame=PolarisationFrame("stokesI"))
+        testim = create_test_image(
+            polarisation_frame=PolarisationFrame("stokesI")
+        )
         return pad_image(testim, [1, 1, npixel, npixel])
 
     def test_raster(self):
@@ -38,7 +44,9 @@ class TestImageIterators(unittest.TestCase):
         testdir = rascil_path("test_results")
         for npixel in [256, 512, 1024]:
             m31original = self.get_test_image(npixel=npixel)
-            assert numpy.max(numpy.abs(m31original["pixels"].data)), "Original is empty"
+            assert numpy.max(
+                numpy.abs(m31original["pixels"].data)
+            ), "Original is empty"
 
             for nraster in [1, 4, 8, 16]:
 
@@ -54,7 +62,10 @@ class TestImageIterators(unittest.TestCase):
                                 "Number of pixels in each patch: %d not as expected: %d"
                                 % (
                                     patch["pixels"].data.shape[3],
-                                    (m31model["pixels"].data.shape[3] // nraster),
+                                    (
+                                        m31model["pixels"].data.shape[3]
+                                        // nraster
+                                    ),
                                 )
                             )
                             assert patch["pixels"].data.shape[2] == (
@@ -63,12 +74,18 @@ class TestImageIterators(unittest.TestCase):
                                 "Number of pixels in each patch: %d not as expected: %d"
                                 % (
                                     patch["pixels"].data.shape[2],
-                                    (m31model["pixels"].data.shape[2] // nraster),
+                                    (
+                                        m31model["pixels"].data.shape[2]
+                                        // nraster
+                                    ),
                                 )
                             )
                             patch["pixels"].data *= 2.0
 
-                        if numpy.max(numpy.abs(m31model["pixels"].data)) == 0.0:
+                        if (
+                            numpy.max(numpy.abs(m31model["pixels"].data))
+                            == 0.0
+                        ):
                             log.warning(
                                 f"Raster is empty failed for {npixel}, {nraster}, {overlap}"
                             )
@@ -87,13 +104,15 @@ class TestImageIterators(unittest.TestCase):
                         )
                     except ValueError as err:
                         log.error(
-                            f"Iterator failed for {npixel}, {nraster}, {overlap}, : {err}"
+                            f"Iterator failed for {npixel}, {nraster}, {overlap},: {err}"
                         )
 
     def test_raster_exception(self):
 
         m31original = self.get_test_image()
-        assert numpy.max(numpy.abs(m31original["pixels"].data)), "Original is empty"
+        assert numpy.max(
+            numpy.abs(m31original["pixels"].data)
+        ), "Original is empty"
 
         for nraster, overlap in [(-1, -1), (-1, 0), (1e6, 127)]:
             with self.assertRaises(AssertionError):

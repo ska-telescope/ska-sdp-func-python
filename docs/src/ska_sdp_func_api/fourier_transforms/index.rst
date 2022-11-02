@@ -3,13 +3,13 @@
 .. py:currentmodule:: rascil.processing_components.fourier_transforms
 
 .. toctree::
-   :maxdepth: 2
+  :maxdepth: 2
 
 Fourier Transforms
 ******************
 
 .. automodapi::    rascil.processing_components.fourier_transforms.fft_coordinates
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:
 
 .. automodapi::    rascil.processing_components.fourier_transforms.fft_support
-   :no-inheritance-diagram:
+  :no-inheritance-diagram:

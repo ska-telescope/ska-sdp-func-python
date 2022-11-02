@@ -1,5 +1,9 @@
+# pylint: disable=invalid-name, too-many-locals, unused-variable
+# pylint: disable=too-many-statements
+# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """
-Functions that implement prediction of and imaging from visibilities using the GPU-based gridder (WAGG version),
+Functions that implement prediction of and imaging from visibilities
+using the GPU-based gridder (WAGG version),
 https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
 
 Currently the python wrapper of the GPU gridder is available in a branch,
@@ -23,8 +27,8 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
 from ska_sdp_datamodels.visibility.vis_model import Visibility
 
 from src.ska_sdp_func_python.imaging.base import (
-    shift_vis_to_image,
     normalise_sumwt,
+    shift_vis_to_image,
 )
 from src.ska_sdp_func_python.parameters import get_parameter
 
@@ -34,9 +38,9 @@ log = logging.getLogger("rascil-logger")
 def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     """Predict using convolutional degridding.
 
-    Nifty-gridder WAGG GPU version. https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
+     Nifty-gridder WAGG GPU version. https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
 
-    In the imaging and pipeline workflows, this may be invoked using context='wg'.
+     In the imaging and pipeline workflows, this may be invoked using context='wg'.
 
     :param bvis: Visibility to be predicted
     :param model: model image
@@ -50,17 +54,19 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
         return None
 
     if not model.image_acc.is_canonical():
-        log.error("The image model is not canonical. See the logfile. Exiting...")
+        log.error(
+            "The image model is not canonical. See the logfile. Exiting..."
+        )
         raise ValueError("WG:The image model is not canonical")
 
     # If the model is None than just return the input visibility.
     if model is None:
         return bvis
 
-    nthreads = get_parameter(kwargs, "threads", 4)
+    nthreads = get_parameter(kwargs, "threads", 4)  # noqa: F841
     epsilon = get_parameter(kwargs, "epsilon", 1e-12)
     do_wstacking = get_parameter(kwargs, "do_wstacking", True)
-    verbosity = get_parameter(kwargs, "verbosity", 0)
+    verbosity = get_parameter(kwargs, "verbosity", 0)  # noqa: F841
 
     newbvis = bvis.copy(deep=True, zero=True)
 
@@ -71,7 +77,9 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     uvw = newbvis.uvw.data
     uvw = uvw.reshape([nrows * nbaselines, 3])
     uvw = numpy.nan_to_num(uvw)
-    vis_temp = numpy.zeros([vnpol, vnchan, nbaselines * nrows], dtype="complex")
+    vis_temp = numpy.zeros(
+        [vnpol, vnchan, nbaselines * nrows], dtype="complex"
+    )
 
     # Get the image properties
     m_nchan, m_npol, ny, nx = model["pixels"].data.shape
@@ -147,11 +155,11 @@ def invert_wg(
 ) -> (Image, numpy.ndarray):
     """Invert using GPU-based WAGG nifty-gridder module
 
-    Nifty-gridder WAGG GPU version. https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
+     Nifty-gridder WAGG GPU version. https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
 
-    Use the image im as a template. Do PSF in a separate call.
+     Use the image im as a template. Do PSF in a separate call.
 
-    In the imaging and pipeline workflows, this may be invoked using context='wg'.
+     In the imaging and pipeline workflows, this may be invoked using context='wg'.
 
     :param dopsf: Make the PSF instead of the dirty image
     :param bvis: Visibility to be inverted
@@ -167,18 +175,22 @@ def invert_wg(
         return None
 
     if not model.image_acc.is_canonical():
-        log.error("The image model is not canonical. See the logfile. Exiting...")
+        log.error(
+            "The image model is not canonical. See the logfile. Exiting..."
+        )
         raise ValueError("WG:The image model is not canonical")
 
     im = model.copy(deep=True)
 
-    nthreads = get_parameter(kwargs, "threads", 4)
+    nthreads = get_parameter(kwargs, "threads", 4)  # noqa: F841
     epsilon = get_parameter(kwargs, "epsilon", 1e-12)
     do_wstacking = get_parameter(kwargs, "do_wstacking", True)
-    verbosity = get_parameter(kwargs, "verbosity", 0)
+    verbosity = get_parameter(kwargs, "verbosity", 0)  # noqa: F841
 
     bvis_shifted = bvis.copy(deep=True)
-    bvis_shifted = shift_vis_to_image(bvis_shifted, im, tangent=True, inverse=False)
+    bvis_shifted = shift_vis_to_image(
+        bvis_shifted, im, tangent=True, inverse=False
+    )
 
     freq = bvis_shifted.frequency.data  # frequency, Hz
 
@@ -249,7 +261,9 @@ def invert_wg(
             for vchan in range(vnchan):
                 ichan = vis_to_im[vchan]
                 frequency = numpy.array(freq[vchan : vchan + 1]).astype(float)
-                lms = numpy.ascontiguousarray(ms_temp[pol, vchan, :, numpy.newaxis])
+                lms = numpy.ascontiguousarray(
+                    ms_temp[pol, vchan, :, numpy.newaxis]
+                )
                 if numpy.max(numpy.abs(lms)) > 0.0:
                     lwt = numpy.ascontiguousarray(
                         weight_temp[pol, vchan, :, numpy.newaxis]

@@ -1,3 +1,6 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable= missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module
 """ Unit tests for coordinate calculations
 
 """
@@ -14,15 +17,17 @@ from src.ska_sdp_func_python.visibility import create_visibility
 from src.ska_sdp_func_python.visibility.visibility_geometry import (
     calculate_visibility_azel,
     calculate_visibility_hourangles,
-    calculate_visibility_transit_time,
     calculate_visibility_parallactic_angles,
+    calculate_visibility_transit_time,
 )
 
 
 class TestGeometry(unittest.TestCase):
     def setUp(self):
         self.lowcore = create_named_configuration("LOWBD2-CORE")
-        self.times = (numpy.pi / 43200.0) * numpy.arange(-21600, +21600, 3600.0)
+        self.times = (numpy.pi / 43200.0) * numpy.arange(
+            -21600, +21600, 3600.0
+        )
         self.phasecentre = SkyCoord(
             ra=+180.0 * u.deg, dec=-65.0 * u.deg, frame="icrs", equinox="J2000"
         )

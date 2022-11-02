@@ -1,3 +1,9 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable=too-many-instance-attributes, invalid-envvar-default
+# pylint: disable=missing-class-docstring, missing-function-docstring
+# pylint: disable=consider-using-f-string, unused-variable
+# pylint: disable=attribute-defined-outside-init, too-many-public-methods
+# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Unit tests for image operations
 
 
@@ -11,35 +17,39 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 
 from src.ska_sdp_func_python.griddata.gridding import (
+    degrid_visibility_from_griddata,
     fft_griddata_to_image,
     fft_image_to_griddata,
-    griddata_merge_weights,
     grid_visibility_to_griddata,
-    griddata_visibility_reweight,
     grid_visibility_weight_to_griddata,
-    degrid_visibility_from_griddata,
+    griddata_merge_weights,
+    griddata_visibility_reweight,
 )
 from src.ska_sdp_func_python.griddata.kernels import (
     create_awterm_convolutionfunction,
-    create_pswf_convolutionfunction,
     create_box_convolutionfunction,
+    create_pswf_convolutionfunction,
 )
-from src.ska_sdp_func_python.griddata.operations import create_griddata_from_image
+from src.ska_sdp_func_python.griddata.operations import (
+    create_griddata_from_image,
+)
 from src.ska_sdp_func_python.image.operations import (
-    convert_stokes_to_polimage,
     convert_polimage_to_stokes,
+    convert_stokes_to_polimage,
+    smooth_image,
 )
-from src.ska_sdp_func_python.image.operations import smooth_image
 from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
 from src.ska_sdp_func_python.imaging.base import normalise_sumwt
 from src.ska_sdp_func_python.imaging.primary_beams import create_pb_generic
-from src.ska_sdp_func_python.simulation import create_named_configuration
 from src.ska_sdp_func_python.simulation import (
-    create_unittest_model,
+    create_named_configuration,
     create_unittest_components,
+    create_unittest_model,
     ingest_unittest_visibility,
 )
 from src.ska_sdp_func_python.skycomponent.operations import insert_skycomponent
@@ -69,7 +79,7 @@ class TestGridDataGridding(unittest.TestCase):
         self.cellsize = 0.0009
         self.low = create_named_configuration("LOWBD2", rmax=750.0)
         self.freqwin = 1
-        self.vis_list = list()
+        self.vis_list = []
         self.ntimes = 3
         self.times = numpy.linspace(-2.0, +2.0, self.ntimes) * numpy.pi / 12.0
 
@@ -116,7 +126,8 @@ class TestGridDataGridding(unittest.TestCase):
         )
         if test_ignored_visibilities:
             self.cellsize = 1 / (
-                2 * numpy.min(self.vis.visibility_acc.uvw_lambda[..., 0, 0].flat)
+                2
+                * numpy.min(self.vis.visibility_acc.uvw_lambda[..., 0, 0].flat)
             )
 
         self.model = create_unittest_model(
@@ -127,7 +138,12 @@ class TestGridDataGridding(unittest.TestCase):
             nchan=self.freqwin,
         )
         self.components = create_unittest_components(
-            self.model, flux, applypb=False, scale=0.5, single=False, symmetric=True
+            self.model,
+            flux,
+            applypb=False,
+            scale=0.5,
+            single=False,
+            symmetric=True,
         )
         self.model = insert_skycomponent(self.model, self.components)
 
@@ -142,7 +158,9 @@ class TestGridDataGridding(unittest.TestCase):
             self.cmodel.image_acc.export_to_fits(
                 "%s/test_gridding_cmodel.fits" % self.results_dir
             )
-        pb = create_pb_generic(self.model, diameter=35.0, blockage=0.0, use_local=False)
+        pb = create_pb_generic(
+            self.model, diameter=35.0, blockage=0.0, use_local=False
+        )
         self.cmodel["pixels"].data *= pb["pixels"].data
         if self.persist:
             self.cmodel.image_acc.export_to_fits(
@@ -283,9 +301,9 @@ class TestGridDataGridding(unittest.TestCase):
         self.check_peaks(im, 97.10594988489598, tol=1e-7)
 
     def check_peaks(self, im, peak, tol=1e-6):
-        assert numpy.abs(im["pixels"].data[self.peak] - peak) < tol, im["pixels"].data[
-            self.peak
-        ]
+        assert numpy.abs(im["pixels"].data[self.peak] - peak) < tol, im[
+            "pixels"
+        ].data[self.peak]
 
     def test_griddata_invert_wterm(self):
         self.actualSetUp(zerow=False)
@@ -389,17 +407,24 @@ class TestGridDataGridding(unittest.TestCase):
             polarisation_frame=self.vis_pol,
         )
         griddata = fft_image_to_griddata(modelIQUV, griddata, gcf)
-        newvis = degrid_visibility_from_griddata(self.vis, griddata=griddata, cf=cf)
+        newvis = degrid_visibility_from_griddata(
+            self.vis, griddata=griddata, cf=cf
+        )
         qa = newvis.visibility_acc.qa_visibility()
         numpy.testing.assert_allclose(
             qa.data["maxabs"], 1091.515280627418, atol=1e-7, err_msg=f"{qa}"
         )
         numpy.testing.assert_allclose(
-            qa.data["minabs"], 0.00023684744483300332, atol=1e-7, err_msg=f"{qa}"
+            qa.data["minabs"],
+            0.00023684744483300332,
+            atol=1e-7,
+            err_msg=f"{qa}",
         )
 
     def test_griddata_predict_wterm(self):
-        self.actualSetUp(zerow=False, image_pol=PolarisationFrame("stokesIQUV"))
+        self.actualSetUp(
+            zerow=False, image_pol=PolarisationFrame("stokesIQUV")
+        )
         gcf, cf = create_awterm_convolutionfunction(
             self.model,
             nw=11,
@@ -416,7 +441,9 @@ class TestGridDataGridding(unittest.TestCase):
             modelIQUV, polarisation_frame=self.vis_pol
         )
         griddata = fft_image_to_griddata(modelIQUV, griddata, gcf)
-        newvis = degrid_visibility_from_griddata(self.vis, griddata=griddata, cf=cf)
+        newvis = degrid_visibility_from_griddata(
+            self.vis, griddata=griddata, cf=cf
+        )
         newvis["vis"].data[...] -= self.vis["vis"].data[...]
         self.plot_vis(newvis, "wterm")
         qa = newvis.visibility_acc.qa_visibility()
@@ -428,7 +455,9 @@ class TestGridDataGridding(unittest.TestCase):
         )
 
     def test_griddata_predict_awterm(self):
-        self.actualSetUp(zerow=False, image_pol=PolarisationFrame("stokesIQUV"))
+        self.actualSetUp(
+            zerow=False, image_pol=PolarisationFrame("stokesIQUV")
+        )
         modelIQUV = convert_stokes_to_polimage(
             self.model, self.vis.visibility_acc.polarisation_frame
         )
@@ -454,7 +483,9 @@ class TestGridDataGridding(unittest.TestCase):
             modelIQUV, polarisation_frame=self.vis_pol
         )
         griddata = fft_image_to_griddata(modelIQUV, griddata, gcf)
-        newvis = degrid_visibility_from_griddata(self.vis, griddata=griddata, cf=cf)
+        newvis = degrid_visibility_from_griddata(
+            self.vis, griddata=griddata, cf=cf
+        )
         qa = newvis.visibility_acc.qa_visibility()
         numpy.testing.assert_allclose(
             qa.data["maxabs"], 1086.4705273529883, atol=1e-7, err_msg=f"{qa}"
@@ -469,8 +500,12 @@ class TestGridDataGridding(unittest.TestCase):
         gcf, cf = create_pswf_convolutionfunction(
             self.model, polarisation_frame=self.vis_pol
         )
-        gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
-        gd_list = [grid_visibility_weight_to_griddata(self.vis, gd) for i in range(10)]
+        gd = create_griddata_from_image(
+            self.model, polarisation_frame=self.vis_pol
+        )
+        gd_list = [
+            grid_visibility_weight_to_griddata(self.vis, gd) for i in range(10)
+        ]
         assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
         gd, sumwt = griddata_merge_weights(gd_list)
         self.vis = griddata_visibility_reweight(self.vis, gd)
@@ -480,7 +515,8 @@ class TestGridDataGridding(unittest.TestCase):
         im = convert_polimage_to_stokes(cim)
         if self.persist:
             im.image_acc.export_to_fits(
-                "%s/test_gridding_dirty_2d_uniform_block.fits" % self.results_dir
+                "%s/test_gridding_dirty_2d_uniform_block.fits"
+                % self.results_dir
             )
         self.check_peaks(im, 99.40822097)
 
@@ -489,8 +525,12 @@ class TestGridDataGridding(unittest.TestCase):
         gcf, cf = create_pswf_convolutionfunction(
             self.model, polarisation_frame=self.vis_pol
         )
-        gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
-        gd_list = [grid_visibility_weight_to_griddata(self.vis, gd) for i in range(10)]
+        gd = create_griddata_from_image(
+            self.model, polarisation_frame=self.vis_pol
+        )
+        gd_list = [
+            grid_visibility_weight_to_griddata(self.vis, gd) for i in range(10)
+        ]
         assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
         gd, sumwt = griddata_merge_weights(gd_list)
         self.vis = griddata_visibility_reweight(self.vis, gd)
@@ -500,7 +540,8 @@ class TestGridDataGridding(unittest.TestCase):
         im = convert_polimage_to_stokes(cim)
         if self.persist:
             im.image_acc.export_to_fits(
-                "%s/test_gridding_dirty_2d_IQ_uniform_block.fits" % self.results_dir
+                "%s/test_gridding_dirty_2d_IQ_uniform_block.fits"
+                % self.results_dir
             )
         self.check_peaks(im, 99.40822097)
 
@@ -509,8 +550,12 @@ class TestGridDataGridding(unittest.TestCase):
         gcf, cf = create_pswf_convolutionfunction(
             self.model, polarisation_frame=self.vis_pol
         )
-        gd = create_griddata_from_image(self.model, polarisation_frame=self.vis_pol)
-        gd_list = [grid_visibility_weight_to_griddata(self.vis, gd) for i in range(10)]
+        gd = create_griddata_from_image(
+            self.model, polarisation_frame=self.vis_pol
+        )
+        gd_list = [
+            grid_visibility_weight_to_griddata(self.vis, gd) for i in range(10)
+        ]
         assert numpy.max(numpy.abs(gd_list[0][0]["pixels"].data)) > 10.0
         gd, sumwt = griddata_merge_weights(gd_list)
         self.vis = griddata_visibility_reweight(self.vis, gd)
@@ -520,7 +565,8 @@ class TestGridDataGridding(unittest.TestCase):
         im = convert_polimage_to_stokes(cim)
         if self.persist:
             im.image_acc.export_to_fits(
-                "%s/test_gridding_dirty_2d_IQ_uniform_block.fits" % self.results_dir
+                "%s/test_gridding_dirty_2d_IQ_uniform_block.fits"
+                % self.results_dir
             )
         self.check_peaks(im, 99.40822097)
 
@@ -534,12 +580,15 @@ class TestGridDataGridding(unittest.TestCase):
             self.model, polarisation_frame=self.vis_pol
         )
         grid_data_list = [
-            grid_visibility_weight_to_griddata(self.vis, grid_data) for i in range(10)
+            grid_visibility_weight_to_griddata(self.vis, grid_data)
+            for i in range(10)
         ]
         griddata, sumwt = griddata_merge_weights(grid_data_list)
         # Using sum to judge the correctness after ignored some visbilities
         assert numpy.isclose(
-            numpy.sum(numpy.abs(griddata["pixels"].data)), numpy.sum(sumwt), atol=1e-11
+            numpy.sum(numpy.abs(griddata["pixels"].data)),
+            numpy.sum(sumwt),
+            atol=1e-11,
         )
         assert numpy.isclose(numpy.sum(sumwt), 3327480.0, atol=1e-11)
 
@@ -553,7 +602,8 @@ class TestGridDataGridding(unittest.TestCase):
             self.model, polarisation_frame=self.vis_pol
         )
         grid_data_list = [
-            grid_visibility_weight_to_griddata(self.vis, grid_data) for i in range(10)
+            grid_visibility_weight_to_griddata(self.vis, grid_data)
+            for i in range(10)
         ]
         grid_data, _ = griddata_merge_weights(grid_data_list)
         self.vis = griddata_visibility_reweight(self.vis, grid_data)
@@ -577,7 +627,8 @@ class TestGridDataGridding(unittest.TestCase):
             self.model, polarisation_frame=self.vis_pol
         )
         grid_data_list = [
-            grid_visibility_weight_to_griddata(self.vis, grid_data) for i in range(10)
+            grid_visibility_weight_to_griddata(self.vis, grid_data)
+            for i in range(10)
         ]
         grid_data, _ = griddata_merge_weights(grid_data_list)
         self.vis = griddata_visibility_reweight(self.vis, grid_data)
@@ -596,7 +647,6 @@ class TestGridDataGridding(unittest.TestCase):
         if self.doplot:
             import matplotlib.pyplot as plt
 
-            r = numpy.sqrt(newvis.u**2 + newvis.v**2)
             for pol in range(4):
                 plt.plot(newvis.w, numpy.real(newvis.vis[:, pol]), ".")
             plt.xlim(150, 300)

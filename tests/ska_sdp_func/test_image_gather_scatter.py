@@ -1,3 +1,9 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable=attribute-defined-outside-init, unused-variable
+# pylint: disable=too-many-instance-attributes, invalid-envvar-default
+# pylint: disable=consider-using-f-string, logging-not-lazy
+# pylint: disable=missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """Unit tests for image iteration
 
 
@@ -7,13 +13,15 @@ import os
 import unittest
 
 import numpy
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 
 from src.ska_sdp_func_python.image.gather_scatter import (
-    image_gather_facets,
-    image_scatter_facets,
     image_gather_channels,
+    image_gather_facets,
     image_scatter_channels,
+    image_scatter_facets,
 )
 from src.ska_sdp_func_python.image.operations import create_empty_image_like
 from src.ska_sdp_func_python.simulation import create_test_image
@@ -32,8 +40,12 @@ class TestImageGatherScatters(unittest.TestCase):
 
     def test_scatter_gather_facet(self):
 
-        m31original = create_test_image(polarisation_frame=PolarisationFrame("stokesI"))
-        assert numpy.max(numpy.abs(m31original["pixels"].data)), "Original is empty"
+        m31original = create_test_image(
+            polarisation_frame=PolarisationFrame("stokesI")
+        )
+        assert numpy.max(
+            numpy.abs(m31original["pixels"].data)
+        ), "Original is empty"
 
         for nraster in [1, 4, 8]:
             m31model = create_test_image(
@@ -43,15 +55,21 @@ class TestImageGatherScatters(unittest.TestCase):
             for patch in image_list:
                 assert patch["pixels"].data.shape[3] == (
                     m31model["pixels"].data.shape[3] // nraster
-                ), "Number of pixels in each patch: %d not as expected: %d" % (
-                    patch["pixels"].data.shape[3],
-                    (m31model["pixels"].data.shape[3] // nraster),
+                ), (
+                    "Number of pixels in each patch: %d not as expected: %d"
+                    % (
+                        patch["pixels"].data.shape[3],
+                        (m31model["pixels"].data.shape[3] // nraster),
+                    )
                 )
                 assert patch["pixels"].data.shape[2] == (
                     m31model["pixels"].data.shape[2] // nraster
-                ), "Number of pixels in each patch: %d not as expected: %d" % (
-                    patch["pixels"].data.shape[2],
-                    (m31model["pixels"].data.shape[2] // nraster),
+                ), (
+                    "Number of pixels in each patch: %d not as expected: %d"
+                    % (
+                        patch["pixels"].data.shape[2],
+                        (m31model["pixels"].data.shape[2] // nraster),
+                    )
                 )
                 patch["pixels"].data[...] = 1.0
             m31reconstructed = create_empty_image_like(m31model)
@@ -71,26 +89,38 @@ class TestImageGatherScatters(unittest.TestCase):
 
     def test_scatter_gather_facet_overlap(self):
 
-        m31original = create_test_image(polarisation_frame=PolarisationFrame("stokesI"))
-        assert numpy.max(numpy.abs(m31original["pixels"].data)), "Original is empty"
+        m31original = create_test_image(
+            polarisation_frame=PolarisationFrame("stokesI")
+        )
+        assert numpy.max(
+            numpy.abs(m31original["pixels"].data)
+        ), "Original is empty"
 
         for nraster, overlap in [(1, 0), (4, 8), (8, 16)]:
             m31model = create_test_image(
                 polarisation_frame=PolarisationFrame("stokesI")
             )
-            image_list = image_scatter_facets(m31model, facets=nraster, overlap=overlap)
+            image_list = image_scatter_facets(
+                m31model, facets=nraster, overlap=overlap
+            )
             for patch in image_list:
                 assert patch["pixels"].data.shape[3] == (
                     m31model["pixels"].data.shape[3] // nraster
-                ), "Number of pixels in each patch: %d not as expected: %d" % (
-                    patch["pixels"].data.shape[3],
-                    (m31model["pixels"].data.shape[3] // nraster),
+                ), (
+                    "Number of pixels in each patch: %d not as expected: %d"
+                    % (
+                        patch["pixels"].data.shape[3],
+                        (m31model["pixels"].data.shape[3] // nraster),
+                    )
                 )
                 assert patch["pixels"].data.shape[2] == (
                     m31model["pixels"].data.shape[2] // nraster
-                ), "Number of pixels in each patch: %d not as expected: %d" % (
-                    patch["pixels"].data.shape[2],
-                    (m31model["pixels"].data.shape[2] // nraster),
+                ), (
+                    "Number of pixels in each patch: %d not as expected: %d"
+                    % (
+                        patch["pixels"].data.shape[2],
+                        (m31model["pixels"].data.shape[2] // nraster),
+                    )
                 )
                 patch["pixels"].data[...] = 1.0
             m31reconstructed = create_empty_image_like(m31model)
@@ -114,8 +144,12 @@ class TestImageGatherScatters(unittest.TestCase):
 
     def test_scatter_gather_facet_overlap_taper(self):
 
-        m31original = create_test_image(polarisation_frame=PolarisationFrame("stokesI"))
-        assert numpy.max(numpy.abs(m31original["pixels"].data)), "Original is empty"
+        m31original = create_test_image(
+            polarisation_frame=PolarisationFrame("stokesI")
+        )
+        assert numpy.max(
+            numpy.abs(m31original["pixels"].data)
+        ), "Original is empty"
 
         for taper in ["linear", "tukey", None]:
             for nraster, overlap in [
@@ -136,15 +170,21 @@ class TestImageGatherScatters(unittest.TestCase):
                 for patch in image_list:
                     assert patch["pixels"].data.shape[3] == (
                         m31model["pixels"].data.shape[3] // nraster
-                    ), "Number of pixels in each patch: %d not as expected: %d" % (
-                        patch.data.shape[3],
-                        (m31model["pixels"].data.shape[3] // nraster),
+                    ), (
+                        "Number of pixels in each patch: %d not as expected: %d"
+                        % (
+                            patch.data.shape[3],
+                            (m31model["pixels"].data.shape[3] // nraster),
+                        )
                     )
                     assert patch["pixels"].data.shape[2] == (
                         m31model["pixels"].data.shape[2] // nraster
-                    ), "Number of pixels in each patch: %d not as expected: %d" % (
-                        patch.data.shape[2],
-                        (m31model["pixels"].data.shape[2] // nraster),
+                    ), (
+                        "Number of pixels in each patch: %d not as expected: %d"
+                        % (
+                            patch.data.shape[2],
+                            (m31model["pixels"].data.shape[2] // nraster),
+                        )
                     )
                 m31reconstructed = create_empty_image_like(m31model)
                 m31reconstructed = image_gather_facets(
@@ -188,7 +228,9 @@ class TestImageGatherScatters(unittest.TestCase):
             )
 
             for subimages in [16, 8, 2, 1]:
-                image_list = image_scatter_channels(m31cube, subimages=subimages)
+                image_list = image_scatter_channels(
+                    m31cube, subimages=subimages
+                )
                 m31cuberec = image_gather_channels(
                     image_list, m31cube, subimages=subimages
                 )
@@ -204,7 +246,9 @@ class TestImageGatherScatters(unittest.TestCase):
                 polarisation_frame=PolarisationFrame("stokesI"),
             )
             image_list = image_scatter_channels(m31cube, subimages=nchan)
-            m31cuberec = image_gather_channels(image_list, None, subimages=nchan)
+            m31cuberec = image_gather_channels(
+                image_list, None, subimages=nchan
+            )
             assert m31cube["pixels"].shape == m31cuberec["pixels"].shape
             diff = m31cube["pixels"].data - m31cuberec["pixels"].data
             assert numpy.max(numpy.abs(diff)) == 0.0, (

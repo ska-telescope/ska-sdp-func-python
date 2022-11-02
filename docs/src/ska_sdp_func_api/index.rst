@@ -1,12 +1,8 @@
-.. _rascil_processing_components:
-
-.. py:currentmodule:: rascil.processing_components
-
 Processing Components
 *********************
 
 .. toctree::
-   :maxdepth: 1
+  :maxdepth: 1
 
    calibration/index
    fourier_transforms/index

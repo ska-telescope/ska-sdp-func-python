@@ -1,3 +1,9 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable=too-many-instance-attributes, unused-variable
+# pylint: disable=attribute-defined-outside-init, too-many-locals
+
+# pylint: disable= missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module
 """ Unit tests for visibility operations
 
 
@@ -9,20 +15,22 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_allclose
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
 from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
 from src.ska_sdp_func_python.simulation import create_named_configuration
 from src.ska_sdp_func_python.visibility.base import (
     create_visibility,
-    phaserotate_visibility,
     generate_baselines,
+    phaserotate_visibility,
 )
 from src.ska_sdp_func_python.visibility.operations import (
-    subtract_visibility,
-    divide_visibility,
     concatenate_visibility,
+    divide_visibility,
+    subtract_visibility,
 )
 
 
@@ -47,7 +55,9 @@ class TestVisibilityOperations(unittest.TestCase):
         pcof = self.phasecentre.skyoffset_frame()
         self.compreldirection = self.compabsdirection.transform_to(pcof)
         self.comp = SkyComponent(
-            direction=self.compreldirection, frequency=self.frequency, flux=self.flux
+            direction=self.compreldirection,
+            frequency=self.frequency,
+            flux=self.flux,
         )
 
     def test_create_visibility(self):
@@ -139,7 +149,9 @@ class TestVisibilityOperations(unittest.TestCase):
         )
         self.othervis["vis"][..., :] = [1.0 + 0.0j]
         self.ratiovis = divide_visibility(self.vis, self.othervis)
-        assert self.ratiovis.visibility_acc.nvis == self.vis.visibility_acc.nvis
+        assert (
+            self.ratiovis.visibility_acc.nvis == self.vis.visibility_acc.nvis
+        )
         assert numpy.max(numpy.abs(self.ratiovis.vis)) == 2.0, numpy.max(
             numpy.abs(self.ratiovis.vis)
         )
@@ -166,7 +178,9 @@ class TestVisibilityOperations(unittest.TestCase):
         )
         self.othervis["vis"][..., :] = [1.0 + 0.0j, 0.0j, 0.0j, 1.0 + 0.0j]
         self.ratiovis = divide_visibility(self.vis, self.othervis)
-        assert self.ratiovis.visibility_acc.nvis == self.vis.visibility_acc.nvis
+        assert (
+            self.ratiovis.visibility_acc.nvis == self.vis.visibility_acc.nvis
+        )
         assert numpy.max(numpy.abs(self.ratiovis.vis)) == 2.0, numpy.max(
             numpy.abs(self.ratiovis.vis)
         )
@@ -181,7 +195,12 @@ class TestVisibilityOperations(unittest.TestCase):
             weight=1.0,
             polarisation_frame=PolarisationFrame("linear"),
         )
-        self.vis["vis"][..., :] = [2.0 + 0.0j, 2.0 + 0.0j, 2.0 + 0.0j, 2.0 + 0.0j]
+        self.vis["vis"][..., :] = [
+            2.0 + 0.0j,
+            2.0 + 0.0j,
+            2.0 + 0.0j,
+            2.0 + 0.0j,
+        ]
         self.othervis = create_visibility(
             self.lowcore,
             self.times,
@@ -191,9 +210,16 @@ class TestVisibilityOperations(unittest.TestCase):
             weight=1.0,
             polarisation_frame=PolarisationFrame("linear"),
         )
-        self.othervis["vis"][..., :] = [1.0 + 0.0j, 1.0 + 0.0j, 1.0 + 0.0j, 1.0 + 0.0j]
+        self.othervis["vis"][..., :] = [
+            1.0 + 0.0j,
+            1.0 + 0.0j,
+            1.0 + 0.0j,
+            1.0 + 0.0j,
+        ]
         self.ratiovis = divide_visibility(self.vis, self.othervis)
-        assert self.ratiovis.visibility_acc.nvis == self.vis.visibility_acc.nvis
+        assert (
+            self.ratiovis.visibility_acc.nvis == self.vis.visibility_acc.nvis
+        )
         assert numpy.max(numpy.abs(self.ratiovis.vis)) == 2.0, numpy.max(
             numpy.abs(self.ratiovis.vis)
         )
@@ -222,7 +248,9 @@ class TestVisibilityOperations(unittest.TestCase):
             original_vis = self.vismodel.vis
             original_uvw = self.vismodel.uvw
             rotatedvis = phaserotate_visibility(
-                phaserotate_visibility(self.vismodel, newphasecentre, tangent=False),
+                phaserotate_visibility(
+                    self.vismodel, newphasecentre, tangent=False
+                ),
                 self.phasecentre,
                 tangent=False,
             )
@@ -242,7 +270,9 @@ class TestVisibilityOperations(unittest.TestCase):
         )
         self.vismodel = dft_skycomponent_visibility(self.vis, self.comp)
         # Predict visibilities with new phase centre independently
-        ha_diff = -(self.compabsdirection.ra - self.phasecentre.ra).to(u.rad).value
+        ha_diff = (
+            -(self.compabsdirection.ra - self.phasecentre.ra).to(u.rad).value
+        )
         vispred = create_visibility(
             self.lowcore,
             self.times + ha_diff,
@@ -284,7 +314,9 @@ class TestVisibilityOperations(unittest.TestCase):
         original_vis = self.vismodel.vis
         original_uvw = self.vismodel.uvw
         rotatedvis = phaserotate_visibility(
-            phaserotate_visibility(self.vismodel, there, tangent=False, inverse=False),
+            phaserotate_visibility(
+                self.vismodel, there, tangent=False, inverse=False
+            ),
             self.phasecentre,
             tangent=False,
             inverse=False,
@@ -337,7 +369,9 @@ class TestVisibilityOperations(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+180.0 * u.deg, dec=+15.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.times = (numpy.pi / 43200.0) * numpy.arange(-43200, +43200, 3600.0)
+        self.times = (numpy.pi / 43200.0) * numpy.arange(
+            -43200, +43200, 3600.0
+        )
         self.vis = create_visibility(
             self.lowcore,
             self.times,
@@ -366,7 +400,7 @@ class TestVisibilityOperations(unittest.TestCase):
         baselines = list(generate_baselines(nants))
 
         for ibaseline, baseline in enumerate(baselines):
-            ant1, ant2 = baselines[ibaseline]
+            ant1, ant2 = baseline
 
 
 if __name__ == "__main__":

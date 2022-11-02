@@ -1,3 +1,9 @@
+# pylint: disable=invalid-name, too-many-arguments, too-many-public-methods
+# pylint: disable=attribute-defined-outside-init, unused-variable
+# pylint: disable=too-many-instance-attributes, invalid-envvar-default
+# pylint: disable=consider-using-f-string, logging-not-lazy
+# pylint: disable=missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Unit tests for imaging using nifty gridder
 
 """
@@ -9,21 +15,21 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
-
-from src.ska_sdp_func_python.image.operations import (
-    smooth_image,
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
 )
+
+from src.ska_sdp_func_python.image.operations import smooth_image
 from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
-from src.ska_sdp_func_python.simulation import create_named_configuration
 from src.ska_sdp_func_python.simulation import (
-    ingest_unittest_visibility,
-    create_unittest_model,
+    create_named_configuration,
     create_unittest_components,
+    create_unittest_model,
+    ingest_unittest_visibility,
 )
 from src.ska_sdp_func_python.skycomponent.operations import (
-    find_skycomponents,
     find_nearest_skycomponent,
+    find_skycomponents,
     insert_skycomponent,
 )
 
@@ -56,7 +62,7 @@ class TestImagingNG(unittest.TestCase):
         self.npixel = 256
         self.low = create_named_configuration("LOWBD2", rmax=750.0)
         self.freqwin = freqwin
-        self.vis = list()
+        self.vis = []
         self.ntimes = 5
         self.times = numpy.linspace(-3.0, +3.0, self.ntimes) * numpy.pi / 12.0
 
@@ -133,15 +139,18 @@ class TestImagingNG(unittest.TestCase):
                 self.vis, self.image_pol, npixel=self.npixel, nchan=1
             )
 
-    def _checkcomponents(self, dirty, fluxthreshold=0.6, positionthreshold=0.1):
+    def _checkcomponents(
+        self, dirty, fluxthreshold=0.6, positionthreshold=0.1
+    ):
         comps = find_skycomponents(
             dirty, fwhm=1.0, threshold=10 * fluxthreshold, npixels=5
         )
-        assert len(comps) == len(
-            self.components
-        ), "Different number of components found: original %d, recovered %d" % (
-            len(self.components),
-            len(comps),
+        assert len(comps) == len(self.components), (
+            "Different number of components found: original %d, recovered %d"
+            % (
+                len(self.components),
+                len(comps),
+            )
         )
         cellsize = numpy.deg2rad(abs(dirty.image_acc.wcs.wcs.cdelt[0]))
 
@@ -165,10 +174,12 @@ class TestImagingNG(unittest.TestCase):
 
     def _predict_base(self, fluxthreshold=1.0, name="predict_ng", **kwargs):
 
-        from src.ska_sdp_func_python.imaging.ng import predict_ng, invert_ng
+        from src.ska_sdp_func_python.imaging.ng import invert_ng, predict_ng
 
         original_vis = self.vis.copy(deep=True)
-        vis = predict_ng(self.vis, self.model, verbosity=self.verbosity, **kwargs)
+        vis = predict_ng(
+            self.vis, self.model, verbosity=self.verbosity, **kwargs
+        )
         vis["vis"].data = vis["vis"].data - original_vis["vis"].data
         dirty = invert_ng(
             vis,
@@ -189,13 +200,16 @@ class TestImagingNG(unittest.TestCase):
 
         if self.persist:
             dirty[0].image_acc.export_to_fits(
-                "%s/test_imaging_ng_%s_residual.fits" % (self.results_dir, name),
+                "%s/test_imaging_ng_%s_residual.fits"
+                % (self.results_dir, name),
             )
 
         # assert numpy.max(numpy.abs(dirty[0].data)), "Residual image is empty"
 
         maxabs = numpy.max(numpy.abs(dirty[0]["pixels"].data))
-        assert maxabs < fluxthreshold, "Error %.3f greater than fluxthreshold %.3f " % (
+        assert (
+            maxabs < fluxthreshold
+        ), "Error %.3f greater than fluxthreshold %.3f " % (
             maxabs,
             fluxthreshold,
         )
@@ -316,21 +330,29 @@ class TestImagingNG(unittest.TestCase):
 
     def test_predict_ng_spec_IQUV(self):
         self.actualSetUp(
-            dospectral=True, freqwin=5, image_pol=PolarisationFrame("stokesIQUV")
+            dospectral=True,
+            freqwin=5,
+            image_pol=PolarisationFrame("stokesIQUV"),
         )
         self._predict_base(name="predict_spec_IQUV")
 
     def test_invert_ng_spec_IQUV(self):
         self.actualSetUp(
-            dospectral=True, freqwin=5, image_pol=PolarisationFrame("stokesIQUV")
+            dospectral=True,
+            freqwin=5,
+            image_pol=PolarisationFrame("stokesIQUV"),
         )
         self._invert_base(
-            name="invert_spec_IQUV", positionthreshold=2.0, check_components=False
+            name="invert_spec_IQUV",
+            positionthreshold=2.0,
+            check_components=False,
         )
 
     def test_invert_ng_spec_IQUV_psf(self):
         self.actualSetUp(
-            dospectral=True, freqwin=5, image_pol=PolarisationFrame("stokesIQUV")
+            dospectral=True,
+            freqwin=5,
+            image_pol=PolarisationFrame("stokesIQUV"),
         )
         self._invert_base(
             name="invert_spec_IQUV_psf",
@@ -347,7 +369,9 @@ class TestImagingNG(unittest.TestCase):
             mfs=True,
         )
         self._invert_base(
-            name="invert_mfs_IQUV", positionthreshold=2.0, check_components=False
+            name="invert_mfs_IQUV",
+            positionthreshold=2.0,
+            check_components=False,
         )
 
     def test_invert_ng_mfs_IQUV_psf(self):
@@ -375,7 +399,9 @@ class TestImagingNG(unittest.TestCase):
             dospectral=True, freqwin=5, image_pol=PolarisationFrame("stokesIQ")
         )
         self._invert_base(
-            name="invert_spec_IQ", positionthreshold=2.0, check_components=False
+            name="invert_spec_IQ",
+            positionthreshold=2.0,
+            check_components=False,
         )
 
 

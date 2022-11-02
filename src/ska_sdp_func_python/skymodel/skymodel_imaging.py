@@ -1,3 +1,7 @@
+# pylint: disable=invalid-name, too-many-arguments, too-many-statements
+# pylint: disable=too-many-nested-blocks, too-many-branches
+# pylint: disable=unused-variable, too-many-locals, no-else-return
+# pylint: disable=import-error, no-name-in-module
 """Functions to invert and predict from skymodels
 
 """
@@ -6,34 +10,38 @@ __all__ = ["skymodel_calibrate_invert", "skymodel_predict_calibrate"]
 import numpy
 
 from src.ska_sdp_func_python import (
-    copy_skycomponent,
     apply_beam_to_skycomponent,
+    copy_skycomponent,
     normalise_sumwt,
 )
 from src.ska_sdp_func_python.calibration import apply_gaintable
 from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
 from src.ska_sdp_func_python.imaging.imaging import (
-    predict_visibility,
     invert_visibility,
+    predict_visibility,
 )
-from src.ska_sdp_func_python.visibility import (
-    concatenate_visibility,
-)
+from src.ska_sdp_func_python.visibility import concatenate_visibility
 
 
 def skymodel_predict_calibrate(
-    bvis, skymodel, context="ng", docal=False, inverse=True, get_pb=None, **kwargs
+    bvis,
+    skymodel,
+    context="ng",
+    docal=False,
+    inverse=True,
+    get_pb=None,
+    **kwargs
 ):
     """Predict visibility for a skymodel, optionally applying calibration
 
-    A skymodel consists of an image and a list of components, optionally with
-    a gaintable.
+     A skymodel consists of an image and a list of components, optionally with
+     a gaintable.
 
-    The function get_pb should have the signature:
+     The function get_pb should have the signature:
 
-        get_pb(Visibility, Image)
+         get_pb(Visibility, Image)
 
-    and should return the primary beam for the visibility.
+     and should return the primary beam for the visibility.
 
     :param bvis: Input visibility
     :param skymodel: Skymodel
@@ -58,10 +66,14 @@ def skymodel_predict_calibrate(
                 if skymodel.mask is not None or pb is not None:
                     comps = copy_skycomponent(skymodel.components)
                     if skymodel.mask is not None:
-                        comps = apply_beam_to_skycomponent(comps, skymodel.mask)
+                        comps = apply_beam_to_skycomponent(
+                            comps, skymodel.mask
+                        )
                     if pb is not None:
                         comps = apply_beam_to_skycomponent(comps, pb)
-                    vis_slice = dft_skycomponent_visibility(vis_slice, comps, **kwargs)
+                    vis_slice = dft_skycomponent_visibility(
+                        vis_slice, comps, **kwargs
+                    )
                 else:
                     vis_slice = dft_skycomponent_visibility(
                         vis_slice, skymodel.components, **kwargs
@@ -75,7 +87,9 @@ def skymodel_predict_calibrate(
                     if skymodel.mask is not None or pb is not None:
                         model = skymodel.image.copy(deep=True)
                         if skymodel.mask is not None:
-                            model["pixels"].data *= skymodel.mask["pixels"].data
+                            model["pixels"].data *= skymodel.mask[
+                                "pixels"
+                            ].data
                         if pb is not None:
                             model["pixels"].data *= pb["pixels"].data
                         imgv = predict_visibility(
@@ -105,7 +119,9 @@ def skymodel_predict_calibrate(
                 comps = apply_beam_to_skycomponent(comps, skymodel.mask)
                 v = dft_skycomponent_visibility(v, comps, **kwargs)
             else:
-                v = dft_skycomponent_visibility(v, skymodel.components, **kwargs)
+                v = dft_skycomponent_visibility(
+                    v, skymodel.components, **kwargs
+                )
 
         # Now do the FFT of the image, after multiplying by the mask and primary
         # beam
@@ -115,7 +131,9 @@ def skymodel_predict_calibrate(
                 if skymodel.mask is not None:
                     model = skymodel.image.copy(deep=True)
                     model["pixels"].data *= skymodel.mask["pixels"].data
-                    imgv = predict_visibility(imgv, model, context=context, **kwargs)
+                    imgv = predict_visibility(
+                        imgv, model, context=context, **kwargs
+                    )
                 else:
                     imgv = predict_visibility(
                         imgv, skymodel.image, context=context, **kwargs
@@ -140,8 +158,8 @@ def skymodel_calibrate_invert(
 ):
     """Inverse Fourier sum of visibility to image and components
 
-    If the get_pb function is defined, the sum of weights will be
-    an image
+     If the get_pb function is defined, the sum of weights will be
+     an image
 
     :param bvis: Visibility to be transformed
     :param skymodel: Skymodel
@@ -177,7 +195,11 @@ def skymodel_calibrate_invert(
             # The return value result contains the weighted image and
             # the weights as an image (including mask and primary beam)
             result = invert_visibility(
-                vis_slice, skymodel.image, context=context, normalise=False, **kwargs
+                vis_slice,
+                skymodel.image,
+                context=context,
+                normalise=False,
+                **kwargs
             )
             flat = numpy.ones_like(result[0]["pixels"].data)
             if skymodel.mask is not None:
@@ -192,13 +214,17 @@ def skymodel_calibrate_invert(
                 flat * flat * result[1][:, :, numpy.newaxis, numpy.newaxis]
             )
         if normalise:
-            sum_dirtys = normalise_sumwt(sum_dirtys, sum_flats, flat_sky=flat_sky)
+            sum_dirtys = normalise_sumwt(
+                sum_dirtys, sum_flats, flat_sky=flat_sky
+            )
             sum_flats["pixels"].data = numpy.sqrt(sum_flats["pixels"].data)
 
         return (sum_dirtys, sum_flats)
 
     else:
-        result = invert_visibility(bvis_cal, skymodel.image, context=context, **kwargs)
+        result = invert_visibility(
+            bvis_cal, skymodel.image, context=context, **kwargs
+        )
         if skymodel.mask is not None:
             result[0]["pixels"].data *= skymodel.mask["pixels"].data
 

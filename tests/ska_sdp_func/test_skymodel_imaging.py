@@ -1,3 +1,9 @@
+# pylint: disable=invalid-name, too-many-arguments
+# pylint: disable=attribute-defined-outside-init, unused-variable
+# pylint: disable=too-many-instance-attributes, invalid-envvar-default
+# pylint: disable=consider-using-f-string, logging-not-lazy
+# pylint: disable=missing-class-docstring, missing-function-docstring
+# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Regression test for skymodel predict and invert functions
 """
 import logging
@@ -8,17 +14,17 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 
 from src.ska_sdp_func_python import (
-    create_named_configuration,
-)
-from src.ska_sdp_func_python import (
-    ingest_unittest_visibility,
-    create_low_test_skymodel_from_gleam,
     calculate_visibility_parallactic_angles,
-    create_low_test_beam,
     convert_azelvp_to_radec,
+    create_low_test_beam,
+    create_low_test_skymodel_from_gleam,
+    create_named_configuration,
+    ingest_unittest_visibility,
     skymodel_calibrate_invert,
     skymodel_predict_calibrate,
 )
@@ -46,7 +52,7 @@ class TestSkyModel(unittest.TestCase):
         self.npixel = 512
         self.low = create_named_configuration("LOW", rmax=300.0)
         self.freqwin = freqwin
-        self.vis = list()
+        self.vis = []
         self.ntimes = 3
         self.cellsize = 0.001
         self.radius = self.npixel * self.cellsize / 2.0
@@ -70,11 +76,10 @@ class TestSkyModel(unittest.TestCase):
         if dopol:
             self.vis_pol = PolarisationFrame("linear")
             self.image_pol = PolarisationFrame("stokesIQUV")
-            f = numpy.array([100.0, 20.0, -10.0, 1.0])
+
         else:
             self.vis_pol = PolarisationFrame("stokesI")
             self.image_pol = PolarisationFrame("stokesI")
-            f = numpy.array([100.0])
 
         self.phasecentre = SkyCoord(
             ra=+30.0 * u.deg, dec=-60.0 * u.deg, frame="icrs", equinox="J2000"
@@ -105,12 +110,16 @@ class TestSkyModel(unittest.TestCase):
             flux_max=5.0,
         )
 
-        assert len(self.skymodel.components) == 11, len(self.skymodel.components)
+        assert len(self.skymodel.components) == 11, len(
+            self.skymodel.components
+        )
         assert (
             numpy.max(numpy.abs(self.skymodel.image["pixels"].data)) > 0.0
         ), "Image is empty"
 
-        skymodel_vis = skymodel_predict_calibrate(self.vis, self.skymodel, context="ng")
+        skymodel_vis = skymodel_predict_calibrate(
+            self.vis, self.skymodel, context="ng"
+        )
         qa = skymodel_vis.visibility_acc.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 60.35140880932053, err_msg=str(qa)
@@ -132,7 +141,9 @@ class TestSkyModel(unittest.TestCase):
             flux_max=5.0,
         )
 
-        assert len(self.skymodel.components) == 11, len(self.skymodel.components)
+        assert len(self.skymodel.components) == 11, len(
+            self.skymodel.components
+        )
         assert (
             numpy.max(numpy.abs(self.skymodel.image["pixels"].data)) > 0.0
         ), "Image is empty"
@@ -170,7 +181,9 @@ class TestSkyModel(unittest.TestCase):
             flux_max=5.0,
         )
 
-        assert len(self.skymodel.components) == 11, len(self.skymodel.components)
+        assert len(self.skymodel.components) == 11, len(
+            self.skymodel.components
+        )
         assert (
             numpy.max(numpy.abs(self.skymodel.image["pixels"].data)) > 0.0
         ), "Image is empty"
@@ -217,7 +230,9 @@ class TestSkyModel(unittest.TestCase):
             flux_max=5.0,
         )
 
-        assert len(self.skymodel.components) == 11, len(self.skymodel.components)
+        assert len(self.skymodel.components) == 11, len(
+            self.skymodel.components
+        )
         assert (
             numpy.max(numpy.abs(self.skymodel.image["pixels"].data)) > 0.0
         ), "Image is empty"
@@ -245,7 +260,8 @@ class TestSkyModel(unittest.TestCase):
         )
         if self.persist:
             skymodel[0].image_acc.export_to_fits(
-                "%s/test_skymodel_invert_flat_noise_dirty.fits" % (self.results_dir),
+                "%s/test_skymodel_invert_flat_noise_dirty.fits"
+                % (self.results_dir),
             )
             skymodel[1].image_acc.export_to_fits(
                 "%s/test_skymodel_invert_flat_noise_sensitivity.fits"
@@ -270,7 +286,8 @@ class TestSkyModel(unittest.TestCase):
         )
         if self.persist:
             skymodel[0].image_acc.export_to_fits(
-                "%s/test_skymodel_invert_flat_sky_dirty.fits" % (self.results_dir),
+                "%s/test_skymodel_invert_flat_sky_dirty.fits"
+                % (self.results_dir),
             )
             skymodel[1].image_acc.export_to_fits(
                 "%s/test_skymodel_invert_flat_sky_sensitivity.fits"
@@ -308,7 +325,9 @@ class TestSkyModel(unittest.TestCase):
             numpy.max(numpy.abs(self.skymodel.image["pixels"].data)) > 0.0
         ), "Image is empty"
 
-        skymodel_vis = skymodel_predict_calibrate(self.vis, self.skymodel, context="ng")
+        skymodel_vis = skymodel_predict_calibrate(
+            self.vis, self.skymodel, context="ng"
+        )
         qa = skymodel_vis.visibility_acc.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 39.916746503252156, err_msg=str(qa)
@@ -333,9 +352,13 @@ class TestSkyModel(unittest.TestCase):
 
         self.skymodel.image = None
 
-        assert len(self.skymodel.components) == 11, len(self.skymodel.components)
+        assert len(self.skymodel.components) == 11, len(
+            self.skymodel.components
+        )
 
-        skymodel_vis = skymodel_predict_calibrate(self.vis, self.skymodel, context="ng")
+        skymodel_vis = skymodel_predict_calibrate(
+            self.vis, self.skymodel, context="ng"
+        )
         qa = skymodel_vis.visibility_acc.qa_visibility()
         numpy.testing.assert_almost_equal(
             qa.data["maxabs"], 20.434662306068372, err_msg=str(qa)
