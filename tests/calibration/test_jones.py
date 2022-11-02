@@ -20,7 +20,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 
 from src.ska_sdp_func_python.calibration import apply_jones
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
 

@@ -34,7 +34,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 )
 from ska_sdp_datamodels.visibility.vis_model import Visibility
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def concatenate_visibility(vis_list, dim="time"):

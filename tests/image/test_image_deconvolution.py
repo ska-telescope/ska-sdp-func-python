@@ -15,38 +15,36 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.configuration import create_named_configuration
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
+from ska_sdp_datamodels.visibility import create_visibility
 
-from src.ska_sdp_func_python import (
-    create_pb,
+from ska_sdp_func_python.image.cleaners import overlapIndices
+from ska_sdp_func_python.image.deconvolution import (
     deconvolve_cube,
+    find_window_list,
     fit_psf,
+    hogbom_kernel_list,
     restore_cube,
     restore_list,
 )
-from src.ska_sdp_func_python.image.cleaners import overlapIndices
-from src.ska_sdp_func_python.image.deconvolution import (
-    find_window_list,
-    hogbom_kernel_list,
-)
-from src.ska_sdp_func_python.imaging.base import create_image_from_visibility
-from src.ska_sdp_func_python.imaging.imaging import (
+from ska_sdp_func_python.imaging.imaging import (
     invert_visibility,
     predict_visibility,
 )
-from src.ska_sdp_func_python.simulation import (
-    create_named_configuration,
-    create_test_image,
-)
+
+# fix the below imports
+from src.ska_sdp_func_python import create_pb
+from src.ska_sdp_func_python.imaging.base import create_image_from_visibility
+from src.ska_sdp_func_python.simulation import create_test_image
 from src.ska_sdp_func_python.skycomponent.operations import (
     restore_skycomponent,
 )
-from src.ska_sdp_func_python.visibility.base import create_visibility
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.INFO)
 

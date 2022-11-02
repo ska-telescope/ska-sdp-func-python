@@ -15,24 +15,24 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.configuration import create_named_configuration
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
+from ska_sdp_datamodels.visibility import create_visibility
 
+from ska_sdp_func_python.calibration.solvers import solve_gaintable
+
+# Below imports need to be fixed
 from src.ska_sdp_func_python.calibration.operations import (
     apply_gaintable,
     create_gaintable_from_visibility,
 )
-from src.ska_sdp_func_python.calibration.solvers import solve_gaintable
 from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
-from src.ska_sdp_func_python.simulation import (
-    create_named_configuration,
-    simulate_gaintable,
-)
-from src.ska_sdp_func_python.visibility.base import create_visibility
+from src.ska_sdp_func_python.simulation import simulate_gaintable
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
 

@@ -11,10 +11,8 @@ import unittest
 import numpy
 from numpy.testing import assert_allclose
 
-from src.ska_sdp_func_python.fourier_transforms.fft_coordinates import (
-    coordinates2,
-)
-from src.ska_sdp_func_python.fourier_transforms.fft_support import (
+from ska_sdp_func_python.fourier_transforms.fft_coordinates import coordinates2
+from ska_sdp_func_python.fourier_transforms.fft_support import (
     extract_mid,
     extract_oversampled,
     pad_mid,

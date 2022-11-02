@@ -10,7 +10,7 @@ import unittest
 import numpy
 from numpy.testing import assert_allclose
 
-from src.ska_sdp_func_python.fourier_transforms.fft_coordinates import (
+from ska_sdp_func_python.fourier_transforms.fft_coordinates import (
     coordinateBounds,
     coordinates,
     coordinates2,

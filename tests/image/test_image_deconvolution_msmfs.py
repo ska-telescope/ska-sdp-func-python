@@ -15,34 +15,40 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels.science_data_model.polarisation_model import (
-    PolarisationFrame,
-)
-
-from src.ska_sdp_func_python import (
-    create_pb,
-    deconvolve_list,
-    image_gather_channels,
-    image_scatter_channels,
-    restore_list,
-    taper_visibility_gaussian,
-    weight_visibility,
-)
-from src.ska_sdp_func_python.image.operations import create_image_from_array
-from src.ska_sdp_func_python.imaging.base import create_image_from_visibility
-from src.ska_sdp_func_python.imaging.imaging import (
-    invert_visibility,
-    predict_visibility,
-)
-from src.ska_sdp_func_python.imaging.primary_beams import create_low_test_beam
-from src.ska_sdp_func_python.simulation import (
-    create_low_test_image_from_gleam,
+from ska_sdp_datamodels.configuration import (
     create_named_configuration,
     decimate_configuration,
 )
-from src.ska_sdp_func_python.visibility.base import create_visibility
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
+from ska_sdp_datamodels.visibility import create_visibility
 
-log = logging.getLogger("rascil-logger")
+from ska_sdp_func_python.image.deconvolution import (
+    deconvolve_list,
+    restore_list,
+)
+from ska_sdp_func_python.image.gather_scatter import (
+    image_gather_channels,
+    image_scatter_channels,
+)
+from ska_sdp_func_python.imaging.imaging import (
+    invert_visibility,
+    predict_visibility,
+)
+from ska_sdp_func_python.imaging.weighting import (
+    taper_visibility_gaussian,
+    weight_visibility,
+)
+
+# fix the below imports
+from src.ska_sdp_func_python import create_pb
+from src.ska_sdp_func_python.image.operations import create_image_from_array
+from src.ska_sdp_func_python.imaging.base import create_image_from_visibility
+from src.ska_sdp_func_python.imaging.primary_beams import create_low_test_beam
+from src.ska_sdp_func_python.simulation import create_low_test_image_from_gleam
+
+log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.INFO)
 

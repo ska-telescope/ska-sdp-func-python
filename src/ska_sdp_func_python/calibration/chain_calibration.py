@@ -77,7 +77,7 @@ from src.ska_sdp_func_python.calibration.operations import (
 )
 from src.ska_sdp_func_python.calibration.solvers import solve_gaintable
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def create_calibration_controls():

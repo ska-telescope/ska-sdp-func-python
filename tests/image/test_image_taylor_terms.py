@@ -11,21 +11,21 @@ import unittest
 
 import numpy
 
-from src.ska_sdp_func_python import (
-    create_empty_image_like,
-    image_scatter_channels,
-)
-from src.ska_sdp_func_python.image.taylor_terms import (
+from ska_sdp_func_python.image.gather_scatter import image_scatter_channels
+from ska_sdp_func_python.image.taylor_terms import (
     calculate_frequency_taylor_terms_from_image_list,
     calculate_image_frequency_moments,
     calculate_image_from_frequency_taylor_terms,
 )
+
+# fix the below imports
+from src.ska_sdp_func_python import create_empty_image_like
 from src.ska_sdp_func_python.simulation import (
     create_low_test_image_from_gleam,
     create_test_image,
 )
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
 

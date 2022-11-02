@@ -23,10 +23,12 @@ from src.ska_sdp_func_python.image.gather_scatter import (
     image_scatter_channels,
     image_scatter_facets,
 )
+
+# fix the below imports
 from src.ska_sdp_func_python.image.operations import create_empty_image_like
 from src.ska_sdp_func_python.simulation import create_test_image
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
 

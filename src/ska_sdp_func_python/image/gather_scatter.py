@@ -20,7 +20,7 @@ from ska_sdp_datamodels.image.image_model import Image
 from src.ska_sdp_func_python.image.iterators import image_raster_iter
 from src.ska_sdp_func_python.image.operations import create_empty_image_like
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def image_scatter_facets(

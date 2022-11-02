@@ -1,12 +1,11 @@
 # pylint: disable=invalid-name, too-many-arguments
 # pylint: disable=attribute-defined-outside-init, unused-variable
 # pylint: disable=too-many-instance-attributes, invalid-envvar-default
-# pylint: disable=consider-using-f-string, logging-not-lazy
+# pylint: disable=consider-using-f-string, logging-not-lazy, bad-string-format-type
 # pylint: disable=missing-class-docstring, missing-function-docstring
 # pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Unit tests for visibility weighting
 """
-# pylint: disable=bad-string-format-type
 
 import logging
 import os
@@ -15,22 +14,24 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.configuration import create_named_configuration
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
+from ska_sdp_datamodels.visibility import create_visibility
 
-from src.ska_sdp_func_python import (
-    create_image_from_visibility,
-    fit_psf,
+from ska_sdp_func_python.image.deconvolution import fit_psf
+from ska_sdp_func_python.imaging.imaging import invert_visibility
+from ska_sdp_func_python.imaging.weighting import (
     taper_visibility_gaussian,
     taper_visibility_tukey,
     weight_visibility,
 )
-from src.ska_sdp_func_python.imaging.imaging import invert_visibility
-from src.ska_sdp_func_python.simulation import create_named_configuration
-from src.ska_sdp_func_python.visibility.base import create_visibility
 
-log = logging.getLogger("rascil-logger")
+# fix the below import
+from src.ska_sdp_func_python import create_image_from_visibility
+
+log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
 

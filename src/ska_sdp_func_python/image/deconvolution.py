@@ -74,7 +74,7 @@ from src.ska_sdp_func_python.image.taylor_terms import (
 )
 from src.ska_sdp_func_python.parameters import get_parameter
 
-log = logging.getLogger("rascil-logger")
+log = logging.getLogger("func-python-logger")
 
 
 def deconvolve_list(
