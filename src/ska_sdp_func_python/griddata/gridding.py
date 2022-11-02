@@ -4,7 +4,7 @@
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=consider-using-f-string, logging-not-lazy, logging-format-interpolation
 # pylint: disable=import-error, no-name-in-module
-""" Imaging is based on used of the FFT to
+""" Imaging is based on use of the FFT to
 perform Fourier transforms efficiently. Since the observed visibility data_models
 do not arrive naturally on grid points, the sampled points are
 resampled on the FFT grid using a convolution function to
