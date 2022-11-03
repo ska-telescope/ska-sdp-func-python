@@ -66,9 +66,9 @@ def image_raster_iter(
     :returns: Generator of images
 
      See also
-        :py:func:`ska_sdp_func.image.gather_scatter.image_gather_facets`
-        :py:func:`ska_sdp_func.image.gather_scatter.image_scatter_facets`
-        :py:func:`ska_sdp_func.util.array_functions.tukey_filter`
+        :py:func:`ska_sdp_func_python.image.gather_scatter.image_gather_facets`
+        :py:func:`ska_sdp_func_python.image.gather_scatter.image_scatter_facets`
+        :py:func:`ska_sdp_func_python.util.array_functions.tukey_filter`
     """
 
     assert isinstance(im, Image), im
@@ -194,8 +194,8 @@ def image_channel_iter(im: Image, subimages=1) -> collections.abc.Iterable:
     :returns: Generator of images
 
      See also
-        :py:func:`ska_sdp_func.image.gather_scatter.image_gather_channels`
-        :py:func:`ska_sdp_func.image.gather_scatter.image_scatter_channels`
+        :py:func:`ska_sdp_func_python.image.gather_scatter.image_gather_channels`
+        :py:func:`ska_sdp_func_python.image.gather_scatter.image_scatter_channels`
     """
 
     assert isinstance(im, Image), im

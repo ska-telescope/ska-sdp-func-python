@@ -128,10 +128,10 @@ def deconvolve_list(
     :return: component image_list, residual image_list
 
      See also
-        :py:func:`ska_sdp_func.image.cleaners.hogbom`
-        :py:func:`ska_sdp_func.image.cleaners.hogbom_complex`
-        :py:func:`ska_sdp_func.image.cleaners.msclean`
-        :py:func:`ska_sdp_func.image.cleaners.msmfsclean`
+        :py:func:`ska_sdp_func_python.image.cleaners.hogbom`
+        :py:func:`ska_sdp_func_python.image.cleaners.hogbom_complex`
+        :py:func:`ska_sdp_func_python.image.cleaners.msclean`
+        :py:func:`ska_sdp_func_python.image.cleaners.msmfsclean`
 
     """
 
@@ -1096,10 +1096,10 @@ def deconvolve_cube(
     :return: component image, residual image
 
      See also
-        :py:func:`ska_sdp_func.image.cleaners.hogbom`
-        :py:func:`ska_sdp_func.image.cleaners.hogbom_complex`
-        :py:func:`ska_sdp_func.image.cleaners.msclean`
-        :py:func:`ska_sdp_func.image.cleaners.msmfsclean`
+        :py:func:`ska_sdp_func_python.image.cleaners.hogbom`
+        :py:func:`ska_sdp_func_python.image.cleaners.hogbom_complex`
+        :py:func:`ska_sdp_func_python.image.cleaners.msclean`
+        :py:func:`ska_sdp_func_python.image.cleaners.msmfsclean`
 
     """
     dirty_list = image_scatter_channels(dirty)

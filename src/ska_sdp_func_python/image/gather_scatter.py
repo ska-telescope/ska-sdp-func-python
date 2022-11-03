@@ -77,7 +77,7 @@ def image_gather_facets(
     :return: list of subimages
 
      See also
-        :py:func:`ska_sdp_func.image.iterators.image_raster_iter`
+        :py:func:`ska_sdp_func_python.image.iterators.image_raster_iter`
     """
     out = create_empty_image_like(im)
     if overlap > 0:
@@ -152,7 +152,7 @@ def image_scatter_channels(im: Image, subimages=None) -> List[Image]:
     :return: list of subimages
 
      See also
-        :py:func:`ska_sdp_func.image.iterators.image_channel_iter`
+        :py:func:`ska_sdp_func_python.image.iterators.image_channel_iter`
     """
     if im is None:
         return None
