@@ -9,6 +9,7 @@
 import logging
 import os
 import sys
+import tempfile
 import unittest
 
 import numpy
@@ -42,11 +43,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 class TestSkyModel(unittest.TestCase):
     def setUp(self):
 
-        from src.ska_sdp_func_python.parameters import rascil_path
-
-        self.results_dir = rascil_path("test_results")
-
-        self.persist = os.getenv("RASCIL_PERSIST", False)
+        self.persist = os.getenv("FUNC_PYTHON_PERSIST", False)
 
     def tearDown(self):
         pass
@@ -206,9 +203,10 @@ class TestSkyModel(unittest.TestCase):
             flat_sky=False,
         )
         if self.persist:
-            dirty.image_acc.export_to_fits(
-                "%s/test_skymodel_invert_dirty.fits" % (self.results_dir),
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                dirty.image_acc.export_to_fits(
+                    f"{tempdir}/test_skymodel_invert_dirty.fits"
+                )
         qa = dirty.image_acc.qa_image()
 
         numpy.testing.assert_allclose(
@@ -263,14 +261,13 @@ class TestSkyModel(unittest.TestCase):
             flat_sky=False,
         )
         if self.persist:
-            skymodel[0].image_acc.export_to_fits(
-                "%s/test_skymodel_invert_flat_noise_dirty.fits"
-                % (self.results_dir),
-            )
-            skymodel[1].image_acc.export_to_fits(
-                "%s/test_skymodel_invert_flat_noise_sensitivity.fits"
-                % (self.results_dir),
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                skymodel[0].image_acc.export_to_fits(
+                    f"{tempdir}/test_skymodel_invert_flat_noise_dirty.fits"
+                )
+                skymodel[1].image_acc.export_to_fits(
+                    f"{tempdir}/test_skymodel_invert_flat_noise_sensitivity.fits"
+                )
         qa = skymodel[0].image_acc.qa_image()
 
         numpy.testing.assert_allclose(
@@ -289,14 +286,13 @@ class TestSkyModel(unittest.TestCase):
             flat_sky=True,
         )
         if self.persist:
-            skymodel[0].image_acc.export_to_fits(
-                "%s/test_skymodel_invert_flat_sky_dirty.fits"
-                % (self.results_dir),
-            )
-            skymodel[1].image_acc.export_to_fits(
-                "%s/test_skymodel_invert_flat_sky_sensitivity.fits"
-                % (self.results_dir),
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                skymodel[0].image_acc.export_to_fits(
+                    f"{tempdir}/test_skymodel_invert_flat_sky_dirty.fits"
+                )
+                skymodel[1].image_acc.export_to_fits(
+                    f"{tempdir}/test_skymodel_invert_flat_sky_sensitivity.fits"
+                )
         qa = skymodel[0].image_acc.qa_image()
 
         numpy.testing.assert_allclose(

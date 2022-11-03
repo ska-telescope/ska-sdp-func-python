@@ -10,6 +10,7 @@
 import logging
 import os
 import sys
+import tempfile
 import unittest
 
 import numpy
@@ -42,13 +43,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 
 class TestImagingNG(unittest.TestCase):
     def setUp(self):
-
-        from src.ska_sdp_func_python.parameters import rascil_path
-
-        self.results_dir = rascil_path("test_results")
-
-        self.persist = os.getenv("RASCIL_PERSIST", False)
-
+        self.persist = os.getenv("FUNC_PYTHON_PERSIST", False)
         self.verbosity = 0
 
     def actualSetUp(
@@ -127,13 +122,13 @@ class TestImagingNG(unittest.TestCase):
 
         self.cmodel = smooth_image(self.model)
         if self.persist:
-            self.model.image_acc.export_to_fits(
-                "%s/test_imaging_ng_model.fits" % self.results_dir
-            )
-        if self.persist:
-            self.cmodel.image_acc.export_to_fits(
-                "%s/test_imaging_ng_cmodel.fits" % self.results_dir
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                self.model.image_acc.export_to_fits(
+                    f"{tempdir}/test_imaging_ng_model.fits"
+                )
+                self.cmodel.image_acc.export_to_fits(
+                    f"{tempdir}/test_imaging_ng_cmodel.fits"
+                )
 
         if mfs:
             self.model = create_unittest_model(
@@ -191,21 +186,11 @@ class TestImagingNG(unittest.TestCase):
             **kwargs,
         )
 
-        # import matplotlib.pyplot as plt
-        # from rascil.processing_components.image.operations import show_image
-        # npol = dirty[0].shape[1]
-        # for pol in range(npol):
-        #     plt.clf()
-        #     show_image(dirty[0], pol=pol)
-        #     plt.show(block=False)
-
         if self.persist:
-            dirty[0].image_acc.export_to_fits(
-                "%s/test_imaging_ng_%s_residual.fits"
-                % (self.results_dir, name),
-            )
-
-        # assert numpy.max(numpy.abs(dirty[0].data)), "Residual image is empty"
+            with tempfile.TemporaryDirectory() as tempdir:
+                dirty[0].image_acc.export_to_fits(
+                    f"{tempdir}/test_imaging_ng_{name}_residual.fits"
+                )
 
         maxabs = numpy.max(numpy.abs(dirty[0]["pixels"].data))
         assert (
@@ -236,17 +221,10 @@ class TestImagingNG(unittest.TestCase):
         )
 
         if self.persist:
-            dirty[0].image_acc.export_to_fits(
-                "%s/test_imaging_ng_%s_dirty.fits" % (self.results_dir, name)
-            )
-
-        # import matplotlib.pyplot as plt
-        # from rascil.processing_components.image.operations import show_image
-        # npol = dirty[0].shape[1]
-        # for pol in range(npol):
-        #     plt.clf()
-        #     show_image(dirty[0], pol=pol)
-        #     plt.show(block=False)
+            with tempfile.TemporaryDirectory() as tempdir:
+                dirty[0].image_acc.export_to_fits(
+                    f"{tempdir}/test_imaging_ng_{name}_dirty.fits"
+                )
         assert numpy.max(numpy.abs(dirty[0]["pixels"].data)), "Image is empty"
 
         if check_components:

@@ -52,25 +52,27 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
 
-from src.ska_sdp_func_python.image.cleaners import (
+from ska_sdp_func_python.image.cleaners import (
     hogbom,
     hogbom_complex,
     msclean,
     msmfsclean,
 )
-from src.ska_sdp_func_python.image.gather_scatter import (
+from ska_sdp_func_python.image.gather_scatter import (
     image_gather_channels,
     image_scatter_channels,
 )
+from ska_sdp_func_python.image.taylor_terms import (
+    calculate_image_list_frequency_moments,
+    calculate_image_list_from_frequency_taylor_terms,
+)
+
+# fix the below imports
 from src.ska_sdp_func_python.image.operations import (
     convert_clean_beam_to_degrees,
     convert_clean_beam_to_pixels,
     create_empty_image_like,
     create_image_from_array,
-)
-from src.ska_sdp_func_python.image.taylor_terms import (
-    calculate_image_list_frequency_moments,
-    calculate_image_list_from_frequency_taylor_terms,
 )
 from src.ska_sdp_func_python.parameters import get_parameter
 
@@ -126,10 +128,10 @@ def deconvolve_list(
     :return: component image_list, residual image_list
 
      See also
-        :py:func:`rascil.processing_components.arrays.cleaners.hogbom`
-        :py:func:`rascil.processing_components.arrays.cleaners.hogbom_complex`
-        :py:func:`rascil.processing_components.arrays.cleaners.msclean`
-        :py:func:`rascil.processing_components.arrays.cleaners.msmfsclean`
+        :py:func:`ska_sdp_func_python.image.cleaners.hogbom`
+        :py:func:`ska_sdp_func_python.image.cleaners.hogbom_complex`
+        :py:func:`ska_sdp_func_python.image.cleaners.msclean`
+        :py:func:`ska_sdp_func_python.image.cleaners.msmfsclean`
 
     """
 
@@ -1094,10 +1096,10 @@ def deconvolve_cube(
     :return: component image, residual image
 
      See also
-        :py:func:`rascil.processing_components.arrays.cleaners.hogbom`
-        :py:func:`rascil.processing_components.arrays.cleaners.hogbom_complex`
-        :py:func:`rascil.processing_components.arrays.cleaners.msclean`
-        :py:func:`rascil.processing_components.arrays.cleaners.msmfsclean`
+        :py:func:`ska_sdp_func_python.image.cleaners.hogbom`
+        :py:func:`ska_sdp_func_python.image.cleaners.hogbom_complex`
+        :py:func:`ska_sdp_func_python.image.cleaners.msclean`
+        :py:func:`ska_sdp_func_python.image.cleaners.msmfsclean`
 
     """
     dirty_list = image_scatter_channels(dirty)

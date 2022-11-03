@@ -14,11 +14,13 @@ import logging
 import numpy
 from ska_sdp_datamodels.image.image_model import Image
 
+from ska_sdp_func_python.util.array_functions import tukey_filter
+
+# fix the below imports
 from src.ska_sdp_func_python.image.operations import (
     create_empty_image_like,
     create_image_from_array,
 )
-from src.ska_sdp_func_python.util.array_functions import tukey_filter
 
 log = logging.getLogger("func-python-logger")
 
@@ -64,9 +66,9 @@ def image_raster_iter(
     :returns: Generator of images
 
      See also
-        :py:func:`rascil.processing_components.image.gather_scatter.image_gather_facets`
-        :py:func:`rascil.processing_components.image.gather_scatter.image_scatter_facets`
-        :py:func:`rascil.processing_components.util.array_functions.tukey_filter`
+        :py:func:`ska_sdp_func_python.image.gather_scatter.image_gather_facets`
+        :py:func:`ska_sdp_func_python.image.gather_scatter.image_scatter_facets`
+        :py:func:`ska_sdp_func_python.util.array_functions.tukey_filter`
     """
 
     assert isinstance(im, Image), im
@@ -192,8 +194,8 @@ def image_channel_iter(im: Image, subimages=1) -> collections.abc.Iterable:
     :returns: Generator of images
 
      See also
-        :py:func:`rascil.processing_components.image.gather_scatter.image_gather_channels`
-        :py:func:`rascil.processing_components.image.gather_scatter.image_scatter_channels`
+        :py:func:`ska_sdp_func_python.image.gather_scatter.image_gather_channels`
+        :py:func:`ska_sdp_func_python.image.gather_scatter.image_scatter_channels`
     """
 
     assert isinstance(im, Image), im

@@ -1,13 +1,13 @@
-.. _rascil_processing_components_skycomponent:
+.. _ska_sdp_func_python_skycomponent:
 
-.. py:currentmodule:: rascil.processing_components.skycomponent
+.. py:currentmodule:: ska_sdp_func_python.skycomponent
 
 Sky components
 **************
 
 
-.. automodapi::    rascil.processing_components.skycomponent.base
+.. automodapi::    ska_sdp_func_python.skycomponent.base
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.skycomponent.operations
+.. automodapi::    ska_sdp_func_python.skycomponent.operations
   :no-inheritance-diagram:

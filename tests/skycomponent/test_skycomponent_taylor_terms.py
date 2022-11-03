@@ -32,7 +32,7 @@ log.setLevel(logging.WARNING)
 
 class TestSkyComponentTaylorTerm(unittest.TestCase):
     def setUp(self):
-        self.persist = os.getenv("RASCIL_PERSIST", False)
+        self.persist = os.getenv("FUNC_PYTHON_PERSIST", False)
 
     def test_calculate_taylor_terms(self):
         phasecentre = SkyCoord(

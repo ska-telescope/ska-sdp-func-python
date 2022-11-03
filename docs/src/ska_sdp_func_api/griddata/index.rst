@@ -1,6 +1,6 @@
-.. _rascil_processing_components_griddata:
+.. _ska_sdp_func_python_griddata:
 
-.. py:currentmodule:: rascil.processing_components.griddata
+.. py:currentmodule:: ska_sdp_func_python.griddata
 
 *************
 Gridding Data
@@ -9,15 +9,15 @@ Gridding Data
 .. toctree::
   :maxdepth: 3
 
-.. automodapi::    rascil.processing_components.griddata.convolution_functions
+.. automodapi::    ska_sdp_func_python.griddata.convolution_functions
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.griddata.gridding
+.. automodapi::    ska_sdp_func_python.griddata.gridding
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.griddata.kernels
+.. automodapi::    ska_sdp_func_python.griddata.kernels
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.griddata.operations
+.. automodapi::    ska_sdp_func_python.griddata.operations
   :no-inheritance-diagram:
 

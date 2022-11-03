@@ -12,6 +12,7 @@ import functools
 import logging
 import os
 import sys
+import tempfile
 import unittest
 
 import numpy
@@ -56,11 +57,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 class TestImaging2D(unittest.TestCase):
     def setUp(self):
 
-        from src.ska_sdp_func_python.parameters import rascil_path
-
-        self.results_dir = rascil_path("test_results")
-
-        self.persist = os.getenv("RASCIL_PERSIST", False)
+        self.persist = os.getenv("FUNC_PYTHON_PERSIST", False)
 
     def actualSetUp(
         self,
@@ -138,13 +135,13 @@ class TestImaging2D(unittest.TestCase):
 
         self.cmodel = smooth_image(self.model)
         if self.persist:
-            self.model.image_acc.export_to_fits(
-                "%s/test_imaging_model.fits" % self.results_dir
-            )
-        if self.persist:
-            self.cmodel.image_acc.export_to_fits(
-                "%s/test_imaging_cmodel.fits" % self.results_dir
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                self.model.image_acc.export_to_fits(
+                    f"{tempdir}/test_imaging_model.fits"
+                )
+                self.cmodel.image_acc.export_to_fits(
+                    f"{tempdir}/test_imaging_cmodel.fits"
+                )
 
     def _checkcomponents(
         self, dirty, fluxthreshold=0.6, positionthreshold=0.1
@@ -199,10 +196,10 @@ class TestImaging2D(unittest.TestCase):
         )
 
         if self.persist:
-            dirty[0].image_acc.export_to_fits(
-                "%s/test_imaging_%s_residual.fits"
-                % (self.results_dir, context),
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                dirty[0].image_acc.export_to_fits(
+                    f"{tempdir}/test_imaging_{context}_residual.fits"
+                )
         for pol in range(dirty[0].image_acc.npol):
             assert numpy.max(
                 numpy.abs(dirty[0]["pixels"].data[:, pol])
@@ -249,9 +246,10 @@ class TestImaging2D(unittest.TestCase):
         )
 
         if self.persist:
-            dirty[0].image_acc.export_to_fits(
-                "%s/test_imaging_%s_dirty.fits" % (self.results_dir, context)
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                dirty[0].image_acc.export_to_fits(
+                    f"{tempdir}/test_imaging_{context}_dirty.fits"
+                )
 
         for pol in range(dirty[0].image_acc.npol):
             assert numpy.max(
@@ -614,9 +612,10 @@ class TestImaging2D(unittest.TestCase):
         error = numpy.max(psf[0]["pixels"].data) - 1.0
         assert abs(error) < 1.0e-12, error
         if self.persist:
-            psf[0].image_acc.export_to_fits(
-                "%s/test_imaging_visibility_psf.fits" % self.results_dir
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                psf[0].image_acc.export_to_fits(
+                    f"{tempdir}/test_imaging_visibility_psf.fits"
+                )
 
         assert numpy.max(numpy.abs(psf[0]["pixels"].data)), "Image is empty"
 
@@ -630,10 +629,10 @@ class TestImaging2D(unittest.TestCase):
             error = numpy.max(psf[0]["pixels"].data) - 1.0
             assert abs(error) < 1.0e-12, error
             if self.persist:
-                psf[0].image_acc.export_to_fits(
-                    "%s/test_imaging_visibility_psf_%s.fits"
-                    % (self.results_dir, weighting),
-                )
+                with tempfile.TemporaryDirectory() as tempdir:
+                    psf[0].image_acc.export_to_fits(
+                        f"{tempdir}/test_imaging_visibility_psf_{weighting}.fits"
+                    )
             assert numpy.max(
                 numpy.abs(psf[0]["pixels"].data)
             ), "Image is empty"

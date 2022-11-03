@@ -138,9 +138,7 @@ def insert_function_pswf(x, a=5):
     :return: 1d vector
     """
 
-    from rascil.processing_components.fourier_transforms.fft_coordinates import (
-        grdsf,
-    )
+    from ska_sdp_func_python.fourier_transforms.fft_coordinates import grdsf
 
     return grdsf(abs(x) / a)[1]
 

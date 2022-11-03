@@ -26,8 +26,6 @@ can also be used::
 
 The convolutional gridding functions are to be found in griddata module
 
-   :py:mod:`rascil.processing_components.griddata`
-
 """
 from .imaging import *
 from .imaging_helpers import *

@@ -20,16 +20,18 @@ import logging
 
 import numpy
 from ska_sdp_datamodels.image.image_model import Image
+from ska_sdp_datamodels.physical_constants import C_M_S
 
-from src import phyconst
-from src.ska_sdp_func_python.griddata.gridding import (
+from ska_sdp_func_python.griddata.gridding import (
     grid_visibility_weight_to_griddata,
     griddata_visibility_reweight,
 )
+from ska_sdp_func_python.util.array_functions import tukey_filter
+
+# fix the below imports
 from src.ska_sdp_func_python.griddata.operations import (
     create_griddata_from_image,
 )
-from src.ska_sdp_func_python.util.array_functions import tukey_filter
 
 log = logging.getLogger("func-python-logger")
 
@@ -84,7 +86,7 @@ def taper_visibility_gaussian(vis, beam=None):
     scale_factor = numpy.pi**2 * beam**2 / (4.0 * numpy.log(2.0))
 
     for chan, freq in enumerate(vis.frequency.data):
-        wave = phyconst.c_m_s / freq
+        wave = C_M_S / freq
         uvdistsq = (
             vis.visibility_acc.u.data**2 + vis.visibility_acc.v.data**2
         ) / wave**2
@@ -119,7 +121,7 @@ def taper_visibility_tukey(vis, tukey=0.1):
 
     oshape = vis.imaging_weight.data[..., 0, 0].shape
     for chan, freq in enumerate(vis.frequency.data):
-        wave = phyconst.c_m_s / freq
+        wave = C_M_S / freq
         uvdist = numpy.sqrt(
             vis.visibility_acc.u.data**2 + vis.visibility_acc.v.data**2
         )

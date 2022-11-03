@@ -1,7 +1,7 @@
 # pylint: disable=invalid-name, too-many-arguments
 # pylint: disable=attribute-defined-outside-init, unused-variable
 # pylint: disable=too-many-instance-attributes, invalid-envvar-default
-# pylint: disable=consider-using-f-string, logging-not-lazy
+# pylint: disable=line-too-long, consider-using-f-string
 # pylint: disable=missing-class-docstring, missing-function-docstring
 # pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """Unit tests for image iteration
@@ -10,6 +10,7 @@
 """
 import logging
 import os
+import tempfile
 import unittest
 
 import numpy
@@ -35,10 +36,8 @@ log.setLevel(logging.WARNING)
 
 class TestImageGatherScatters(unittest.TestCase):
     def setUp(self):
-        from src.ska_sdp_func_python.parameters import rascil_path
 
-        self.results_dir = rascil_path("test_results")
-        self.persist = os.getenv("RASCIL_PERSIST", False)
+        self.persist = os.getenv("FUNC_PYTHON_PERSIST", False)
 
     def test_scatter_gather_facet(self):
 
@@ -205,15 +204,13 @@ class TestImageGatherScatters(unittest.TestCase):
                     return_flat=True,
                 )
                 if self.persist:
-                    m31reconstructed.image_acc.export_to_fits(
-                        "%s/test_image_gather_scatter_%dnraster_%doverlap_%s_reconstructed.fits"
-                        % (self.results_dir, nraster, overlap, taper),
-                    )
-                if self.persist:
-                    flat.image_acc.export_to_fits(
-                        "%s/test_image_gather_scatter_%dnraster_%doverlap_%s_flat.fits"
-                        % (self.results_dir, nraster, overlap, taper),
-                    )
+                    with tempfile.TemporaryDirectory() as tempdir:
+                        m31reconstructed.image_acc.export_to_fits(
+                            f"{tempdir}/test_image_gather_scatter_{nraster}nraster_{overlap}overlap_{taper}_reconstructed.fits"
+                        )
+                        flat.image_acc.export_to_fits(
+                            f"{tempdir}/test_image_gather_scatter_{nraster}nraster_{overlap}overlap_{taper}_flat.fits"
+                        )
 
                 assert numpy.max(numpy.abs(flat["pixels"].data)), (
                     "Flat is empty for %d" % nraster

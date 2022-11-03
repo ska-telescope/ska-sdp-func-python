@@ -15,7 +15,7 @@ from astropy.coordinates import EarthLocation, SkyCoord
 from astropy.time import Time
 from astropy.units import Quantity
 
-from src.ska_sdp_func_python.util.geometry import (
+from ska_sdp_func_python.util.geometry import (
     calculate_azel,
     calculate_hourangles,
     calculate_parallactic_angles,
