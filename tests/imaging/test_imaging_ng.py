@@ -170,7 +170,7 @@ class TestImagingNG(unittest.TestCase):
 
     def _predict_base(self, fluxthreshold=1.0, name="predict_ng", **kwargs):
 
-        from src.ska_sdp_func_python.imaging.ng import invert_ng, predict_ng
+        from ska_sdp_func_python.imaging.ng import invert_ng, predict_ng
 
         original_vis = self.vis.copy(deep=True)
         vis = predict_ng(
@@ -210,7 +210,7 @@ class TestImagingNG(unittest.TestCase):
     ):
 
         # dirty = invert_ng(self.vis, self.model, dopsf=False, normalise=True, **kwargs)
-        from src.ska_sdp_func_python.imaging.ng import invert_ng
+        from ska_sdp_func_python.imaging.ng import invert_ng
 
         dirty = invert_ng(
             self.vis,

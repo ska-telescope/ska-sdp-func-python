@@ -15,18 +15,21 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_allclose
+from ska_sdp_datamodels.configuration.config_create import (
+    create_named_configuration,
+)
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
-
-from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
-from src.ska_sdp_func_python.simulation import create_named_configuration
-from src.ska_sdp_func_python.visibility.base import (
+from ska_sdp_datamodels.visibility.vis_create import (
     create_visibility,
     generate_baselines,
-    phaserotate_visibility,
 )
+
+# fix the below imports
+from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
+from src.ska_sdp_func_python.visibility.base import phaserotate_visibility
 from src.ska_sdp_func_python.visibility.operations import (
     concatenate_visibility,
     divide_visibility,
