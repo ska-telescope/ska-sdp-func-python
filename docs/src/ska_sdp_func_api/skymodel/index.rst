@@ -1,6 +1,6 @@
-.. _rascil_processing_components_skymodel:
+.. _ska_sdp_func_python_skymodel:
 
-.. py:currentmodule:: rascil.processing_components.skymodel
+.. py:currentmodule:: ska_sdp_func_python.skymodel
 
 **********
 Sky models
@@ -9,9 +9,9 @@ Sky models
 .. toctree::
   :maxdepth: 3
 
-.. automodapi::    rascil.processing_components.skymodel.skymodel_imaging
+.. automodapi::    ska_sdp_func_python.skymodel.skymodel_imaging
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.skymodel.operations
+.. automodapi::    ska_sdp_func_python.skymodel.operations
   :no-inheritance-diagram:
 

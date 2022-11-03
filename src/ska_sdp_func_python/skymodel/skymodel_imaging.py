@@ -9,6 +9,13 @@ __all__ = ["skymodel_calibrate_invert", "skymodel_predict_calibrate"]
 
 import numpy
 
+from ska_sdp_func_python.imaging.imaging import (
+    invert_visibility,
+    predict_visibility,
+)
+from ska_sdp_func_python.visibility import concatenate_visibility
+
+# fix the below imports
 from src.ska_sdp_func_python import (
     apply_beam_to_skycomponent,
     copy_skycomponent,
@@ -16,11 +23,6 @@ from src.ska_sdp_func_python import (
 )
 from src.ska_sdp_func_python.calibration import apply_gaintable
 from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
-from src.ska_sdp_func_python.imaging.imaging import (
-    invert_visibility,
-    predict_visibility,
-)
-from src.ska_sdp_func_python.visibility import concatenate_visibility
 
 
 def skymodel_predict_calibrate(

@@ -18,6 +18,7 @@ astroplan = "^0.8"
 astropy = "^5.1"
 numpy = "^1.23.4"
 xarray = "^2022.10.0"
+ska-sdp-datamodels = "^0.1.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"

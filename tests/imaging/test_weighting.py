@@ -9,6 +9,7 @@
 
 import logging
 import os
+import tempfile
 import unittest
 
 import numpy
@@ -38,12 +39,10 @@ log.setLevel(logging.WARNING)
 
 class TestWeighting(unittest.TestCase):
     def setUp(self):
-        from src.ska_sdp_func_python.parameters import rascil_path
 
-        self.results_dir = rascil_path("test_results")
         self.npixel = 512
 
-        self.persist = os.getenv("RASCIL_PERSIST", False)
+        self.persist = os.getenv("FUNC_PYTHON_PERSIST", False)
 
     def actualSetUp(
         self,
@@ -126,10 +125,10 @@ class TestWeighting(unittest.TestCase):
             self.componentvis, self.model, dopsf=True, context="2d"
         )
         if self.persist:
-            psf.image_acc.export_to_fits(
-                "%s/test_weighting_gaussian_taper_psf.fits"
-                % (self.results_dir),
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                psf.image_acc.export_to_fits(
+                    f"{tempdir}/test_weighting_gaussian_taper_psf.fits"
+                )
         fit = fit_psf(psf)
 
         assert (
@@ -155,9 +154,10 @@ class TestWeighting(unittest.TestCase):
             self.componentvis, self.model, dopsf=True, context="2d"
         )
         if self.persist:
-            psf.image_acc.export_to_fits(
-                "%s/test_weighting_tukey_taper_psf.fits" % (self.results_dir),
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                psf.image_acc.export_to_fits(
+                    f"{tempdir}/test_weighting_tukey_taper_psf.fits"
+                )
         fit = fit_psf(psf)
         assert (
             numpy.abs(fit["bmaj"] - 0.14492670913355402) < 1.0

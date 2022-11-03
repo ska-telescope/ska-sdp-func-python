@@ -9,10 +9,12 @@ import logging
 
 import numpy
 
-from src.ska_sdp_func_python.image.operations import create_empty_image_like
-from src.ska_sdp_func_python.image.taylor_terms import (
+from ska_sdp_func_python.image.taylor_terms import (
     calculate_image_frequency_moments,
 )
+
+# fix the below imports
+from src.ska_sdp_func_python.image.operations import create_empty_image_like
 from src.ska_sdp_func_python.imaging.base import normalise_sumwt
 
 log = logging.getLogger("func-python-logger")

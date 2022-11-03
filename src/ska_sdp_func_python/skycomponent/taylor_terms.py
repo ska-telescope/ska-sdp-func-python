@@ -22,13 +22,15 @@ from numpy.polynomial import polynomial as polynomial
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
+from ska_sdp_func_python.image.taylor_terms import (
+    calculate_frequency_taylor_terms_from_image_list,
+)
+
+# fix the below imports
 from src.ska_sdp_func_python import (
     copy_skycomponent,
     find_skycomponents,
     fit_skycomponent,
-)
-from src.ska_sdp_func_python.image.taylor_terms import (
-    calculate_frequency_taylor_terms_from_image_list,
 )
 from src.ska_sdp_func_python.parameters import get_parameter
 

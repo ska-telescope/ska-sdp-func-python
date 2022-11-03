@@ -1,12 +1,13 @@
 # pylint: disable=invalid-name, too-many-arguments,line-too-long
+# pylint: disable=missing-class-docstring, missing-function-docstring
 # pylint: disable=consider-using-f-string, logging-fstring-interpolation
-# pylint: disable= missing-class-docstring, missing-function-docstring
 # pylint: disable=import-error, no-name-in-module
 """Unit tests for image iteration
 
 
 """
 import logging
+import tempfile
 import unittest
 
 import numpy
@@ -21,7 +22,6 @@ from src.ska_sdp_func_python.image.iterators import (
 
 # fix the below imports
 from src.ska_sdp_func_python.image.operations import pad_image
-from src.ska_sdp_func_python.parameters import rascil_path
 from src.ska_sdp_func_python.simulation import create_test_image
 
 log = logging.getLogger("func-python-logger")
@@ -43,7 +43,6 @@ class TestImageIterators(unittest.TestCase):
 
         """
 
-        testdir = rascil_path("test_results")
         for npixel in [256, 512, 1024]:
             m31original = self.get_test_image(npixel=npixel)
             assert numpy.max(
@@ -98,12 +97,13 @@ class TestImageIterators(unittest.TestCase):
                             log.warning(
                                 f"Raster set failed for {npixel}, {nraster}, {overlap}: error {err}"
                             )
-                        m31model.image_acc.export_to_fits(
-                            f"{testdir}/test_image_iterators_model_{npixel}_{nraster}_{overlap}.fits",
-                        )
-                        diff.image_acc.export_to_fits(
-                            f"{testdir}/test_image_iterators_diff_{npixel}_{nraster}_{overlap}.fits",
-                        )
+                        with tempfile.TemporaryDirectory() as testdir:
+                            m31model.image_acc.export_to_fits(
+                                f"{testdir}/test_image_iterators_model_{npixel}_{nraster}_{overlap}.fits",
+                            )
+                            diff.image_acc.export_to_fits(
+                                f"{testdir}/test_image_iterators_diff_{npixel}_{nraster}_{overlap}.fits",
+                            )
                     except ValueError as err:
                         log.error(
                             f"Iterator failed for {npixel}, {nraster}, {overlap},: {err}"

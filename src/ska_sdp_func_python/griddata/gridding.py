@@ -41,7 +41,9 @@ import numpy
 import numpy.testing
 from ska_sdp_datamodels.gridded_visibility.grid_vis_model import GridData
 
-from src.ska_sdp_func_python.fourier_transforms import fft, ifft
+from ska_sdp_func_python.fourier_transforms import fft, ifft
+
+# fix the below imports
 from src.ska_sdp_func_python.image.operations import create_image_from_array
 
 log = logging.getLogger("func-python-logger")

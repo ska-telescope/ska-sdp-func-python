@@ -1,6 +1,6 @@
-.. _rascil_processing_components_calibration:
+.. _ska_sdp_func_python_calibration:
 
-.. py:currentmodule:: rascil.processing_components.calibration
+.. py:currentmodule:: ska_sdp_func_python.calibration
 
 ***********
 Calibration
@@ -18,19 +18,19 @@ late seventies.
 .. toctree::
   :maxdepth: 3
 
-.. automodapi::    rascil.processing_components.calibration.chain_calibration
+.. automodapi::    ska_sdp_func_python.calibration.chain_calibration
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.calibration.iterators
+.. automodapi::    ska_sdp_func_python.calibration.iterators
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.calibration.operations
+.. automodapi::    ska_sdp_func_python.calibration.operations
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.calibration.pointing
+.. automodapi::    ska_sdp_func_python.calibration.pointing
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.calibration.solvers
+.. automodapi::    ska_sdp_func_python.calibration.solvers
   :no-inheritance-diagram:
 
 

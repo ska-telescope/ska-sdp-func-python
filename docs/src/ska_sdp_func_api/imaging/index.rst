@@ -1,6 +1,6 @@
-.. _rascil_processing_components_imaging:
+.. _ska_sdp_func_python_imaging:
 
-.. py:currentmodule:: rascil.processing_components.imaging
+.. py:currentmodule:: ska_sdp_func_python.imaging
 
 Imaging
 *******
@@ -8,25 +8,25 @@ Imaging
 .. toctree::
   :maxdepth: 3
 
-.. automodapi::    rascil.processing_components.imaging.base
+.. automodapi::    ska_sdp_func_python.imaging.base
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.imaging.dft
+.. automodapi::    ska_sdp_func_python.imaging.dft
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.imaging.imaging_params
+.. automodapi::    ska_sdp_func_python.imaging.imaging_params
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.imaging.ng
+.. automodapi::    ska_sdp_func_python.imaging.ng
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.imaging.primary_beams
+.. automodapi::    ska_sdp_func_python.imaging.primary_beams
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.imaging.weighting
+.. automodapi::    ska_sdp_func_python.imaging.weighting
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.imaging.wg
+.. automodapi::    ska_sdp_func_python.imaging.wg
   :no-inheritance-diagram:
 
 

@@ -1,6 +1,6 @@
-.. _rascil_processing_components_image:
+.. _ska_sdp_func_python_image:
 
-.. py:currentmodule:: rascil.processing_components.image
+.. py:currentmodule:: ska_sdp_func_python.image
 
 ******
 Images
@@ -9,20 +9,20 @@ Images
 .. toctree::
   :maxdepth: 3
 
-.. automodapi::    rascil.processing_components.image.cleaners
+.. automodapi::    ska_sdp_func_python.image.cleaners
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.image.deconvolution
+.. automodapi::    ska_sdp_func_python.image.deconvolution
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.image.gather_scatter
+.. automodapi::    ska_sdp_func_python.image.gather_scatter
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.image.gradients
+.. automodapi::    ska_sdp_func_python.image.gradients
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.image.iterators
+.. automodapi::    ska_sdp_func_python.image.iterators
   :no-inheritance-diagram:
 
-.. automodapi::    rascil.processing_components.image.operations
+.. automodapi::    ska_sdp_func_python.image.operations
   :no-inheritance-diagram:

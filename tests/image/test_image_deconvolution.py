@@ -10,6 +10,7 @@
 """
 import logging
 import os
+import tempfile
 import unittest
 
 import astropy.units as u
@@ -52,11 +53,8 @@ log.setLevel(logging.INFO)
 class TestImageDeconvolution(unittest.TestCase):
     def setUp(self):
 
-        self.persist = os.getenv("RASCIL_PERSIST", False)
+        self.persist = os.getenv("FUNC_PYTHON_PERSIST", False)
 
-        from src.ska_sdp_func_python.parameters import rascil_path
-
-        self.results_dir = rascil_path("test_results")
         self.lowcore = create_named_configuration("LOWBD2-CORE")
         self.times = (numpy.pi / (12.0)) * numpy.linspace(-3.0, 3.0, 7)
         self.frequency = numpy.array([1e8])
@@ -120,9 +118,10 @@ class TestImageDeconvolution(unittest.TestCase):
             numpy.abs(numpy.max(self.cmodel["pixels"].data) - 1.0) < 1e-7
         ), numpy.max(self.cmodel["pixels"].data)
         if self.persist:
-            self.cmodel.image_acc.export_to_fits(
-                "%s/test_restore.fits" % (self.results_dir)
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                self.cmodel.image_acc.export_to_fits(
+                    f"{tempdir}/test_restore.fits"
+                )
 
     def test_restore_list(self):
         self.model["pixels"].data[0, 0, 256, 256] = 1.0
@@ -131,9 +130,10 @@ class TestImageDeconvolution(unittest.TestCase):
             numpy.abs(numpy.max(self.cmodel["pixels"].data) - 1.0) < 1e-7
         ), numpy.max(self.cmodel["pixels"].data)
         if self.persist:
-            self.cmodel.image_acc.export_to_fits(
-                "%s/test_restore.fits" % (self.results_dir)
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                self.cmodel.image_acc.export_to_fits(
+                    f"{tempdir}/test_restore.fits"
+                )
 
     def test_restore_clean_beam(self):
         """Test restoration with specified beam beam
@@ -152,9 +152,10 @@ class TestImageDeconvolution(unittest.TestCase):
             numpy.abs(numpy.max(self.cmodel["pixels"].data) - 1.0) < 1e-7
         ), numpy.max(self.cmodel["pixels"].data)
         if self.persist:
-            self.cmodel.image_acc.export_to_fits(
-                "%s/test_restore_6mrad_beam.fits" % (self.results_dir)
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                self.cmodel.image_acc.export_to_fits(
+                    f"{tempdir}/test_restore_6mrad_beam.fits"
+                )
 
     def test_restore_skycomponent(self):
         """Test restoration of single pixel and skycomponent"""
@@ -179,9 +180,10 @@ class TestImageDeconvolution(unittest.TestCase):
             self.cmodel, sc, clean_beam=clean_beam
         )
         if self.persist:
-            self.cmodel.image_acc.export_to_fits(
-                "%s/test_restore_skycomponent.fits" % (self.results_dir)
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                self.cmodel.image_acc.export_to_fits(
+                    f"{tempdir}/test_restore_skycomponent.fits"
+                )
         assert (
             numpy.abs(
                 numpy.max(self.cmodel["pixels"].data) - 0.9959046879055156
@@ -192,9 +194,10 @@ class TestImageDeconvolution(unittest.TestCase):
     def test_fit_psf(self):
         clean_beam = fit_psf(self.psf)
         if self.persist:
-            self.psf.image_acc.export_to_fits(
-                "%s/test_fit_psf.fits" % (self.results_dir)
-            )
+            with tempfile.TemporaryDirectory() as tempdir:
+                self.psf.image_acc.export_to_fits(
+                    f"{tempdir}/test_fit_psf.fits"
+                )
         # Sanity check: by eyeball the FHWM = 4 pixels = 0.004 rad = 0.229 deg
         assert (
             numpy.abs(clean_beam["bmaj"] - 0.24790689057765794) < 1.0e-7
@@ -236,15 +239,16 @@ class TestImageDeconvolution(unittest.TestCase):
         assert numpy.max(self.residual["pixels"].data) < 1.2
 
     def save_results(self, tag):
-        self.comp.image_acc.export_to_fits(
-            f"{self.results_dir}/test_deconvolve_{tag}-deconvolved.fits"
-        )
-        self.residual.image_acc.export_to_fits(
-            f"{self.results_dir}/test_deconvolve_{tag}-residual.fits",
-        )
-        self.cmodel.image_acc.export_to_fits(
-            f"{self.results_dir}/test_deconvolve_{tag}-restored.fits"
-        )
+        with tempfile.TemporaryDirectory() as tempdir:
+            self.comp.image_acc.export_to_fits(
+                f"{tempdir}/test_deconvolve_{tag}-deconvolved.fits"
+            )
+            self.residual.image_acc.export_to_fits(
+                f"{tempdir}/test_deconvolve_{tag}-residual.fits",
+            )
+            self.cmodel.image_acc.export_to_fits(
+                f"{tempdir}/test_deconvolve_{tag}-restored.fits"
+            )
 
     def test_deconvolve_msclean_sensitivity(self):
         self.comp, self.residual = deconvolve_cube(

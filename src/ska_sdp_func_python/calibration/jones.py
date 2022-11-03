@@ -1,5 +1,5 @@
 # pylint: disable=invalid-name
-# pylint: disable=import-error, missing-module-docstring
+# pylint: disable=missing-module-docstring
 import numpy
 
 

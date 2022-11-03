@@ -17,7 +17,9 @@ from typing import List
 import xarray
 from ska_sdp_datamodels.image.image_model import Image
 
-from src.ska_sdp_func_python.image.iterators import image_raster_iter
+from ska_sdp_func_python.image.iterators import image_raster_iter
+
+# fix the below imports
 from src.ska_sdp_func_python.image.operations import create_empty_image_like
 
 log = logging.getLogger("func-python-logger")
@@ -75,7 +77,7 @@ def image_gather_facets(
     :return: list of subimages
 
      See also
-        :py:func:`rascil.processing_components.image.iterators.image_raster_iter`
+        :py:func:`ska_sdp_func.image.iterators.image_raster_iter`
     """
     out = create_empty_image_like(im)
     if overlap > 0:
@@ -150,7 +152,7 @@ def image_scatter_channels(im: Image, subimages=None) -> List[Image]:
     :return: list of subimages
 
      See also
-        :py:func:`rascil.processing_components.image.iterators.image_channel_iter`
+        :py:func:`ska_sdp_func.image.iterators.image_channel_iter`
     """
     if im is None:
         return None

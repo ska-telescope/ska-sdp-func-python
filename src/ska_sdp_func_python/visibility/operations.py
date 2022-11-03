@@ -1,5 +1,6 @@
 # pylint: disable=unnecessary-dunder-call, protected-access
 # pylint: disable=invalid-name, unused-variable, too-many-locals
+# pylint: disable=unsupported-assignment-operation, unsubscriptable-object
 # pylint: disable=import-error
 """ Visibility operations
 
