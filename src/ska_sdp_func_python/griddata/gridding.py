@@ -44,7 +44,7 @@ from ska_sdp_datamodels.gridded_visibility.grid_vis_model import GridData
 from ska_sdp_func_python.fourier_transforms import fft, ifft
 
 # fix the below imports
-from src.ska_sdp_func_python.image.operations import create_image_from_array
+from ska_sdp_func_python.image.operations import create_image
 
 log = logging.getLogger("func-python-logger")
 
@@ -597,7 +597,7 @@ def fft_griddata_to_image(griddata, template, gcf=None):
             * float(ny)
         )
 
-    return create_image_from_array(
+    return create_image(
         im_data,
         template.image_acc.wcs,
         griddata.griddata_acc.polarisation_frame,

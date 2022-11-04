@@ -62,19 +62,20 @@ from ska_sdp_func_python.image.gather_scatter import (
     image_gather_channels,
     image_scatter_channels,
 )
+from ska_sdp_func_python.image.operations import (
+    convert_clean_beam_to_degrees,
+    convert_clean_beam_to_pixels,
+)
 from ska_sdp_func_python.image.taylor_terms import (
     calculate_image_list_frequency_moments,
     calculate_image_list_from_frequency_taylor_terms,
 )
 
 # fix the below imports
-from src.ska_sdp_func_python.image.operations import (
-    convert_clean_beam_to_degrees,
-    convert_clean_beam_to_pixels,
-    create_empty_image_like,
-    create_image_from_array,
+from ska_sdp_func_python.image.operations import (
+    create_image,
 )
-from src.ska_sdp_func_python.parameters import get_parameter
+from ska_sdp_func_python.parameters import get_parameter
 
 log = logging.getLogger("func-python-logger")
 
@@ -270,7 +271,7 @@ def radler_deconvolve_list(
         reached_threshold = False
         reached_threshold = radler_object.perform(reached_threshold, 0)
 
-        x_im = create_empty_image_like(dirty)
+        x_im = create_image(dirty)
         x_im["pixels"].data = numpy.expand_dims(restored_radler, axis=(0, 1))
         comp_image_list.append(x_im)
 
@@ -349,7 +350,7 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
                 )
                 window_array = mask["pixels"].data
         if window_array is not None:
-            window_image = create_image_from_array(
+            window_image = create_image(
                 window_array,
                 dirty.image_acc.wcs,
                 dirty.image_acc.polarisation_frame,
@@ -518,12 +519,12 @@ def complex_hogbom_kernel_list(
                     )
                 if pol == 2:
                     continue
-        comp_image = create_image_from_array(
+        comp_image = create_image(
             comp_array,
             dirty.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesIQUV"),
         )
-        residual_image = create_image_from_array(
+        residual_image = create_image(
             residual_array,
             dirty.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesIQUV"),
@@ -643,10 +644,10 @@ def hogbom_kernel_list(
                     "hogbom_kernel_list %s: Skipping pol %d, channel %d"
                     % (prefix, pol, channel)
                 )
-        comp_image = create_image_from_array(
+        comp_image = create_image(
             comp_array, dirty.image_acc.wcs, dirty.image_acc.polarisation_frame
         )
-        residual_image = create_image_from_array(
+        residual_image = create_image(
             residual_array,
             dirty.image_acc.wcs,
             dirty.image_acc.polarisation_frame,
@@ -816,12 +817,12 @@ def mmclean_kernel_list(
                 )
         else:
             log.info("deconvolve_cube %s: Skipping pol %d" % (prefix, pol))
-    comp_taylor = create_image_from_array(
+    comp_taylor = create_image(
         comp_array,
         dirty_taylor.image_acc.wcs,
         dirty_taylor.image_acc.polarisation_frame,
     )
-    residual_taylor = create_image_from_array(
+    residual_taylor = create_image(
         residual_array,
         dirty_taylor.image_acc.wcs,
         dirty_taylor.image_acc.polarisation_frame,
@@ -937,10 +938,10 @@ def msclean_kernel_list(
                     "msclean_kernel_list %s: Skipping pol %d, channel %d"
                     % (prefix, pol, channel)
                 )
-        comp_image = create_image_from_array(
+        comp_image = create_image(
             comp_array, dirty.image_acc.wcs, dirty.image_acc.polarisation_frame
         )
-        residual_image = create_image_from_array(
+        residual_image = create_image(
             residual_array,
             dirty.image_acc.wcs,
             dirty.image_acc.polarisation_frame,

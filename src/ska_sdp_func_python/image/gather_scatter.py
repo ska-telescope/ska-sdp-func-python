@@ -20,7 +20,7 @@ from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_func_python.image.iterators import image_raster_iter
 
 # fix the below imports
-from src.ska_sdp_func_python.image.operations import create_empty_image_like
+from src.ska_sdp_func_python.image.operations import create_image
 
 log = logging.getLogger("func-python-logger")
 
@@ -79,9 +79,9 @@ def image_gather_facets(
      See also
         :py:func:`ska_sdp_func_python.image.iterators.image_raster_iter`
     """
-    out = create_empty_image_like(im)
+    out = create_image(im)
     if overlap > 0:
-        flat = create_empty_image_like(im)
+        flat = create_image(im)
         flat["pixels"].data[...] = 1.0
         flats = list(
             image_raster_iter(
@@ -93,7 +93,7 @@ def image_gather_facets(
             )
         )
 
-        sum_flats = create_empty_image_like(im)
+        sum_flats = create_image(im)
 
         if return_flat:
             i = 0
@@ -130,7 +130,7 @@ def image_gather_facets(
         return out
 
     # if no overlap
-    flat = create_empty_image_like(im)
+    flat = create_image(im)
     flat["pixels"].data[...] = 1.0
 
     if return_flat:

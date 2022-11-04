@@ -72,12 +72,9 @@ import logging
 import numpy
 
 from ska_sdp_func_python.calibration.solvers import solve_gaintable
-
+from ska_sdp_func_python.calibration.operations import apply_gaintable
 # fix the below imports
-from src.ska_sdp_func_python.calibration.operations import (
-    apply_gaintable,
-    create_gaintable_from_visibility,
-)
+from src.ska_sdp_func_python.calibration.operations import create_gaintable_from_visibility
 
 log = logging.getLogger("func-python-logger")
 

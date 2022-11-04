@@ -18,9 +18,7 @@ from ska_sdp_datamodels.visibility.vis_model import Visibility
 
 from ska_sdp_func_python.imaging.ng import invert_ng, predict_ng
 from ska_sdp_func_python.imaging.wg import invert_wg, predict_wg
-
-# fix the below imports
-from src.ska_sdp_func_python.imaging.base import (
+from ska_sdp_func_python.imaging.base import (
     invert_awprojection,
     predict_awprojection,
 )

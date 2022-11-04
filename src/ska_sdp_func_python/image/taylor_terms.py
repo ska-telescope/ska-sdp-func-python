@@ -22,7 +22,7 @@ import numpy
 from ska_sdp_datamodels.image.image_model import Image
 
 # fix the below imports
-from src.ska_sdp_func_python.image.operations import create_image_from_array
+from ska_sdp_func_python.image.operations import create_image
 
 log = logging.getLogger("func-python-logger")
 
@@ -98,7 +98,7 @@ def calculate_image_frequency_moments(
     moment_wcs.wcs.cdelt[3] = 1.0
     moment_wcs.wcs.cunit[3] = ""
 
-    return create_image_from_array(
+    return create_image(
         moment_data, moment_wcs, im.image_acc.polarisation_frame
     )
 
@@ -153,7 +153,7 @@ def calculate_image_from_frequency_taylor_terms(
                 taylor_terms_image["pixels"].data[taylor_term, ...] * weight
             )
 
-    newim = create_image_from_array(
+    newim = create_image(
         newim_data,
         wcs=im.image_acc.wcs,
         polarisation_frame=im.image_acc.polarisation_frame,
@@ -232,7 +232,7 @@ def calculate_image_list_frequency_moments(
     moment_wcs.wcs.cdelt[3] = 1.0
     moment_wcs.wcs.cunit[3] = ""
 
-    return create_image_from_array(
+    return create_image(
         moment_data, moment_wcs, im_list[0].image_acc.polarisation_frame
     )
 
@@ -276,7 +276,7 @@ def calculate_image_list_from_frequency_taylor_terms(
                 moment_image["pixels"].data[moment, ...] * weight
             )
 
-        newim = create_image_from_array(
+        newim = create_image(
             newim_data,
             wcs=im_list[chan].image_acc.wcs,
             polarisation_frame=im_list[chan].image_acc.polarisation_frame,

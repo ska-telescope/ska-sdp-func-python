@@ -17,10 +17,7 @@ from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_func_python.util.array_functions import tukey_filter
 
 # fix the below imports
-from src.ska_sdp_func_python.image.operations import (
-    create_empty_image_like,
-    create_image_from_array,
-)
+from src.ska_sdp_func_python.image.operations import create_image
 
 log = logging.getLogger("func-python-logger")
 
@@ -145,13 +142,13 @@ def image_raster_iter(
                 wcs.wcs.crpix[0] -= x
                 wcs.wcs.crpix[1] -= y
                 # yield image from slice (reference!)
-                subim = create_image_from_array(
+                subim = create_image(
                     im["pixels"].data[..., y : y + dy, x : x + dx],
                     wcs,
                     im.image_acc.polarisation_frame,
                 )
                 if overlap > 0 and make_flat:
-                    flat = create_empty_image_like(subim)
+                    flat = create_image(subim)
                     if taper == "linear":
                         flat["pixels"].data[..., :, :] = numpy.outer(
                             taper_linear(dy, overlap),
@@ -223,7 +220,7 @@ def image_channel_iter(im: Image, subimages=1) -> collections.abc.Iterable:
         wcs.wcs.crpix[3] -= channel
 
         # Yield image from slice (reference!)
-        yield create_image_from_array(
+        yield create_image(
             im["pixels"].data[channel:channel_max, ...],
             wcs,
             im.image_acc.polarisation_frame,
