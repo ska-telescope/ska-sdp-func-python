@@ -8,6 +8,9 @@
 
 
 """
+import pytest
+
+pytestmark = pytest.skip(allow_module_level=True)
 import logging
 import os
 import tempfile

@@ -8,6 +8,9 @@
 
 
 """
+import pytest
+
+pytestmark = pytest.skip(allow_module_level=True)
 import logging
 import os
 import tempfile
@@ -32,18 +35,16 @@ from ska_sdp_func_python.image.deconvolution import (
     restore_cube,
     restore_list,
 )
+from ska_sdp_func_python.imaging.base import create_image_from_visibility
 from ska_sdp_func_python.imaging.imaging import (
     invert_visibility,
     predict_visibility,
 )
+from ska_sdp_func_python.skycomponent.operations import restore_skycomponent
 
 # fix the below imports
 from src.ska_sdp_func_python import create_pb
-from src.ska_sdp_func_python.imaging.base import create_image_from_visibility
 from src.ska_sdp_func_python.simulation import create_test_image
-from src.ska_sdp_func_python.skycomponent.operations import (
-    restore_skycomponent,
-)
 
 log = logging.getLogger("func-python-logger")
 

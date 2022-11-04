@@ -18,7 +18,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
 
-from src.ska_sdp_func_python.calibration import apply_jones
+from ska_sdp_func_python.calibration.jones import apply_jones
 
 log = logging.getLogger("func-python-logger")
 

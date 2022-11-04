@@ -6,6 +6,9 @@
 # pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Regression test for skymodel predict and invert functions
 """
+import pytest
+
+pytestmark = pytest.skip(allow_module_level=True)
 import logging
 import os
 import sys

@@ -6,7 +6,9 @@
 # pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Unit tests for visibility weighting
 """
+import pytest
 
+pytestmark = pytest.skip(allow_module_level=True)
 import logging
 import os
 import tempfile

@@ -8,6 +8,9 @@
 
 
 """
+import pytest
+
+pytestmark = pytest.skip(allow_module_level=True)
 import functools
 import logging
 import os
@@ -31,6 +34,13 @@ from ska_sdp_func_python.griddata.gridding import (
     griddata_merge_weights,
     griddata_visibility_reweight,
 )
+from ska_sdp_func_python.image.operations import (
+    convert_polimage_to_stokes,
+    convert_stokes_to_polimage,
+)
+from ska_sdp_func_python.imaging.base import normalise_sumwt
+from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
+from ska_sdp_func_python.skycomponent.operations import insert_skycomponent
 
 # fix the below imports
 from src.ska_sdp_func_python.griddata.kernels import (
@@ -41,13 +51,7 @@ from src.ska_sdp_func_python.griddata.kernels import (
 from src.ska_sdp_func_python.griddata.operations import (
     create_griddata_from_image,
 )
-from src.ska_sdp_func_python.image.operations import (
-    convert_polimage_to_stokes,
-    convert_stokes_to_polimage,
-    smooth_image,
-)
-from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
-from src.ska_sdp_func_python.imaging.base import normalise_sumwt
+from src.ska_sdp_func_python.image.operations import smooth_image
 from src.ska_sdp_func_python.imaging.primary_beams import create_pb_generic
 from src.ska_sdp_func_python.simulation import (
     create_named_configuration,
@@ -55,7 +59,6 @@ from src.ska_sdp_func_python.simulation import (
     create_unittest_model,
     ingest_unittest_visibility,
 )
-from src.ska_sdp_func_python.skycomponent.operations import insert_skycomponent
 
 log = logging.getLogger("func-python-logger")
 

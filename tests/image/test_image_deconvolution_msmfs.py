@@ -8,6 +8,9 @@
 
 
 """
+import pytest
+
+pytestmark = pytest.skip(allow_module_level=True)
 import logging
 import os
 import tempfile
@@ -33,6 +36,7 @@ from ska_sdp_func_python.image.gather_scatter import (
     image_gather_channels,
     image_scatter_channels,
 )
+from ska_sdp_func_python.imaging.base import create_image_from_visibility
 from ska_sdp_func_python.imaging.imaging import (
     invert_visibility,
     predict_visibility,
@@ -45,7 +49,6 @@ from ska_sdp_func_python.imaging.weighting import (
 # fix the below imports
 from src.ska_sdp_func_python import create_pb
 from src.ska_sdp_func_python.image.operations import create_image_from_array
-from src.ska_sdp_func_python.imaging.base import create_image_from_visibility
 from src.ska_sdp_func_python.imaging.primary_beams import create_low_test_beam
 from src.ska_sdp_func_python.simulation import create_low_test_image_from_gleam
 

@@ -7,6 +7,9 @@
 """ Unit tests for imaging using nifty gridder
 
 """
+import pytest
+
+pytestmark = pytest.skip(allow_module_level=True)
 import logging
 import os
 import sys
@@ -20,19 +23,20 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
 
+from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
+from ska_sdp_func_python.skycomponent.operations import (
+    find_nearest_skycomponent,
+    find_skycomponents,
+    insert_skycomponent,
+)
+
 # fix the below imports
 from src.ska_sdp_func_python.image.operations import smooth_image
-from src.ska_sdp_func_python.imaging import dft_skycomponent_visibility
 from src.ska_sdp_func_python.simulation import (
     create_named_configuration,
     create_unittest_components,
     create_unittest_model,
     ingest_unittest_visibility,
-)
-from src.ska_sdp_func_python.skycomponent.operations import (
-    find_nearest_skycomponent,
-    find_skycomponents,
-    insert_skycomponent,
 )
 
 log = logging.getLogger("func-python-logger")
