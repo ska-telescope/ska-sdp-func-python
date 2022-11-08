@@ -5,15 +5,17 @@
 """ Unit tests for image Taylor terms
 
 """
-import pytest
 import logging
 import os
 import tempfile
+
 import numpy
+import pytest
 from astropy import units
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.image.image_create import create_image
+from ska_sdp_datamodels.image.image_model import Image
+
 from ska_sdp_func_python.image.gather_scatter import image_scatter_channels
 from ska_sdp_func_python.image.taylor_terms import (
     calculate_frequency_taylor_terms_from_image_list,
@@ -33,22 +35,24 @@ def taylor_terms_fixture():
     npixel = 512
     cellsize = 0.0001
     phase_centre = SkyCoord(
-        ra=+180.0 * units.deg, dec=-60.0 * units.deg, frame="icrs", equinox="J2000"
+        ra=+180.0 * units.deg,
+        dec=-60.0 * units.deg,
+        frame="icrs",
+        equinox="J2000",
     )
     image = create_image(npixel, cellsize, phase_centre)
     params = {
         "image": image,
         "persist": persist,
+        "phasecentre": phase_centre
     }
     return params
 
-
-@pytest.mark.skip(reason="Issues remaining with create_image_frequency_moments")
+@pytest.mark.skip(
+    reason="Issues remaining with create_image_frequency_moments:  bad operand type for unary -: 'WCS'"
+)
 def test_calculate_image_frequency_moments(result_taylor_terms):
-    cube = Image.constructor(data=numpy.zeros_like(result_taylor_terms["image"].data_vars["pixels"].data),
-                             polarisation_frame=result_taylor_terms["image"].image_acc.polarisation_frame,
-                             wcs=result_taylor_terms["image"].image_acc.wcs,
-                             clean_beam=None)
+    cube = create_image(512, 0.0001, result_taylor_terms["phasecentre"])
     moment_cube = calculate_image_frequency_moments(cube, nmoment=3)
     reconstructed_cube = calculate_image_from_frequency_taylor_terms(
         cube, moment_cube
@@ -65,15 +69,17 @@ def test_calculate_image_frequency_moments(result_taylor_terms):
                 f"{tempdir}/test_moments_reconstructed_cube.fits"
             )
     error = numpy.std(
-        reconstructed_cube["pixels"].data - result_taylor_terms["image"].data_vars["pixels"].data
+        reconstructed_cube["pixels"].data
+        - result_taylor_terms["image"].data_vars["pixels"].data
     )
     assert error < 0.2, error
 
-
-@pytest.mark.skip(reason="Issues reamining with create_image_frequency_moments as above")
+@pytest.mark.skip(
+    reason="Issues remaining with create_image_frequency_moments as above"
+)
 def test_calculate_image_frequency_moments_1(result_taylor_terms):
     original_cube = result_taylor_terms["image"]
-    cube = create_empty_image_like(original_cube)
+    cube = create_image(512, 0.0001, result_taylor_terms["phasecentre"])
     moment_cube = calculate_image_frequency_moments(cube, nmoment=1)
     reconstructed_cube = calculate_image_from_frequency_taylor_terms(
         cube, moment_cube

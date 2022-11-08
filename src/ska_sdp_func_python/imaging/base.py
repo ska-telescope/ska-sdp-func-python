@@ -37,17 +37,21 @@ import astropy.wcs as wcs
 import numpy
 from astropy.wcs.utils import pixel_to_skycoord
 from ska_sdp_datamodels.image.image_model import Image
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 from ska_sdp_datamodels.visibility.vis_model import Visibility
 from ska_sdp_datamodels import physical_constants
 from ska_sdp_datamodels.image.image_create import create_image
-from ska_sdp_datamodels.gridded_visibility.grid_vis_create import create_griddata_from_image
+from ska_sdp_datamodels.gridded_visibility.grid_vis_create import (
+    create_griddata_from_image,
+)
 
 from ska_sdp_func_python.griddata.gridding import (
     grid_visibility_to_griddata,
     fft_griddata_to_image,
     degrid_visibility_from_griddata,
-    fft_image_to_griddata
+    fft_image_to_griddata,
 )
 from ska_sdp_func_python.visibility.base import phaserotate_visibility
 from ska_sdp_func_python.image.operations import (
@@ -151,7 +155,9 @@ def normalise_sumwt(im: Image, sumwt, min_weight=0.1, flat_sky=False) -> Image:
                     sumwt["pixels"].data[chan, pol, :, :] /= maxwt
                     sumwt["pixels"].data = numpy.sqrt(sumwt["pixels"].data)
     else:
-        raise ValueError("sumwt is not a 2D or 4D array - cannot perform normalisation")
+        raise ValueError(
+            "sumwt is not a 2D or 4D array - cannot perform normalisation"
+        )
 
     return im
 
@@ -187,7 +193,9 @@ def predict_awprojection(
     griddata = create_griddata_from_image(
         model, polarisation_frame=vis.visibility_acc.polarisation_frame
     )
-    polmodel = convert_stokes_to_polimage(model, vis.visibility_acc.polarisation_frame)
+    polmodel = convert_stokes_to_polimage(
+        model, vis.visibility_acc.polarisation_frame
+    )
     griddata = fft_image_to_griddata(polmodel, griddata, gcf)
     vis = degrid_visibility_from_griddata(vis, griddata=griddata, cf=cf)
 
@@ -236,7 +244,9 @@ def invert_awprojection(
         raise ValueError("invert_awprojection: gcfcf not specified")
 
     gcf, cf = gcfcf(im)
-    griddata, sumwt = grid_visibility_to_griddata(svis, griddata=griddata, cf=cf)
+    griddata, sumwt = grid_visibility_to_griddata(
+        svis, griddata=griddata, cf=cf
+    )
     result = fft_griddata_to_image(griddata, im, gcf)
 
     if normalise:
@@ -262,19 +272,29 @@ def fill_vis_for_psf(svis):
         svis["vis"].data[..., 0] = 1.0 + 0.0j
         svis["vis"].data[..., 1:3] = 0.0 + 0.0j
         svis["vis"].data[..., 3] = 1.0 + 0.0j
-    elif svis.visibility_acc.polarisation_frame == PolarisationFrame("circular"):
+    elif svis.visibility_acc.polarisation_frame == PolarisationFrame(
+        "circular"
+    ):
         svis["vis"].data[..., 0] = 1.0 + 0.0j
         svis["vis"].data[..., 1:3] = 0.0 + 0.0j
         svis["vis"].data[..., 3] = 1.0 + 0.0j
-    elif svis.visibility_acc.polarisation_frame == PolarisationFrame("linearnp"):
+    elif svis.visibility_acc.polarisation_frame == PolarisationFrame(
+        "linearnp"
+    ):
         svis["vis"].data[...] = 1.0 + 0.0j
-    elif svis.visibility_acc.polarisation_frame == PolarisationFrame("circularnp"):
+    elif svis.visibility_acc.polarisation_frame == PolarisationFrame(
+        "circularnp"
+    ):
         svis["vis"].data[...] = 1.0 + 0.0j
-    elif svis.visibility_acc.polarisation_frame == PolarisationFrame("stokesI"):
+    elif svis.visibility_acc.polarisation_frame == PolarisationFrame(
+        "stokesI"
+    ):
         svis["vis"].data[...] = 1.0 + 0.0j
     else:
         raise ValueError(
-            "Cannot calculate PSF for {}".format(svis.visibility_acc.polarisation_frame)
+            "Cannot calculate PSF for {}".format(
+                svis.visibility_acc.polarisation_frame
+            )
         )
 
     return svis
@@ -306,12 +326,16 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     try:
         image_centre = kwargs["imagecentre"]
     except KeyError:
-        log.info("create_image_from_visibility: no image_centre given, setting default value")
+        log.info(
+            "create_image_from_visibility: no image_centre given, setting default value"
+        )
         image_centre = vis.phasecentre
     try:
         phase_centre = kwargs["phasecentre"]
     except KeyError:
-        log.info("create_image_from_visibility: no phase_centre given, setting default value")
+        log.info(
+            "create_image_from_visibility: no phase_centre given, setting default value"
+        )
         phase_centre = vis.phasecentre
 
     # Spectral processing options
@@ -319,7 +343,9 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     try:
         frequency = kwargs["frequency"]
     except KeyError:
-        log.info("create_image_from_visibility: no frequency given, setting default value")
+        log.info(
+            "create_image_from_visibility: no frequency given, setting default value"
+        )
         frequency = vis["frequency"].data
 
     vnchan = len(ufrequency)
@@ -327,7 +353,9 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     try:
         inchan = kwargs["nchan"]
     except KeyError:
-        log.info("create_image_from_visibility: no inchan given, setting default value")
+        log.info(
+            "create_image_from_visibility: no inchan given, setting default value"
+        )
         inchan = vnchan
 
     reffrequency = frequency[0] * units.Hz
@@ -335,7 +363,9 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     try:
         channel_bandwidth = kwargs["channel_bandwidth"]
     except KeyError:
-        log.info("create_image_from_visibility: no channel_bandwidth given, setting default value")
+        log.info(
+            "create_image_from_visibility: no channel_bandwidth given, setting default value"
+        )
         channel_bandwidth = vis["channel_bandwidth"].data.flat[0]
 
     channel_bandwidth = channel_bandwidth * units.Hz
@@ -351,7 +381,8 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         ), "Channel width must be non-zero for mfs mode"
         log.debug(
             "create_image_from_visibility: Defining single channel MFS Image at %s, starting frequency %s, "
-            "and bandwidth %s" % (image_centre, reffrequency, channel_bandwidth)
+            "and bandwidth %s"
+            % (image_centre, reffrequency, channel_bandwidth)
         )
     elif inchan > 1 and vnchan > 1:
         assert (
@@ -359,7 +390,8 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         ), "Channel width must be non-zero for mfs mode"
         log.debug(
             "create_image_from_visibility: Defining multi-channel MFS Image at %s, starting frequency %s, "
-            "and bandwidth %s" % (image_centre, reffrequency, channel_bandwidth)
+            "and bandwidth %s"
+            % (image_centre, reffrequency, channel_bandwidth)
         )
     elif (inchan == 1) and (vnchan == 1):
         assert (
@@ -367,7 +399,8 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         ), "Channel width must be non-zero for mfs mode"
         log.debug(
             "create_image_from_visibility: Defining single channel Image at %s, starting frequency %s, "
-            "and bandwidth %s" % (image_centre, reffrequency, channel_bandwidth)
+            "and bandwidth %s"
+            % (image_centre, reffrequency, channel_bandwidth)
         )
     else:
         raise ValueError(
@@ -380,7 +413,9 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     try:
         npixel = kwargs["npixel"]
     except KeyError:
-        log.info("create_image_from_visibility: no npixel given, setting default value")
+        log.info(
+            "create_image_from_visibility: no npixel given, setting default value"
+        )
         npixel = 512
 
     uvmax = numpy.max((numpy.abs(vis.visibility_acc.uvw_lambda[..., 0:2])))
@@ -394,7 +429,9 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     try:
         cellsize = kwargs["cellsize"]
     except KeyError:
-        log.info("create_image_from_visibility: no cellsize given, setting default value")
+        log.info(
+            "create_image_from_visibility: no cellsize given, setting default value"
+        )
         cellsize = 0.5 * criticalcellsize
 
     log.debug(
@@ -404,10 +441,14 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     try:
         override_cellsize = kwargs["override_cellsize"]
     except KeyError:
-        log.info("create_image_from_visibility: no override_cellsize given, setting default value")
+        log.info(
+            "create_image_from_visibility: no override_cellsize given, setting default value"
+        )
         override_cellsize = True
 
-    if (override_cellsize and cellsize > criticalcellsize) or (cellsize == 0.0):
+    if (override_cellsize and cellsize > criticalcellsize) or (
+        cellsize == 0.0
+    ):
         log.debug(
             "create_image_from_visibility: Resetting cellsize %g radians to criticalcellsize %g radians"
             % (cellsize, criticalcellsize)
@@ -416,7 +457,9 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     try:
         pol_frame = kwargs["polarisation_frame"]
     except KeyError:
-        log.info("create_image_from_visibility: no pol_frame given, setting default value")
+        log.info(
+            "create_image_from_visibility: no pol_frame given, setting default value"
+        )
         pol_frame = PolarisationFrame("stokesI")
 
     inpol = pol_frame.npol
@@ -448,23 +491,27 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     try:
         w.wcs.radesys = kwargs["frame"]
     except KeyError:
-        log.info("create_image_from_visibility: no radesys given, setting default value")
+        log.info(
+            "create_image_from_visibility: no radesys given, setting default value"
+        )
         w.wcs.radesys = "ICRS"
 
     try:
         w.wcs.equinox = kwargs["equinox"]
     except KeyError:
-        log.info("create_image_from_visibility: no equinox given, setting default value")
+        log.info(
+            "create_image_from_visibility: no equinox given, setting default value"
+        )
         w.wcs.equinox = 2000.0
 
     try:
         chunksize = kwargs["chunksize"]
     except KeyError:
-        log.info("create_image_from_visibility: no chunksize given, setting default value")
+        log.info(
+            "create_image_from_visibility: no chunksize given, setting default value"
+        )
         chunksize = None
-    im = create_image(
-        npixel, cellsize, phase_centre
-    )
+    im = create_image(npixel, cellsize, phase_centre)
     return im
 
 
@@ -532,7 +579,8 @@ def advise_wide_field(
 
     if verbose:
         log.info(
-            "advise_wide_field: (maximum_w) Maximum w %.1f (wavelengths)" % (maximum_w)
+            "advise_wide_field: (maximum_w) Maximum w %.1f (wavelengths)"
+            % (maximum_w)
         )
 
     diameter = numpy.min(vis.attrs["configuration"].diameter.data)
@@ -575,7 +623,8 @@ def advise_wide_field(
     cellsize = synthesized_beam / oversampling_synthesised_beam
     if verbose:
         log.info(
-            "advise_wide_field: (cellsize) Cellsize %s" % (rad_deg_arcsec(cellsize))
+            "advise_wide_field: (cellsize) Cellsize %s"
+            % (rad_deg_arcsec(cellsize))
         )
         log.info("")
 
@@ -606,7 +655,9 @@ def advise_wide_field(
 
     npixels = int(round(image_fov / cellsize))
     if verbose:
-        log.info("advice_wide_field: (npixels) Npixels per side = %d" % (npixels))
+        log.info(
+            "advice_wide_field: (npixels) Npixels per side = %d" % (npixels)
+        )
 
     npixels2 = pwr2(npixels)
     if verbose:
@@ -674,7 +725,9 @@ def advise_wide_field(
                 % (time_sampling_facet)
             )
 
-    time_sampling_primary_beam = 86400.0 * (synthesized_beam / primary_beam_fov)
+    time_sampling_primary_beam = 86400.0 * (
+        synthesized_beam / primary_beam_fov
+    )
     if verbose:
         log.info(
             "advice_wide_field: (time_sampling_primary_beam) Time sampling for primary beam = %.1f (s)"
@@ -698,7 +751,9 @@ def advise_wide_field(
                 % (freq_sampling_facet)
             )
 
-    freq_sampling_primary_beam = max_freq * (synthesized_beam / primary_beam_fov)
+    freq_sampling_primary_beam = max_freq * (
+        synthesized_beam / primary_beam_fov
+    )
     if verbose:
         log.info(
             "advice_wide_field: (freq_sampling_primary_beam) Frequency sampling for primary beam = %.1f (Hz)"
@@ -821,5 +876,7 @@ def visibility_recentre(uvw, dl, dm):
     :returns: Visibility coordinates re-centrered on the peak of their w-kernel
     """
 
-    u, v, w = numpy.hsplit(uvw, 3)  # pylint: disable=unbalanced-tuple-unpacking
+    u, v, w = numpy.hsplit(
+        uvw, 3
+    )  # pylint: disable=unbalanced-tuple-unpacking
     return numpy.hstack([u - w * dl, v - w * dm, w])

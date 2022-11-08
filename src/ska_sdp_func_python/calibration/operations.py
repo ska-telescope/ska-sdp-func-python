@@ -53,7 +53,8 @@ def apply_gaintable(
 
     for row in range(ntimes):
         vis_rows = (
-            numpy.abs(vis.time.data - gt.time.data[row]) < gt.interval.data[row] / 2.0
+            numpy.abs(vis.time.data - gt.time.data[row])
+            < gt.interval.data[row] / 2.0
         )
         vis_rows = row_numbers[vis_rows]
         if len(vis_rows) > 0:
@@ -70,12 +71,16 @@ def apply_gaintable(
             # Try to ignore visibility flags in application of gains. Should have no impact
             # and will save time in applying the flags
             use_flags = kwargs["use_flags"]
-            flagged = use_flags and numpy.max(vis["flags"][vis_rows].data) > 0.0
+            flagged = (
+                use_flags and numpy.max(vis["flags"][vis_rows].data) > 0.0
+            )
             if flagged:
                 log.debug("apply_gaintable:Applying flags")
                 original = vis.visibility_acc.flagged_vis[vis_rows]
                 applied = copy.deepcopy(original)
-                appliedwt = copy.deepcopy(vis.visibility_acc.flagged_weight[vis_rows])
+                appliedwt = copy.deepcopy(
+                    vis.visibility_acc.flagged_weight[vis_rows]
+                )
             else:
                 log.debug("apply_gaintable:flags are absent or being ignored")
                 original = vis["vis"].data[vis_rows]
@@ -108,7 +113,9 @@ def apply_gaintable(
                                 )
                             else:
                                 applied[sub_vis_row, ibaseline, chan, 0] = 0.0
-                                appliedwt[sub_vis_row, ibaseline, chan, 0] = 0.0
+                                appliedwt[
+                                    sub_vis_row, ibaseline, chan, 0
+                                ] = 0.0
 
             elif vis.visibility_acc.npol == 2:
                 has_inverse_ant = numpy.zeros([nant, nchan], dtype="bool")
@@ -136,7 +143,9 @@ def apply_gaintable(
                                     and has_inverse_ant[a2, chan]
                                 ):
                                     cfs = numpy.diag(
-                                        original[sub_vis_row, ibaseline, chan, ...]
+                                        original[
+                                            sub_vis_row, ibaseline, chan, ...
+                                        ]
                                     )
                                     applied[
                                         sub_vis_row, ibaseline, chan, ...
@@ -148,8 +157,12 @@ def apply_gaintable(
                                         [2]
                                     )
                                 else:
-                                    applied[sub_vis_row, ibaseline, chan, 0] = 0.0
-                                    appliedwt[sub_vis_row, ibaseline, chan, 0] = 0.0
+                                    applied[
+                                        sub_vis_row, ibaseline, chan, 0
+                                    ] = 0.0
+                                    appliedwt[
+                                        sub_vis_row, ibaseline, chan, 0
+                                    ] = 0.0
 
                 else:
                     for sub_vis_row in range(original.shape[0]):
@@ -158,9 +171,15 @@ def apply_gaintable(
                                 cfs = numpy.diag(
                                     original[sub_vis_row, ibaseline, chan, ...]
                                 )
-                                applied[sub_vis_row, ibaseline, chan, ...] = numpy.diag(
-                                    gain[a1, chan, :, :] @ cfs @ cgain[a2, chan, :, :]
-                                ).reshape([2])
+                                applied[
+                                    sub_vis_row, ibaseline, chan, ...
+                                ] = numpy.diag(
+                                    gain[a1, chan, :, :]
+                                    @ cfs
+                                    @ cgain[a2, chan, :, :]
+                                ).reshape(
+                                    [2]
+                                )
 
             elif vis.visibility_acc.npol == 4:
                 has_inverse_ant = numpy.zeros([nant, nchan], dtype="bool")
@@ -190,14 +209,22 @@ def apply_gaintable(
                                     cfs = original[
                                         sub_vis_row, ibaseline, chan, ...
                                     ].reshape([2, 2])
-                                    applied[sub_vis_row, ibaseline, chan, ...] = (
+                                    applied[
+                                        sub_vis_row, ibaseline, chan, ...
+                                    ] = (
                                         igain[baseline[0], chan, :, :]
                                         @ cfs
                                         @ cigain[baseline[1], chan, :, :]
-                                    ).reshape([4])
+                                    ).reshape(
+                                        [4]
+                                    )
                                 else:
-                                    applied[sub_vis_row, ibaseline, chan, ...] = 0.0
-                                    appliedwt[sub_vis_row, ibaseline, chan, ...] = 0.0
+                                    applied[
+                                        sub_vis_row, ibaseline, chan, ...
+                                    ] = 0.0
+                                    appliedwt[
+                                        sub_vis_row, ibaseline, chan, ...
+                                    ] = 0.0
                 else:
                     for sub_vis_row in range(original.shape[0]):
                         for ibaseline, baseline in enumerate(baselines):
@@ -223,6 +250,7 @@ def apply_gaintable(
             vis["weight"].data[vis_rows] = appliedwt
 
     return vis
+
 
 def multiply_gaintables(
     gt: GainTable, dgt: GainTable, time_tolerance=1e-3
@@ -253,12 +281,16 @@ def multiply_gaintables(
             gt["weight"].data *= dgt["weight"].data
         else:
             raise ValueError(
-                "Gain tables have illegal structures {} {}".format(str(gt), str(dgt))
+                "Gain tables have illegal structures {} {}".format(
+                    str(gt), str(dgt)
+                )
             )
 
     else:
         raise ValueError(
-            "Gain tables have different structures {} {}".format(str(gt), str(dgt))
+            "Gain tables have different structures {} {}".format(
+                str(gt), str(dgt)
+            )
         )
 
     return gt
@@ -275,5 +307,9 @@ def concatenate_gaintables(gt_list, dim="time"):
         raise ValueError("GainTable list is empty")
 
     return xarray.concat(
-        gt_list, dim=dim, data_vars="minimal", coords="minimal", compat="override"
+        gt_list,
+        dim=dim,
+        data_vars="minimal",
+        coords="minimal",
+        compat="override",
     )

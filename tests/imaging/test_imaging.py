@@ -9,6 +9,7 @@
 
 """
 import pytest
+
 # Imports for griddata.kernels need to be fixed
 pytestmark = pytest.skip(allow_module_level=True)
 import functools
@@ -21,10 +22,12 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.configuration.config_create import (
+    create_named_configuration,
+)
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-from ska_sdp_datamodels.configuration.config_create import create_named_configuration
 
 from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 from ska_sdp_func_python.imaging.imaging import (

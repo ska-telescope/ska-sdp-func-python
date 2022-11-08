@@ -3,21 +3,26 @@
 """
 
 import logging
-import pytest
+
 import numpy
+import pytest
 from astropy import units
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels.configuration.config_create import create_named_configuration
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.configuration.config_create import (
+    create_named_configuration,
+)
 from ska_sdp_datamodels.image.image_create import create_image
-from ska_sdp_func_python.imaging.base import (
-    shift_vis_to_image,
-    predict_awprojection,
-    fill_vis_for_psf,
-    create_image_from_visibility,
-    advise_wide_field,
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
 )
 from ska_sdp_datamodels.visibility.vis_create import create_visibility
+
+from ska_sdp_func_python.imaging.base import (
+    create_image_from_visibility,
+    fill_vis_for_psf,
+    predict_awprojection,
+    shift_vis_to_image,
+)
 
 log = logging.getLogger("func-python-logger")
 
@@ -63,8 +68,8 @@ def base_fixture():
 
 
 def test_shift_vis_to_image(result_base):
-    """ Unit tests for shift_vis_to_image function:
-        check that the phasecentre does change
+    """Unit tests for shift_vis_to_image function:
+    check that the phasecentre does change
     """
     vis = result_base["visibility"]
     old_pc = vis.attrs["phasecentre"]
@@ -79,7 +84,10 @@ def test_shift_vis_to_image(result_base):
     assert old_pc != shifted_vis.attrs["phasecentre"]
     assert shifted_vis.attrs["phasecentre"] == expected_phase_centre
 
-@pytest.mark.skip(reason="gcfcf examples need to be found for predict_awprojection")
+
+@pytest.mark.skip(
+    reason="gcfcf examples need to be found for predict_awprojection"
+)
 def test_predict_awprojection(result_base):
     vis = result_base["visibility"]
     svis = predict_awprojection(vis, result_base["image"])
@@ -88,17 +96,16 @@ def test_predict_awprojection(result_base):
 
 
 def test_fill_vis_for_psf(result_base):
-    """ Unit tests for fill_vis_for_psf function
-    """
+    """Unit tests for fill_vis_for_psf function"""
     svis = fill_vis_for_psf(result_base["visibility"])
 
     assert (svis["vis"].data[...] == 1.0 + 0.0j).all()
 
 
 def test_create_image_from_visibility(result_base):
-    """ Unit tests for create_image_from_visibility function:
-        check image created here is the same as image in result_base
-        """
+    """Unit tests for create_image_from_visibility function:
+    check image created here is the same as image in result_base
+    """
     phase_centre = SkyCoord(
         ra=-180.0 * units.deg,
         dec=+35.0 * units.deg,
@@ -106,6 +113,8 @@ def test_create_image_from_visibility(result_base):
         equinox="J2000",
     )
     expected_image = result_base["image"]
-    new_image = create_image_from_visibility(vis=result_base["visibility"], phasecentre=phase_centre)
+    new_image = create_image_from_visibility(
+        vis=result_base["visibility"], phasecentre=phase_centre
+    )
 
     assert (new_image == expected_image).all()

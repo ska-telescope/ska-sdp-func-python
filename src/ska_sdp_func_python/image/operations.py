@@ -20,7 +20,9 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
     convert_linear_to_stokes,
     convert_circular_to_stokes,
 )
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 
 
 warnings.simplefilter("ignore", FITSFixedWarning)
@@ -71,7 +73,9 @@ def convert_clean_beam_to_pixels(model, clean_beam):
     return beam_pixels
 
 
-def convert_stokes_to_polimage(im: Image, polarisation_frame: PolarisationFrame):
+def convert_stokes_to_polimage(
+    im: Image, polarisation_frame: PolarisationFrame
+):
     """Convert a stokes image in IQUV to polarisation_frame
 
     For example::
@@ -106,7 +110,9 @@ def convert_stokes_to_polimage(im: Image, polarisation_frame: PolarisationFrame)
             PolarisationFrame("stokesI"),
         )
     else:
-        raise ValueError("Cannot convert stokes to %s" % (polarisation_frame.type))
+        raise ValueError(
+            "Cannot convert stokes to %s" % (polarisation_frame.type)
+        )
 
 
 def convert_polimage_to_stokes(im: Image, complex_image=False, **kwargs):
@@ -137,22 +143,30 @@ def convert_polimage_to_stokes(im: Image, complex_image=False, **kwargs):
     if im.image_acc.polarisation_frame == PolarisationFrame("linear"):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
         return create_image(
-            to_required(cimarr), im.image_acc.wcs, PolarisationFrame("stokesIQUV")
+            to_required(cimarr),
+            im.image_acc.wcs,
+            PolarisationFrame("stokesIQUV"),
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("linearnp"):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
         return create_image(
-            to_required(cimarr), im.image_acc.wcs, PolarisationFrame("stokesIQ")
+            to_required(cimarr),
+            im.image_acc.wcs,
+            PolarisationFrame("stokesIQ"),
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("circular"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
         return create_image(
-            to_required(cimarr), im.image_acc.wcs, PolarisationFrame("stokesIQUV")
+            to_required(cimarr),
+            im.image_acc.wcs,
+            PolarisationFrame("stokesIQUV"),
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("circularnp"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
         return create_image(
-            to_required(cimarr), im.image_acc.wcs, PolarisationFrame("stokesIV")
+            to_required(cimarr),
+            im.image_acc.wcs,
+            PolarisationFrame("stokesIV"),
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("stokesI"):
         return create_image(
@@ -162,5 +176,6 @@ def convert_polimage_to_stokes(im: Image, complex_image=False, **kwargs):
         )
     else:
         raise ValueError(
-            "Cannot convert %s to stokes" % (im.image_acc.polarisation_frame.type)
+            "Cannot convert %s to stokes"
+            % (im.image_acc.polarisation_frame.type)
         )

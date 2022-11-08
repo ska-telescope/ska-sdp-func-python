@@ -41,9 +41,7 @@ def test_apply_jones():
         diagonal = numpy.array(
             [[1.0 + 0.0j, 0.0 + 0.0j], [0.0 + 0.0j, 1.0 + 0.0]]
         )
-        skew = numpy.array(
-            [[0.0 + 0.0j, 1.0 + 0.0j], [1.0 + 0.0j, 0.0 + 0.0]]
-        )
+        skew = numpy.array([[0.0 + 0.0j, 1.0 + 0.0j], [1.0 + 0.0j, 0.0 + 0.0]])
         leakage = numpy.array(
             [[1.0 + 0.0j, 0.0 + 0.1j], [0.0 - 0.1j, 1.0 + 0.0]]
         )
@@ -61,9 +59,7 @@ def test_apply_jones():
                 nsucceeded += 1
             except AssertionError as e:
                 print(e)
-                print(
-                    "{0} {1} {2} failed".format(vpol, str(ej), str(flux))
-                )
+                print("{0} {1} {2} failed".format(vpol, str(ej), str(flux)))
                 nfailures += 1
     assert nfailures == 0, "{0} tests succeeded, {1} failed".format(
         nsucceeded, nfailures

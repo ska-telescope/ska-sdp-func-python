@@ -5,16 +5,13 @@ import logging
 
 import numpy
 import pytest
-
 from astropy import units
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.image.image_create import create_image
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+
 from ska_sdp_func_python.image.operations import (
     convert_clean_beam_to_degrees,
     convert_clean_beam_to_pixels,
-    convert_stokes_to_polimage,
-    convert_polimage_to_stokes,
 )
 
 log = logging.getLogger("func-python-logger")
@@ -44,9 +41,11 @@ def test_convert_clean_beam_to_degrees(operations_image):
     beam_pixels = (24.7, 49.4, -1.05)
     clean_beam = convert_clean_beam_to_degrees(operations_image, beam_pixels)
     expected_results = (
-        numpy.rad2deg(beam_pixels[0]) * (0.000015 * numpy.sqrt(8.0 * numpy.log(2.0))),
-        numpy.rad2deg(beam_pixels[1]) * (0.000015 * numpy.sqrt(8.0 * numpy.log(2.0))),
-        numpy.rad2deg(beam_pixels[2])
+        numpy.rad2deg(beam_pixels[0])
+        * (0.000015 * numpy.sqrt(8.0 * numpy.log(2.0))),
+        numpy.rad2deg(beam_pixels[1])
+        * (0.000015 * numpy.sqrt(8.0 * numpy.log(2.0))),
+        numpy.rad2deg(beam_pixels[2]),
     )
 
     assert clean_beam["bmin"] == pytest.approx(expected_results[0])
@@ -58,12 +57,14 @@ def test_convert_clean_beam_to_pixels(operations_image):
     """
     Unit test for the convert_clean_beam_to_pixels function
     """
-    clean_beam = {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}
+    clean_beam = {"bmaj": 0.1, "bmin": 0.05, "bpa": -60.0}
     beam_pixels = convert_clean_beam_to_pixels(operations_image, clean_beam)
     expected_results = (
-        numpy.deg2rad(clean_beam["bmin"]) / (0.000015 * numpy.sqrt(8.0 * numpy.log(2.0))),
-        numpy.deg2rad(clean_beam["bmaj"]) / (0.000015 * numpy.sqrt(8.0 * numpy.log(2.0))),
-        numpy.deg2rad(clean_beam["bpa"])
+        numpy.deg2rad(clean_beam["bmin"])
+        / (0.000015 * numpy.sqrt(8.0 * numpy.log(2.0))),
+        numpy.deg2rad(clean_beam["bmaj"])
+        / (0.000015 * numpy.sqrt(8.0 * numpy.log(2.0))),
+        numpy.deg2rad(clean_beam["bpa"]),
     )
 
     assert beam_pixels[0] == pytest.approx(expected_results[0])

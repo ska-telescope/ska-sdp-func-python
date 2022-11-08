@@ -3,12 +3,15 @@
 # pylint: disable=attribute-defined-outside-init, too-many-instance-attributes
 # pylint: disable= missing-class-docstring, missing-function-docstring
 # pylint: disable=import-error, no-name-in-module
+# pylint: skip-file
 """ Unit tests for calibration solution
 
 
 """
 import pytest
 
+# Tests being skipped due to persisting issues with importing ska-sdp-func in dft_skycomponent_visibility
+# this is needed in the fixture for these tests
 pytestmark = pytest.skip(allow_module_level=True)
 
 import logging
@@ -17,13 +20,16 @@ import unittest
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
+from numpy.random import default_rng
+from ska_sdp_datamodels.calibration.calibration_create import (
+    create_gaintable_from_visibility,
+)
 from ska_sdp_datamodels.configuration import create_named_configuration
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility import create_visibility
-from ska_sdp_datamodels.calibration.calibration_create import create_gaintable_from_visibility
 
 from ska_sdp_func_python.calibration.chain_calibration import (
     calibrate_chain,
@@ -32,12 +38,19 @@ from ska_sdp_func_python.calibration.chain_calibration import (
 from ska_sdp_func_python.calibration.operations import apply_gaintable
 from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 
-# Imports below need to be fixed
-from src.ska_sdp_func_python.simulation import simulate_gaintable
-
 log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
+
+
+# Quick mockup of the simulate_gaintable() function in rascil_main
+def simulate_gaintable(gt, phase_error, seed):
+    rng = default_rng(seed)
+    phases = rng.normal(0, phase_error, gt["gain"].data.shape)
+    gt["gain"].data = 1 * numpy.exp(0 + 1j * phases)
+    gt["gain"].data[..., 0, 1] = 0.0
+    gt["gain"].data[..., 1, 0] = 0.0
+    return gt
 
 
 class TestCalibrationChain(unittest.TestCase):
@@ -104,7 +117,7 @@ class TestCalibrationChain(unittest.TestCase):
         # Prepare the corrupted visibility data_models
         gt = create_gaintable_from_visibility(self.vis)
         log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
-        gt = simulate_gaintable(gt, phase_error=10.0, amplitude_error=0.0)
+        gt = simulate_gaintable(gt, 10.0, 180550721)
         original = self.vis.copy(deep=True)
         self.vis = apply_gaintable(self.vis, gt)
         # Now get the control dictionary and calibrate
@@ -122,7 +135,7 @@ class TestCalibrationChain(unittest.TestCase):
         # Prepare the corrupted visibility data_models
         gt = create_gaintable_from_visibility(self.vis)
         log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
-        gt = simulate_gaintable(gt, phase_error=10.0, amplitude_error=0.0)
+        gt = simulate_gaintable(gt, 10.0, 180550721)
         original = self.vis.copy(deep=True)
         self.vis = apply_gaintable(self.vis, gt)
         # Now get the control dictionary and calibrate
@@ -140,11 +153,7 @@ class TestCalibrationChain(unittest.TestCase):
         # Prepare the corrupted visibility data_models
         gt = create_gaintable_from_visibility(self.vis)
         log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
-        gt = simulate_gaintable(
-            gt,
-            phase_error=1.0,
-            amplitude_error=0.1,
-        )
+        gt = simulate_gaintable(gt, 1.0, 180550721)
         corrupted = self.vis.copy(deep=True)
         corrupted = apply_gaintable(corrupted, gt)
         # Now get the control dictionary and calibrate
@@ -163,7 +172,7 @@ class TestCalibrationChain(unittest.TestCase):
         # Prepare the corrupted visibility data_models
         gt = create_gaintable_from_visibility(self.vis)
         log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
-        gt = simulate_gaintable(gt, phase_error=10.0, amplitude_error=0.1)
+        gt = simulate_gaintable(gt, 10.0, 180550721)
         original = self.vis.copy(deep=True)
         self.vis = apply_gaintable(self.vis, gt)
 
@@ -190,7 +199,7 @@ class TestCalibrationChain(unittest.TestCase):
         # Prepare the corrupted visibility data_models
         gt = create_gaintable_from_visibility(self.vis)
         log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
-        gt = simulate_gaintable(gt, phase_error=10.0, amplitude_error=0.1)
+        gt = simulate_gaintable(gt, 10.0, 180550721)
         original = self.vis.copy(deep=True)
         self.vis = apply_gaintable(self.vis, gt)
 

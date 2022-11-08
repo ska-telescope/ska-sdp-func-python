@@ -18,6 +18,11 @@ import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.configuration import create_named_configuration
+
+# fix the below import
+from ska_sdp_datamodels.configuration.config_create import (
+    create_image_from_visibility,
+)
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
@@ -30,9 +35,6 @@ from ska_sdp_func_python.imaging.weighting import (
     taper_visibility_tukey,
     weight_visibility,
 )
-
-# fix the below import
-from ska_sdp_datamodels.configuration.config_create import create_image_from_visibility
 
 log = logging.getLogger("func-python-logger")
 

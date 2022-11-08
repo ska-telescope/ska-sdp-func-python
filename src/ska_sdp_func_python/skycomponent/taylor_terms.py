@@ -31,9 +31,7 @@ from ska_sdp_func_python.skycomponent.operations import (
 )
 
 # fix the below imports
-from src.ska_sdp_func_python import (
-    copy_skycomponent,
-)
+from ska_sdp_func_python import copy_skycomponent
 
 log = logging.getLogger("func-python-logger")
 

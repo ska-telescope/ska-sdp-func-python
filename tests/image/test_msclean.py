@@ -6,9 +6,9 @@
 
 """
 import logging
-import pytest
 
 import numpy
+import pytest
 
 from ska_sdp_func_python.image.cleaners import (
     argmax,
@@ -28,7 +28,7 @@ def msclean_fixture():
     scales = [0.0, 8.0 / numpy.sqrt(2.0), 8.0]
     stackshape = [len(scales), npixel, npixel]
     scalestack = create_scalestack(stackshape, scales)
-    params={
+    params = {
         "npixel": npixel,
         "stackshape": stackshape,
         "scalestack": scalestack,
@@ -43,17 +43,23 @@ def test_convolve(msclean_params):
     assert argmax(result)[1:] == (75, 31)
     numpy.testing.assert_array_almost_equal(
         result[0, 75, 31],
-        msclean_params["scalestack"][0, msclean_params["npixel"] // 2, msclean_params["npixel"] // 2],
+        msclean_params["scalestack"][
+            0, msclean_params["npixel"] // 2, msclean_params["npixel"] // 2
+        ],
         7,
     )
     numpy.testing.assert_array_almost_equal(
         result[1, 75, 31],
-        msclean_params["scalestack"][1, msclean_params["npixel"] // 2, msclean_params["npixel"] // 2],
+        msclean_params["scalestack"][
+            1, msclean_params["npixel"] // 2, msclean_params["npixel"] // 2
+        ],
         7,
     )
     numpy.testing.assert_array_almost_equal(
         result[2, 75, 31],
-        msclean_params["scalestack"][2, msclean_params["npixel"] // 2, msclean_params["npixel"] // 2],
+        msclean_params["scalestack"][
+            2, msclean_params["npixel"] // 2, msclean_params["npixel"] // 2
+        ],
         7,
     )
 
@@ -65,17 +71,23 @@ def test_convolve_convolve(msclean_params):
     assert argmax(result)[2:] == (75, 31)
     numpy.testing.assert_array_almost_equal(
         result[0, 0, 75, 31],
-        msclean_params["scalestack"][0, msclean_params["npixel"] // 2, msclean_params["npixel"] // 2],
+        msclean_params["scalestack"][
+            0, msclean_params["npixel"] // 2, msclean_params["npixel"] // 2
+        ],
         7,
     )
     numpy.testing.assert_array_almost_equal(
         result[0, 1, 75, 31],
-        msclean_params["scalestack"][1, msclean_params["npixel"] // 2, msclean_params["npixel"] // 2],
+        msclean_params["scalestack"][
+            1, msclean_params["npixel"] // 2, msclean_params["npixel"] // 2
+        ],
         7,
     )
     numpy.testing.assert_array_almost_equal(
         result[0, 2, 75, 31],
-        msclean_params["scalestack"][2, msclean_params["npixel"] // 2, msclean_params["npixel"] // 2],
+        msclean_params["scalestack"][
+            2, msclean_params["npixel"] // 2, msclean_params["npixel"] // 2
+        ],
         7,
     )
     # This is a coarse test since the scales do not
@@ -83,6 +95,8 @@ def test_convolve_convolve(msclean_params):
     # convolution
     numpy.testing.assert_array_almost_equal(
         result[1, 1, 75, 31],
-        msclean_params["scalestack"][2,msclean_params["npixel"] // 2, msclean_params["npixel"] // 2],
+        msclean_params["scalestack"][
+            2, msclean_params["npixel"] // 2, msclean_params["npixel"] // 2
+        ],
         2,
     )

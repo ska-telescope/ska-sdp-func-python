@@ -7,14 +7,16 @@
 
 """
 import pytest
+
 # Need to fix pad_image import and use pytest.parameterise instead of get_test_image()
 pytestmark = pytest.skip(allow_module_level=True)
 
 import logging
 import tempfile
+
+import numpy
 from astropy import units
 from astropy.coordinates import SkyCoord
-import numpy
 from ska_sdp_datamodels.image.image_create import create_image
 
 from src.ska_sdp_func_python.image.iterators import (
@@ -73,10 +75,7 @@ def test_raster(result_iterators):
                             "Number of pixels in each patch: %d not as expected: %d"
                             % (
                                 patch["pixels"].data.shape[3],
-                                (
-                                    m31model["pixels"].data.shape[3]
-                                    // nraster
-                                ),
+                                (m31model["pixels"].data.shape[3] // nraster),
                             )
                         )
                         assert patch["pixels"].data.shape[2] == (
@@ -85,18 +84,12 @@ def test_raster(result_iterators):
                             "Number of pixels in each patch: %d not as expected: %d"
                             % (
                                 patch["pixels"].data.shape[2],
-                                (
-                                    m31model["pixels"].data.shape[2]
-                                    // nraster
-                                ),
+                                (m31model["pixels"].data.shape[2] // nraster),
                             )
                         )
                         patch["pixels"].data *= 2.0
 
-                    if (
-                        numpy.max(numpy.abs(m31model["pixels"].data))
-                        == 0.0
-                    ):
+                    if numpy.max(numpy.abs(m31model["pixels"].data)) == 0.0:
                         log.warning(
                             f"Raster is empty failed for {npixel}, {nraster}, {overlap}"
                         )

@@ -9,7 +9,8 @@
 
 """
 import pytest
-
+# Tests being skipped due to persisting issues with importing ska-sdp-func in dft_skycomponent_visibility
+# this is needed in the fixture for these tests
 pytestmark = pytest.skip(allow_module_level=True)
 import functools
 import logging
@@ -21,11 +22,17 @@ import unittest
 import numpy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.configuration.config_create import (
+    create_named_configuration,
+)
+from ska_sdp_datamodels.gridded_visibility.grid_vis_create import (
+    create_griddata_from_image,
+)
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-from ska_sdp_datamodels.configuration.config_create import create_named_configuration
-from ska_sdp_datamodels.gridded_visibility.grid_vis_create import create_griddata_from_image
+from ska_sdp_datamodels.image.image_create import create_image
+from ska_sdp_datamodels.visibility.vis_create import create_visibility
 from ska_sdp_func_python.griddata.gridding import (
     degrid_visibility_from_griddata,
     fft_griddata_to_image,
@@ -39,7 +46,10 @@ from ska_sdp_func_python.image.operations import (
     convert_polimage_to_stokes,
     convert_stokes_to_polimage,
 )
-from ska_sdp_func_python.imaging.base import normalise_sumwt
+from ska_sdp_func_python.imaging.base import (
+    normalise_sumwt,
+    advise_wide_field,
+)
 from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 from ska_sdp_func_python.skycomponent.operations import insert_skycomponent
 
@@ -49,13 +59,10 @@ from src.ska_sdp_func_python.griddata.kernels import (
     create_box_convolutionfunction,
     create_pswf_convolutionfunction,
 )
-
 from src.ska_sdp_func_python.image.operations import smooth_image
 from src.ska_sdp_func_python.imaging.primary_beams import create_pb_generic
 from src.ska_sdp_func_python.simulation import (
     create_unittest_components,
-    create_unittest_model,
-    ingest_unittest_visibility,
 )
 
 log = logging.getLogger("func-python-logger")
@@ -116,7 +123,7 @@ class TestGridDataGridding(unittest.TestCase):
         self.phasecentre = SkyCoord(
             ra=+180.0 * u.deg, dec=-60.0 * u.deg, frame="icrs", equinox="J2000"
         )
-        self.vis = ingest_unittest_visibility(
+        self.vis = create_visibility(
             self.low,
             self.frequency,
             self.channelwidth,
@@ -125,19 +132,21 @@ class TestGridDataGridding(unittest.TestCase):
             self.phasecentre,
             zerow=zerow,
         )
+        self.vis["vis"].data[...] = 0.0
         if test_ignored_visibilities:
             self.cellsize = 1 / (
                 2
                 * numpy.min(self.vis.visibility_acc.uvw_lambda[..., 0, 0].flat)
             )
-
-        self.model = create_unittest_model(
+        advice = advise_wide_field(
             self.vis,
-            self.image_pol,
-            cellsize=self.cellsize,
-            npixel=self.npixel,
-            nchan=self.freqwin,
+            guard_band_image=2.0,
+            delA=0.02,
+            facets=1,
+            wprojection_planes=1,
+            oversampling_synthesised_beam=4.0,
         )
+        self.model = create_image(advice["npixels2"], advice["cellsize"], self.phasecentre)
         self.components = create_unittest_components(
             self.model,
             flux,

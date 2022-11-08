@@ -112,7 +112,9 @@ def extract_direction_and_flux(sc, vis):
         vfluxes.append(vflux)
 
         l, m, n = skycoord_to_lmn(comp.direction, vis.phasecentre)
-        direction_cosine = numpy.array([l, m, numpy.sqrt(1 - l**2 - m**2) - 1.0])
+        direction_cosine = numpy.array(
+            [l, m, numpy.sqrt(1 - l**2 - m**2) - 1.0]
+        )
 
         direction_cosines.append(direction_cosine)
 
@@ -165,7 +167,9 @@ def dft_kernel(
 
         ntimes, nbaselines, nchan, _ = uvw_lambda.shape
         npol = vfluxes.shape[-1]
-        new_vis_data = numpy.zeros([ntimes, nbaselines, nchan, npol], dtype="complex")
+        new_vis_data = numpy.zeros(
+            [ntimes, nbaselines, nchan, npol], dtype="complex"
+        )
 
         dft_point_v00(
             direction_cosines,
@@ -309,7 +313,8 @@ def dft_gpu_raw_kernel(direction_cosines, uvw_lambda, vfluxes):
     fluxes_gpu = cupy.asarray(vfluxes)
     uvw_gpu = cupy.asarray(uvw_lambda)
     vis_gpu = cupy.zeros(
-        (num_times, num_baselines, num_channels, num_pols), dtype=cupy.complex128
+        (num_times, num_baselines, num_channels, num_pols),
+        dtype=cupy.complex128,
     )
     # Define GPU kernel parameters, thread block size and grid size.
     num_threads = (128, 2, 2)  # Product must not exceed 1024.
@@ -356,9 +361,13 @@ def idft_visibility_skycomponent(
         # assert isinstance(comp, SkyComponent), comp
         newcomp = copy_skycomponent(comp)
 
-        phasor = numpy.conjugate(calculate_visibility_phasor(comp.direction, vis))
+        phasor = numpy.conjugate(
+            calculate_visibility_phasor(comp.direction, vis)
+        )
         flux = numpy.sum(
-            vis.visibility_acc.flagged_weight * vis.visibility_acc.flagged_vis * phasor,
+            vis.visibility_acc.flagged_weight
+            * vis.visibility_acc.flagged_vis
+            * phasor,
             axis=(0, 1),
         )
         weight = numpy.sum(vis.visibility_acc.flagged_weight, axis=(0, 1))

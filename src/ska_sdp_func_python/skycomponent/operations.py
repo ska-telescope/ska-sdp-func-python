@@ -47,7 +47,9 @@ from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_functions import (
     convert_pol_frame,
 )
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_func_python.image.operations import convert_clean_beam_to_pixels
 from ska_sdp_func_python.calibration.jones import apply_jones
@@ -68,7 +70,8 @@ def find_nearest_skycomponent_index(home, comps) -> int:
     if len(comps) == 0:
         raise ValueError("find_nearest_skycomponent_index: Catalog is empty")
     catalog = SkyCoord(
-        ra=[c.direction.ra for c in comps], dec=[c.direction.dec for c in comps]
+        ra=[c.direction.ra for c in comps],
+        dec=[c.direction.dec for c in comps],
     )
     idx, dist2d, dist3d = match_coordinates_sky(home, catalog)
     return idx
@@ -99,7 +102,9 @@ def find_separation_skycomponents(comps_test, comps_ref=None):
         for i in range(ncomps):
             for j in range(i + 1, ncomps):
                 distances[i, j] = (
-                    comps_test[i].direction.separation(comps_test[j].direction).rad
+                    comps_test[i]
+                    .direction.separation(comps_test[j].direction)
+                    .rad
                 )
                 distances[j, i] = distances[i, j]
         return distances
@@ -111,7 +116,9 @@ def find_separation_skycomponents(comps_test, comps_ref=None):
         for ref in range(ncomps_ref):
             for test in range(ncomps_test):
                 separations[ref, test] = (
-                    comps_test[test].direction.separation(comps_ref[ref].direction).rad
+                    comps_test[test]
+                    .direction.separation(comps_ref[ref].direction)
+                    .rad
                 )
 
         return separations
@@ -157,7 +164,8 @@ def find_skycomponent_matches(comps_test, comps_ref, tol=1e-7):
         dec=[c.direction.dec for c in comps_test],
     )
     catalog_ref = SkyCoord(
-        ra=[c.direction.ra for c in comps_ref], dec=[c.direction.dec for c in comps_ref]
+        ra=[c.direction.ra for c in comps_ref],
+        dec=[c.direction.dec for c in comps_ref],
     )
     idx, dist2d, dist3d = match_coordinates_sky(catalog_test, catalog_ref)
     matches = list()
@@ -253,7 +261,9 @@ def find_skycomponents(
     """
 
     # assert isinstance(im, Image)
-    log.debug("find_skycomponents: Finding components in Image by segmentation")
+    log.debug(
+        "find_skycomponents: Finding components in Image by segmentation"
+    )
 
     # We use photutils segmentation - this first segments the image
     # into pieces that are thought to contain individual sources, then
@@ -295,7 +305,10 @@ def find_skycomponents(
 
     def comp_prop(comp, prop_name):
         return [
-            [comp_catalog[chan][pol][comp].__getattribute__(prop_name) for pol in [0]]
+            [
+                comp_catalog[chan][pol][comp].__getattribute__(prop_name)
+                for pol in [0]
+            ]
             for chan in range(im.image_acc.nchan)
         ]
 
@@ -305,8 +318,12 @@ def find_skycomponents(
         # Get flux and position. Astropy's quantities make this
         # unnecessarily complicated.
         flux = numpy.array(comp_prop(segment, "max_value"))
-        xs = u.Quantity(list(map(u.Quantity, comp_prop(segment, "maxval_xindex"))))
-        ys = u.Quantity(list(map(u.Quantity, comp_prop(segment, "maxval_yindex"))))
+        xs = u.Quantity(
+            list(map(u.Quantity, comp_prop(segment, "maxval_xindex")))
+        )
+        ys = u.Quantity(
+            list(map(u.Quantity, comp_prop(segment, "maxval_yindex")))
+        )
 
         sc = pixel_to_skycoord(xs, ys, im.image_acc.wcs, 0)
         ras = sc.ra
@@ -366,13 +383,17 @@ def apply_beam_to_skycomponent(
 
     nchan, npol, ny, nx = beam["pixels"].data.shape
 
-    log.debug("apply_beam_to_skycomponent: Processing %d components" % (len(sc)))
+    log.debug(
+        "apply_beam_to_skycomponent: Processing %d components" % (len(sc))
+    )
 
     ras = [comp.direction.ra.radian for comp in sc]
     decs = [comp.direction.dec.radian for comp in sc]
     skycoords = SkyCoord(ras * u.rad, decs * u.rad, frame="icrs")
     if beam.image_acc.wcs.wcs.ctype[0] == "RA---SIN":
-        pixlocs = skycoord_to_pixel(skycoords, beam.image_acc.wcs, origin=1, mode="wcs")
+        pixlocs = skycoord_to_pixel(
+            skycoords, beam.image_acc.wcs, origin=1, mode="wcs"
+        )
     else:
         wcs = copy.deepcopy(beam.image_acc.wcs)
         wcs.wcs.ctype[0] = "RA---SIN"
@@ -442,9 +463,9 @@ def apply_voltage_pattern_to_skycomponent(
     :return: List of skycomponents
     """
     # assert isinstance(vp, Image)
-    assert (vp.image_acc.polarisation_frame == PolarisationFrame("linear")) or (
-        vp.image_acc.polarisation_frame == PolarisationFrame("circular")
-    )
+    assert (
+        vp.image_acc.polarisation_frame == PolarisationFrame("linear")
+    ) or (vp.image_acc.polarisation_frame == PolarisationFrame("circular"))
 
     # assert vp["pixels"].data.dtype == "complex128"
     single = not isinstance(sc, collections.abc.Iterable)
@@ -460,7 +481,9 @@ def apply_voltage_pattern_to_skycomponent(
     decs = [comp.direction.dec.radian for comp in sc]
     skycoords = SkyCoord(ras * u.rad, decs * u.rad, frame="icrs")
     if vp.image_acc.wcs.wcs.ctype[0] == "RA---SIN":
-        pixlocs = skycoord_to_pixel(skycoords, vp.image_acc.wcs, origin=1, mode="wcs")
+        pixlocs = skycoord_to_pixel(
+            skycoords, vp.image_acc.wcs, origin=1, mode="wcs"
+        )
     else:
         assert phasecentre is not None, "Need to know the phasecentre"
         wcs = copy.deepcopy(vp.image_acc.wcs)
@@ -497,7 +520,9 @@ def apply_voltage_pattern_to_skycomponent(
                 for chan in range(nchan):
                     ej = vp["pixels"].data[chan, :, y, x].reshape([2, 2])
                     cfs = comp_flux_cstokes[chan].reshape([2, 2])
-                    comp_flux[chan, :] = apply_jones(ej, cfs, inverse).reshape([4])
+                    comp_flux[chan, :] = apply_jones(ej, cfs, inverse).reshape(
+                        [4]
+                    )
 
                 total_flux += comp_flux
                 if inverse:
@@ -580,7 +605,9 @@ def insert_skycomponent(
     ras = [comp.direction.ra.radian for comp in sc]
     decs = [comp.direction.dec.radian for comp in sc]
     skycoords = SkyCoord(ras * u.rad, decs * u.rad, frame="icrs")
-    pixlocs = skycoord_to_pixel(skycoords, im.image_acc.wcs, origin=0, mode="wcs")
+    pixlocs = skycoord_to_pixel(
+        skycoords, im.image_acc.wcs, origin=0, mode="wcs"
+    )
 
     nbad = 0
     for icomp, comp in enumerate(sc):
@@ -592,7 +619,8 @@ def insert_skycomponent(
 
         if (
             len(comp.frequency.data) == len(image_frequency)
-            and numpy.max(numpy.abs(comp.frequency.data - image_frequency)) < 1e-7
+            and numpy.max(numpy.abs(comp.frequency.data - image_frequency))
+            < 1e-7
         ):
             flux = comp.flux
         elif comp.flux.shape[0] > 1:
@@ -677,7 +705,9 @@ def restore_skycomponent(
     ras = [comp.direction.ra.radian for comp in sc]
     decs = [comp.direction.dec.radian for comp in sc]
     skycoords = SkyCoord(ras * u.rad, decs * u.rad, frame="icrs")
-    pixlocs = skycoord_to_pixel(skycoords, im.image_acc.wcs, origin=0, mode="wcs")
+    pixlocs = skycoord_to_pixel(
+        skycoords, im.image_acc.wcs, origin=0, mode="wcs"
+    )
     beam_pixels = convert_clean_beam_to_pixels(im, clean_beam)
 
     for icomp, comp in enumerate(sc):
@@ -692,7 +722,8 @@ def restore_skycomponent(
 
         if (
             len(comp.frequency.data) == len(image_frequency)
-            and numpy.max(numpy.abs(comp.frequency.data - image_frequency)) < 1e-7
+            and numpy.max(numpy.abs(comp.frequency.data - image_frequency))
+            < 1e-7
         ):
             flux = comp.flux
         elif comp.flux.shape[0] > 1:
@@ -762,7 +793,9 @@ def voronoi_decomposition(im, comps):
     return vor, vertex_image
 
 
-def image_voronoi_iter(im: Image, components: list) -> collections.abc.Iterable:
+def image_voronoi_iter(
+    im: Image, components: list
+) -> collections.abc.Iterable:
     """Iterate through Voronoi decomposition, returning a generator yielding fullsize images
 
     :param im: Image
@@ -782,7 +815,9 @@ def image_voronoi_iter(im: Image, components: list) -> collections.abc.Iterable:
         nregions = numpy.max(vertex_array) + 1
         for region in range(nregions):
             mask = numpy.zeros(im["pixels"].data.shape)
-            mask[(vertex_array == region)[numpy.newaxis, numpy.newaxis, ...]] = 1.0
+            mask[
+                (vertex_array == region)[numpy.newaxis, numpy.newaxis, ...]
+            ] = 1.0
             yield create_image(
                 mask,
                 wcs=im.image_acc.wcs,
@@ -842,7 +877,9 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
             fit = fit_p(p_init, x, y, z)
 
         # Now fill in the new skycomponent values
-        newsc.direction = pixel_to_skycoord(fit.x_mean, fit.y_mean, im.image_acc.wcs, 0)
+        newsc.direction = pixel_to_skycoord(
+            fit.x_mean, fit.y_mean, im.image_acc.wcs, 0
+        )
         iy = round(fit.y_mean.value)
         ix = round(fit.x_mean.value)
 
@@ -853,7 +890,9 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
         try:
             force_point_sources = kwargs["force_point_sources"]
         except KeyError:
-            log.info("fit_skycomponent: force_point_sources not give, setting as default: True")
+            log.info(
+                "fit_skycomponent: force_point_sources not give, setting as default: True"
+            )
             force_point_sources = True
 
         if force_point_sources or (fit.x_fwhm <= 0.0 or fit.y_fwhm <= 0.0):
@@ -861,7 +900,9 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
         else:
             newsc.shape = "Gaussian"
             # cellsize in radians
-            cellsize = numpy.abs((im["x"][0].data - im["x"][-1].data)) / len(im["x"])
+            cellsize = numpy.abs((im["x"][0].data - im["x"][-1].data)) / len(
+                im["x"]
+            )
 
             gaussian_pixels = (fit.x_fwhm, fit.y_fwhm, fit.theta)
 

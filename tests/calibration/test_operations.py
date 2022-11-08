@@ -2,19 +2,26 @@
 
 """
 import logging
-import pytest
-import numpy
 
+import numpy
+import pytest
 from astropy import units
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
-from ska_sdp_datamodels.configuration.config_create import create_named_configuration
-from ska_sdp_datamodels.calibration.calibration_create import create_gaintable_from_visibility
+from ska_sdp_datamodels.calibration.calibration_create import (
+    create_gaintable_from_visibility,
+)
+from ska_sdp_datamodels.configuration.config_create import (
+    create_named_configuration,
+)
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 from ska_sdp_datamodels.visibility.vis_create import create_visibility
+
 from ska_sdp_func_python.calibration.operations import (
     apply_gaintable,
-    multiply_gaintables,
     concatenate_gaintables,
+    multiply_gaintables,
 )
 
 log = logging.getLogger("func-python-logger")
@@ -74,8 +81,11 @@ def test_apply_gaintable(results_operations):
     """
 
     vis = results_operations["visibility2"]
-    new_vis = apply_gaintable(results_operations["visibility1"], results_operations["gaintable2"],
-                              use_flags=numpy.ones((1, 1, 1, 1)))
+    new_vis = apply_gaintable(
+        results_operations["visibility1"],
+        results_operations["gaintable2"],
+        use_flags=numpy.ones((1, 1, 1, 1)),
+    )
     assert (new_vis["vis"].data == vis["vis"].data).all()
     assert (new_vis["weight"].data == vis["weight"].data / 2).all()
 
@@ -89,9 +99,16 @@ def test_multiply_gaintables(results_operations):
 
     gt_multiplied = multiply_gaintables(gt, dgt)
 
-    assert (gt_multiplied["gain"].data == numpy.einsum("...ik,...ij->...kj",
-                                                       gt["gain"].data, dgt["gain"].data)).all()
-    assert (gt_multiplied["weight"].data == (gt["weight"].data * dgt["weight"].data)).all()
+    assert (
+        gt_multiplied["gain"].data
+        == numpy.einsum(
+            "...ik,...ij->...kj", gt["gain"].data, dgt["gain"].data
+        )
+    ).all()
+    assert (
+        gt_multiplied["weight"].data
+        == (gt["weight"].data * dgt["weight"].data)
+    ).all()
 
 
 def test_concatenate_gaintables(results_operations):
@@ -101,12 +118,14 @@ def test_concatenate_gaintables(results_operations):
 
     gt_list = [
         results_operations["gaintable1"],
-        results_operations["gaintable2"]
+        results_operations["gaintable2"],
     ]
 
     gt_concat = concatenate_gaintables(gt_list)
 
-    assert (len(gt_list[0]) + len(gt_list[1])) == (len(results_operations["gaintable1"]) +
-                                                   len(results_operations["gaintable2"]))
+    assert (len(gt_list[0]) + len(gt_list[1])) == (
+        len(results_operations["gaintable1"])
+        + len(results_operations["gaintable2"])
+    )
     assert len(gt_concat) == len(results_operations["gaintable1"])
     assert len(gt_concat) == len(results_operations["gaintable2"])

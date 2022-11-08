@@ -8,20 +8,19 @@
 
 
 """
-import pytest
-
 import logging
 import os
 import tempfile
 
 import astropy.units as u
 import numpy
+import pytest
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.configuration import create_named_configuration
+from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility import create_visibility
 
@@ -39,6 +38,7 @@ from ska_sdp_func_python.imaging.imaging import (
     invert_visibility,
     predict_visibility,
 )
+
 # from ska_sdp_func_python.skycomponent.operations import restore_skycomponent
 
 # fix the below imports
@@ -87,9 +87,7 @@ def deconvolution_fixture():
         polarisation_frame=PolarisationFrame("stokesI"),
     )
     dirty = invert_visibility(vis, model, context="2d")[0]
-    psf = invert_visibility(
-        vis, model, context="2d", dopsf=True
-    )[0]
+    psf = invert_visibility(vis, model, context="2d", dopsf=True)[0]
     # sensitivity = create_pb(model, "LOW")
     params = {
         "dirty": dirty,
@@ -121,29 +119,31 @@ def test_overlap():
 
 
 def test_restore(result_deconvolution):
-    result_deconvolution["model"].data_vars["pixels"].data[0, 0, 256, 256] = 1.0
-    cmodel = restore_cube(result_deconvolution["model"], result_deconvolution["psf"])
-    assert (
-        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7
-    ), numpy.max(cmodel["pixels"].data)
+    result_deconvolution["model"].data_vars["pixels"].data[
+        0, 0, 256, 256
+    ] = 1.0
+    cmodel = restore_cube(
+        result_deconvolution["model"], result_deconvolution["psf"]
+    )
+    assert numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7, numpy.max(
+        cmodel["pixels"].data
+    )
     if result_deconvolution["persist"]:
         with tempfile.TemporaryDirectory() as tempdir:
-            cmodel.image_acc.export_to_fits(
-                f"{tempdir}/test_restore.fits"
-            )
+            cmodel.image_acc.export_to_fits(f"{tempdir}/test_restore.fits")
 
 
 def test_restore_list(result_deconvolution):
     result_deconvolution["model"]["pixels"].data[0, 0, 256, 256] = 1.0
-    cmodel = restore_list([result_deconvolution["model"]], [result_deconvolution["psf"]])[0]
-    assert (
-        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7
-    ), numpy.max(cmodel["pixels"].data)
+    cmodel = restore_list(
+        [result_deconvolution["model"]], [result_deconvolution["psf"]]
+    )[0]
+    assert numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7, numpy.max(
+        cmodel["pixels"].data
+    )
     if result_deconvolution["persist"]:
         with tempfile.TemporaryDirectory() as tempdir:
-            cmodel.image_acc.export_to_fits(
-                f"{tempdir}/test_restore.fits"
-            )
+            cmodel.image_acc.export_to_fits(f"{tempdir}/test_restore.fits")
 
 
 def test_restore_clean_beam(result_deconvolution):
@@ -159,14 +159,15 @@ def test_restore_clean_beam(result_deconvolution):
         result_deconvolution["psf"],
         clean_beam={"bmaj": bmaj, "bmin": bmaj, "bpa": 0.0},
     )
-    assert (
-        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7
-    ), numpy.max(cmodel["pixels"].data)
+    assert numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7, numpy.max(
+        cmodel["pixels"].data
+    )
     if result_deconvolution["persist"]:
         with tempfile.TemporaryDirectory() as tempdir:
             cmodel.image_acc.export_to_fits(
                 f"{tempdir}/test_restore_6mrad_beam.fits"
             )
+
 
 @pytest.mark.skip(reason="Import issues in SkyComponent/operations.py")
 def test_restore_skycomponent(result_deconvolution):
@@ -188,19 +189,14 @@ def test_restore_skycomponent(result_deconvolution):
     bmaj = 0.012 * 180.0 / numpy.pi
     clean_beam = {"bmaj": bmaj, "bmin": bmaj / 2.0, "bpa": 15.0}
     cmodel = restore_cube(result_deconvolution["model"], clean_beam=clean_beam)
-    cmodel = restore_skycomponent(
-        cmodel, sc, clean_beam=clean_beam
-    )
+    cmodel = restore_skycomponent(cmodel, sc, clean_beam=clean_beam)
     if result_deconvolution["persist"]:
         with tempfile.TemporaryDirectory() as tempdir:
             cmodel.image_acc.export_to_fits(
                 f"{tempdir}/test_restore_skycomponent.fits"
             )
     assert (
-        numpy.abs(
-            numpy.max(cmodel["pixels"].data) - 0.9959046879055156
-        )
-        < 1e-7
+        numpy.abs(numpy.max(cmodel["pixels"].data) - 0.9959046879055156) < 1e-7
     ), numpy.max(cmodel["pixels"].data)
 
 
@@ -223,7 +219,9 @@ def test_fit_psf(result_deconvolution):
     ), clean_beam
 
 
-@pytest.mark.skip(reason="Issues with inputs for create_image in deconvolution.py")
+@pytest.mark.skip(
+    reason="Issues with inputs for create_image in deconvolution.py"
+)
 def test_deconvolve_hogbom(result_deconvolution):
     comp, residual = deconvolve_cube(
         result_deconvolution["dirty"],
@@ -239,7 +237,9 @@ def test_deconvolve_hogbom(result_deconvolution):
     assert numpy.max(residual["pixels"].data) < 1.2
 
 
-@pytest.mark.skip(reason="Issues with inputs for create_image in deconvolution.py")
+@pytest.mark.skip(
+    reason="Issues with inputs for create_image in deconvolution.py"
+)
 def test_deconvolve_msclean(result_deconvolution):
     comp, residual = deconvolve_cube(
         result_deconvolution["dirty"],
@@ -294,7 +294,9 @@ def test_deconvolve_msclean_sensitivity(result_deconvolution):
     )
 
 
-@pytest.mark.skip(reason="Issues with inputs for create_image in deconvolution.py")
+@pytest.mark.skip(
+    reason="Issues with inputs for create_image in deconvolution.py"
+)
 def test_deconvolve_msclean_1scale(result_deconvolution):
 
     comp, residual = deconvolve_cube(
@@ -312,7 +314,9 @@ def test_deconvolve_msclean_1scale(result_deconvolution):
     assert numpy.max(residual["pixels"].data) < 1.2
 
 
-@pytest.mark.skip(reason="Issues with inputs for create_image in deconvolution.py")
+@pytest.mark.skip(
+    reason="Issues with inputs for create_image in deconvolution.py"
+)
 def test_deconvolve_hogbom_no_edge(result_deconvolution):
     comp, residual = deconvolve_cube(
         result_deconvolution["dirty"],
@@ -329,7 +333,9 @@ def test_deconvolve_hogbom_no_edge(result_deconvolution):
     assert numpy.max(residual["pixels"].data) < 1.2
 
 
-@pytest.mark.skip(reason="Issues with inputs for create_image in deconvolution.py")
+@pytest.mark.skip(
+    reason="Issues with inputs for create_image in deconvolution.py"
+)
 def test_deconvolve_hogbom_inner_quarter(result_deconvolution):
     comp, residual = deconvolve_cube(
         result_deconvolution["dirty"],
@@ -342,11 +348,13 @@ def test_deconvolve_hogbom_inner_quarter(result_deconvolution):
     )
     cmodel = restore_cube(comp, result_deconvolution["psf"], residual)
     if result_deconvolution["persist"]:
-        save_results("hogbom_no_inner_quarter", comp, residual,cmodel)
+        save_results("hogbom_no_inner_quarter", comp, residual, cmodel)
     assert numpy.max(residual["pixels"].data) < 1.2
 
 
-@pytest.mark.skip(reason="Issues with inputs for create_image in deconvolution.py")
+@pytest.mark.skip(
+    reason="Issues with inputs for create_image in deconvolution.py"
+)
 def test_deconvolve_msclean_inner_quarter(result_deconvolution):
 
     comp, residual = deconvolve_cube(
@@ -365,7 +373,9 @@ def test_deconvolve_msclean_inner_quarter(result_deconvolution):
     assert numpy.max(residual["pixels"].data) < 1.2
 
 
-@pytest.mark.skip(reason="Issues with inputs for create_image in deconvolution.py")
+@pytest.mark.skip(
+    reason="Issues with inputs for create_image in deconvolution.py"
+)
 def test_deconvolve_hogbom_subpsf(result_deconvolution):
 
     comp, residual = deconvolve_cube(
@@ -381,12 +391,12 @@ def test_deconvolve_hogbom_subpsf(result_deconvolution):
     cmodel = restore_cube(comp, result_deconvolution["psf"], residual)
     if result_deconvolution["persist"]:
         save_results("hogbom_subpsf", comp, residual, cmodel)
-    assert (
-        numpy.max(residual["pixels"].data[..., 56:456, 56:456]) < 1.2
-    )
+    assert numpy.max(residual["pixels"].data[..., 56:456, 56:456]) < 1.2
 
 
-@pytest.mark.skip(reason="Issues with inputs for create_image in deconvolution.py")
+@pytest.mark.skip(
+    reason="Issues with inputs for create_image in deconvolution.py"
+)
 def test_deconvolve_msclean_subpsf(result_deconvolution):
 
     comp, residual = deconvolve_cube(
@@ -403,9 +413,7 @@ def test_deconvolve_msclean_subpsf(result_deconvolution):
     cmodel = restore_cube(comp, result_deconvolution["psf"], residual)
     if result_deconvolution["persist"]:
         save_results("msclean_subpsf", comp, result_deconvolution, cmodel)
-    assert (
-        numpy.max(residual["pixels"].data[..., 56:456, 56:456]) < 1.0
-    )
+    assert numpy.max(residual["pixels"].data[..., 56:456, 56:456]) < 1.0
 
 
 def _check_hogbom_kernel_list_test_results(component, residual):
@@ -456,7 +464,9 @@ def _check_hogbom_kernel_list_test_results(component, residual):
     )
 
 
-@pytest.mark.skip(reason="Issues with inputs for create_image in deconvolution.py")
+@pytest.mark.skip(
+    reason="Issues with inputs for create_image in deconvolution.py"
+)
 def test_hogbom_kernel_list_single_dirty(result_deconvolution):
     prefix = "test_hogbom_list"
     dirty_list = [result_deconvolution["dirty"]]
@@ -469,12 +479,12 @@ def test_hogbom_kernel_list_single_dirty(result_deconvolution):
 
     assert len(comp_list) == 1
     assert len(residual_list) == 1
-    _check_hogbom_kernel_list_test_results(
-        comp_list[0], residual_list[0]
-    )
+    _check_hogbom_kernel_list_test_results(comp_list[0], residual_list[0])
 
 
-@pytest.mark.skip(reason="Issues with inputs for create_image in deconvolution.py")
+@pytest.mark.skip(
+    reason="Issues with inputs for create_image in deconvolution.py"
+)
 def test_hogbom_kernel_list_multiple_dirty(result_deconvolution):
     """
     Bugfix: hogbom_kernel_list produced an IndexError, when dirty_list has more than
@@ -493,12 +503,8 @@ def test_hogbom_kernel_list_multiple_dirty(result_deconvolution):
     assert len(comp_list) == 2
     assert len(residual_list) == 2
     # because the two dirty images and psfs are the same, the expected results are also the same
-    _check_hogbom_kernel_list_test_results(
-        comp_list[0], residual_list[0]
-    )
-    _check_hogbom_kernel_list_test_results(
-        comp_list[1], residual_list[1]
-    )
+    _check_hogbom_kernel_list_test_results(comp_list[0], residual_list[0])
+    _check_hogbom_kernel_list_test_results(comp_list[1], residual_list[1])
 
 
 @pytest.mark.skip(reason="Incomplete test")
