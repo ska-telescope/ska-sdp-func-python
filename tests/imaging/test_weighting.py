@@ -32,7 +32,7 @@ from ska_sdp_func_python.imaging.weighting import (
 )
 
 # fix the below import
-from src.ska_sdp_func_python import create_image_from_visibility
+from ska_sdp_datamodels.configuration.config_create import create_image_from_visibility
 
 log = logging.getLogger("func-python-logger")
 

@@ -47,6 +47,7 @@ from typing import List
 import numpy
 from astropy.convolution import Gaussian2DKernel, convolve_fft
 from astropy.modeling import fitting, models
+from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
@@ -70,12 +71,6 @@ from ska_sdp_func_python.image.taylor_terms import (
     calculate_image_list_frequency_moments,
     calculate_image_list_from_frequency_taylor_terms,
 )
-
-# fix the below imports
-from ska_sdp_func_python.image.operations import (
-    create_image,
-)
-from ska_sdp_func_python.parameters import get_parameter
 
 log = logging.getLogger("func-python-logger")
 
@@ -136,7 +131,12 @@ def deconvolve_list(
 
     """
 
-    window_shape = get_parameter(kwargs, "window_shape", None)
+    try:
+        window_shape = kwargs["window_shape"]
+    except KeyError:
+        log.info("no window_shape given, setting default value")
+        window_shape = None
+
     window_list = find_window_list(
         dirty_list, prefix, window_shape=window_shape
     )
@@ -147,7 +147,12 @@ def deconvolve_list(
 
     check_psf_peak(psf_list)
 
-    algorithm = get_parameter(kwargs, "algorithm", "msclean")
+    try:
+        algorithm = kwargs["algorithm"]
+    except KeyError:
+        log.info("no algorithm given, setting default value")
+        algorithm = "msclean"
+
     if algorithm == "msclean":
         comp_image_list, residual_image_list = msclean_kernel_list(
             dirty_list,
@@ -222,12 +227,42 @@ def radler_deconvolve_list(
 
     import radler as rd  # pylint: disable=import-error
 
-    algorithm = get_parameter(kwargs, "algorithm", "msclean")
-    n_iterations = get_parameter(kwargs, "niter", 500)
-    clean_threshold = get_parameter(kwargs, "threshold", 0.001)
-    loop_gain = get_parameter(kwargs, "gain", 0.7)
-    ms_scales = get_parameter(kwargs, "scales", [])
-    cellsize = get_parameter(kwargs, "cellsize", 0.005)
+    try:
+        algorithm = kwargs["algorithm"]
+    except KeyError:
+        log.info("no algorithm given, setting default value")
+        algorithm = "msclean"
+
+    try:
+        n_iterations = kwargs["niter"]
+    except KeyError:
+        log.info("no n_iterations given, setting default value")
+        n_iterations = 500
+
+    try:
+        clean_threshold = kwargs["threshold"]
+    except KeyError:
+        log.info("no clean_threshold given, setting default value")
+        clean_threshold = 0.001
+
+    try:
+        loop_gain = kwargs["gain"]
+    except KeyError:
+        log.info("no loop_gain given, setting default value")
+        loop_gain = 0.7
+
+    try:
+        ms_scales = kwargs["scales"]
+    except KeyError:
+        log.info("no ms_scales given, setting default value")
+        ms_scales = []
+
+    try:
+        cellsize = kwargs["cellsize"]
+    except KeyError:
+        log.info("no cellsize given, setting default value")
+        cellsize = 0.005
+
     settings = rd.Settings()
     settings.trimmed_image_width = dirty_list[0].pixels.shape[2]
     settings.trimmed_image_height = dirty_list[0].pixels.shape[3]
@@ -325,7 +360,12 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
                 % prefix
             )
         elif window_shape == "no_edge":
-            edge = get_parameter(kwargs, "window_edge", 16)
+            try:
+                edge = kwargs["window_edge"]
+            except KeyError:
+                log.info("no edge given, setting default value")
+                edge = 16
+
             nx = dirty["pixels"].shape[3]
             ny = dirty["pixels"].shape[2]
             window_array = numpy.zeros_like(dirty["pixels"].data)
@@ -341,7 +381,12 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
                 "Window shape %s is not recognized" % window_shape
             )
 
-        mask = get_parameter(kwargs, "mask", None)
+        try:
+            mask = kwargs["mask"]
+        except KeyError:
+            log.info("no mask given, setting default value")
+            mask = None
+
         if isinstance(mask, Image):
             if window_array is not None:
                 log.warning(
@@ -547,19 +592,43 @@ def common_arguments(**kwargs):
     :param kwargs:
     :return: fracthresh, gain, niter, thresh, scales
     """
-    gain = get_parameter(kwargs, "gain", 0.1)
+    try:
+        gain = kwargs["gain"]
+    except KeyError:
+        log.info("no gain given, setting default value")
+        gain = 0.1
+
     if gain <= 0.0 or gain >= 2.0:
         raise ValueError("Loop gain must be between 0 and 2")
-    thresh = get_parameter(kwargs, "threshold", 0.0)
+    try:
+        thresh = kwargs["threshold"]
+    except KeyError:
+        log.info("no threshold given, setting default value")
+        thresh = 0.0
+
     if thresh < 0.0:
         raise ValueError("Threshold must be positive or zero")
-    niter = get_parameter(kwargs, "niter", 100)
+    try:
+        niter = kwargs["niter"]
+    except KeyError:
+        log.info("no niter given, setting default value")
+        niter = 100
+
     if niter < 0:
         raise ValueError("niter must be greater than zero")
-    fracthresh = get_parameter(kwargs, "fractional_threshold", 0.01)
+    try:
+        fracthresh = kwargs["fractional_threshold"]
+    except KeyError:
+        log.info("no fracthresh given, setting default value")
+        fracthresh = 0.01
+
     if fracthresh < 0.0 or fracthresh > 1.0:
         raise ValueError("Fractional threshold should be in range 0.0, 1.0")
-    scales = get_parameter(kwargs, "scales", [0, 3, 10, 30])
+    try:
+        scales = kwargs["scales"]
+    except KeyError:
+        log.info("no scales given, setting default value")
+        scales = [0, 3, 10, 30]
 
     return fracthresh, gain, niter, thresh, scales
 
@@ -696,13 +765,23 @@ def mmclean_kernel_list(
 
     """
 
-    findpeak = get_parameter(kwargs, "findpeak", "RASCIL")
+    try:
+        findpeak = kwargs["findpeak"]
+    except KeyError:
+        log.info("no findpeak given, setting default value")
+        findpeak = "RASCIL"
+
     log.info(
         "mmclean_kernel_list %s: "
         "Starting Multi-scale multi-frequency clean of each polarisation separately"
         % prefix
     )
-    nmoment = get_parameter(kwargs, "nmoment", 3)
+    try:
+        nmoment = kwargs["nmoment"]
+    except KeyError:
+        log.info("no nmoment given, setting default value")
+        nmoment = 3
+
     if not nmoment >= 1:
         raise ValueError(
             "Number of frequency moments must be greater than or equal to one"
@@ -758,7 +837,12 @@ def mmclean_kernel_list(
 
     fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
 
-    gain = get_parameter(kwargs, "gain", 0.7)
+    try:
+        gain = kwargs["gain"]
+    except KeyError:
+        log.info("no gain given, setting default value")
+        gain = 0.7
+
     if not 0.0 < gain < 2.0:
         raise ValueError("Loop gain must be between 0 and 2")
 

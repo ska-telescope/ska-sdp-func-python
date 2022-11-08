@@ -15,12 +15,11 @@ import logging
 from typing import List
 
 import xarray
+from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 
 from ska_sdp_func_python.image.iterators import image_raster_iter
 
-# fix the below imports
-from src.ska_sdp_func_python.image.operations import create_image
 
 log = logging.getLogger("func-python-logger")
 

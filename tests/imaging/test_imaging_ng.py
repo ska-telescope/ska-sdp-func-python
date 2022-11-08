@@ -22,7 +22,7 @@ from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-
+from ska_sdp_datamodels.configuration.config_create import create_named_configuration
 from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 from ska_sdp_func_python.skycomponent.operations import (
     find_nearest_skycomponent,
@@ -33,7 +33,6 @@ from ska_sdp_func_python.skycomponent.operations import (
 # fix the below imports
 from src.ska_sdp_func_python.image.operations import smooth_image
 from src.ska_sdp_func_python.simulation import (
-    create_named_configuration,
     create_unittest_components,
     create_unittest_model,
     ingest_unittest_visibility,

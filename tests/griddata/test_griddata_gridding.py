@@ -24,7 +24,8 @@ from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-
+from ska_sdp_datamodels.configuration.config_create import create_named_configuration
+from ska_sdp_datamodels.gridded_visibility.grid_vis_create import create_griddata_from_image
 from ska_sdp_func_python.griddata.gridding import (
     degrid_visibility_from_griddata,
     fft_griddata_to_image,
@@ -48,13 +49,10 @@ from src.ska_sdp_func_python.griddata.kernels import (
     create_box_convolutionfunction,
     create_pswf_convolutionfunction,
 )
-from src.ska_sdp_func_python.griddata.operations import (
-    create_griddata_from_image,
-)
+
 from src.ska_sdp_func_python.image.operations import smooth_image
 from src.ska_sdp_func_python.imaging.primary_beams import create_pb_generic
 from src.ska_sdp_func_python.simulation import (
-    create_named_configuration,
     create_unittest_components,
     create_unittest_model,
     ingest_unittest_visibility,

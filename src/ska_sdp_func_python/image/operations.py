@@ -12,6 +12,7 @@ import warnings
 
 import numpy
 from astropy.wcs import FITSFixedWarning
+from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_functions import (
     convert_stokes_to_linear,
@@ -20,8 +21,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
     convert_circular_to_stokes,
 )
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
-# Fix imports below
-from ska_sdp_datamodels import create_image
+
 
 warnings.simplefilter("ignore", FITSFixedWarning)
 log = logging.getLogger("func-python-logger")
@@ -75,7 +75,7 @@ def convert_stokes_to_polimage(im: Image, polarisation_frame: PolarisationFrame)
     """Convert a stokes image in IQUV to polarisation_frame
 
     For example::
-        impol = convert_stokes_to_polimage(imIQUV, Polarisation_Frame('linear'))
+        impol = convert_stokes_to_polimage(imIQUV, PolarisationFrame('linear'))
 
     :param im: Image to be converted
     :param polarisation_frame: desired polarisation frame

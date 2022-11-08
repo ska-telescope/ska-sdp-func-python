@@ -23,6 +23,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 )
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility import create_visibility
+from ska_sdp_datamodels.calibration.calibration_create import create_gaintable_from_visibility
 
 from ska_sdp_func_python.calibration.chain_calibration import (
     calibrate_chain,
@@ -32,9 +33,6 @@ from ska_sdp_func_python.calibration.operations import apply_gaintable
 from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 
 # Imports below need to be fixed
-from src.ska_sdp_func_python.calibration.operations import (
-    create_gaintable_from_visibility,
-)
 from src.ska_sdp_func_python.simulation import simulate_gaintable
 
 log = logging.getLogger("func-python-logger")
@@ -42,7 +40,6 @@ log = logging.getLogger("func-python-logger")
 log.setLevel(logging.WARNING)
 
 
-@pytest.skip(allow_module_level=True)
 class TestCalibrationChain(unittest.TestCase):
     def setUp(self):
         numpy.random.seed(1805550721)

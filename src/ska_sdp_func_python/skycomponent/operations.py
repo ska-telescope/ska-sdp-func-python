@@ -42,16 +42,17 @@ from photutils import segmentation
 from scipy import interpolate
 from scipy.optimize import minpack
 from scipy.spatial.qhull import Voronoi
+from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_functions import (
     convert_pol_frame,
 )
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
+from ska_sdp_func_python.image.operations import convert_clean_beam_to_pixels
+from ska_sdp_func_python.calibration.jones import apply_jones
 
 # Fix imports below
-from ska_sdp_func_python.image.operations import create_image
-from ska_sdp_func_python.parameters import get_parameter
 from ska_sdp_func_python.skycomponent import copy_skycomponent
 
 log = logging.getLogger("func-python-logger")
@@ -677,11 +678,6 @@ def restore_skycomponent(
     decs = [comp.direction.dec.radian for comp in sc]
     skycoords = SkyCoord(ras * u.rad, decs * u.rad, frame="icrs")
     pixlocs = skycoord_to_pixel(skycoords, im.image_acc.wcs, origin=0, mode="wcs")
-
-    from rascil.processing_components.image.operations import (
-        convert_clean_beam_to_pixels,
-    )
-
     beam_pixels = convert_clean_beam_to_pixels(im, clean_beam)
 
     for icomp, comp in enumerate(sc):
@@ -854,7 +850,12 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
         if iy < image_shape[0] and iy >= 0 and ix < image_shape[1] and ix >= 0:
             newsc.flux = im["pixels"].data[:, :, iy, ix]
 
-        force_point_sources = get_parameter(kwargs, "force_point_sources", True)
+        try:
+            force_point_sources = kwargs["force_point_sources"]
+        except KeyError:
+            log.info("fit_skycomponent: force_point_sources not give, setting as default: True")
+            force_point_sources = True
+
         if force_point_sources or (fit.x_fwhm <= 0.0 or fit.y_fwhm <= 0.0):
             newsc.shape = "Point"
         else:

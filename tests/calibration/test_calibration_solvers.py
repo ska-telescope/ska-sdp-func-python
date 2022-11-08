@@ -10,12 +10,10 @@
 
 """
 import pytest
-
 pytestmark = pytest.skip(allow_module_level=True)
 
 import logging
 import unittest
-
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
@@ -25,15 +23,12 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 )
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility import create_visibility
-
+from ska_sdp_datamodels.calibration.calibration_create import create_gaintable_from_visibility
 from ska_sdp_func_python.calibration.operations import apply_gaintable
 from ska_sdp_func_python.calibration.solvers import solve_gaintable
 from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 
 # Below imports need to be fixed
-from src.ska_sdp_func_python.calibration.operations import (
-    create_gaintable_from_visibility,
-)
 from src.ska_sdp_func_python.simulation import simulate_gaintable
 
 log = logging.getLogger("func-python-logger")

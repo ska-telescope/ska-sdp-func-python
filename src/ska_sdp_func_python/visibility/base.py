@@ -11,7 +11,7 @@ import logging
 
 import numpy
 from astropy.coordinates import SkyCoord
-from ska_sdp_func_python import phyconst
+from ska_sdp_datamodels import physical_constants
 from ska_sdp_datamodels.visibility.vis_model import Visibility
 
 from ska_sdp_func_python.util.coordinate_support import (
@@ -50,7 +50,7 @@ def calculate_visibility_uvw_lambda(vis):
     :param vis: Visibility
     :return: Visibility with updated uvw_lambda
     """
-    k = vis.frequency.data / phyconst.c_m_s
+    k = vis.frequency.data / physical_constants.c_m_s
     uvw_lambda = numpy.einsum("tbs,k->tbks", vis.uvw.data, k)
     vis.visibility_acc.uvw_lambda = uvw_lambda
     return vis

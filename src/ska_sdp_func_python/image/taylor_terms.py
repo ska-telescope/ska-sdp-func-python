@@ -19,10 +19,8 @@ import logging
 from typing import List
 
 import numpy
+from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
-
-# fix the below imports
-from ska_sdp_func_python.image.operations import create_image
 
 log = logging.getLogger("func-python-logger")
 

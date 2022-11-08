@@ -12,12 +12,11 @@ import collections.abc
 import logging
 
 import numpy
+from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 
 from ska_sdp_func_python.util.array_functions import tukey_filter
 
-# fix the below imports
-from src.ska_sdp_func_python.image.operations import create_image
 
 log = logging.getLogger("func-python-logger")
 

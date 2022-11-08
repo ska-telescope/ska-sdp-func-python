@@ -21,17 +21,12 @@ import logging
 import numpy
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.physical_constants import C_M_S
-
+from ska_sdp_datamodels.gridded_visibility.grid_vis_create import create_griddata_from_image
 from ska_sdp_func_python.griddata.gridding import (
     grid_visibility_weight_to_griddata,
     griddata_visibility_reweight,
 )
 from ska_sdp_func_python.util.array_functions import tukey_filter
-
-# fix the below imports
-from src.ska_sdp_func_python.griddata.operations import (
-    create_griddata_from_image,
-)
 
 log = logging.getLogger("func-python-logger")
 

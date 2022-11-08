@@ -21,6 +21,7 @@ from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
+from ska_sdp_datamodels.configuration.config_create import create_named_configuration
 
 from ska_sdp_func_python.skymodel.skymodel_imaging import (
     skymodel_calibrate_invert,
@@ -33,7 +34,6 @@ from src.ska_sdp_func_python import (
     convert_azelvp_to_radec,
     create_low_test_beam,
     create_low_test_skymodel_from_gleam,
-    create_named_configuration,
     ingest_unittest_visibility,
 )
 

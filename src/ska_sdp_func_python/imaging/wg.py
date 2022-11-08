@@ -30,7 +30,6 @@ from src.ska_sdp_func_python.imaging.base import (
     normalise_sumwt,
     shift_vis_to_image,
 )
-from src.ska_sdp_func_python.parameters import get_parameter
 
 log = logging.getLogger("func-python-logger")
 
@@ -63,10 +62,26 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     if model is None:
         return bvis
 
-    nthreads = get_parameter(kwargs, "threads", 4)  # noqa: F841
-    epsilon = get_parameter(kwargs, "epsilon", 1e-12)
-    do_wstacking = get_parameter(kwargs, "do_wstacking", True)
-    verbosity = get_parameter(kwargs, "verbosity", 0)  # noqa: F841
+    try:
+        nthreads = kwargs["threads"]
+    except KeyError:
+        log.info("predict_wg: nthreads not given, setting as default - 4")
+        nthreads = 4  # noqa: F841
+    try:
+        epsilon = kwargs["epsilon"]
+    except KeyError:
+        log.info("predict_wg: epsilon not given, setting as default - 1e-12")
+        epsilon = 1e-12
+    try:
+        do_wstacking = kwargs["do_wstacking"]
+    except KeyError:
+        log.info("predict_wg: wstacking not given, setting as default - True")
+        do_wstacking = True
+    try:
+        verbosity = kwargs["verbosity"]
+    except KeyError:
+        log.info("predict_wg: verbosity not given, setting as default - 0")
+        verbosity = 0  # noqa: F841
 
     newbvis = bvis.copy(deep=True, zero=True)
 
@@ -182,10 +197,26 @@ def invert_wg(
 
     im = model.copy(deep=True)
 
-    nthreads = get_parameter(kwargs, "threads", 4)  # noqa: F841
-    epsilon = get_parameter(kwargs, "epsilon", 1e-12)
-    do_wstacking = get_parameter(kwargs, "do_wstacking", True)
-    verbosity = get_parameter(kwargs, "verbosity", 0)  # noqa: F841
+    try:
+        nthreads = kwargs["threads"]
+    except KeyError:
+        log.info("invert_wg: nthreads not given, setting as default - 4")
+        nthreads = 4  # noqa: F841
+    try:
+        epsilon = kwargs["epsilon"]
+    except KeyError:
+        log.info("invert_wg: epsilon not given, setting as default - 1e-12")
+        epsilon = 1e-12
+    try:
+        do_wstacking = kwargs["do_wstacking"]
+    except KeyError:
+        log.info("invert_wg: wstacking not given, setting as default - True")
+        do_wstacking = True
+    try:
+        verbosity = kwargs["verbosity"]
+    except KeyError:
+        log.info("invert_wg: verbosity not given, setting as default - 0")
+        verbosity = 0  # noqa: F841
 
     bvis_shifted = bvis.copy(deep=True)
     bvis_shifted = shift_vis_to_image(

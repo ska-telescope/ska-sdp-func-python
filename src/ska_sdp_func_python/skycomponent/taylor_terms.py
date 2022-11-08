@@ -25,14 +25,15 @@ from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_func_python.image.taylor_terms import (
     calculate_frequency_taylor_terms_from_image_list,
 )
+from ska_sdp_func_python.skycomponent.operations import (
+    fit_skycomponent,
+    find_skycomponents,
+)
 
 # fix the below imports
 from src.ska_sdp_func_python import (
     copy_skycomponent,
-    find_skycomponents,
-    fit_skycomponent,
 )
-from src.ska_sdp_func_python.parameters import get_parameter
 
 log = logging.getLogger("func-python-logger")
 
@@ -113,7 +114,13 @@ def find_skycomponents_frequency_taylor_terms(
     moment0_list = calculate_frequency_taylor_terms_from_image_list(
         dirty_list, nmoment=1, reference_frequency=reference_frequency
     )
-    threshold = get_parameter(kwargs, "component_threshold", numpy.inf)
+    try:
+        threshold = kwargs["component_threshold"]
+    except KeyError:
+        log.info(
+            "find_skycomponents_frequency_taylor_terms: No components_threshold given, setting default value numpy.inf"
+        )
+        threshold = numpy.inf
     try:
         moment0_skycomponents = find_skycomponents(
             moment0_list[0], threshold=threshold

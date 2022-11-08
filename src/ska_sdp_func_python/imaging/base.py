@@ -39,17 +39,21 @@ from astropy.wcs.utils import pixel_to_skycoord
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 from ska_sdp_datamodels.visibility.vis_model import Visibility
+from ska_sdp_datamodels import physical_constants
+from ska_sdp_datamodels.image.image_create import create_image
+from ska_sdp_datamodels.gridded_visibility.grid_vis_create import create_griddata_from_image
+
+from ska_sdp_func_python.griddata.gridding import (
+    grid_visibility_to_griddata,
+    fft_griddata_to_image,
+    degrid_visibility_from_griddata,
+    fft_image_to_griddata
+)
 from ska_sdp_func_python.visibility.base import phaserotate_visibility
-from ska_sdp_func_python import phyconst
 from ska_sdp_func_python.image.operations import (
     convert_polimage_to_stokes,
     convert_stokes_to_polimage,
 )
-
-# Fix imports below
-from ska_sdp_func_python.griddata.operations import create_griddata_from_image
-from ska_sdp_func_python.image.operations import create_image
-from ska_sdp_func_python.parameters import get_parameter
 
 log = logging.getLogger("func-python-logger")
 
@@ -299,28 +303,47 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         "create_image_from_visibility: Parsing parameters to get definition of WCS"
     )
 
-    imagecentre = get_parameter(kwargs, "imagecentre", vis.phasecentre)
-    phasecentre = get_parameter(kwargs, "phasecentre", vis.phasecentre)
+    try:
+        image_centre = kwargs["imagecentre"]
+    except KeyError:
+        log.info("create_image_from_visibility: no image_centre given, setting default value")
+        image_centre = vis.phasecentre
+    try:
+        phase_centre = kwargs["phasecentre"]
+    except KeyError:
+        log.info("create_image_from_visibility: no phase_centre given, setting default value")
+        phase_centre = vis.phasecentre
 
     # Spectral processing options
     ufrequency = numpy.unique(vis["frequency"].data)
-    frequency = get_parameter(kwargs, "frequency", vis["frequency"].data)
+    try:
+        frequency = kwargs["frequency"]
+    except KeyError:
+        log.info("create_image_from_visibility: no frequency given, setting default value")
+        frequency = vis["frequency"].data
 
     vnchan = len(ufrequency)
 
-    inchan = get_parameter(kwargs, "nchan", vnchan)
+    try:
+        inchan = kwargs["nchan"]
+    except KeyError:
+        log.info("create_image_from_visibility: no inchan given, setting default value")
+        inchan = vnchan
+
     reffrequency = frequency[0] * units.Hz
-    channel_bandwidth = (
-        get_parameter(
-            kwargs, "channel_bandwidth", vis["channel_bandwidth"].data.flat[0]
-        )
-        * units.Hz
-    )
+
+    try:
+        channel_bandwidth = kwargs["channel_bandwidth"]
+    except KeyError:
+        log.info("create_image_from_visibility: no channel_bandwidth given, setting default value")
+        channel_bandwidth = vis["channel_bandwidth"].data.flat[0]
+
+    channel_bandwidth = channel_bandwidth * units.Hz
 
     if (inchan == vnchan) and vnchan > 1:
         log.debug(
             "create_image_from_visibility: Defining %d channel Image at %s, starting frequency %s, and bandwidth %s"
-            % (inchan, imagecentre, reffrequency, channel_bandwidth)
+            % (inchan, image_centre, reffrequency, channel_bandwidth)
         )
     elif (inchan == 1) and vnchan > 1:
         assert (
@@ -328,7 +351,7 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         ), "Channel width must be non-zero for mfs mode"
         log.debug(
             "create_image_from_visibility: Defining single channel MFS Image at %s, starting frequency %s, "
-            "and bandwidth %s" % (imagecentre, reffrequency, channel_bandwidth)
+            "and bandwidth %s" % (image_centre, reffrequency, channel_bandwidth)
         )
     elif inchan > 1 and vnchan > 1:
         assert (
@@ -336,7 +359,7 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         ), "Channel width must be non-zero for mfs mode"
         log.debug(
             "create_image_from_visibility: Defining multi-channel MFS Image at %s, starting frequency %s, "
-            "and bandwidth %s" % (imagecentre, reffrequency, channel_bandwidth)
+            "and bandwidth %s" % (image_centre, reffrequency, channel_bandwidth)
         )
     elif (inchan == 1) and (vnchan == 1):
         assert (
@@ -344,7 +367,7 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         ), "Channel width must be non-zero for mfs mode"
         log.debug(
             "create_image_from_visibility: Defining single channel Image at %s, starting frequency %s, "
-            "and bandwidth %s" % (imagecentre, reffrequency, channel_bandwidth)
+            "and bandwidth %s" % (image_centre, reffrequency, channel_bandwidth)
         )
     else:
         raise ValueError(
@@ -354,7 +377,12 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         )
 
     # Image sampling options
-    npixel = get_parameter(kwargs, "npixel", 512)
+    try:
+        npixel = kwargs["npixel"]
+    except KeyError:
+        log.info("create_image_from_visibility: no npixel given, setting default value")
+        npixel = 512
+
     uvmax = numpy.max((numpy.abs(vis.visibility_acc.uvw_lambda[..., 0:2])))
     log.debug("create_image_from_visibility: uvmax = %f wavelengths" % uvmax)
     criticalcellsize = 1.0 / (uvmax * 2.0)
@@ -362,21 +390,35 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         "create_image_from_visibility: Critical cellsize = %f radians, %f degrees"
         % (criticalcellsize, criticalcellsize * 180.0 / numpy.pi)
     )
-    cellsize = get_parameter(kwargs, "cellsize", 0.5 * criticalcellsize)
+
+    try:
+        cellsize = kwargs["cellsize"]
+    except KeyError:
+        log.info("create_image_from_visibility: no cellsize given, setting default value")
+        cellsize = 0.5 * criticalcellsize
+
     log.debug(
         "create_image_from_visibility: Cellsize          = %g radians, %g degrees"
         % (cellsize, cellsize * 180.0 / numpy.pi)
     )
-    override_cellsize = get_parameter(kwargs, "override_cellsize", True)
+    try:
+        override_cellsize = kwargs["override_cellsize"]
+    except KeyError:
+        log.info("create_image_from_visibility: no override_cellsize given, setting default value")
+        override_cellsize = True
+
     if (override_cellsize and cellsize > criticalcellsize) or (cellsize == 0.0):
         log.debug(
             "create_image_from_visibility: Resetting cellsize %g radians to criticalcellsize %g radians"
             % (cellsize, criticalcellsize)
         )
         cellsize = criticalcellsize
-    pol_frame = get_parameter(
-        kwargs, "polarisation_frame", PolarisationFrame("stokesI")
-    )
+    try:
+        pol_frame = kwargs["polarisation_frame"]
+    except KeyError:
+        log.info("create_image_from_visibility: no pol_frame given, setting default value")
+        pol_frame = PolarisationFrame("stokesI")
+
     inpol = pol_frame.npol
 
     # Now we can define the WCS, which is a convenient place to hold the info above
@@ -396,19 +438,32 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     w.wcs.crpix = [npixel // 2 + 1, npixel // 2 + 1, 1.0, 1.0]
     w.wcs.ctype = ["RA---SIN", "DEC--SIN", "STOKES", "FREQ"]
     w.wcs.crval = [
-        phasecentre.ra.deg,
-        phasecentre.dec.deg,
+        phase_centre.ra.deg,
+        phase_centre.dec.deg,
         1.0,
         reffrequency.to(units.Hz).value,
     ]
     w.naxis = 4
 
-    w.wcs.radesys = get_parameter(kwargs, "frame", "ICRS")
-    w.wcs.equinox = get_parameter(kwargs, "equinox", 2000.0)
+    try:
+        w.wcs.radesys = kwargs["frame"]
+    except KeyError:
+        log.info("create_image_from_visibility: no radesys given, setting default value")
+        w.wcs.radesys = "ICRS"
 
-    chunksize = get_parameter(kwargs, "chunksize", None)
+    try:
+        w.wcs.equinox = kwargs["equinox"]
+    except KeyError:
+        log.info("create_image_from_visibility: no equinox given, setting default value")
+        w.wcs.equinox = 2000.0
+
+    try:
+        chunksize = kwargs["chunksize"]
+    except KeyError:
+        log.info("create_image_from_visibility: no chunksize given, setting default value")
+        chunksize = None
     im = create_image(
-        numpy.zeros(shape), wcs=w, polarisation_frame=pol_frame, chunksize=chunksize
+        npixel, cellsize, phase_centre
     )
     return im
 
@@ -429,7 +484,10 @@ def advise_wide_field(
     For example::
 
         advice = advise_wide_field(vis, delA)
-        wstep = get_parameter(kwargs, 'wstep', advice['w_sampling_primary_beam'])
+        try:
+            wstep = kwargs["wstep"]
+        except KeyError:
+            wstep = advice['w_sampling_primary_beam'])
 
 
     :param vis:
@@ -444,14 +502,14 @@ def advise_wide_field(
 
     isblock = isinstance(vis, Visibility)
 
-    max_wavelength = phyconst.c_m_s / numpy.min(vis.frequency.data)
+    max_wavelength = physical_constants.c_m_s / numpy.min(vis.frequency.data)
     if verbose:
         log.info(
             "advise_wide_field: (max_wavelength) Maximum wavelength %.3f (meters)"
             % (max_wavelength)
         )
 
-    min_wavelength = phyconst.c_m_s / numpy.max(vis.frequency.data)
+    min_wavelength = physical_constants.c_m_s / numpy.max(vis.frequency.data)
     if verbose:
         log.info(
             "advise_wide_field: (min_wavelength) Minimum wavelength %.3f (meters)"

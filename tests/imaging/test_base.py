@@ -1,0 +1,111 @@
+""" Unit tests for base imaging functions
+
+"""
+
+import logging
+import pytest
+import numpy
+from astropy import units
+from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.configuration.config_create import create_named_configuration
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.image.image_create import create_image
+from ska_sdp_func_python.imaging.base import (
+    shift_vis_to_image,
+    predict_awprojection,
+    fill_vis_for_psf,
+    create_image_from_visibility,
+    advise_wide_field,
+)
+from ska_sdp_datamodels.visibility.vis_create import create_visibility
+
+log = logging.getLogger("func-python-logger")
+
+
+@pytest.fixture(scope="module", name="result_base")
+def base_fixture():
+    lowcore = create_named_configuration("LOWBD2-CORE")
+    times = (numpy.pi / 43200.0) * numpy.arange(0.0, 300.0, 30.0)
+    frequency = numpy.linspace(0.8e8, 1.0e8, 5)
+    channel_bandwidth = numpy.array([1e7, 1e7, 1e7, 1e7, 1e7])
+    polarisation_frame = PolarisationFrame("stokesI")
+    phase_centre = SkyCoord(
+        ra=+180.0 * units.deg,
+        dec=-35.0 * units.deg,
+        frame="icrs",
+        equinox="J2000",
+    )
+
+    vis = create_visibility(
+        lowcore,
+        times,
+        frequency,
+        channel_bandwidth=channel_bandwidth,
+        polarisation_frame=polarisation_frame,
+        phasecentre=phase_centre,
+        weight=1.0,
+    )
+    npixels = 512
+    cellsize = 0.00015
+    phase_centre = SkyCoord(
+        ra=-180.0 * units.deg,
+        dec=+35.0 * units.deg,
+        frame="icrs",
+        equinox="J2000",
+    )
+    im = create_image(npixels, cellsize, phase_centre)
+
+    params = {
+        "visibility": vis,
+        "image": im,
+    }
+    return params
+
+
+def test_shift_vis_to_image(result_base):
+    """ Unit tests for shift_vis_to_image function:
+        check that the phasecentre does change
+    """
+    vis = result_base["visibility"]
+    old_pc = vis.attrs["phasecentre"]
+    shifted_vis = shift_vis_to_image(vis, result_base["image"])
+    expected_phase_centre = SkyCoord(
+        ra=-180.0 * units.deg,
+        dec=+35.0 * units.deg,
+        frame="icrs",
+        equinox="J2000",
+    )
+
+    assert old_pc != shifted_vis.attrs["phasecentre"]
+    assert shifted_vis.attrs["phasecentre"] == expected_phase_centre
+
+@pytest.mark.skip(reason="gcfcf examples need to be found for predict_awprojection")
+def test_predict_awprojection(result_base):
+    vis = result_base["visibility"]
+    svis = predict_awprojection(vis, result_base["image"])
+
+    assert vis != svis
+
+
+def test_fill_vis_for_psf(result_base):
+    """ Unit tests for fill_vis_for_psf function
+    """
+    svis = fill_vis_for_psf(result_base["visibility"])
+
+    assert (svis["vis"].data[...] == 1.0 + 0.0j).all()
+
+
+def test_create_image_from_visibility(result_base):
+    """ Unit tests for create_image_from_visibility function:
+        check image created here is the same as image in result_base
+        """
+    phase_centre = SkyCoord(
+        ra=-180.0 * units.deg,
+        dec=+35.0 * units.deg,
+        frame="icrs",
+        equinox="J2000",
+    )
+    expected_image = result_base["image"]
+    new_image = create_image_from_visibility(vis=result_base["visibility"], phasecentre=phase_centre)
+
+    assert (new_image == expected_image).all()
