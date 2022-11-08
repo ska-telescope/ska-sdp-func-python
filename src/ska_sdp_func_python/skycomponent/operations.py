@@ -41,7 +41,7 @@ from astropy.wcs.utils import skycoord_to_pixel
 from photutils import segmentation
 from scipy import interpolate
 from scipy.optimize import minpack
-from scipy.spatial.qhull import Voronoi
+from scipy.spatial import Voronoi
 from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_functions import (
