@@ -9,10 +9,10 @@
 
 """
 import pytest
-
+# Issues with create_image inputs to fix in gridding.py
 pytestmark = pytest.skip(
     allow_module_level=True
-)  # Issues with create_image inputs to fix in gridding.py
+)
 
 import logging
 import os
@@ -256,7 +256,6 @@ def test_scatter_gather_channel(result_gather_scatter):
             npixel=512,
             cellsize=0.00015,
             phasecentre=result_gather_scatter["phase_centre"],
-            polarisation_frame=PolarisationFrame("stokesI"),
             frequency=numpy.linspace(1e8, 1.1e8, nchan),
         )
 

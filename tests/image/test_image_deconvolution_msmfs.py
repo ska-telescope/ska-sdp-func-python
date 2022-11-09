@@ -25,6 +25,7 @@ from ska_sdp_datamodels.configuration import (
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
+from ska_sdp_datamodels import physical_constants
 from ska_sdp_datamodels.visibility import create_visibility
 from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_func_python.image.deconvolution import (
@@ -55,6 +56,47 @@ log = logging.getLogger("func-python-logger")
 log.setLevel(logging.INFO)
 
 
+# def create_test_beam(image, vis):
+#     # model, diameter = 38.0, blockage = 0.0, use_local = use_local
+#     beam = create_image(npixel=256,
+#                         cellsize=0.001,
+#                         phasecentre=vis.phasecentre)
+#     beam["pixels"].data = numpy.zeros(beam["pixels"].data.shape, dtype="complex")
+#     nchan, npol, ny, nx = image["pixels"].shape
+#     cx, cy = (
+#         beam.image_acc.wcs.sub(2).wcs.crpix[0] - 1,
+#         beam.image_acc.wcs.sub(2).wcs.crpix[1] - 1,
+#     )
+#     for chan in range(nchan):
+#         # The frequency axis is the second to last in the beam
+#         frequency = image.image_acc.wcs.sub(["spectral"]).wcs_pix2world([chan], 0)[0]
+#         wavelength = physical_constants.c_m_s / frequency
+#
+#         d2r = numpy.pi / 180.0
+#         scale = d2r * numpy.abs(beam.image_acc.wcs.sub(2).wcs.cdelt[0])
+#         xx, yy = numpy.meshgrid(
+#             scale * (numpy.arange(nx) - cx), scale * (numpy.arange(ny) - cy)
+#         )
+#         # Radius of each cell in radians
+#         rr = numpy.sqrt(xx ** 2 + yy ** 2)
+#         blockage_factor = (blockage / diameter) ** 2
+#         pols = [0]
+#         reflector = ft_disk(rr * numpy.pi * diameter / wavelength)
+#         blockage = ft_disk(rr * numpy.pi * blockage / wavelength)
+#         combined = reflector - blockage_factor * blockage
+#
+#         for pol in pols:
+#             beam["pixels"].data[chan, pol, ...] = combined
+#         wcs = beam.image_acc.wcs
+#         wcs.wcs.ctype[0] = "AZELGEO long"
+#         wcs.wcs.ctype[1] = "AZELGEO lati"
+#         wcs.wcs.crval[0] = 0.0
+#         wcs.wcs.crval[1] = 0.0
+#         wcs.wcs.crpix[0] = nx // 2
+#         wcs.wcs.crpix[1] = ny // 2
+#         beam["wcs"] = wcs
+
+
 @pytest.fixture(scope="module", name="result_deconv_msmfs")
 def deconvolution_msmfs_fixture():
     persist = os.getenv("FUNC_PYTHON_PERSIST", False)
@@ -82,26 +124,26 @@ def deconvolution_msmfs_fixture():
     )
     vis["vis"].data *= 0.0
 
-    # Create model
-    test_model = create_low_test_image_from_gleam(
+    # Create image
+    test_image = create_image(
         npixel=256,
         cellsize=0.001,
         phasecentre=vis.phasecentre,
+        polarisation_frame=PolarisationFrame("stokesI"),
         frequency=frequency,
         channel_bandwidth=channel_bandwidth,
-        flux_limit=1.0,
     )
-    beam = create_low_test_beam(test_model)
-    test_model["pixels"].data *= beam["pixels"].data
+    beam = create_low_test_beam(test_image)
+    test_image["pixels"].data *= beam["pixels"].data
     if persist:
         with tempfile.TemporaryDirectory() as tempdir:
             beam.image_acc.export_to_fits(
                 f"{tempdir}/test_deconvolve_mmclean_beam.fits"
             )
-            test_model.image_acc.export_to_fits(
+            test_image.image_acc.export_to_fits(
                 f"{tempdir}/test_deconvolve_mmclean_model.fits"
             )
-    vis = predict_visibility(vis, test_model, context="2d")
+    vis = predict_visibility(vis, test_image, context="2d")
     assert numpy.max(numpy.abs(vis.vis)) > 0.0
     model = create_image_from_visibility(
         vis,
@@ -143,6 +185,7 @@ def deconvolution_msmfs_fixture():
         "psf": psf,
 
     }
+    return params
 
 
 def test_deconvolve_mmclean_no_taylor(result_deconv_msmfs):

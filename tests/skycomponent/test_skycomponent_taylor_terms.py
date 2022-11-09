@@ -9,7 +9,6 @@ import pytest
 # Needs copy_skycomponent and decision about smooth_image and create_low_test_skycomponents_from_gleam
 pytestmark = pytest.skip(allow_module_level=True)
 import logging
-import os
 
 import astropy.units as u
 import numpy

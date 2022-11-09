@@ -10,7 +10,6 @@
 """
 import pytest
 # Tests being skipped due to persisting issues with importing ska-sdp-func in dft_skycomponent_visibility
-# this is needed in the fixture for these tests
 pytestmark = pytest.skip(allow_module_level=True)
 import functools
 import logging
@@ -31,6 +30,7 @@ from ska_sdp_datamodels.gridded_visibility.grid_vis_create import (
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
+from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.visibility.vis_create import create_visibility
 from ska_sdp_func_python.griddata.gridding import (

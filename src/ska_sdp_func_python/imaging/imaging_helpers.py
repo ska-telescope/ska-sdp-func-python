@@ -28,15 +28,19 @@ def sum_invert_results(image_list):
         sumwt = image_list[0][1]
         return im, sumwt
 
-    im = create_image(image_list[0][0])
-    sumwt = image_list[0][1].copy()
+    im = create_image(image_list[0][0]["pixels"].data.shape[3],
+                      numpy.deg2rad(numpy.abs(image_list[0][0].image_acc.wcs.wcs.cdelt[1])),
+                      image_list[0][0].image_acc.phasecentre,
+                      )
+
+    sumwt = image_list[0][1]
     sumwt *= 0.0
 
     for i, arg in enumerate(image_list):
         if arg is not None:
             im["pixels"].data += (
-                arg[1][..., numpy.newaxis, numpy.newaxis]
-                * arg[0]["pixels"].data
+                    arg[1]*[..., numpy.newaxis, numpy.newaxis]
+                    * arg[0]["pixels"].data
             )
             sumwt += arg[1]
 
@@ -70,7 +74,7 @@ def sum_predict_results(results):
                 sum_results = result
             else:
                 assert (
-                    sum_results["vis"].data.shape == result["vis"].data.shape
+                        sum_results["vis"].data.shape == result["vis"].data.shape
                 )
                 sum_results["vis"].data += result["vis"].data
 
@@ -78,7 +82,7 @@ def sum_predict_results(results):
 
 
 def threshold_list(
-    imagelist, threshold, fractional_threshold, use_moment0=True, prefix=""
+        imagelist, threshold, fractional_threshold, use_moment0=True, prefix=""
 ):
     """Find actual threshold for list of results, optionally using moment 0
 

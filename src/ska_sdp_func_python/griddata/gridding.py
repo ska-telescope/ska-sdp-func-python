@@ -53,6 +53,7 @@ def convolution_mapping_visibility(
 
     :param vis:
     :param griddata:
+    :param chan:
     :param cf:
     :param channel_tolerance:
     :return:
