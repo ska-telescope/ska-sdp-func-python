@@ -1,9 +1,4 @@
-# pylint: disable=invalid-name, too-many-arguments, too-many-public-methods
-# pylint: disable=attribute-defined-outside-init, unused-variable
-# pylint: disable=too-many-instance-attributes, invalid-envvar-default
-# pylint: disable=consider-using-f-string, logging-not-lazy
-# pylint: disable=missing-class-docstring, missing-function-docstring
-# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
+# pylint: skip-file
 """ Unit tests for imaging using nifty gridder
 
 """
@@ -25,7 +20,9 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 )
 from ska_sdp_datamodels.visibility.vis_create import create_visibility
 
-from ska_sdp_func_python.imaging.ng import invert_ng, predict_ng
+from ska_sdp_func_python.imaging.wg import invert_wg, predict_wg
+
+pytestmark = pytest.skip(allow_module_level=True, reason="Imports for WAGG")
 
 log = logging.getLogger("func-python-logger")
 
@@ -33,8 +30,8 @@ log.setLevel(logging.WARNING)
 log.addHandler(logging.StreamHandler(sys.stdout))
 
 
-@pytest.fixture(scope="module", name="result_ng")
-def ng_fixture():
+@pytest.fixture(scope="module", name="result_wg")
+def wg_fixture():
 
     persist = os.getenv("FUNC_PYTHON_PERSIST", False)
     verbosity = 0
@@ -73,16 +70,17 @@ def ng_fixture():
     return params
 
 
-def test_predict_ng(result_ng):
+def test_predict_wg(result_wg):
 
-    vis = result_ng["visibility"]
-    model = result_ng["model"]
-    verbosity = result_ng["verbosity"]
-    persist = result_ng["persist"]
+    vis = result_wg["visibility"]
+    model = result_wg["model"]
+    verbosity = result_wg["verbosity"]
+    persist = result_wg["persist"]
+
     original_vis = vis.copy(deep=True)
-    vis = predict_ng(vis, model, verbosity=verbosity)
+    vis = predict_wg(vis, model, verbosity=verbosity)
     vis["vis"].data = vis["vis"].data - original_vis["vis"].data
-    dirty = invert_ng(
+    dirty = invert_wg(
         vis,
         model,
         dopsf=False,
@@ -93,7 +91,7 @@ def test_predict_ng(result_ng):
     if persist:
         with tempfile.TemporaryDirectory() as tempdir:
             dirty[0].image_acc.export_to_fits(
-                f"{tempdir}/test_imaging_ng_predict_ng_residual.fits"
+                f"{tempdir}/test_imaging_ng_predict_wg_residual.fits"
             )
 
     maxabs = numpy.max(numpy.abs(dirty[0]["pixels"].data))
@@ -103,43 +101,42 @@ def test_predict_ng(result_ng):
     )
 
 
-@pytest.mark.skip(reason="Need an non-empty image")
-def test_invert_ng(result_ng):
-    vis = result_ng["visibility"]
-    model = result_ng["model"]
-    verbosity = result_ng["verbosity"]
-    persist = result_ng["persist"]
-    dirty = invert_ng(
-        vis,
-        model,
-        normalise=True,
-        verbosity=verbosity,
-    )
-
-    if persist:
-        with tempfile.TemporaryDirectory() as tempdir:
-            dirty[0].image_acc.export_to_fits(
-                f"{tempdir}/test_imaging_ng_invert_ng_dirty.fits"
-            )
-    assert numpy.max(numpy.abs(dirty[0]["pixels"].data)), "Image is empty"
-
-
-def test_invert_ng_psf(result_ng):
-    vis = result_ng["visibility"]
-    model = result_ng["model"]
-    verbosity = result_ng["verbosity"]
-    persist = result_ng["persist"]
-    dirty = invert_ng(
-        vis,
-        model,
-        normalise=True,
-        dopsf=True,
-        verbosity=verbosity,
-    )
-
-    if persist:
-        with tempfile.TemporaryDirectory() as tempdir:
-            dirty[0].image_acc.export_to_fits(
-                f"{tempdir}/test_imaging_ng_invert_ng_psf_dirty.fits"
-            )
-    assert numpy.max(numpy.abs(dirty[0]["pixels"].data)), "Image is empty"
+# def test_invert_wg(result_wg):
+#     vis = result_wg["visibility"]
+#     model = result_wg["model"]
+#     verbosity = result_wg["verbosity"]
+#     persist = result_wg["persist"]
+#     dirty = invert_wg(
+#         vis,
+#         model,
+#         normalise=True,
+#         verbosity=verbosity,
+#     )
+#
+#     if persist:
+#         with tempfile.TemporaryDirectory() as tempdir:
+#             dirty[0].image_acc.export_to_fits(
+#                 f"{tempdir}/test_imaging_ng_invert_wg_dirty.fits"
+#             )
+#     assert numpy.max(numpy.abs(dirty[0]["pixels"].data)), "Image is empty"
+#
+#
+# def test_invert_wg_psf(result_wg):
+#     vis = result_wg["visibility"]
+#     model = result_wg["model"]
+#     verbosity = result_wg["verbosity"]
+#     persist = result_wg["persist"]
+#     dirty = invert_wg(
+#         vis,
+#         model,
+#         normalise=True,
+#         dopsf=True,
+#         verbosity=verbosity,
+#     )
+#
+#     if persist:
+#         with tempfile.TemporaryDirectory() as tempdir:
+#             dirty[0].image_acc.export_to_fits(
+#                 f"{tempdir}/test_imaging_ng_invert_wg_psf_dirty.fits"
+#             )
+#     assert numpy.max(numpy.abs(dirty[0]["pixels"].data)), "Image is empty"

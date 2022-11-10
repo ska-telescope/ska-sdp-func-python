@@ -1,31 +1,30 @@
-# pylint: disable=invalid-name, too-many-arguments,line-too-long
-# pylint: disable=missing-class-docstring, missing-function-docstring
-# pylint: disable=consider-using-f-string, logging-fstring-interpolation
-# pylint: disable=import-error, no-name-in-module
 """Unit tests for image iteration
 
 
 """
 import pytest
 
-# Need to fix pad_image import and use pytest.parameterise instead of get_test_image()
-pytestmark = pytest.skip(allow_module_level=True)
-
+pytestmark = pytest.skip(
+    allow_module_level=True,
+    reason="Image is seen as empty even with added skycomponents",
+)
 import logging
 import tempfile
 
 import numpy
-from astropy import units
+from astropy import units as u
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.image.image_create import create_image
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
+from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
-from src.ska_sdp_func_python.image.iterators import (
+from ska_sdp_func_python.image.iterators import (
     image_channel_iter,
     image_raster_iter,
 )
-
-# fix the below imports
-from src.ska_sdp_func_python.image.operations import pad_image
+from ska_sdp_func_python.skycomponent.operations import insert_skycomponent
 
 log = logging.getLogger("func-python-logger")
 log.setLevel(logging.WARNING)
@@ -36,17 +35,34 @@ log.setLevel(logging.WARNING)
 @pytest.fixture(scope="module", name="result_iterators")
 def iterators_fixture():
     phase_centre = SkyCoord(
-        ra=+180.0 * units.deg,
-        dec=-35.0 * units.deg,
+        ra=+180.0 * u.deg,
+        dec=-35.0 * u.deg,
         frame="icrs",
         equinox="J2000",
     )
-    im = create_image(
-        npixel,
-        cellsize=0.000015,
+    image = create_image(
+        npixel=512,
+        cellsize=0.00015,
         phasecentre=phase_centre,
     )
-    return pad_image(im, [1, 1, npixel, npixel])
+
+    image_sc = SkyComponent(
+        direction=SkyCoord(
+            ra=+110.0 * u.deg, dec=-40.0 * u.deg, frame="icrs", equinox="J2000"
+        ),
+        frequency=numpy.array([1e8]),
+        name="image_sc",
+        flux=numpy.ones((1, 1)),
+        shape="Point",
+        polarisation_frame=PolarisationFrame("stokesI"),
+    )
+
+    image = insert_skycomponent(image, image_sc)
+    params = {
+        "image": image,
+        "phasecentre": phase_centre,
+    }
+    return params
 
 
 def test_raster(result_iterators):
@@ -56,7 +72,11 @@ def test_raster(result_iterators):
     """
 
     for npixel in [256, 512, 1024]:
-        m31original = get_test_image(npixel=npixel)
+        m31original = create_image(
+            npixel=npixel,
+            cellsize=0.001,
+            phasecentre=result_iterators["phasecentre"],
+        )
         assert numpy.max(
             numpy.abs(m31original["pixels"].data)
         ), "Original is empty"
@@ -65,7 +85,11 @@ def test_raster(result_iterators):
 
             for overlap in [0, 2, 4, 8, 16]:
                 try:
-                    m31model = get_test_image(npixel=npixel)
+                    m31model = create_image(
+                        npixel=npixel,
+                        cellsize=0.001,
+                        phasecentre=result_iterators["phasecentre"],
+                    )
                     for patch in image_raster_iter(
                         m31model, facets=nraster, overlap=overlap
                     ):
@@ -113,6 +137,7 @@ def test_raster(result_iterators):
                     )
 
 
+@pytest.mark.skip()
 def test_raster_exception(result_iterators):
 
     m31original = result_iterators

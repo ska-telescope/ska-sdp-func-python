@@ -1,9 +1,3 @@
-# pylint: disable=invalid-name, too-many-arguments
-# pylint: disable=too-many-instance-attributes, unused-variable
-# pylint: disable=attribute-defined-outside-init, too-many-locals
-
-# pylint: disable= missing-class-docstring, missing-function-docstring
-# pylint: disable=import-error, no-name-in-module
 """ Unit tests for visibility operations
 
 
@@ -22,7 +16,6 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility.vis_create import (
     create_visibility,
-    generate_baselines,
 )
 
 # from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
@@ -418,11 +411,3 @@ def test_elevation(vis_ops_params):
         elevation_limit=None,
     )
     assert len(numpy.unique(vis.time)) >= n_elevation_limit
-
-
-def test_baselines(vis_ops_params):
-    nants = 512
-    baselines = list(generate_baselines(nants))
-
-    for ibaseline, baseline in enumerate(baselines):
-        ant1, ant2 = baseline

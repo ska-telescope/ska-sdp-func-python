@@ -54,26 +54,10 @@ def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     assert isinstance(model, Image), model
     assert model.image_acc.is_canonical()
 
-    try:
-        nthreads = kwargs["threads"]
-    except KeyError:
-        log.info("predict_ng: nthreads not given, setting as default - 4")
-        nthreads = 4  # noqa: F841
-    try:
-        epsilon = kwargs["epsilon"]
-    except KeyError:
-        log.info("predict_ng: epsilon not given, setting as default - 1e-12")
-        epsilon = 1e-12
-    try:
-        do_wstacking = kwargs["do_wstacking"]
-    except KeyError:
-        log.info("predict_ng: wstacking not given, setting as default - True")
-        do_wstacking = True
-    try:
-        verbosity = kwargs["verbosity"]
-    except KeyError:
-        log.info("predict_ng: verbosity not given, setting as default - 0")
-        verbosity = 0  # noqa: F841
+    nthreads = kwargs.get("threads", 4)
+    epsilon = kwargs.get("epsilon", 1e12)
+    do_wstacking = kwargs.get("do_wstacking", True)
+    verbosity = kwargs.get("verbosity", 0)
 
     newbvis = bvis.copy(deep=True, zero=True)
 
@@ -183,30 +167,14 @@ def invert_ng(
     assert isinstance(model, Image), model
     assert model.image_acc.is_canonical()
 
-    # assert isinstance(bvis, Visibility), bvis
+    assert isinstance(bvis, Visibility), bvis
 
     im = model.copy(deep=True)
 
-    try:
-        nthreads = kwargs["threads"]
-    except KeyError:
-        log.info("invert_ng: nthreads not given, setting as default - 4")
-        nthreads = 4  # noqa: F841
-    try:
-        epsilon = kwargs["epsilon"]
-    except KeyError:
-        log.info("invert_ng: epsilon not given, setting as default - 1e-12")
-        epsilon = 1e-12
-    try:
-        do_wstacking = kwargs["do_wstacking"]
-    except KeyError:
-        log.info("invert_ng: wstacking not given, setting as default - True")
-        do_wstacking = True
-    try:
-        verbosity = kwargs["verbosity"]
-    except KeyError:
-        log.info("invert_ng: verbosity not given, setting as default - 0")
-        verbosity = 0  # noqa: F841
+    nthreads = kwargs.get("threads", 4)
+    epsilon = kwargs.get("epsilon", 1e12)
+    do_wstacking = kwargs.get("do_wstacking", True)
+    verbosity = kwargs.get("verbosity", 0)
 
     sbvis = bvis.copy(deep=True)
     sbvis = shift_vis_to_image(sbvis, im, tangent=True, inverse=False)

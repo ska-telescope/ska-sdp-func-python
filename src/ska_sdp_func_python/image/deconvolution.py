@@ -219,7 +219,7 @@ def radler_deconvolve_list(
 
     algorithm = kwargs.get("algorithm", "msclean")
     n_iterations = kwargs.get("niter", 500)
-    clean_threshold =  kwargs.get("threshold", 0.001)
+    clean_threshold = kwargs.get("threshold", 0.001)
     loop_gain = kwargs.get("gain", 0.7)
     ms_scales = kwargs.get("scales", [])
     cellsize = kwargs.get("cellsize", 0.005)

@@ -1,18 +1,11 @@
-# pylint: disable=invalid-name, too-many-arguments
-# pylint: disable=attribute-defined-outside-init, unused-variable
-# pylint: disable=too-many-instance-attributes, invalid-envvar-default
-# pylint: disable=line-too-long, consider-using-f-string
-# pylint: disable=missing-class-docstring, missing-function-docstring
-# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """Unit tests for image iteration
 
 
 """
 import pytest
+
 # Issues with create_image inputs to fix in gridding.py
-pytestmark = pytest.skip(
-    allow_module_level=True
-)
+pytestmark = pytest.skip(allow_module_level=True)
 
 import logging
 import os

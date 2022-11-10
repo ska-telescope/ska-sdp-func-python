@@ -1,6 +1,3 @@
-# pylint: disable=invalid-name, too-many-arguments
-# pylint: disable= missing-class-docstring, missing-function-docstring
-# pylint: disable=import-error, no-name-in-module
 """ Unit processing_components for image deconvolution via MSClean
 
 

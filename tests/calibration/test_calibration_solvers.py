@@ -11,10 +11,11 @@
 
 """
 import pytest
-# Tests being skipped due to persisting issues with importing ska-sdp-func in dft_skycomponent_visibility
-# this is needed in the fixture for these tests
-pytestmark = pytest.skip(allow_module_level=True)
 
+pytestmark = pytest.skip(
+    allow_module_level=True,
+    reason="not able importing ska-sdp-func in dft_skycomponent_visibility",
+)
 import logging
 import unittest
 

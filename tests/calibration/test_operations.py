@@ -29,6 +29,7 @@ log = logging.getLogger("func-python-logger")
 
 @pytest.fixture(scope="module", name="results_operations")
 def operations_fixture():
+    """Fixture for the operations unit tests"""
     # Create a visibility object
     lowcore = create_named_configuration("LOWBD2-CORE")
     times = (numpy.pi / 43200.0) * numpy.arange(0.0, 300.0, 30.0)
@@ -94,7 +95,9 @@ def test_multiply_gaintables(results_operations):
     """
     Unit test for the multiply_gaintable function
     """
-    gt = create_gaintable_from_visibility(results_operations["visibility1"])
+    gt = create_gaintable_from_visibility(  # pylint: disable=invalid-name
+        results_operations["visibility1"]
+    )
     dgt = create_gaintable_from_visibility(results_operations["visibility2"])
 
     gt_multiplied = multiply_gaintables(gt, dgt)

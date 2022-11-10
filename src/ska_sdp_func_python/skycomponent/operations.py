@@ -55,7 +55,7 @@ from ska_sdp_func_python.image.operations import convert_clean_beam_to_pixels
 from ska_sdp_func_python.calibration.jones import apply_jones
 
 # Fix imports below
-from ska_sdp_func_python.skycomponent import copy_skycomponent
+# from ska_sdp_func_python.skycomponent import copy_skycomponent
 
 log = logging.getLogger("func-python-logger")
 

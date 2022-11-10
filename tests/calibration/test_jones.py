@@ -55,7 +55,6 @@ def test_apply_jones():
                 rflux = apply_jones(ej, jflux, inverse=True).reshape([4])
                 rflux = convert_pol_frame(rflux, vpol, cpol, 0)
                 assert_array_almost_equal(flux, numpy.real(rflux), 12)
-                # print("{0} {1} {2} succeeded".format(vpol, str(ej), str(flux)))
                 nsucceeded += 1
             except AssertionError as e:
                 print(e)

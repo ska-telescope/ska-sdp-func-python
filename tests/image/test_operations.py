@@ -19,7 +19,6 @@ log = logging.getLogger("func-python-logger")
 
 @pytest.fixture(scope="module", name="operations_image")
 def operations_fixture():
-    # Create a visibility object
 
     npixels = 512
     cellsize = 0.000015

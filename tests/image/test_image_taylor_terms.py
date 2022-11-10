@@ -1,20 +1,13 @@
-# pylint: disable=invalid-name, too-many-arguments, duplicate-code
-# pylint: disable=invalid-envvar-default, consider-using-f-string
-# pylint: disable= missing-class-docstring, missing-function-docstring
-# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Unit tests for image Taylor terms
 
 """
 import logging
-import os
-import tempfile
 
 import numpy
 import pytest
 from astropy import units
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.image.image_create import create_image
-from ska_sdp_datamodels.image.image_model import Image
 
 from ska_sdp_func_python.image.gather_scatter import image_scatter_channels
 from ska_sdp_func_python.image.taylor_terms import (
@@ -31,7 +24,6 @@ log.setLevel(logging.WARNING)
 @pytest.fixture(scope="module", name="result_taylor_terms")
 def taylor_terms_fixture():
 
-    persist = os.getenv("FUNC_PYTHON_PERSIST", False)
     npixel = 512
     cellsize = 0.0001
     phase_centre = SkyCoord(
@@ -41,15 +33,13 @@ def taylor_terms_fixture():
         equinox="J2000",
     )
     image = create_image(npixel, cellsize, phase_centre)
-    params = {
-        "image": image,
-        "persist": persist,
-        "phasecentre": phase_centre
-    }
+    params = {"image": image, "phasecentre": phase_centre}
     return params
 
+
 @pytest.mark.skip(
-    reason="Issues remaining with create_image_frequency_moments:  bad operand type for unary -: 'WCS'"
+    reason="Issues remaining with create_image_frequency_moments : "
+    "bad operand type for unary -: 'WCS' in create_image()"
 )
 def test_calculate_image_frequency_moments(result_taylor_terms):
     cube = create_image(512, 0.0001, result_taylor_terms["phasecentre"])
@@ -57,22 +47,12 @@ def test_calculate_image_frequency_moments(result_taylor_terms):
     reconstructed_cube = calculate_image_from_frequency_taylor_terms(
         cube, moment_cube
     )
-    if result_taylor_terms["persist"]:
-        with tempfile.TemporaryDirectory() as tempdir:
-            result_taylor_terms["image"].image_acc.export_to_fits(
-                f"{tempdir}/test_moments_cube.fits"
-            )
-            moment_cube.image_acc.export_to_fits(
-                f"{tempdir}/test_moments_moment_cube.fits"
-            )
-            reconstructed_cube.image_acc.export_to_fits(
-                f"{tempdir}/test_moments_reconstructed_cube.fits"
-            )
     error = numpy.std(
         reconstructed_cube["pixels"].data
         - result_taylor_terms["image"].data_vars["pixels"].data
     )
     assert error < 0.2, error
+
 
 @pytest.mark.skip(
     reason="Issues remaining with create_image_frequency_moments as above"
@@ -85,17 +65,6 @@ def test_calculate_image_frequency_moments_1(result_taylor_terms):
         cube, moment_cube
     )
 
-    if result_taylor_terms["persist"]:
-        with tempfile.TemporaryDirectory() as tempdir:
-            original_cube.image_acc.export_to_fits(
-                f"{tempdir}/test_moments_1_cube.fits"
-            )
-            moment_cube.image_acc.export_to_fits(
-                f"{tempdir}/test_moments_1_moment_cube.fits"
-            )
-            reconstructed_cube.image_acc.export_to_fits(
-                f"{tempdir}/test_moments_1_reconstructed_cube.fits"
-            )
     error = numpy.std(
         reconstructed_cube["pixels"].data - original_cube["pixels"].data
     )

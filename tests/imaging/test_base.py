@@ -20,8 +20,11 @@ from ska_sdp_datamodels.visibility.vis_create import create_visibility
 from ska_sdp_func_python.imaging.base import (
     create_image_from_visibility,
     fill_vis_for_psf,
+    invert_awprojection,
+    normalise_sumwt,
     predict_awprojection,
     shift_vis_to_image,
+    visibility_recentre,
 )
 
 log = logging.getLogger("func-python-logger")
@@ -85,12 +88,13 @@ def test_shift_vis_to_image(result_base):
     assert shifted_vis.attrs["phasecentre"] == expected_phase_centre
 
 
-@pytest.mark.skip(
-    reason="gcfcf examples need to be found for predict_awprojection"
-)
+@pytest.mark.skip(reason="gcfcf examples needed for predict_awprojection")
 def test_predict_awprojection(result_base):
     vis = result_base["visibility"]
-    svis = predict_awprojection(vis, result_base["image"])
+    svis = predict_awprojection(
+        vis,
+        result_base["image"],
+    )
 
     assert vis != svis
 
@@ -114,7 +118,44 @@ def test_create_image_from_visibility(result_base):
     )
     expected_image = result_base["image"]
     new_image = create_image_from_visibility(
-        vis=result_base["visibility"], phasecentre=phase_centre
+        vis=result_base["visibility"],
+        phasecentre=phase_centre,
     )
 
     assert (new_image == expected_image).all()
+
+
+def test_normalise_sumwt(result_base):
+    """Unit tests for normalise_sumwt function:
+    check image created here is the same as image in result_base
+    """
+    image = result_base["image"]
+    sumwt = image
+    norm_image = normalise_sumwt(image, sumwt)
+
+    assert image != norm_image
+
+
+@pytest.mark.skip(reason="Need gcfcf values")
+def test_invert_awprojection(result_base):
+    """Unit tests for normalise_sumwt function:
+    check image created here is the same as image in result_base
+    """
+    vis = result_base["visibility"]
+    image = result_base["image"]
+    inverted_im = invert_awprojection(vis, image, gcfcf="")
+
+    assert inverted_im != image
+
+
+def test_visibility_recentre(result_base):
+    """Unit tests for normalise_sumwt function:
+    check image created here is the same as image in result_base
+    """
+    uvw = numpy.array([1, 2, 3])
+    dl = 0.1
+    dm = 0.5
+    uvw_recentred = visibility_recentre(uvw, dl, dm)
+    assert uvw_recentred[0] == 0.7
+    assert uvw_recentred[1] == 0.5
+    assert uvw_recentred[2] == 3

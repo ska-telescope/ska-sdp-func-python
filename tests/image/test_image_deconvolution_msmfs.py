@@ -1,9 +1,3 @@
-# pylint: disable=invalid-name, too-many-arguments
-# pylint: disable=attribute-defined-outside-init, unused-variable
-# pylint: disable=too-many-instance-attributes, invalid-envvar-default
-# pylint: disable=consider-using-f-string, logging-not-lazy
-# pylint: disable=missing-class-docstring, missing-function-docstring
-# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """Unit tests for image deconvolution vis MSMFS
 
 
@@ -18,16 +12,17 @@ import tempfile
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels import physical_constants
 from ska_sdp_datamodels.configuration import (
     create_named_configuration,
     decimate_configuration,
 )
+from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-from ska_sdp_datamodels import physical_constants
 from ska_sdp_datamodels.visibility import create_visibility
-from ska_sdp_datamodels.image.image_create import create_image
+
 from ska_sdp_func_python.image.deconvolution import (
     deconvolve_list,
     restore_list,
@@ -49,52 +44,10 @@ from ska_sdp_func_python.imaging.weighting import (
 # fix the below imports
 from src.ska_sdp_func_python import create_pb
 from src.ska_sdp_func_python.imaging.primary_beams import create_low_test_beam
-from src.ska_sdp_func_python.simulation import create_low_test_image_from_gleam
 
 log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.INFO)
-
-
-# def create_test_beam(image, vis):
-#     # model, diameter = 38.0, blockage = 0.0, use_local = use_local
-#     beam = create_image(npixel=256,
-#                         cellsize=0.001,
-#                         phasecentre=vis.phasecentre)
-#     beam["pixels"].data = numpy.zeros(beam["pixels"].data.shape, dtype="complex")
-#     nchan, npol, ny, nx = image["pixels"].shape
-#     cx, cy = (
-#         beam.image_acc.wcs.sub(2).wcs.crpix[0] - 1,
-#         beam.image_acc.wcs.sub(2).wcs.crpix[1] - 1,
-#     )
-#     for chan in range(nchan):
-#         # The frequency axis is the second to last in the beam
-#         frequency = image.image_acc.wcs.sub(["spectral"]).wcs_pix2world([chan], 0)[0]
-#         wavelength = physical_constants.c_m_s / frequency
-#
-#         d2r = numpy.pi / 180.0
-#         scale = d2r * numpy.abs(beam.image_acc.wcs.sub(2).wcs.cdelt[0])
-#         xx, yy = numpy.meshgrid(
-#             scale * (numpy.arange(nx) - cx), scale * (numpy.arange(ny) - cy)
-#         )
-#         # Radius of each cell in radians
-#         rr = numpy.sqrt(xx ** 2 + yy ** 2)
-#         blockage_factor = (blockage / diameter) ** 2
-#         pols = [0]
-#         reflector = ft_disk(rr * numpy.pi * diameter / wavelength)
-#         blockage = ft_disk(rr * numpy.pi * blockage / wavelength)
-#         combined = reflector - blockage_factor * blockage
-#
-#         for pol in pols:
-#             beam["pixels"].data[chan, pol, ...] = combined
-#         wcs = beam.image_acc.wcs
-#         wcs.wcs.ctype[0] = "AZELGEO long"
-#         wcs.wcs.ctype[1] = "AZELGEO lati"
-#         wcs.wcs.crval[0] = 0.0
-#         wcs.wcs.crval[1] = 0.0
-#         wcs.wcs.crpix[0] = nx // 2
-#         wcs.wcs.crpix[1] = ny // 2
-#         beam["wcs"] = wcs
 
 
 @pytest.fixture(scope="module", name="result_deconv_msmfs")
@@ -106,9 +59,7 @@ def deconvolution_msmfs_fixture():
     nchan = 6
     times = (numpy.pi / 12.0) * numpy.linspace(-3.0, 3.0, 7)
     frequency = numpy.linspace(0.9e8, 1.1e8, nchan)
-    channel_bandwidth = numpy.array(
-        nchan * [frequency[1] - frequency[0]]
-    )
+    channel_bandwidth = numpy.array(nchan * [frequency[1] - frequency[0]])
     phasecentre = SkyCoord(
         ra=+0.0 * u.deg, dec=-45.0 * u.deg, frame="icrs", equinox="J2000"
     )
@@ -153,12 +104,8 @@ def deconvolution_msmfs_fixture():
     )
     vis = weight_visibility(vis, model)
     vis = taper_visibility_gaussian(vis, 0.002)
-    dirty, sumwt = invert_visibility(
-        vis, model, context="2d"
-    )
-    psf, sumwt = invert_visibility(
-        vis, model, context="2d", dopsf=True
-    )
+    dirty, sumwt = invert_visibility(vis, model, context="2d")
+    psf, sumwt = invert_visibility(vis, model, context="2d", dopsf=True)
     if persist:
         with tempfile.TemporaryDirectory() as tempdir:
             dirty.image_acc.export_to_fits(
@@ -183,7 +130,6 @@ def deconvolution_msmfs_fixture():
         "dirty": dirty,
         "niter": niter,
         "psf": psf,
-
     }
     return params
 
@@ -204,7 +150,12 @@ def test_deconvolve_mmclean_no_taylor(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     save_and_check_images(
-        "mmclean_no_taylor", comp, residual, cmodel, 12.806085871833158, -0.14297206892008504
+        "mmclean_no_taylor",
+        comp,
+        residual,
+        cmodel,
+        12.806085871833158,
+        -0.14297206892008504,
     )
 
 
@@ -225,7 +176,12 @@ def test_deconvolve_mmclean_no_taylor_edge(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     save_and_check_images(
-        "mmclean_no_taylor_edge", comp, residual, cmodel, 12.806085871833158, -0.1429720689200851
+        "mmclean_no_taylor_edge",
+        comp,
+        residual,
+        cmodel,
+        12.806085871833158,
+        -0.1429720689200851,
     )
 
 
@@ -270,7 +226,12 @@ def test_deconvolve_mmclean_linear(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     save_and_check_images(
-        "mmclean_linear", comp, residual, cmodel, 15.207396524333546, -0.14224980487729696
+        "mmclean_linear",
+        comp,
+        residual,
+        cmodel,
+        15.207396524333546,
+        -0.14224980487729696,
     )
 
 
@@ -291,7 +252,9 @@ def test_deconvolve_mmclean_linear_sensitivity(result_deconv_msmfs):
     )
     if result_deconv_msmfs["persist"]:
         with tempfile.TemporaryDirectory() as tempdir:
-            sensitivity = image_gather_channels(result_deconv_msmfs["sensitivity"])
+            sensitivity = image_gather_channels(
+                result_deconv_msmfs["sensitivity"]
+            )
             sensitivity.image_acc.export_to_fits(
                 f"{tempdir}/test_deconvolve_mmclean_linear_sensitivity.fits"
             )
@@ -322,7 +285,12 @@ def test_deconvolve_mmclean_linear_noscales(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     save_and_check_images(
-        "mmclean_linear_noscales", comp, residual, cmodel, 15.554039669750269, -0.14697685168807129
+        "mmclean_linear_noscales",
+        comp,
+        residual,
+        cmodel,
+        15.554039669750269,
+        -0.14697685168807129,
     )
 
 
@@ -342,7 +310,12 @@ def test_deconvolve_mmclean_quadratic(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     save_and_check_images(
-        "mmclean_quadratic", comp, residual, cmodel, 15.302992891627193, -0.15373682171426403
+        "mmclean_quadratic",
+        comp,
+        residual,
+        cmodel,
+        15.302992891627193,
+        -0.15373682171426403,
     )
 
 
@@ -370,7 +343,16 @@ def test_deconvolve_mmclean_quadratic_noscales(result_deconv_msmfs):
         -0.1654330930047646,
     )
 
-def save_and_check_images(result_deconv_msmfs, tag, comp, residual, cmodel, flux_max=0.0, flux_min=0.0):
+
+def save_and_check_images(
+    result_deconv_msmfs,
+    tag,
+    comp,
+    residual,
+    cmodel,
+    flux_max=0.0,
+    flux_min=0.0,
+):
     """Save the images with standard names
 
     :param tag: Informational, unique tag
@@ -416,5 +398,10 @@ def test_deconvolve_mmclean_quadratic_psf_support(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     save_and_check_images(
-        "mmclean_quadratic_psf", comp, residual, cmodel, 15.322874439605584, -0.23892365313457908
+        "mmclean_quadratic_psf",
+        comp,
+        residual,
+        cmodel,
+        15.322874439605584,
+        -0.23892365313457908,
     )

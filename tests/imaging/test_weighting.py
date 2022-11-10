@@ -1,36 +1,28 @@
-# pylint: disable=invalid-name, too-many-arguments
-# pylint: disable=attribute-defined-outside-init, unused-variable
-# pylint: disable=too-many-instance-attributes, invalid-envvar-default
-# pylint: disable=consider-using-f-string, logging-not-lazy, bad-string-format-type
-# pylint: disable=missing-class-docstring, missing-function-docstring
-# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Unit tests for visibility weighting
 """
 
-import pytest
 import logging
 import os
 import tempfile
 
 import numpy
+import pytest
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.configuration import create_named_configuration
-
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
 from ska_sdp_datamodels.visibility import create_visibility
 
 from ska_sdp_func_python.image.deconvolution import fit_psf
+from ska_sdp_func_python.imaging.base import create_image_from_visibility
 from ska_sdp_func_python.imaging.imaging import invert_visibility
 from ska_sdp_func_python.imaging.weighting import (
     taper_visibility_gaussian,
     taper_visibility_tukey,
     weight_visibility,
 )
-
-from ska_sdp_func_python.imaging.base import create_image_from_visibility
 
 log = logging.getLogger("func-python-logger")
 
@@ -89,13 +81,18 @@ def test_tapering_Gaussian(result_weighting):
     """Apply a Gaussian taper to the visibility and check to see if the PSF size is close"""
     size_required = 0.020
     result_weighting["componentvis"] = weight_visibility(
-        result_weighting["componentvis"], result_weighting["model"], algoritm="uniform"
+        result_weighting["componentvis"],
+        result_weighting["model"],
+        algoritm="uniform",
     )
     result_weighting["componentvis"] = taper_visibility_gaussian(
         result_weighting["componentvis"], beam=size_required
     )
     psf, sumwt = invert_visibility(
-        result_weighting["componentvis"], result_weighting["model"], dopsf=True, context="2d"
+        result_weighting["componentvis"],
+        result_weighting["model"],
+        dopsf=True,
+        context="2d",
     )
     if result_weighting["persist"]:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -118,13 +115,18 @@ def test_tapering_tukey(result_weighting):
     :return:
     """
     result_weighting["componentvis"] = weight_visibility(
-        result_weighting["componentvis"], result_weighting["model"], algorithm="uniform"
+        result_weighting["componentvis"],
+        result_weighting["model"],
+        algorithm="uniform",
     )
     result_weighting["componentvis"] = taper_visibility_tukey(
         result_weighting["componentvis"], tukey=0.1
     )
     psf, sumwt = invert_visibility(
-        result_weighting["componentvis"], result_weighting["model"], dopsf=True, context="2d"
+        result_weighting["componentvis"],
+        result_weighting["model"],
+        dopsf=True,
+        context="2d",
     )
     if result_weighting["persist"]:
         with tempfile.TemporaryDirectory() as tempdir:

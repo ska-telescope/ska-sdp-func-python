@@ -323,51 +323,19 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         "create_image_from_visibility: Parsing parameters to get definition of WCS"
     )
 
-    try:
-        image_centre = kwargs["imagecentre"]
-    except KeyError:
-        log.info(
-            "create_image_from_visibility: no image_centre given, setting default value"
-        )
-        image_centre = vis.phasecentre
-    try:
-        phase_centre = kwargs["phasecentre"]
-    except KeyError:
-        log.info(
-            "create_image_from_visibility: no phase_centre given, setting default value"
-        )
-        phase_centre = vis.phasecentre
+    image_centre = kwargs.get("imagecentre", vis.phasecentre)
+
+    phase_centre = kwargs.get("phasecentre", vis.phasecentre)
 
     # Spectral processing options
     ufrequency = numpy.unique(vis["frequency"].data)
-    try:
-        frequency = kwargs["frequency"]
-    except KeyError:
-        log.info(
-            "create_image_from_visibility: no frequency given, setting default value"
-        )
-        frequency = vis["frequency"].data
-
+    frequency = kwargs.get("frequency", vis["frequency"].data)
     vnchan = len(ufrequency)
-
-    try:
-        inchan = kwargs["nchan"]
-    except KeyError:
-        log.info(
-            "create_image_from_visibility: no inchan given, setting default value"
-        )
-        inchan = vnchan
-
+    inchan = kwargs.get("nchan", vnchan)
     reffrequency = frequency[0] * units.Hz
-
-    try:
-        channel_bandwidth = kwargs["channel_bandwidth"]
-    except KeyError:
-        log.info(
-            "create_image_from_visibility: no channel_bandwidth given, setting default value"
-        )
-        channel_bandwidth = vis["channel_bandwidth"].data.flat[0]
-
+    channel_bandwidth = kwargs.get(
+        "channel_bandwidth", vis["channel_bandwidth"].data.flat[0]
+    )
     channel_bandwidth = channel_bandwidth * units.Hz
 
     if (inchan == vnchan) and vnchan > 1:
@@ -410,14 +378,7 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         )
 
     # Image sampling options
-    try:
-        npixel = kwargs["npixel"]
-    except KeyError:
-        log.info(
-            "create_image_from_visibility: no npixel given, setting default value"
-        )
-        npixel = 512
-
+    npixel = kwargs.get("npixel", 512)
     uvmax = numpy.max((numpy.abs(vis.visibility_acc.uvw_lambda[..., 0:2])))
     log.debug("create_image_from_visibility: uvmax = %f wavelengths" % uvmax)
     criticalcellsize = 1.0 / (uvmax * 2.0)
@@ -426,26 +387,14 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         % (criticalcellsize, criticalcellsize * 180.0 / numpy.pi)
     )
 
-    try:
-        cellsize = kwargs["cellsize"]
-    except KeyError:
-        log.info(
-            "create_image_from_visibility: no cellsize given, setting default value"
-        )
-        cellsize = 0.5 * criticalcellsize
+    cellsize = kwargs.get("cellsize", 0.5 * criticalcellsize)
 
     log.debug(
         "create_image_from_visibility: Cellsize          = %g radians, %g degrees"
         % (cellsize, cellsize * 180.0 / numpy.pi)
     )
-    try:
-        override_cellsize = kwargs["override_cellsize"]
-    except KeyError:
-        log.info(
-            "create_image_from_visibility: no override_cellsize given, setting default value"
-        )
-        override_cellsize = True
 
+    override_cellsize = kwargs.get("override_cellsize", True)
     if (override_cellsize and cellsize > criticalcellsize) or (
         cellsize == 0.0
     ):
@@ -454,14 +403,8 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
             % (cellsize, criticalcellsize)
         )
         cellsize = criticalcellsize
-    try:
-        pol_frame = kwargs["polarisation_frame"]
-    except KeyError:
-        log.info(
-            "create_image_from_visibility: no pol_frame given, setting default value"
-        )
-        pol_frame = PolarisationFrame("stokesI")
 
+    pol_frame = kwargs.get("polarisation_frame", PolarisationFrame("stokesI"))
     inpol = pol_frame.npol
 
     # Now we can define the WCS, which is a convenient place to hold the info above
@@ -488,29 +431,9 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     ]
     w.naxis = 4
 
-    try:
-        w.wcs.radesys = kwargs["frame"]
-    except KeyError:
-        log.info(
-            "create_image_from_visibility: no radesys given, setting default value"
-        )
-        w.wcs.radesys = "ICRS"
-
-    try:
-        w.wcs.equinox = kwargs["equinox"]
-    except KeyError:
-        log.info(
-            "create_image_from_visibility: no equinox given, setting default value"
-        )
-        w.wcs.equinox = 2000.0
-
-    try:
-        chunksize = kwargs["chunksize"]
-    except KeyError:
-        log.info(
-            "create_image_from_visibility: no chunksize given, setting default value"
-        )
-        chunksize = None
+    w.wcs.radesys = kwargs.get("frame", "ICRS")
+    w.wcs.equinox = kwargs.get("equinox", 2000.0)
+    chunksize = kwargs.get("chunksize", None)
     im = create_image(npixel, cellsize, phase_centre)
     return im
 
@@ -531,10 +454,8 @@ def advise_wide_field(
     For example::
 
         advice = advise_wide_field(vis, delA)
-        try:
-            wstep = kwargs["wstep"]
-        except KeyError:
-            wstep = advice['w_sampling_primary_beam'])
+        wstep = kwargs.get("wstep")
+
 
 
     :param vis:

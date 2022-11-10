@@ -1,29 +1,26 @@
-# pylint: disable=invalid-name, too-many-arguments
-# pylint: disable=invalid-envvar-default
-# pylint: disable= missing-class-docstring, missing-function-docstring
-# pylint: disable=import-error, no-name-in-module
+# pylint: skip-file
 """ Unit tests for image Taylor terms
 
 """
 import pytest
-# Needs copy_skycomponent and decision about smooth_image and create_low_test_skycomponents_from_gleam
-pytestmark = pytest.skip(allow_module_level=True)
+
+pytestmark = pytest.skip(
+    allow_module_level=True, reason="Needs copy_skycomponents"
+)
 import logging
 
 import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
+from ska_sdp_datamodels.image.image_create import create_image
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
+from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
 from ska_sdp_func_python.skycomponent.taylor_terms import (
     calculate_skycomponent_list_taylor_terms,
     find_skycomponents_frequency_taylor_terms,
-)
-from ska_sdp_datamodels.image.image_create import create_image
-
-# fix the below imports
-from src.ska_sdp_func_python import (
-    create_low_test_skycomponents_from_gleam,
-    smooth_image,
 )
 
 log = logging.getLogger("func-python-logger")
@@ -33,28 +30,36 @@ log.setLevel(logging.WARNING)
 
 @pytest.fixture(scope="module", name="result_taylor_terms")
 def taylor_terms_fixture():
-    phasecentre = SkyCoord(
+
+    phase_centre = SkyCoord(
         ra=+15.0 * u.deg, dec=-45.0 * u.deg, frame="icrs", equinox="J2000"
     )
     frequency = numpy.linspace(0.9e8, 1.1e8, 9)
+    name = "test_sc"
+    flux = numpy.array([1, 1])
+    shape = "Point"
+    polarisation_frame = PolarisationFrame("stokesI")
+
+    sky_components = SkyComponent(
+        phase_centre,
+        frequency,
+        name,
+        flux,
+        shape,
+        polarisation_frame,
+    )
     params = {
-        "phasecentre": phasecentre,
+        "phasecentre": phase_centre,
         "frequency": frequency,
+        "skycomponents": sky_components,
     }
     return params
 
 
-@pytest.mark.skip(reason="create_low_test_skycomponent_from_glean needs to be replaced")
 def test_calculate_taylor_terms(result_taylor_terms):
-    sc = create_low_test_skycomponents_from_gleam(
-        phasecentre=result_taylor_terms["phasecentre"],
-        frequency=result_taylor_terms["frequency"],
-        flux_limit=10.0
-    )[0:10]
+    sc = result_taylor_terms["skycomponents"]
 
-    taylor_term_list = calculate_skycomponent_list_taylor_terms(
-        sc, nmoment=3
-    )
+    taylor_term_list = calculate_skycomponent_list_taylor_terms(sc, nmoment=3)
     assert len(taylor_term_list) == 10
 
 
@@ -68,7 +73,6 @@ def test_find_skycomponents_frequency_taylor_terms(result_taylor_terms):
         )
         for f in result_taylor_terms["frequency"]
     ]
-    # im_list = [smooth_image(im, width=2.0) for im in im_list]
 
     for moment in [1, 2, 3]:
         sc_list = find_skycomponents_frequency_taylor_terms(
