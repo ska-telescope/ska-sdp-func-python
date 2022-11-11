@@ -1,6 +1,3 @@
-# pylint: disable=invalid-name, expression-not-assigned, unused-argument
-# pylint: disable= missing-class-docstring, missing-function-docstring
-# pylint: disable=import-error, no-name-in-module
 """ Unit processing_components for convolutional Gridding
 
 

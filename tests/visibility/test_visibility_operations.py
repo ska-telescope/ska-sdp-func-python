@@ -14,9 +14,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
-from ska_sdp_datamodels.visibility.vis_create import (
-    create_visibility,
-)
+from ska_sdp_datamodels.visibility.vis_create import create_visibility
 
 # from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 from ska_sdp_func_python.visibility.base import phaserotate_visibility

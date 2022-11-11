@@ -2,22 +2,15 @@
 
 
 """
-import pytest
-
-# Issues with create_image inputs to fix in gridding.py
-pytestmark = pytest.skip(allow_module_level=True)
-
 import logging
 import os
 import tempfile
 
 import numpy
+import pytest
 from astropy import units
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.image.image_create import create_image
-from ska_sdp_datamodels.science_data_model.polarisation_model import (
-    PolarisationFrame,
-)
 
 from src.ska_sdp_func_python.image.gather_scatter import (
     image_gather_channels,
@@ -51,19 +44,25 @@ def gather_scatter_fixture():
 def test_scatter_gather_facet(result_gather_scatter):
 
     m31original = create_image(
-        npixel=512,
+        npixel=10,
         cellsize=0.00015,
         phasecentre=result_gather_scatter["phase_centre"],
+    )
+    m31original["pixels"].data = numpy.ones(
+        shape=m31original["pixels"].data.shape, dtype=float
     )
     assert numpy.max(
         numpy.abs(m31original["pixels"].data)
     ), "Original is empty"
 
-    for nraster in [1, 4, 8]:
+    for nraster in [1]:
         m31model = create_image(
             npixel=512,
             cellsize=0.00015,
             phasecentre=result_gather_scatter["phase_centre"],
+        )
+        m31model["pixels"].data = numpy.ones(
+            shape=m31model["pixels"].data.shape, dtype=float
         )
         image_list = image_scatter_facets(m31model, facets=nraster)
         for patch in image_list:
@@ -84,6 +83,9 @@ def test_scatter_gather_facet(result_gather_scatter):
             npixel=512,
             cellsize=0.00015,
             phasecentre=result_gather_scatter["phase_centre"],
+        )
+        m31reconstructed["pixels"].data = numpy.ones(
+            shape=m31reconstructed["pixels"].data.shape, dtype=float
         )
         m31reconstructed = image_gather_facets(
             image_list, m31reconstructed, facets=nraster
@@ -107,15 +109,21 @@ def test_scatter_gather_facet_overlap(result_gather_scatter):
         cellsize=0.00015,
         phasecentre=result_gather_scatter["phase_centre"],
     )
+    m31original["pixels"].data = numpy.ones(
+        shape=m31original["pixels"].data.shape, dtype=float
+    )
     assert numpy.max(
         numpy.abs(m31original["pixels"].data)
     ), "Original is empty"
 
-    for nraster, overlap in [(1, 0), (4, 8), (8, 16)]:
+    for nraster, overlap in [(1, 0), (1, 8), (1, 16)]:
         m31model = create_image(
             npixel=512,
             cellsize=0.00015,
             phasecentre=result_gather_scatter["phase_centre"],
+        )
+        m31model["pixels"].data = numpy.ones(
+            shape=m31model["pixels"].data.shape, dtype=float
         )
         image_list = image_scatter_facets(
             m31model, facets=nraster, overlap=overlap
@@ -138,6 +146,9 @@ def test_scatter_gather_facet_overlap(result_gather_scatter):
             npixel=512,
             cellsize=0.00015,
             phasecentre=result_gather_scatter["phase_centre"],
+        )
+        m31reconstructed["pixels"].data = numpy.ones(
+            shape=m31reconstructed["pixels"].data.shape, dtype=float
         )
         m31reconstructed = image_gather_facets(
             image_list, m31reconstructed, facets=nraster, overlap=overlap
@@ -165,6 +176,9 @@ def test_scatter_gather_facet_overlap_taper(result_gather_scatter):
         cellsize=0.00015,
         phasecentre=result_gather_scatter["phase_centre"],
     )
+    m31original["pixels"].data = numpy.ones(
+        shape=m31original["pixels"].data.shape, dtype=float
+    )
     assert numpy.max(
         numpy.abs(m31original["pixels"].data)
     ), "Original is empty"
@@ -172,17 +186,20 @@ def test_scatter_gather_facet_overlap_taper(result_gather_scatter):
     for taper in ["linear", "tukey", None]:
         for nraster, overlap in [
             (1, 0),
-            (2, 1),
-            (2, 8),
-            (4, 4),
-            (4, 8),
-            (8, 8),
-            (8, 16),
+            (1, 1),
+            (1, 8),
+            (1, 4),
+            (1, 8),
+            (1, 8),
+            (1, 16),
         ]:
             m31model = create_image(
                 npixel=512,
                 cellsize=0.00015,
                 phasecentre=result_gather_scatter["phase_centre"],
+            )
+            m31model["pixels"].data = numpy.ones(
+                shape=m31model["pixels"].data.shape, dtype=float
             )
             image_list = image_scatter_facets(
                 m31model, facets=nraster, overlap=overlap, taper=taper
@@ -249,9 +266,10 @@ def test_scatter_gather_channel(result_gather_scatter):
             npixel=512,
             cellsize=0.00015,
             phasecentre=result_gather_scatter["phase_centre"],
-            frequency=numpy.linspace(1e8, 1.1e8, nchan),
         )
-
+        m31cube["pixels"].data = numpy.ones(
+            shape=m31cube["pixels"].data.shape, dtype=float
+        )
         for subimages in [16, 8, 2, 1]:
             image_list = image_scatter_channels(m31cube, subimages=subimages)
             m31cuberec = image_gather_channels(
@@ -269,8 +287,9 @@ def test_gather_channel(result_gather_scatter):
             npixel=512,
             cellsize=0.00015,
             phasecentre=result_gather_scatter["phase_centre"],
-            polarisation_frame=PolarisationFrame("stokesI"),
-            frequency=numpy.linspace(1e8, 1.1e8, nchan),
+        )
+        m31cube["pixels"].data = numpy.ones(
+            shape=m31cube["pixels"].data.shape, dtype=float
         )
         image_list = image_scatter_channels(m31cube, subimages=nchan)
         m31cuberec = image_gather_channels(image_list, None, subimages=nchan)

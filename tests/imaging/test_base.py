@@ -2,6 +2,7 @@
 
 """
 
+import functools
 import logging
 
 import numpy
@@ -136,7 +137,7 @@ def test_normalise_sumwt(result_base):
     assert image != norm_image
 
 
-@pytest.mark.skip(reason="Need gcfcf values")
+@pytest.mark.skip(reason="Need more info on gcfcf values")
 def test_invert_awprojection(result_base):
     """Unit tests for normalise_sumwt function:
     check image created here is the same as image in result_base

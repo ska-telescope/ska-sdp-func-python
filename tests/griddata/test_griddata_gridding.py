@@ -1,12 +1,4 @@
-# pylint: disable=invalid-name, too-many-arguments
-# pylint: disable=too-many-instance-attributes, invalid-envvar-default
-# pylint: disable=missing-class-docstring, missing-function-docstring
-# pylint: disable=consider-using-f-string, unused-variable
-# pylint: disable=attribute-defined-outside-init, too-many-public-methods
-# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
-# pylint: skip-file
 """ Unit tests for image operations
-
 
 """
 import logging
@@ -118,13 +110,12 @@ def test_grid_visibility_weight_to_griddata(result_gridding):
     assert new_gd != grid_data
 
 
-@pytest.mark.skip(reason="gd_list issue")
 def test_griddata_merge_weights(result_gridding):
-    """Unit tests for grid_visibility_to_griddata function:
-    check that griddata is updated
+    """Unit tests for griddata_merge_weights function:
+    check that griddata is updated and sumwt is 3
     """
     grid_data = result_gridding["grid_data"]
-    gd_list = [grid_data, grid_data, grid_data]
+    gd_list = [(grid_data, 1), (grid_data, 1), (grid_data, 1)]
     new_gd, sumwt = griddata_merge_weights(gd_list)
 
     assert new_gd != grid_data

@@ -1,9 +1,3 @@
-# pylint: disable=invalid-name, too-many-arguments, too-many-public-methods
-# pylint: disable=attribute-defined-outside-init, unused-variable
-# pylint: disable=too-many-instance-attributes, invalid-envvar-default
-# pylint: disable=consider-using-f-string, logging-not-lazy
-# pylint: disable=missing-class-docstring, missing-function-docstring
-# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Unit tests for imaging functions
 
 

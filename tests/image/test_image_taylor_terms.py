@@ -14,6 +14,8 @@ from ska_sdp_func_python.image.taylor_terms import (
     calculate_frequency_taylor_terms_from_image_list,
     calculate_image_frequency_moments,
     calculate_image_from_frequency_taylor_terms,
+    calculate_image_list_frequency_moments,
+    calculate_image_list_from_frequency_taylor_terms,
 )
 
 log = logging.getLogger("func-python-logger")
@@ -37,26 +39,19 @@ def taylor_terms_fixture():
     return params
 
 
-@pytest.mark.skip(
-    reason="Issues remaining with create_image_frequency_moments : "
-    "bad operand type for unary -: 'WCS' in create_image()"
-)
-def test_calculate_image_frequency_moments(result_taylor_terms):
+def test_calculate_image_frequency_moments_3(result_taylor_terms):
+    original_cube = result_taylor_terms["image"]
     cube = create_image(512, 0.0001, result_taylor_terms["phasecentre"])
     moment_cube = calculate_image_frequency_moments(cube, nmoment=3)
     reconstructed_cube = calculate_image_from_frequency_taylor_terms(
         cube, moment_cube
     )
     error = numpy.std(
-        reconstructed_cube["pixels"].data
-        - result_taylor_terms["image"].data_vars["pixels"].data
+        reconstructed_cube["pixels"].data - original_cube["pixels"].data
     )
     assert error < 0.2, error
 
 
-@pytest.mark.skip(
-    reason="Issues remaining with create_image_frequency_moments as above"
-)
 def test_calculate_image_frequency_moments_1(result_taylor_terms):
     original_cube = result_taylor_terms["image"]
     cube = create_image(512, 0.0001, result_taylor_terms["phasecentre"])
@@ -69,6 +64,32 @@ def test_calculate_image_frequency_moments_1(result_taylor_terms):
         reconstructed_cube["pixels"].data - original_cube["pixels"].data
     )
     assert error < 0.2
+
+
+def test_calculate_image_list_frequency_moments(result_taylor_terms):
+    original_cube = result_taylor_terms["image"]
+    image_list = [original_cube, original_cube, original_cube]
+    moment_cube = calculate_image_frequency_moments(original_cube, nmoment=3)
+    reconstructed_cube = calculate_image_list_frequency_moments(
+        image_list, nmoment=3
+    )
+
+    error = numpy.std(
+        reconstructed_cube["pixels"].data - original_cube["pixels"].data
+    )
+    assert error < 0.2
+
+
+def test_calculate_image_list_from_frequency_taylor_terms(result_taylor_terms):
+    original_cube = result_taylor_terms["image"]
+    image_list = [original_cube, original_cube, original_cube]
+    moment_cube = calculate_image_frequency_moments(original_cube, nmoment=1)
+    reconstructed_cube_list = calculate_image_list_from_frequency_taylor_terms(
+        image_list, moment_cube
+    )
+    for image in reconstructed_cube_list:
+        error = numpy.std(image["pixels"].data - original_cube["pixels"].data)
+        assert error < 0.2
 
 
 def test_calculate_taylor_terms(result_taylor_terms):

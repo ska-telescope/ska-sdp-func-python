@@ -14,7 +14,7 @@ from ska_sdp_func_python.imaging.imaging import (
     predict_visibility,
 )
 from ska_sdp_func_python.calibration import apply_gaintable
-from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
+# from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 from ska_sdp_func_python.imaging.base import normalise_sumwt
 from ska_sdp_func_python.visibility import concatenate_visibility
 from ska_sdp_func_python.skycomponent.operations import (
@@ -22,7 +22,7 @@ from ska_sdp_func_python.skycomponent.operations import (
 )
 
 # fix the below imports
-from ska_sdp_func_python.skycomponent import copy_skycomponent
+# from ska_sdp_func_python.skycomponent import copy_skycomponent
 
 
 def skymodel_predict_calibrate(

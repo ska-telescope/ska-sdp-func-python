@@ -1,9 +1,3 @@
-# pylint: disable=invalid-name, too-many-arguments, too-many-public-methods
-# pylint: disable=attribute-defined-outside-init, unused-variable
-# pylint: disable=too-many-instance-attributes, invalid-envvar-default
-# pylint: disable=consider-using-f-string, logging-not-lazy
-# pylint: disable=missing-class-docstring, missing-function-docstring
-# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Unit tests for imaging functions
 
 
@@ -107,14 +101,11 @@ def test_sum_predict_results(result_helpers):
     ).all()
 
 
-@pytest.mark.skip(
-    reason="Issues remaining with create_image_frequency_moments : "
-    "bad operand type for unary -: 'WCS' in create_image()"
-)
 def test_threshold_list(result_helpers):
-
+    image = result_helpers["image"]
+    image_list = [image, image, image]
     actual_threshold = threshold_list(
-        result_helpers["multiple_list"],
+        image_list,
         threshold=0.0,
         fractional_threshold=0.01,
     )

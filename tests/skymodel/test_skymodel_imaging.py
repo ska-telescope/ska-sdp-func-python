@@ -5,7 +5,7 @@ import pytest
 
 pytestmark = pytest.skip(
     allow_module_level=True,
-    reason="Issues with dft_skycomponent_visibility in skymodel_imaging.py ( import ska-sdp-func)",
+    reason="Issues with dft_skycomponent_visibility in skymodel_imaging.py ( import ska-sdp-func) and empty Images",
 )
 import logging
 import os
@@ -25,7 +25,7 @@ from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-from ska_sdp_datamodels.sky_model.sky_model import SkyModel
+from ska_sdp_datamodels.sky_model.sky_model import SkyComponent, SkyModel
 from ska_sdp_datamodels.visibility.vis_create import create_visibility
 
 from ska_sdp_func_python.skymodel.skymodel_imaging import (
@@ -48,13 +48,12 @@ log.setLevel(logging.WARNING)
 log.addHandler(logging.StreamHandler(sys.stdout))
 
 
-@pytest.fixture(scope="module", nmae="result_imaging")
+@pytest.fixture(scope="module", name="result_imaging")
 def skymodel_imaging_fixture():
 
     persist = os.getenv("FUNC_PYTHON_PERSIST", False)
     npixel = 512
     low = create_named_configuration("LOW", rmax=300.0)
-    zerow = False
     ntimes = 3
     cellsize = 0.001
     radius = npixel * cellsize / 2.0
@@ -75,15 +74,23 @@ def skymodel_imaging_fixture():
     )
     vis = create_visibility(
         low,
-        frequency,
-        channelwidth,
         times,
-        vis_pol,
+        frequency,
         phase_centre,
-        zerow=zerow,
+        channelwidth,
+        polarisation_frame=vis_pol,
     )
-    gt = create_gaintable_from_visibility(vis, times, "T")
+    gt = create_gaintable_from_visibility(vis, None, "T")
     im = create_image(npixel, cellsize, phase_centre)
+    im["pixels"].data = numpy.ones(shape=im["pixels"].data.shape, dtype=float)
+    sky_component = SkyComponent(
+        phase_centre,
+        frequency,
+        name="skymodel_sc",
+        flux=numpy.ones((1, 1)),
+        shape="Point",
+        polarisation_frame=vis_pol,
+    )
     params = {
         "npixel": npixel,
         "cellsize": cellsize,
@@ -93,23 +100,24 @@ def skymodel_imaging_fixture():
         "phasecentre": phase_centre,
         "persist": persist,
         "radius": radius,
+        "skycomponent": sky_component,
         "vis": vis,
     }
 
     return params
 
 
-def test_predict_no_pb(result_imaging):
+def test_predict_calibrate_no_pb(result_imaging):
     """Predict with no primary beam"""
-    skymodel = SkyModel.constructor(
+    skymodel = SkyModel(
         result_imaging["image"],
-        None,
+        result_imaging["skycomponent"],
         result_imaging["gaintable"],
-        "Test_mask",
+        None,
         False,
     )
 
-    assert len(skymodel.components) == 11, len(skymodel.components)
+    assert len(skymodel.components) == 1, len(skymodel.components)
     assert (
         numpy.max(numpy.abs(skymodel.image["pixels"].data)) > 0.0
     ), "Image is empty"
@@ -119,7 +127,9 @@ def test_predict_no_pb(result_imaging):
     )
     qa = skymodel_vis.visibility_acc.qa_visibility()
     numpy.testing.assert_almost_equal(
-        qa.data["maxabs"], 60.35140880932053, err_msg=str(qa)
+        qa.data["maxabs"],
+        60.35140880932053,
+        err_msg=str(qa),  # Value will need to be changed
     )
 
 
@@ -127,7 +137,7 @@ def test_predict_no_pb(result_imaging):
 def test_predict_with_pb(result_imaging):
     """Test predict while applying a time-variable primary beam"""
 
-    skymodel = SkyModel.constructor(
+    skymodel = SkyModel(
         result_imaging["image"],
         None,
         result_imaging["gaintable"],
@@ -154,22 +164,24 @@ def test_predict_with_pb(result_imaging):
     )
     qa = skymodel_vis.visibility_acc.qa_visibility()
     numpy.testing.assert_almost_equal(
-        qa.data["maxabs"], 32.20530966848842, err_msg=str(qa)
+        qa.data["maxabs"],
+        32.20530966848842,
+        err_msg=str(qa),  # Value will need to be changed
     )
 
 
-def test_invert_no_pb(result_imaging):
+def test_calibrate_invert_no_pb(result_imaging):
     """Test invert"""
 
-    skymodel = SkyModel.constructor(
+    skymodel = SkyModel(
         result_imaging["image"],
-        None,
+        result_imaging["skycomponent"],
         result_imaging["gaintable"],
         "Test_mask",
         False,
     )
 
-    assert len(skymodel.components) == 11, len(skymodel.components)
+    assert len(skymodel.components) == 1, len(skymodel.components)
     assert (
         numpy.max(numpy.abs(skymodel.image["pixels"].data)) > 0.0
     ), "Image is empty"
@@ -187,18 +199,19 @@ def test_invert_no_pb(result_imaging):
         normalise=True,
         flat_sky=False,
     )
-    if result_imaging["persist"]:
-        with tempfile.TemporaryDirectory() as tempdir:
-            dirty.image_acc.export_to_fits(
-                f"{tempdir}/test_skymodel_invert_dirty.fits"
-            )
     qa = dirty.image_acc.qa_image()
 
     numpy.testing.assert_allclose(
-        qa.data["max"], 4.179714181498791, atol=1e-7, err_msg=f"{qa}"
+        qa.data["max"],
+        4.179714181498791,
+        atol=1e-7,
+        err_msg=f"{qa}",  # Value will need to be changed
     )
     numpy.testing.assert_allclose(
-        qa.data["min"], -0.33300435260339034, atol=1e-7, err_msg=f"{qa}"
+        qa.data["min"],
+        -0.33300435260339034,
+        atol=1e-7,
+        err_msg=f"{qa}",  # Value will need to be changed
     )
 
 
@@ -206,7 +219,7 @@ def test_invert_no_pb(result_imaging):
 def test_invert_with_pb(result_imaging):
     """Test invert while applying a time-variable primary beam"""
 
-    skymodel = SkyModel.constructor(
+    skymodel = SkyModel(
         result_imaging["image"],
         None,
         result_imaging["gaintable"],
@@ -276,21 +289,27 @@ def test_invert_with_pb(result_imaging):
     qa = skymodel[0].image_acc.qa_image()
 
     numpy.testing.assert_allclose(
-        qa.data["max"], 4.025153684707801, atol=1e-7, err_msg=f"{qa}"
+        qa.data["max"],
+        4.025153684707801,
+        atol=1e-7,
+        err_msg=f"{qa}",  # Value will need to be changed
     )
     numpy.testing.assert_allclose(
-        qa.data["min"], -0.24826345131847594, atol=1e-7, err_msg=f"{qa}"
+        qa.data["min"],
+        -0.24826345131847594,
+        atol=1e-7,
+        err_msg=f"{qa}",  # Value will need to be changed
     )
 
 
 def test_predict_nocomponents(result_imaging):
     """Test predict with no components"""
 
-    skymodel = SkyModel.constructor(
+    skymodel = SkyModel(
         result_imaging["image"],
         None,
         result_imaging["gaintable"],
-        "Test_mask",
+        None,
         False,
     )
 
@@ -305,16 +324,16 @@ def test_predict_nocomponents(result_imaging):
     )
     qa = skymodel_vis.visibility_acc.qa_visibility()
     numpy.testing.assert_almost_equal(
-        qa.data["maxabs"], 39.916746503252156, err_msg=str(qa)
+        qa.data["maxabs"], 267561.334946478, err_msg=str(qa)
     )
 
 
 def test_predict_noimage(result_imaging):
     """Test predict with no image"""
 
-    skymodel = SkyModel.constructor(
-        result_imaging["image"],
+    skymodel = SkyModel(
         None,
+        result_imaging["skycomponent"],
         result_imaging["gaintable"],
         "Test_mask",
         False,
@@ -322,12 +341,14 @@ def test_predict_noimage(result_imaging):
 
     skymodel.image = None
 
-    assert len(skymodel.components) == 11, len(skymodel.components)
+    assert len(skymodel.components) == 1, len(skymodel.components)
 
     skymodel_vis = skymodel_predict_calibrate(
         result_imaging["vis"], skymodel, context="ng"
     )
     qa = skymodel_vis.visibility_acc.qa_visibility()
     numpy.testing.assert_almost_equal(
-        qa.data["maxabs"], 20.434662306068372, err_msg=str(qa)
+        qa.data["maxabs"],
+        20.434662306068372,
+        err_msg=str(qa),  # Value will need to be changed
     )

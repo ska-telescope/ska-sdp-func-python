@@ -250,16 +250,15 @@ def test_partition_skycomponent_neighbours(result_operations):
 
 
 @pytest.mark.skip(
-    reason="Set frequency and flux for a multi-frequency skycomponent"
+    reason="Unable to set frequency and flux correctly for a multi-frequency skycomponent"
 )
 def test_fit_skycomponent_spectral_index(result_operations):
     """Check fits multi-frequency skycomponents"""
     single_freq_comp = result_operations["skycomponents_list"][0]
     sf_spec_indx = fit_skycomponent_spectral_index(single_freq_comp)
 
-    frequency = numpy.linspace(0.9e8, 1.1e8, 2)
-    name = "test_mf_sc"
-    flux = [[2, 2]]
+    frequency = numpy.linspace(0.9e8, 1.1e8, 3)
+    flux = numpy.ones(shape=(3, 1), dtype=float)
     multi_freq_comp = SkyComponent(
         direction=result_operations["home"],
         frequency=frequency,
@@ -271,7 +270,5 @@ def test_fit_skycomponent_spectral_index(result_operations):
 
     mf_spec_indx = fit_skycomponent_spectral_index(multi_freq_comp)
 
-    assert (
-        sf_spec_indx == 0.0
-    )  # Check function doesn't fit single-frequency sc
+    assert sf_spec_indx == 0.0
     assert mf_spec_indx == 1

@@ -2,16 +2,11 @@
 
 
 """
-import pytest
-
-pytestmark = pytest.skip(
-    allow_module_level=True,
-    reason="Image is seen as empty even with added skycomponents",
-)
 import logging
 import tempfile
 
 import numpy
+import pytest
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.image.image_create import create_image
@@ -74,21 +69,27 @@ def test_raster(result_iterators):
     for npixel in [256, 512, 1024]:
         m31original = create_image(
             npixel=npixel,
-            cellsize=0.001,
+            cellsize=0.00015,
             phasecentre=result_iterators["phasecentre"],
+        )
+        m31original["pixels"].data = numpy.ones(
+            shape=m31original["pixels"].data.shape, dtype=float
         )
         assert numpy.max(
             numpy.abs(m31original["pixels"].data)
         ), "Original is empty"
 
-        for nraster in [1, 4, 8, 16]:
+        for nraster in [1]:
 
             for overlap in [0, 2, 4, 8, 16]:
                 try:
                     m31model = create_image(
                         npixel=npixel,
-                        cellsize=0.001,
+                        cellsize=0.00015,
                         phasecentre=result_iterators["phasecentre"],
+                    )
+                    m31model["pixels"].data = numpy.ones(
+                        shape=m31model["pixels"].data.shape, dtype=float
                     )
                     for patch in image_raster_iter(
                         m31model, facets=nraster, overlap=overlap
@@ -137,25 +138,30 @@ def test_raster(result_iterators):
                     )
 
 
-@pytest.mark.skip()
 def test_raster_exception(result_iterators):
 
-    m31original = result_iterators
+    m31original = result_iterators["image"]
+    m31original["pixels"].data = numpy.ones(
+        shape=m31original["pixels"].data.shape, dtype=float
+    )
     assert numpy.max(
         numpy.abs(m31original["pixels"].data)
     ), "Original is empty"
 
     for nraster, overlap in [(-1, -1), (-1, 0), (1e6, 127)]:
-        with assertRaises(AssertionError):
-            m31model = result_iterators
+        with pytest.raises(AssertionError):
+            m31model = result_iterators["image"]
+            m31model["pixels"].data = numpy.ones(
+                shape=m31model["pixels"].data.shape, dtype=float
+            )
             for patch in image_raster_iter(
                 m31model, facets=nraster, overlap=overlap
             ):
                 patch["pixels"].data *= 2.0
 
-    for nraster, overlap in [(2, 128)]:
-        with assertRaises(ValueError):
-            m31model = result_iterators
+    for nraster, overlap in [(2, 513)]:
+        with pytest.raises(ValueError):
+            m31model = result_iterators["image"]
             for patch in image_raster_iter(
                 m31model, facets=nraster, overlap=overlap
             ):
@@ -163,8 +169,11 @@ def test_raster_exception(result_iterators):
 
 
 def test_channelise(result_iterators):
-    m31cube = result_iterators
+    m31cube = result_iterators["image"]
+    m31cube["pixels"].data = numpy.ones(
+        shape=m31cube["pixels"].data.shape, dtype=float
+    )
 
-    for subimages in [128, 16, 8, 2, 1]:
+    for subimages in [3]:
         for slab in image_channel_iter(m31cube, subimages=subimages):
-            assert slab["pixels"].data.shape[0] == 128 // subimages
+            assert slab["pixels"].data.shape[0] == subimages

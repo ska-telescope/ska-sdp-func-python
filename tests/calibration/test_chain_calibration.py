@@ -1,8 +1,3 @@
-# pylint: disable=invalid-name, too-many-arguments
-# pylint: disable=consider-using-f-string, logging-not-lazy, unused-variable
-# pylint: disable=attribute-defined-outside-init, too-many-instance-attributes
-# pylint: disable= missing-class-docstring, missing-function-docstring
-# pylint: disable=import-error, no-name-in-module
 # pylint: skip-file
 """ Unit tests for calibration solution
 

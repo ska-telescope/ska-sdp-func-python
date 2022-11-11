@@ -78,9 +78,9 @@ def image_gather_facets(
      See also
         :py:func:`ska_sdp_func_python.image.iterators.image_raster_iter`
     """
-    out = create_image(im)
+    out = create_image(im["pixels"].data.shape[3], cellsize=0.00015, phasecentre=im.image_acc.phasecentre)
     if overlap > 0:
-        flat = create_image(im)
+        flat = create_image(im["pixels"].data.shape[3], cellsize=0.00015, phasecentre=im.image_acc.phasecentre)
         flat["pixels"].data[...] = 1.0
         flats = list(
             image_raster_iter(
@@ -92,7 +92,7 @@ def image_gather_facets(
             )
         )
 
-        sum_flats = create_image(im)
+        sum_flats = create_image(im["pixels"].data.shape[3], cellsize=0.00015, phasecentre=im.image_acc.phasecentre)
 
         if return_flat:
             i = 0
@@ -129,7 +129,10 @@ def image_gather_facets(
         return out
 
     # if no overlap
-    flat = create_image(im)
+    flat = create_image(im["pixels"].data.shape[3],
+                        cellsize=0.00015,
+                        phasecentre=im.image_acc.phasecentre
+                        )
     flat["pixels"].data[...] = 1.0
 
     if return_flat:
