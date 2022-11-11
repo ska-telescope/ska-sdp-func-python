@@ -78,7 +78,9 @@ def weighting_fixture():
 
 
 def test_tapering_Gaussian(result_weighting):
-    """Apply a Gaussian taper to the visibility and check to see if the PSF size is close"""
+    """Apply a Gaussian taper to the visibility and check to see if
+    the PSF size is close
+    """
     size_required = 0.020
     result_weighting["componentvis"] = weight_visibility(
         result_weighting["componentvis"],
@@ -110,7 +112,8 @@ def test_tapering_Gaussian(result_weighting):
 
 
 def test_tapering_tukey(result_weighting):
-    """Apply a Tukey window taper and output the psf and FT of the PSF. No quantitative check.
+    """Apply a Tukey window taper and output the psf and FT of the PSF.
+       No quantitative check.
 
     :return:
     """

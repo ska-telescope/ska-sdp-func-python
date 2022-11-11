@@ -55,7 +55,7 @@ def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     assert model.image_acc.is_canonical()
 
     nthreads = kwargs.get("threads", 4)
-    epsilon = kwargs.get("epsilon", 1e12)
+    epsilon = kwargs.get("epsilon", 1e-12)
     do_wstacking = kwargs.get("do_wstacking", True)
     verbosity = kwargs.get("verbosity", 0)
 
@@ -167,12 +167,10 @@ def invert_ng(
     assert isinstance(model, Image), model
     assert model.image_acc.is_canonical()
 
-    assert isinstance(bvis, Visibility), bvis
-
     im = model.copy(deep=True)
 
     nthreads = kwargs.get("threads", 4)
-    epsilon = kwargs.get("epsilon", 1e12)
+    epsilon = kwargs.get("epsilon", 1e-12)
     do_wstacking = kwargs.get("do_wstacking", True)
     verbosity = kwargs.get("verbosity", 0)
 

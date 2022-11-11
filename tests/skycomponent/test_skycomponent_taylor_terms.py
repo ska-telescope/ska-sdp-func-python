@@ -2,15 +2,11 @@
 """ Unit tests for image Taylor terms
 
 """
-import pytest
-
-pytestmark = pytest.skip(
-    allow_module_level=True, reason="Needs copy_skycomponents"
-)
 import logging
 
 import astropy.units as u
 import numpy
+import pytest
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
@@ -23,6 +19,9 @@ from ska_sdp_func_python.skycomponent.taylor_terms import (
     find_skycomponents_frequency_taylor_terms,
 )
 
+pytestmark = pytest.skip(
+    allow_module_level=True, reason="Needs copy_skycomponents"
+)
 log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)

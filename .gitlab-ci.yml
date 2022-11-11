@@ -15,8 +15,8 @@ include:
   # For Python, only include linting and testing stages
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/python-lint.gitlab-ci.yml'
-#  - project: 'ska-telescope/templates-repository'
-#    file: 'gitlab-ci/includes/python-test.gitlab-ci.yml'
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/python-test.gitlab-ci.yml'
 #  - project: 'ska-telescope/templates-repository'
 #    file: 'gitlab-ci/includes/oci-image.gitlab-ci.yml'
 #  - project: 'ska-telescope/templates-repository'

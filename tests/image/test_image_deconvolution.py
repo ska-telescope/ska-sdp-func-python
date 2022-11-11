@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """ Unit tests for image deconvolution
 
 
@@ -39,7 +40,7 @@ log.setLevel(logging.INFO)
 
 @pytest.fixture(scope="module", name="result_deconvolution")
 def deconvolution_fixture():
-
+    """Pytest fixture for the deconvolution.py unit tests"""
     lowcore = create_named_configuration("LOWBD2-CORE")
     times = (numpy.pi / 12.0) * numpy.linspace(-3.0, 3.0, 7)
     frequency = numpy.array([1e8])
@@ -91,12 +92,13 @@ def deconvolution_fixture():
 
 def overlaptest(a1, a2, s1, s2):
     #
-    a1[s1[0] : s1[1], s1[2] : s1[3]] = 1
-    a2[s2[0] : s2[1], s2[2] : s2[3]] = 1
+    a1[s1[0]: s1[1], s1[2]: s1[3]] = 1
+    a2[s2[0]: s2[1], s2[2]: s2[3]] = 1
     return numpy.sum(a1) == numpy.sum(a2)
 
 
 def test_overlap():
+    """Unit tests for the overlapIndices function"""
     res = numpy.zeros([512, 512])
     psf = numpy.zeros([100, 100])
     peak = (499, 249)
@@ -109,6 +111,7 @@ def test_overlap():
 
 
 def test_restore(result_deconvolution):
+    """Unit tests for the restore_cube function"""
     result_deconvolution["model"].data_vars["pixels"].data[
         0, 0, 256, 256
     ] = 1.0
@@ -121,6 +124,7 @@ def test_restore(result_deconvolution):
 
 
 def test_restore_list(result_deconvolution):
+    """Unit tests for the restore_list function"""
     result_deconvolution["model"]["pixels"].data[0, 0, 256, 256] = 1.0
     cmodel = restore_list(
         [result_deconvolution["model"]], [result_deconvolution["psf"]]
@@ -131,7 +135,7 @@ def test_restore_list(result_deconvolution):
 
 
 def test_restore_clean_beam(result_deconvolution):
-    """Test restoration with specified beam beam
+    """Test restoration with specified beam
 
     :return:
     """
@@ -174,7 +178,7 @@ def test_restore_skycomponent(result_deconvolution):
 
 
 def test_fit_psf(result_deconvolution):
-
+    """Unit tests for the fit_psf function"""
     clean_beam = fit_psf(result_deconvolution["psf"])
 
     assert (
@@ -191,6 +195,7 @@ def test_fit_psf(result_deconvolution):
 
 @pytest.mark.skip(reason="Test takes too long")
 def test_deconvolve_hogbom(result_deconvolution):
+    """Unit tests for the deconvolve_cube function using hogbom"""
     comp, residual = deconvolve_cube(
         result_deconvolution["dirty"],
         result_deconvolution["psf"],
@@ -204,6 +209,7 @@ def test_deconvolve_hogbom(result_deconvolution):
 
 @pytest.mark.skip(reason="Test takes too long")
 def test_deconvolve_msclean(result_deconvolution):
+    """Unit tests for the deconvolve_cube function using msclean"""
     comp, residual = deconvolve_cube(
         result_deconvolution["dirty"],
         result_deconvolution["psf"],
@@ -218,7 +224,7 @@ def test_deconvolve_msclean(result_deconvolution):
 
 @pytest.mark.skip(reason="Test takes too long")
 def test_deconvolve_msclean_1scale(result_deconvolution):
-
+    """Unit tests for the deconvolve_cube function using msclean and scale 1"""
     comp, residual = deconvolve_cube(
         result_deconvolution["dirty"],
         result_deconvolution["psf"],
@@ -233,6 +239,7 @@ def test_deconvolve_msclean_1scale(result_deconvolution):
 
 @pytest.mark.skip(reason="Test takes too long")
 def test_deconvolve_hogbom_no_edge(result_deconvolution):
+    """Unit tests for the deconvolve_cube function using hogbom and no_edge"""
     comp, residual = deconvolve_cube(
         result_deconvolution["dirty"],
         result_deconvolution["psf"],
@@ -247,6 +254,7 @@ def test_deconvolve_hogbom_no_edge(result_deconvolution):
 
 @pytest.mark.skip(reason="Test takes too long")
 def test_deconvolve_hogbom_inner_quarter(result_deconvolution):
+    """Unit tests for the deconvolve_cube function using hogbom and quarter"""
     comp, residual = deconvolve_cube(
         result_deconvolution["dirty"],
         result_deconvolution["psf"],
@@ -261,7 +269,7 @@ def test_deconvolve_hogbom_inner_quarter(result_deconvolution):
 
 @pytest.mark.skip(reason="Test takes too long")
 def test_deconvolve_msclean_inner_quarter(result_deconvolution):
-
+    """Unit tests for the deconvolve_cube function using msclean and quarter"""
     comp, residual = deconvolve_cube(
         result_deconvolution["dirty"],
         result_deconvolution["psf"],
@@ -277,7 +285,7 @@ def test_deconvolve_msclean_inner_quarter(result_deconvolution):
 
 @pytest.mark.skip(reason="Test takes too long")
 def test_deconvolve_hogbom_subpsf(result_deconvolution):
-
+    """Unit tests for the deconvolve_cube function"""
     comp, residual = deconvolve_cube(
         result_deconvolution["dirty"],
         result_deconvolution["psf"],
@@ -293,7 +301,7 @@ def test_deconvolve_hogbom_subpsf(result_deconvolution):
 
 @pytest.mark.skip(reason="Test takes too long")
 def test_deconvolve_msclean_subpsf(result_deconvolution):
-
+    """Unit tests for the deconvolve_cube function"""
     comp, residual = deconvolve_cube(
         result_deconvolution["dirty"],
         result_deconvolution["psf"],
@@ -309,6 +317,7 @@ def test_deconvolve_msclean_subpsf(result_deconvolution):
 
 
 def _check_hogbom_kernel_list_test_results(component, residual):
+    """Checkinf function used to test non zero values"""
     result_comp_data = component["pixels"].data
     non_zero_idx_comp = numpy.where(result_comp_data != 0.0)
     expected_comp_non_zero_data = numpy.array(
@@ -358,6 +367,7 @@ def _check_hogbom_kernel_list_test_results(component, residual):
 
 @pytest.mark.skip(reason="assertion error ")
 def test_hogbom_kernel_list_single_dirty(result_deconvolution):
+    """Unit tests for the find_window_list function"""
     prefix = "test_hogbom_list"
     dirty_list = [result_deconvolution["dirty"]]
     psf_list = [result_deconvolution["psf"]]
@@ -377,8 +387,9 @@ def test_hogbom_kernel_list_single_dirty(result_deconvolution):
 )
 def test_hogbom_kernel_list_multiple_dirty(result_deconvolution):
     """
-    Bugfix: hogbom_kernel_list produced an IndexError, when dirty_list has more than
-    one elements, and those elements are for a single frequency each, and window_shape is None.
+    Bugfix: hogbom_kernel_list produced an IndexError, when
+    dirty_list has more than one elements, and those elements are
+    for a single frequency each, and window_shape is None.
     """
 
     prefix = "test_hogbom_list"
@@ -392,7 +403,8 @@ def test_hogbom_kernel_list_multiple_dirty(result_deconvolution):
 
     assert len(comp_list) == 2
     assert len(residual_list) == 2
-    # because the two dirty images and psfs are the same, the expected results are also the same
+    # because the two dirty images and psfs are the same,
+    # the expected results are also the same
     _check_hogbom_kernel_list_test_results(comp_list[0], residual_list[0])
     _check_hogbom_kernel_list_test_results(comp_list[1], residual_list[1])
 

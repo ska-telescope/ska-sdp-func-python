@@ -1,10 +1,10 @@
+# pylint: disable=duplicate-code
 """Unit tests for image iteration
 
 
 """
 import logging
 import os
-import tempfile
 
 import numpy
 import pytest
@@ -26,7 +26,7 @@ log.setLevel(logging.WARNING)
 
 @pytest.fixture(scope="module", name="result_gather_scatter")
 def gather_scatter_fixture():
-
+    """Fixture for the gather_scatter.py unit tests"""
     persist = os.getenv("FUNC_PYTHON_PERSIST", False)
     phase_centre = SkyCoord(
         ra=+180.0 * units.deg,
@@ -42,7 +42,7 @@ def gather_scatter_fixture():
 
 
 def test_scatter_gather_facet(result_gather_scatter):
-
+    """Unit test for the image_gather_facets function"""
     m31original = create_image(
         npixel=10,
         cellsize=0.00015,
@@ -103,7 +103,7 @@ def test_scatter_gather_facet(result_gather_scatter):
 
 
 def test_scatter_gather_facet_overlap(result_gather_scatter):
-
+    """Unit test for the image_gather_facets function with overlap"""
     m31original = create_image(
         npixel=512,
         cellsize=0.00015,
@@ -170,7 +170,7 @@ def test_scatter_gather_facet_overlap(result_gather_scatter):
 
 
 def test_scatter_gather_facet_overlap_taper(result_gather_scatter):
-
+    """Unit test for the image_gather_facets function with overlap and taper"""
     m31original = create_image(
         npixel=512,
         cellsize=0.00015,
@@ -243,14 +243,6 @@ def test_scatter_gather_facet_overlap_taper(result_gather_scatter):
                 taper=taper,
                 return_flat=True,
             )
-            if result_gather_scatter["persist"]:
-                with tempfile.TemporaryDirectory() as tempdir:
-                    m31reconstructed.image_acc.export_to_fits(
-                        f"{tempdir}/test_image_gather_scatter_{nraster}nraster_{overlap}overlap_{taper}_reconstructed.fits"
-                    )
-                    flat.image_acc.export_to_fits(
-                        f"{tempdir}/test_image_gather_scatter_{nraster}nraster_{overlap}overlap_{taper}_flat.fits"
-                    )
 
             assert numpy.max(numpy.abs(flat["pixels"].data)), (
                 "Flat is empty for %d" % nraster
@@ -261,6 +253,8 @@ def test_scatter_gather_facet_overlap_taper(result_gather_scatter):
 
 
 def test_scatter_gather_channel(result_gather_scatter):
+    """Unit test for image_scatter_channels & image_gather_channels functions
+    """
     for nchan in [128, 16]:
         m31cube = create_image(
             npixel=512,
@@ -282,6 +276,7 @@ def test_scatter_gather_channel(result_gather_scatter):
 
 
 def test_gather_channel(result_gather_scatter):
+    """Unit test for the image_gather_channels functions"""
     for nchan in [128, 16]:
         m31cube = create_image(
             npixel=512,

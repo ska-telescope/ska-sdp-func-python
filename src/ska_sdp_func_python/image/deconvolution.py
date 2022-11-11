@@ -268,7 +268,7 @@ def radler_deconvolve_list(
         reached_threshold = radler_object.perform(reached_threshold, 0)
 
         x_im = create_image(dirty["pixels"].data.shape[3],
-                            cellsize=0.00015,
+                            cellsize=numpy.deg2rad(numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])),
                             phasecentre=dirty.image_acc.phasecentre
                             )
         x_im["pixels"].data = numpy.expand_dims(restored_radler, axis=(0, 1))
@@ -351,7 +351,7 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
         if window_array is not None:
             window_image = create_image(
                 window_array.shape[3],
-                cellsize=0.00015,
+                cellsize=numpy.deg2rad(numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])),
                 phasecentre=dirty.image_acc.phasecentre,
             )
         else:
@@ -520,13 +520,13 @@ def complex_hogbom_kernel_list(
                     continue
         comp_image = create_image(
             comp_array[3],
-            cellsize=0.00015,
-            phasecentre=psf.image_acc.phasecentre,
+            cellsize=numpy.deg2rad(numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])),
+            phasecentre=dirty.image_acc.phasecentre,
         )
         residual_image = create_image(
             residual_array[3],
-            cellsize=0.00015,
-            phasecentre=psf.image_acc.phasecentre,
+            cellsize=numpy.deg2rad(numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])),
+            phasecentre=dirty.image_acc.phasecentre,
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)
@@ -645,12 +645,12 @@ def hogbom_kernel_list(
                 )
         comp_image = create_image(
             dirty["pixels"].data.shape[3],
-            cellsize=0.00015,
+            cellsize=numpy.deg2rad(numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])),
             phasecentre=dirty.image_acc.phasecentre
         )
         residual_image = create_image(
             dirty["pixels"].data.shape[3],
-            cellsize=0.00015,
+            cellsize=numpy.deg2rad(numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])),
             phasecentre=dirty.image_acc.phasecentre,
         )
         comp_images.append(comp_image)
@@ -823,12 +823,12 @@ def mmclean_kernel_list(
             log.info("deconvolve_cube %s: Skipping pol %d" % (prefix, pol))
     comp_taylor = create_image(
         comp_array[3],
-        cellsize=0.00015,
+        cellsize=numpy.deg2rad(numpy.abs(dirty_taylor.image_acc.wcs.wcs.cdelt[1])),
         phasecentre=dirty_taylor.image_acc.phasecentre,
     )
     residual_taylor = create_image(
         residual_array[3],
-        cellsize=0.00015,
+        cellsize=numpy.deg2rad(numpy.abs(dirty_taylor.image_acc.wcs.wcs.cdelt[1])),
         phasecentre=dirty_taylor.image_acc.phasecentre,
     )
     log.info(
@@ -944,12 +944,12 @@ def msclean_kernel_list(
                 )
         comp_image = create_image(
             comp_array[3],
-            cellsize=0.00015,
+            cellsize=numpy.deg2rad(numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])),
             phasecentre=dirty.image_acc.phasecentre,
         )
         residual_image = create_image(
             residual_array[3],
-            cellsize=0.00015,
+            cellsize=numpy.deg2rad(numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])),
             phasecentre=dirty.image_acc.phasecentre,
         )
         comp_images.append(comp_image)

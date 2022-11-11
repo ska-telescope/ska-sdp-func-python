@@ -93,16 +93,32 @@ def convert_stokes_to_polimage(
 
     if polarisation_frame == PolarisationFrame("linear"):
         cimarr = convert_stokes_to_linear(im["pixels"].data)
-        return create_image(cimarr, im.image_acc.wcs, polarisation_frame)
+        return create_image(
+            cimarr["pixels"].data.shape[3],
+            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
+            phasecentre=cimarr.image_acc.phasecentre
+        )
     elif polarisation_frame == PolarisationFrame("linearnp"):
         cimarr = convert_stokes_to_linear(im["pixels"].data)
-        return create_image(cimarr, im.image_acc.wcs, polarisation_frame)
+        return create_image(
+            cimarr["pixels"].data.shape[3],
+            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
+            phasecentre=cimarr.image_acc.phasecentre
+        )
     elif polarisation_frame == PolarisationFrame("circular"):
         cimarr = convert_stokes_to_circular(im["pixels"].data)
-        return create_image(cimarr, im.image_acc.wcs, polarisation_frame)
+        return create_image(
+            cimarr["pixels"].data.shape[3],
+            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
+            phasecentre=cimarr.image_acc.phasecentre
+        )
     elif polarisation_frame == PolarisationFrame("circularnp"):
         cimarr = convert_stokes_to_circular(im["pixels"].data)
-        return create_image(cimarr, im.image_acc.wcs, polarisation_frame)
+        return create_image(
+            cimarr["pixels"].data.shape[3],
+            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
+            phasecentre=cimarr.image_acc.phasecentre
+        )
     elif polarisation_frame == PolarisationFrame("stokesI"):
         return create_image(
             im["pixels"].data.astype("complex"),
@@ -143,36 +159,36 @@ def convert_polimage_to_stokes(im: Image, complex_image=False, **kwargs):
     if im.image_acc.polarisation_frame == PolarisationFrame("linear"):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
         return create_image(
-            to_required(cimarr),
-            im.image_acc.wcs,
-            PolarisationFrame("stokesIQUV"),
+            cimarr["pixels"].data.shape[3],
+            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
+            phasecentre=cimarr.image_acc.phasecentre
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("linearnp"):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
         return create_image(
-            to_required(cimarr),
-            im.image_acc.wcs,
-            PolarisationFrame("stokesIQ"),
+            cimarr["pixels"].data.shape[3],
+            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
+            phasecentre=cimarr.image_acc.phasecentre
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("circular"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
         return create_image(
-            to_required(cimarr),
-            im.image_acc.wcs,
-            PolarisationFrame("stokesIQUV"),
+            cimarr["pixels"].data.shape[3],
+            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
+            phasecentre=cimarr.image_acc.phasecentre
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("circularnp"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
         return create_image(
-            to_required(cimarr),
-            im.image_acc.wcs,
-            PolarisationFrame("stokesIV"),
+            cimarr["pixels"].data.shape[3],
+            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
+            phasecentre=cimarr.image_acc.phasecentre
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("stokesI"):
         return create_image(
-            to_required(im["pixels"].data),
-            im.image_acc.wcs,
-            PolarisationFrame("stokesI"),
+            im["pixels"].data.shape[3],
+            cellsize=numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
+            phasecentre=im.image_acc.phasecentre
         )
     else:
         raise ValueError(

@@ -98,7 +98,7 @@ def calculate_image_frequency_moments(
 
     return create_image(
         im["pixels"].data.shape[3],
-        cellsize=0.0015,
+        cellsize=numpy.deg2rad(numpy.abs(moment_wcs.wcs.cdelt[1])),
         phasecentre=im.image_acc.phasecentre,
     )
 
@@ -154,8 +154,8 @@ def calculate_image_from_frequency_taylor_terms(
             )
 
     newim = create_image(
-        im["pixels"].data.shape[3],
-        cellsize=0.0015,
+        newim_data.shape[3],
+        cellsize=numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
         phasecentre=im.image_acc.phasecentre,
     )
     return newim
@@ -234,7 +234,7 @@ def calculate_image_list_frequency_moments(
 
     return create_image(
         im["pixels"].data.shape[3],
-        cellsize=0.0015,
+        cellsize=numpy.deg2rad(numpy.abs(moment_wcs.wcs.cdelt[1])),
         phasecentre=im.image_acc.phasecentre,
     )
 
@@ -280,7 +280,7 @@ def calculate_image_list_from_frequency_taylor_terms(
 
         newim = create_image(
             moment_image["pixels"].data.shape[3],
-            cellsize=0.0015,
+            cellsize=numpy.deg2rad(numpy.abs(moment_image.image_acc.wcs.wcs.cdelt[1])),
             phasecentre=moment_image.image_acc.phasecentre,
         )
 

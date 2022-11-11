@@ -365,7 +365,7 @@ def griddata_visibility_reweight(
         https://casadocs.readthedocs.io/en/latest/notebooks/synthesis_imaging.html
 
     :param weighting:
-    :param robustness
+    :param robustness:
     :param vis: visibility to be reweighted
     :param griddata: GridData holding gridded weights
     :return: Visibility with imaging_weights corrected
@@ -590,19 +590,9 @@ def fft_griddata_to_image(griddata, template, gcf=None):
         griddata["pixels"].data.shape[-1],
     )
 
-    if gcf is None:
-        im_data = float(nx) * float(ny)
-    else:
-        im_data = (
-            ifft(griddata["pixels"].data)
-            * gcf["pixels"].data
-            * float(nx)
-            * float(ny)
-        )
-
     return create_image(
-        npixel=int(im_data),
-        cellsize=0.0009,
+        npixel=nx,
+        cellsize=numpy.deg2rad(numpy.abs(template.image_acc.wcs.wcs.cdelt[1])),
         phasecentre=template.image_acc.phasecentre,
     )
 

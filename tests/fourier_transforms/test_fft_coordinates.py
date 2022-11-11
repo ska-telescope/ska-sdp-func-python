@@ -14,6 +14,7 @@ from ska_sdp_func_python.fourier_transforms.fft_coordinates import (
 
 
 def test_coordinates():
+    """Unit tests for the coordinates function"""
     for N in [4, 5, 6, 7, 8, 9, 1000, 1001, 1002, 1003]:
         low, high = coordinateBounds(N)
         c = coordinates(N)
@@ -23,6 +24,7 @@ def test_coordinates():
 
 
 def test_coordinates2():
+    """Unit tests for the coordinates2 function"""
     for N in [4, 5, 6, 7, 8, 9, 1000, 1001, 1002, 1003]:
         low, high = coordinateBounds(N)
         cx, cy = coordinates2(N)
@@ -35,6 +37,7 @@ def test_coordinates2():
 
 
 def test_coordinates2_offset():
+    """Unit tests for the coordinates2_offset function"""
     for N in [4, 5, 6, 7, 8, 9, 1000, 1001, 1002, 1003]:
         low, high = coordinateBounds(N)
         cx_off, cy_off = coordinates2Offset(N, None, None)
@@ -46,12 +49,8 @@ def test_coordinates2_offset():
         assert (cy_off[:, N // 2] == 0).all()
 
 
-# What is the point/use of this funciton?
-def _test_pattern(npixel):
-    return coordinates2(npixel)[0] + coordinates2(npixel)[1] * 1j
-
-
 def test_w_kernel_beam():
+    """Unit tests for the w_beam function"""
     assert (numpy.real(w_beam(5, 0.1, 0))[0, 0] == 1.0).all()
     assert (w_beam(5, 0.1, 100)[2, 2] == 1).all()
     assert (w_beam(10, 0.1, 100)[5, 5] == 1).all()

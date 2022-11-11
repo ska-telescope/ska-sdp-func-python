@@ -1,8 +1,8 @@
+# pylint: disable=duplicate-code
 """ Unit tests for base imaging functions
 
 """
 
-import functools
 import logging
 
 import numpy

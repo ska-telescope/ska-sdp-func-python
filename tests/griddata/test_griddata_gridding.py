@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """ Unit tests for image operations
 
 """
@@ -41,6 +42,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 
 @pytest.fixture(scope="module", name="result_gridding")
 def gridding_fixture():
+    """Pytest fixture for the gridding.py unit tests"""
 
     npixel = 256
     cellsize = 0.0009

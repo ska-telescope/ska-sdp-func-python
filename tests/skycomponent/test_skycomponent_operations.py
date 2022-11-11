@@ -250,7 +250,8 @@ def test_partition_skycomponent_neighbours(result_operations):
 
 
 @pytest.mark.skip(
-    reason="Unable to set frequency and flux correctly for a multi-frequency skycomponent"
+    reason="Unable to set frequency and flux correctly for "
+    "a multi-frequency skycomponent"
 )
 def test_fit_skycomponent_spectral_index(result_operations):
     """Check fits multi-frequency skycomponents"""

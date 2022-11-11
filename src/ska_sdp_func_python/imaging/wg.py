@@ -62,26 +62,10 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     if model is None:
         return bvis
 
-    try:
-        nthreads = kwargs["threads"]
-    except KeyError:
-        log.info("predict_wg: nthreads not given, setting as default - 4")
-        nthreads = 4  # noqa: F841
-    try:
-        epsilon = kwargs["epsilon"]
-    except KeyError:
-        log.info("predict_wg: epsilon not given, setting as default - 1e-12")
-        epsilon = 1e-12
-    try:
-        do_wstacking = kwargs["do_wstacking"]
-    except KeyError:
-        log.info("predict_wg: wstacking not given, setting as default - True")
-        do_wstacking = True
-    try:
-        verbosity = kwargs["verbosity"]
-    except KeyError:
-        log.info("predict_wg: verbosity not given, setting as default - 0")
-        verbosity = 0  # noqa: F841
+    nthreads = kwargs.get("threads", 4)
+    epsilon = kwargs.get("epsilon", 1e-12)
+    do_wstacking = kwargs.get("do_wstacking", True)
+    verbosity = kwargs.get("verbosity", 0)
 
     newbvis = bvis.copy(deep=True, zero=True)
 
@@ -132,6 +116,7 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
                 pixsize,
                 epsilon,
                 do_wstacking,
+                nthreads=nthreads,
             ).T
     else:
         for vpol in range(vnpol):
@@ -197,26 +182,10 @@ def invert_wg(
 
     im = model.copy(deep=True)
 
-    try:
-        nthreads = kwargs["threads"]
-    except KeyError:
-        log.info("invert_wg: nthreads not given, setting as default - 4")
-        nthreads = 4  # noqa: F841
-    try:
-        epsilon = kwargs["epsilon"]
-    except KeyError:
-        log.info("invert_wg: epsilon not given, setting as default - 1e-12")
-        epsilon = 1e-12
-    try:
-        do_wstacking = kwargs["do_wstacking"]
-    except KeyError:
-        log.info("invert_wg: wstacking not given, setting as default - True")
-        do_wstacking = True
-    try:
-        verbosity = kwargs["verbosity"]
-    except KeyError:
-        log.info("invert_wg: verbosity not given, setting as default - 0")
-        verbosity = 0  # noqa: F841
+    nthreads = kwargs.get("threads", 4)
+    epsilon = kwargs.get("epsilon", 1e-12)
+    do_wstacking = kwargs.get("do_wstacking", True)
+    verbosity = kwargs.get("verbosity", 0)
 
     bvis_shifted = bvis.copy(deep=True)
     bvis_shifted = shift_vis_to_image(
@@ -284,6 +253,7 @@ def invert_wg(
                     pixsize,
                     epsilon,
                     do_wstacking,
+                    nthreads=nthreads
                 )
                 im["pixels"].data[0, pol] += dirty.T
             sum_weight[0, pol] += numpy.sum(weight_temp[pol, :, :].T)

@@ -1,18 +1,14 @@
+# pylint: disable=duplicate-code
 """Unit tests for image deconvolution vis MSMFS
 
 
 """
-import pytest
-
-pytestmark = pytest.skip(allow_module_level=True)
 import logging
-import os
-import tempfile
 
 import astropy.units as u
 import numpy
+import pytest
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels import physical_constants
 from ska_sdp_datamodels.configuration import (
     create_named_configuration,
     decimate_configuration,
@@ -41,9 +37,10 @@ from ska_sdp_func_python.imaging.weighting import (
     weight_visibility,
 )
 
+pytestmark = pytest.skip(allow_module_level=True)
 # fix the below imports
-from src.ska_sdp_func_python import create_pb
-from src.ska_sdp_func_python.imaging.primary_beams import create_low_test_beam
+# from ska_sdp_func_python import create_pb
+# from ska_sdp_func_python.imaging.primary_beams import create_low_test_beam
 
 log = logging.getLogger("func-python-logger")
 
@@ -52,7 +49,6 @@ log.setLevel(logging.INFO)
 
 @pytest.fixture(scope="module", name="result_deconv_msmfs")
 def deconvolution_msmfs_fixture():
-    persist = os.getenv("FUNC_PYTHON_PERSIST", False)
     niter = 1000
     lowcore = create_named_configuration("LOWBD2-CORE")
     lowcore = decimate_configuration(lowcore, skip=3)
@@ -84,16 +80,8 @@ def deconvolution_msmfs_fixture():
         frequency=frequency,
         channel_bandwidth=channel_bandwidth,
     )
-    beam = create_low_test_beam(test_image)
-    test_image["pixels"].data *= beam["pixels"].data
-    if persist:
-        with tempfile.TemporaryDirectory() as tempdir:
-            beam.image_acc.export_to_fits(
-                f"{tempdir}/test_deconvolve_mmclean_beam.fits"
-            )
-            test_image.image_acc.export_to_fits(
-                f"{tempdir}/test_deconvolve_mmclean_model.fits"
-            )
+    # beam = create_low_test_beam(test_image)
+    # test_image["pixels"].data *= beam["pixels"].data
     vis = predict_visibility(vis, test_image, context="2d")
     assert numpy.max(numpy.abs(vis.vis)) > 0.0
     model = create_image_from_visibility(
@@ -106,14 +94,6 @@ def deconvolution_msmfs_fixture():
     vis = taper_visibility_gaussian(vis, 0.002)
     dirty, sumwt = invert_visibility(vis, model, context="2d")
     psf, sumwt = invert_visibility(vis, model, context="2d", dopsf=True)
-    if persist:
-        with tempfile.TemporaryDirectory() as tempdir:
-            dirty.image_acc.export_to_fits(
-                f"{tempdir}/test_deconvolve_mmclean-dirty.fits"
-            )
-            psf.image_acc.export_to_fits(
-                f"{tempdir}/test_deconvolve_mmclean-psf.fits"
-            )
     dirty = image_scatter_channels(dirty)
     psf = image_scatter_channels(psf)
     window = numpy.ones(shape=model["pixels"].shape, dtype=bool)
@@ -124,8 +104,8 @@ def deconvolution_msmfs_fixture():
         phasecentre=phasecentre,
     )
     innerquarter = image_scatter_channels(innerquarter)
-    sensitivity = create_pb(model, "LOW")
-    sensitivity = image_scatter_channels(sensitivity)
+    # sensitivity = create_pb(model, "LOW")
+    # sensitivity = image_scatter_channels(sensitivity)
     params = {
         "dirty": dirty,
         "niter": niter,
@@ -250,14 +230,6 @@ def test_deconvolve_mmclean_linear_sensitivity(result_deconv_msmfs):
         fractional_threshold=0.01,
         window_shape="quarter",
     )
-    if result_deconv_msmfs["persist"]:
-        with tempfile.TemporaryDirectory() as tempdir:
-            sensitivity = image_gather_channels(
-                result_deconv_msmfs["sensitivity"]
-            )
-            sensitivity.image_acc.export_to_fits(
-                f"{tempdir}/test_deconvolve_mmclean_linear_sensitivity.fits"
-            )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     save_and_check_images(
         "mmclean_linear_sensitivity",
@@ -359,19 +331,6 @@ def save_and_check_images(
     :return:
     """
     cmodel = image_gather_channels(cmodel)
-    if result_deconv_msmfs["persist"]:
-        with tempfile.TemporaryDirectory() as tempdir:
-            comp = image_gather_channels(comp)
-            comp.image_acc.export_to_fits(
-                f"{tempdir}/test_deconvolve_{tag}_deconvolved.fits",
-            )
-            residual = image_gather_channels(residual)
-            residual.image_acc.export_to_fits(
-                f"{tempdir}/test_deconvolve_{tag}_residual.fits",
-            )
-            cmodel.image_acc.export_to_fits(
-                f"{tempdir}/test_deconvolve_{tag}_restored.fits",
-            )
     qa = cmodel.image_acc.qa_image()
     numpy.testing.assert_allclose(
         qa.data["max"], flux_max, atol=1e-7, err_msg=f"{qa}"

@@ -17,6 +17,8 @@ log.setLevel(logging.WARNING)
 
 
 def test_average_chunks():
+    """ Unit test for average_chunks function
+    """
     arr = numpy.linspace(0.0, 100.0, 11)
     wts = numpy.ones_like(arr)
     carr, cwts = average_chunks(arr, wts, 2)
@@ -28,6 +30,8 @@ def test_average_chunks():
 
 
 def test_average_chunks_exact():
+    """ Unit test for average_chunks function with chunksize 2
+    """
     arr = numpy.linspace(0.0, 90.0, 10)
     wts = numpy.ones_like(arr)
     carr, cwts = average_chunks(arr, wts, 2)
@@ -39,6 +43,8 @@ def test_average_chunks_exact():
 
 
 def test_average_chunks_zero():
+    """ Unit test for average_chunks function with chunksize 0
+    """
     arr = numpy.linspace(0.0, 90.0, 10)
     wts = numpy.ones_like(arr)
     carr, cwts = average_chunks(arr, wts, 0)
@@ -48,6 +54,8 @@ def test_average_chunks_zero():
 
 
 def test_average_chunks_single():
+    """ Unit test for average_chunks function with chunksize 12
+    """
     arr = numpy.linspace(0.0, 100.0, 11)
     wts = numpy.ones_like(arr)
     carr, cwts = average_chunks(arr, wts, 12)
@@ -59,6 +67,8 @@ def test_average_chunks_single():
 
 
 def test_average_chunks2_1d():
+    """ Unit test for average_chunks2 function
+    """
     arr = numpy.linspace(0.0, 100.0, 11).reshape(
         [1, 11]
     )  # pylint: disable=no-member
@@ -72,6 +82,8 @@ def test_average_chunks2_1d():
 
 
 def test_average_chunks2_1d_trans():
+    """ Unit test for average_chunks2 function
+    """
     arr = numpy.linspace(0.0, 100.0, 11).reshape(
         [11, 1]
     )  # pylint: disable=no-member
@@ -85,6 +97,8 @@ def test_average_chunks2_1d_trans():
 
 
 def test_average_chunks2_2d():
+    """ Unit test for average_chunks2 function
+    """
     arr = numpy.linspace(0.0, 120.0, 121).reshape(
         11, 11
     )  # pylint: disable=no-member

@@ -71,10 +71,7 @@ def test_sum_invert_results_single_list(result_helpers):
     assert smwt == 2.0
 
 
-@pytest.mark.skip(
-    reason="shape issue in imaging_helpers when incrementing im[pixels].data:"
-    "ValueError: operands could not be broadcast together with shapes (3,) (3,1,512,512)"
-)
+@pytest.mark.skip(reason="shape issue when incrementing im[pixels].data:")
 def test_sum_invert_results_multiple_list(result_helpers):
 
     im, smwt = sum_invert_results(result_helpers["multiple_list"])

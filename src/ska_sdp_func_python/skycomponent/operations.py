@@ -53,6 +53,12 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_func_python.image.operations import convert_clean_beam_to_pixels
 from ska_sdp_func_python.calibration.jones import apply_jones
+from ska_sdp_func_python.util.array_functions import (
+    insert_function_sinc,
+    insert_function_L,
+    insert_function_pswf,
+    insert_array,
+)
 
 # Fix imports below
 # from ska_sdp_func_python.skycomponent import copy_skycomponent
@@ -805,9 +811,9 @@ def image_voronoi_iter(
     if len(components) == 1:
         mask = numpy.ones(im["pixels"].data.shape)
         yield create_image(
-            mask,
-            wcs=im.image_acc.wcs,
-            polarisation_frame=im.image_acc.polarisation_frame,
+            mask[3],
+            numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
+            im.image_acc.phasecentre,
         )
     else:
         vor, vertex_array = voronoi_decomposition(im, components)
@@ -819,9 +825,9 @@ def image_voronoi_iter(
                 (vertex_array == region)[numpy.newaxis, numpy.newaxis, ...]
             ] = 1.0
             yield create_image(
-                mask,
-                wcs=im.image_acc.wcs,
-                polarisation_frame=im.image_acc.polarisation_frame,
+                mask[3],
+                numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
+                im.image_acc.phasecentre,
             )
 
 

@@ -25,7 +25,7 @@ log.setLevel(logging.WARNING)
 
 @pytest.fixture(scope="module", name="result_taylor_terms")
 def taylor_terms_fixture():
-
+    """Fixture for the taylor_terms.py unit tests"""
     npixel = 512
     cellsize = 0.0001
     phase_centre = SkyCoord(
@@ -40,6 +40,9 @@ def taylor_terms_fixture():
 
 
 def test_calculate_image_frequency_moments_3(result_taylor_terms):
+    """Unit test for the calculate_image_frequency_moments function
+    with 3 moments
+    """
     original_cube = result_taylor_terms["image"]
     cube = create_image(512, 0.0001, result_taylor_terms["phasecentre"])
     moment_cube = calculate_image_frequency_moments(cube, nmoment=3)
@@ -53,6 +56,9 @@ def test_calculate_image_frequency_moments_3(result_taylor_terms):
 
 
 def test_calculate_image_frequency_moments_1(result_taylor_terms):
+    """Unit test for the calculate_image_frequency_moments function
+    with 1 moment
+    """
     original_cube = result_taylor_terms["image"]
     cube = create_image(512, 0.0001, result_taylor_terms["phasecentre"])
     moment_cube = calculate_image_frequency_moments(cube, nmoment=1)
@@ -67,9 +73,11 @@ def test_calculate_image_frequency_moments_1(result_taylor_terms):
 
 
 def test_calculate_image_list_frequency_moments(result_taylor_terms):
+    """Unit test for the calculate_image_list_frequency_moments function
+    with 3 moments
+    """
     original_cube = result_taylor_terms["image"]
     image_list = [original_cube, original_cube, original_cube]
-    moment_cube = calculate_image_frequency_moments(original_cube, nmoment=3)
     reconstructed_cube = calculate_image_list_frequency_moments(
         image_list, nmoment=3
     )
@@ -81,6 +89,7 @@ def test_calculate_image_list_frequency_moments(result_taylor_terms):
 
 
 def test_calculate_image_list_from_frequency_taylor_terms(result_taylor_terms):
+    """Unit test for the calculate_image_list_frequency_taylor_terms"""
     original_cube = result_taylor_terms["image"]
     image_list = [original_cube, original_cube, original_cube]
     moment_cube = calculate_image_frequency_moments(original_cube, nmoment=1)
@@ -93,6 +102,7 @@ def test_calculate_image_list_from_frequency_taylor_terms(result_taylor_terms):
 
 
 def test_calculate_taylor_terms(result_taylor_terms):
+    """Unit test for the calculate_taylor_termss function"""
     original_cube = result_taylor_terms["image"]
     original_list = image_scatter_channels(original_cube)
     taylor_term_list = calculate_frequency_taylor_terms_from_image_list(

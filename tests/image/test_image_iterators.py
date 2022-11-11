@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Unit tests for image iteration
 
 
@@ -29,6 +30,7 @@ log.setLevel(logging.WARNING)
 
 @pytest.fixture(scope="module", name="result_iterators")
 def iterators_fixture():
+    """Fixture for the iterators.py unit tests"""
     phase_centre = SkyCoord(
         ra=+180.0 * u.deg,
         dec=-35.0 * u.deg,
@@ -97,7 +99,8 @@ def test_raster(result_iterators):
                         assert patch["pixels"].data.shape[3] == (
                             m31model["pixels"].data.shape[3] // nraster
                         ), (
-                            "Number of pixels in each patch: %d not as expected: %d"
+                            "Number of pixels in each patch: %d not as "
+                            "expected: %d"
                             % (
                                 patch["pixels"].data.shape[3],
                                 (m31model["pixels"].data.shape[3] // nraster),
@@ -106,7 +109,8 @@ def test_raster(result_iterators):
                         assert patch["pixels"].data.shape[2] == (
                             m31model["pixels"].data.shape[2] // nraster
                         ), (
-                            "Number of pixels in each patch: %d not as expected: %d"
+                            "Number of pixels in each patch: %d not as "
+                            "expected: %d"
                             % (
                                 patch["pixels"].data.shape[2],
                                 (m31model["pixels"].data.shape[2] // nraster),
@@ -116,30 +120,35 @@ def test_raster(result_iterators):
 
                     if numpy.max(numpy.abs(m31model["pixels"].data)) == 0.0:
                         log.warning(
-                            f"Raster is empty failed for {npixel}, {nraster}, {overlap}"
+                            f"Raster is empty failed for {npixel}, {nraster},"
+                            f"{overlap}"
                         )
                     diff = m31model.copy(deep=True)
                     diff["pixels"].data -= 2.0 * m31original["pixels"].data
                     err = numpy.max(diff["pixels"].data)
                     if abs(err) > 0.0:
                         log.warning(
-                            f"Raster set failed for {npixel}, {nraster}, {overlap}: error {err}"
+                            f"Raster set failed for {npixel}, {nraster}, "
+                            f"{overlap}: error {err}"
                         )
                     with tempfile.TemporaryDirectory() as testdir:
                         m31model.image_acc.export_to_fits(
-                            f"{testdir}/test_image_iterators_model_{npixel}_{nraster}_{overlap}.fits",
+                            f"{testdir}/test_image_iterators_model_{npixel}_"
+                            f"{nraster}_{overlap}.fits",
                         )
                         diff.image_acc.export_to_fits(
-                            f"{testdir}/test_image_iterators_diff_{npixel}_{nraster}_{overlap}.fits",
+                            f"{testdir}/test_image_iterators_diff_{npixel}_"
+                            f"{nraster}_{overlap}.fits",
                         )
                 except ValueError as err:
                     log.error(
-                        f"Iterator failed for {npixel}, {nraster}, {overlap},: {err}"
+                        f"Iterator failed for {npixel}, {nraster}, {overlap},:"
+                        f" {err}"
                     )
 
 
 def test_raster_exception(result_iterators):
-
+    """Check that raster captures the right exceptions"""
     m31original = result_iterators["image"]
     m31original["pixels"].data = numpy.ones(
         shape=m31original["pixels"].data.shape, dtype=float
@@ -169,6 +178,7 @@ def test_raster_exception(result_iterators):
 
 
 def test_channelise(result_iterators):
+    """Unit test for the image_channel_iter function"""
     m31cube = result_iterators["image"]
     m31cube["pixels"].data = numpy.ones(
         shape=m31cube["pixels"].data.shape, dtype=float

@@ -1,8 +1,9 @@
+# pylint: disable=duplicate-code
 """ Unit tests for imaging functions
 
 
 """
-import functools
+# import functools
 import logging
 import sys
 
@@ -73,6 +74,9 @@ def imaging_fixture():
 
     model = create_image(
         npixel=npixel, cellsize=0.0001, phasecentre=phase_centre
+    )
+    model["pixels"].data = numpy.ones(
+        shape=model["pixels"].data.shape, dtype=float
     )
 
     components = SkyComponent(
@@ -264,105 +268,105 @@ def test_invert_visibility_spec_I(result_imaging):
     )
 
 
-@pytest.mark.skip(reason="Beam functions and kernel function imports needed")
-def test_predict_awterm(result_imaging):
-    make_pb = functools.partial(
-        create_pb_generic, diameter=35.0, blockage=0.0, use_local=False
-    )
-    gcfcf = functools.partial(
-        create_awterm_convolutionfunction,
-        make_pb=make_pb,
-        nw=50,
-        wstep=16.0,
-        oversampling=4,
-        support=100,
-        use_aaf=True,
-        polarisation_frame=PolarisationFrame("stokesI"),
-    )
-    _predict_base(
-        vis=result_imaging["visibility"],
-        model=result_imaging["image"],
-        fluxthreshold=62.0,
-        name="predict_awterm",
-        context="awprojection",
-        gcfcf=gcfcf,
-        flux_max=61.82267373099863,
-        flux_min=-4.188093872633347,
-    )
-
-
-@pytest.mark.skip(reason="Beam functions and kernel function imports needed")
-def test_invert_awterm(result_imaging):
-    make_pb = functools.partial(
-        create_pb_generic, diameter=35.0, blockage=0.0, use_local=False
-    )
-    gcfcf = functools.partial(
-        create_awterm_convolutionfunction,
-        make_pb=make_pb,
-        nw=50,
-        wstep=16.0,
-        oversampling=4,
-        support=100,
-        use_aaf=True,
-        polarisation_frame=PolarisationFrame("stokesI"),
-    )
-    _invert_base(
-        vis=result_imaging["visibility"],
-        model=result_imaging["image"],
-        name="invert_awterm",
-        positionthreshold=35.0,
-        check_components=False,
-        gcfcf=gcfcf,
-        flux_max=96.69252147910645,
-        flux_min=-6.110150403739334,
-    )
-
-
-@pytest.mark.skip(reason="Beam functions and kernel function imports needed")
-def test_predict_wterm(result_imaging):
-    gcfcf = functools.partial(
-        create_awterm_convolutionfunction,
-        nw=50,
-        wstep=16.0,
-        oversampling=4,
-        support=100,
-        use_aaf=True,
-        polarisation_frame=PolarisationFrame("stokesI"),
-    )
-    _predict_base(
-        vis=result_imaging["visibility"],
-        model=result_imaging["image"],
-        fluxthreshold=5.0,
-        name="predict_wterm",
-        context="awprojection",
-        gcfcf=gcfcf,
-        flux_max=1.542478111903605,
-        flux_min=-1.9124378846946475,
-    )
-
-
-@pytest.mark.skip(reason="Beam functions and kernel function imports needed")
-def test_invert_wterm(result_imaging):
-    gcfcf = functools.partial(
-        create_awterm_convolutionfunction,
-        nw=50,
-        wstep=16.0,
-        oversampling=4,
-        support=100,
-        use_aaf=True,
-        polarisation_frame=PolarisationFrame("stokesI"),
-    )
-    _invert_base(
-        vis=result_imaging["visibility"],
-        model=result_imaging["image"],
-        name="invert_wterm",
-        context="awprojection",
-        positionthreshold=35.0,
-        check_components=False,
-        gcfcf=gcfcf,
-        flux_max=100.29162257614617,
-        flux_min=-8.34142746239203,
-    )
+# @pytest.mark.skip(reason="Beam functions and kernel function imports needed")
+# def test_predict_awterm(result_imaging):
+#     make_pb = functools.partial(
+#         create_pb_generic, diameter=35.0, blockage=0.0, use_local=False
+#     )
+#     gcfcf = functools.partial(
+#         create_awterm_convolutionfunction,
+#         make_pb=make_pb,
+#         nw=50,
+#         wstep=16.0,
+#         oversampling=4,
+#         support=100,
+#         use_aaf=True,
+#         polarisation_frame=PolarisationFrame("stokesI"),
+#     )
+#     _predict_base(
+#         vis=result_imaging["visibility"],
+#         model=result_imaging["image"],
+#         fluxthreshold=62.0,
+#         name="predict_awterm",
+#         context="awprojection",
+#         gcfcf=gcfcf,
+#         flux_max=61.82267373099863,
+#         flux_min=-4.188093872633347,
+#     )
+#
+#
+# @pytest.mark.skip(reason="Beam functions and kernel function imports needed")
+# def test_invert_awterm(result_imaging):
+#     make_pb = functools.partial(
+#         create_pb_generic, diameter=35.0, blockage=0.0, use_local=False
+#     )
+#     gcfcf = functools.partial(
+#         create_awterm_convolutionfunction,
+#         make_pb=make_pb,
+#         nw=50,
+#         wstep=16.0,
+#         oversampling=4,
+#         support=100,
+#         use_aaf=True,
+#         polarisation_frame=PolarisationFrame("stokesI"),
+#     )
+#     _invert_base(
+#         vis=result_imaging["visibility"],
+#         model=result_imaging["image"],
+#         name="invert_awterm",
+#         positionthreshold=35.0,
+#         check_components=False,
+#         gcfcf=gcfcf,
+#         flux_max=96.69252147910645,
+#         flux_min=-6.110150403739334,
+#     )
+#
+#
+# @pytest.mark.skip(reason="Beam functions and kernel function imports needed")
+# def test_predict_wterm(result_imaging):
+#     gcfcf = functools.partial(
+#         create_awterm_convolutionfunction,
+#         nw=50,
+#         wstep=16.0,
+#         oversampling=4,
+#         support=100,
+#         use_aaf=True,
+#         polarisation_frame=PolarisationFrame("stokesI"),
+#     )
+#     _predict_base(
+#         vis=result_imaging["visibility"],
+#         model=result_imaging["image"],
+#         fluxthreshold=5.0,
+#         name="predict_wterm",
+#         context="awprojection",
+#         gcfcf=gcfcf,
+#         flux_max=1.542478111903605,
+#         flux_min=-1.9124378846946475,
+#     )
+#
+#
+# @pytest.mark.skip(reason="Beam functions and kernel function imports needed")
+# def test_invert_wterm(result_imaging):
+#     gcfcf = functools.partial(
+#         create_awterm_convolutionfunction,
+#         nw=50,
+#         wstep=16.0,
+#         oversampling=4,
+#         support=100,
+#         use_aaf=True,
+#         polarisation_frame=PolarisationFrame("stokesI"),
+#     )
+#     _invert_base(
+#         vis=result_imaging["visibility"],
+#         model=result_imaging["image"],
+#         name="invert_wterm",
+#         context="awprojection",
+#         positionthreshold=35.0,
+#         check_components=False,
+#         gcfcf=gcfcf,
+#         flux_max=100.29162257614617,
+#         flux_min=-8.34142746239203,
+#     )
 
 
 def test_invert_psf(result_imaging):
@@ -383,9 +387,7 @@ def test_invert_psf_weighting(result_imaging):
             result_imaging["image"],
             weighting=weighting,
         )
-        psf = invert_visibility(
-            result_imaging["visibility"], result_imaging["image"], dopsf=True
-        )
+        psf = invert_visibility(vis, result_imaging["image"], dopsf=True)
         error = numpy.max(psf[0]["pixels"].data) - 1.0
         assert (
             abs(error) < 3.0e-3

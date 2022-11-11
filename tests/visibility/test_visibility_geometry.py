@@ -21,6 +21,8 @@ from ska_sdp_func_python.visibility.visibility_geometry import (
 
 @pytest.fixture(scope="module", name="vis_geo_params")
 def visibility_geometry_fixture():
+    """ Fixture for visbility_geometry.py unit tests
+    """
     lowcore = create_named_configuration("LOWBD2-CORE")
     times = (numpy.pi / 43200.0) * numpy.arange(-21600, +21600, 3600.0)
     phasecentre = SkyCoord(
@@ -41,21 +43,29 @@ def visibility_geometry_fixture():
 
 
 def test_azel(vis_geo_params):
+    """ Unit test for the calculate_visibility_azel function
+    """
     azel = calculate_visibility_azel(vis_geo_params)
     numpy.testing.assert_array_almost_equal(azel[0][0].deg, 152.546993)
     numpy.testing.assert_array_almost_equal(azel[1][0].deg, 24.061762)
 
 
 def test_hourangle(vis_geo_params):
-    ha = calculate_visibility_hourangles(vis_geo_params)
-    numpy.testing.assert_array_almost_equal(ha[0].deg, -89.989667)
+    """ Unit test for the calculate_visibility_hourangles function
+    """
+    hr_angle = calculate_visibility_hourangles(vis_geo_params)
+    numpy.testing.assert_array_almost_equal(hr_angle[0].deg, -89.989667)
 
 
 def test_parallactic_angle(vis_geo_params):
-    pa = calculate_visibility_parallactic_angles(vis_geo_params)
-    numpy.testing.assert_array_almost_equal(pa[0].deg, -102.050543)
+    """ Unit test for the calculate_visibility_parallactic_angles function
+    """
+    p_angle = calculate_visibility_parallactic_angles(vis_geo_params)
+    numpy.testing.assert_array_almost_equal(p_angle[0].deg, -102.050543)
 
 
 def test_transit_time(vis_geo_params):
+    """ Unit test for the calculate_visibility_transit_time function
+    """
     transit_time = calculate_visibility_transit_time(vis_geo_params)
     numpy.testing.assert_array_almost_equal(transit_time.mjd, 58849.895812)

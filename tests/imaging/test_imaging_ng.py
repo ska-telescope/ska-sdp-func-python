@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """ Unit tests for imaging using nifty gridder
 
 """
@@ -40,7 +41,6 @@ def ng_fixture():
     channelwidth = numpy.array([1e6])
 
     vis_pol = PolarisationFrame("stokesI")
-    f = numpy.array([100.0])
 
     phase_centre = SkyCoord(
         ra=+180.0 * u.deg, dec=-45.0 * u.deg, frame="icrs", equinox="J2000"

@@ -16,6 +16,8 @@ from ska_sdp_func_python.fourier_transforms.fft_support import (
 
 @pytest.fixture(scope="module", name="pattern")
 def fft_support_fixture():
+    """Pytest fixture for fft_support unit tests"""
+
     def _pattern(npixel):
         return coordinates2(npixel)[0] + coordinates2(npixel)[1] * 1j
 
@@ -23,8 +25,10 @@ def fft_support_fixture():
 
 
 def test_pad_extract(pattern):
+    """Unit tests for the pad_mid function"""
     for npixel, N2 in [(100, 128), (128, 256), (126, 128)]:
-        # Make a 2D complex image of size (npixel, npixel) centred on (npixel//2, npixel//2)
+        # Make a 2D complex image of size (npixel, npixel)
+        # centred on (npixel//2, npixel//2)
         cs = 1 + pattern(npixel)
         # Pad it and extract npixel pixels around the centre
         cs_pad = pad_mid(cs, N2)
@@ -40,6 +44,7 @@ def test_pad_extract(pattern):
 
 
 def test_extract_oversampled(pattern):
+    """Unit tests for the extract_oversampled function"""
     for npixel, kernel_oversampling in [
         (1, 2),
         (2, 3),

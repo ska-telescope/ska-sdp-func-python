@@ -21,6 +21,7 @@ log.setLevel(logging.WARNING)
 
 
 def test_apply_jones():
+    """Unit tests for the apply_jones function"""
     nsucceeded = 0
     nfailures = 0
     for flux in (

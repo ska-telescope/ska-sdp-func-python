@@ -143,11 +143,14 @@ def image_raster_iter(
                 # yield image from slice (reference!)
                 subim = create_image(
                     im["pixels"].data.shape[3],
-                    cellsize=0.00015,
+                    cellsize=numpy.deg2rad(numpy.abs(wcs.wcs.cdelt[1])),
                     phasecentre=im.image_acc.phasecentre,
                 )
                 if overlap > 0 and make_flat:
-                    flat = create_image(subim)
+                    flat = create_image(
+                        subim["pixels"].data.shape[3],
+                        cellsize=numpy.deg2rad(numpy.abs(wcs.wcs.cdelt[1])),
+                        phasecentre=im.image_acc.phasecentre,)
                     if taper == "linear":
                         flat["pixels"].data[..., :, :] = numpy.outer(
                             taper_linear(dy, overlap),
@@ -221,6 +224,6 @@ def image_channel_iter(im: Image, subimages=1) -> collections.abc.Iterable:
         # Yield image from slice (reference!)
         yield create_image(
             im["pixels"].data.shape[3],
-            cellsize=0.00015,
+            cellsize=numpy.deg2rad(numpy.abs(wcs.wcs.cdelt[1])),
             phasecentre=im.image_acc.phasecentre,
         )
