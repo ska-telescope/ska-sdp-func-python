@@ -24,7 +24,7 @@ from ska_sdp_func_python.visibility.operations import (
 )
 
 
-@pytest.fixture(scope="module", name="result_operations")
+@pytest.fixture(scope="module", name="operations_params")
 def visibility_operations_fixture():
     """Fixture for operations.py unit tests"""
     lowcore = create_named_configuration("LOWBD2-CORE")
@@ -58,23 +58,23 @@ def visibility_operations_fixture():
     return parameters
 
 
-def test_concatenate_visibility(result_operations):
+def test_concatenate_visibility(operations_params):
     """Unit test for the concatenate_visibility function"""
     vis = create_visibility(
-        result_operations["lowcore"],
-        result_operations["times"],
-        result_operations["frequency"],
-        channel_bandwidth=result_operations["channel_bandwidth"],
-        phasecentre=result_operations["phasecentre"],
+        operations_params["lowcore"],
+        operations_params["times"],
+        operations_params["frequency"],
+        channel_bandwidth=operations_params["channel_bandwidth"],
+        phasecentre=operations_params["phasecentre"],
         weight=1.0,
     )
     othertimes = (numpy.pi / 43200.0) * numpy.arange(300.0, 600.0, 30.0)
     othervis = create_visibility(
-        result_operations["lowcore"],
+        operations_params["lowcore"],
         othertimes,
-        result_operations["frequency"],
-        channel_bandwidth=result_operations["channel_bandwidth"],
-        phasecentre=result_operations["phasecentre"],
+        operations_params["frequency"],
+        channel_bandwidth=operations_params["channel_bandwidth"],
+        phasecentre=operations_params["phasecentre"],
         weight=1.0,
     )
     other_shape = list(othervis.vis.shape)
@@ -91,25 +91,25 @@ def test_concatenate_visibility(result_operations):
     print(newvis)
 
 
-def test_divide_visibility(result_operations):
+def test_divide_visibility(operations_params):
     """Unit test for the divide_visibility function
     with StokesI polarisation"""
     vis = create_visibility(
-        result_operations["lowcore"],
-        result_operations["times"],
-        result_operations["frequency"],
-        channel_bandwidth=result_operations["channel_bandwidth"],
-        phasecentre=result_operations["phasecentre"],
+        operations_params["lowcore"],
+        operations_params["times"],
+        operations_params["frequency"],
+        channel_bandwidth=operations_params["channel_bandwidth"],
+        phasecentre=operations_params["phasecentre"],
         weight=1.0,
         polarisation_frame=PolarisationFrame("stokesI"),
     )
     vis["vis"][..., :] = [2.0 + 0.0j]
     othervis = create_visibility(
-        result_operations["lowcore"],
-        result_operations["times"],
-        result_operations["frequency"],
-        channel_bandwidth=result_operations["channel_bandwidth"],
-        phasecentre=result_operations["phasecentre"],
+        operations_params["lowcore"],
+        operations_params["times"],
+        operations_params["frequency"],
+        channel_bandwidth=operations_params["channel_bandwidth"],
+        phasecentre=operations_params["phasecentre"],
         weight=1.0,
         polarisation_frame=PolarisationFrame("stokesI"),
     )
@@ -121,24 +121,24 @@ def test_divide_visibility(result_operations):
     )
 
 
-def test_divide_visibility_pol(result_operations):
+def test_divide_visibility_pol(operations_params):
     """Unit test for the divide_visibility function with linear polarisation"""
     vis = create_visibility(
-        result_operations["lowcore"],
-        result_operations["times"],
-        result_operations["frequency"],
-        channel_bandwidth=result_operations["channel_bandwidth"],
-        phasecentre=result_operations["phasecentre"],
+        operations_params["lowcore"],
+        operations_params["times"],
+        operations_params["frequency"],
+        channel_bandwidth=operations_params["channel_bandwidth"],
+        phasecentre=operations_params["phasecentre"],
         weight=1.0,
         polarisation_frame=PolarisationFrame("linear"),
     )
     vis["vis"][..., :] = [2.0 + 0.0j, 0.0j, 0.0j, 2.0 + 0.0j]
     othervis = create_visibility(
-        result_operations["lowcore"],
-        result_operations["times"],
-        result_operations["frequency"],
-        channel_bandwidth=result_operations["channel_bandwidth"],
-        phasecentre=result_operations["phasecentre"],
+        operations_params["lowcore"],
+        operations_params["times"],
+        operations_params["frequency"],
+        channel_bandwidth=operations_params["channel_bandwidth"],
+        phasecentre=operations_params["phasecentre"],
         weight=1.0,
         polarisation_frame=PolarisationFrame("linear"),
     )
@@ -150,14 +150,14 @@ def test_divide_visibility_pol(result_operations):
     )
 
 
-def test_divide_visibility_singular(result_operations):
+def test_divide_visibility_singular(operations_params):
     """Unit test for the divide_visibility function with linear polarisation"""
     vis = create_visibility(
-        result_operations["lowcore"],
-        result_operations["times"],
-        result_operations["frequency"],
-        channel_bandwidth=result_operations["channel_bandwidth"],
-        phasecentre=result_operations["phasecentre"],
+        operations_params["lowcore"],
+        operations_params["times"],
+        operations_params["frequency"],
+        channel_bandwidth=operations_params["channel_bandwidth"],
+        phasecentre=operations_params["phasecentre"],
         weight=1.0,
         polarisation_frame=PolarisationFrame("linear"),
     )
@@ -168,11 +168,11 @@ def test_divide_visibility_singular(result_operations):
         2.0 + 0.0j,
     ]
     othervis = create_visibility(
-        result_operations["lowcore"],
-        result_operations["times"],
-        result_operations["frequency"],
-        channel_bandwidth=result_operations["channel_bandwidth"],
-        phasecentre=result_operations["phasecentre"],
+        operations_params["lowcore"],
+        operations_params["times"],
+        operations_params["frequency"],
+        channel_bandwidth=operations_params["channel_bandwidth"],
+        phasecentre=operations_params["phasecentre"],
         weight=1.0,
         polarisation_frame=PolarisationFrame("linear"),
     )
@@ -189,24 +189,24 @@ def test_divide_visibility_singular(result_operations):
     )
 
 
-def test_subtract(result_operations):
+def test_subtract(operations_params):
     """Unit test for the subtract_visibility function"""
     vis1 = create_visibility(
-        result_operations["lowcore"],
-        result_operations["times"],
-        result_operations["frequency"],
-        channel_bandwidth=result_operations["channel_bandwidth"],
-        phasecentre=result_operations["phasecentre"],
+        operations_params["lowcore"],
+        operations_params["times"],
+        operations_params["frequency"],
+        channel_bandwidth=operations_params["channel_bandwidth"],
+        phasecentre=operations_params["phasecentre"],
         weight=1.0,
         polarisation_frame=PolarisationFrame("stokesIQUV"),
     )
     vis1["vis"].data[...] = 1.0
     vis2 = create_visibility(
-        result_operations["lowcore"],
-        result_operations["times"],
-        result_operations["frequency"],
-        channel_bandwidth=result_operations["channel_bandwidth"],
-        phasecentre=result_operations["phasecentre"],
+        operations_params["lowcore"],
+        operations_params["times"],
+        operations_params["frequency"],
+        channel_bandwidth=operations_params["channel_bandwidth"],
+        phasecentre=operations_params["phasecentre"],
         weight=1.0,
         polarisation_frame=PolarisationFrame("stokesIQUV"),
     )

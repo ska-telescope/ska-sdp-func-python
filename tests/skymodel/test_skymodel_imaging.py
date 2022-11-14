@@ -30,10 +30,9 @@ from ska_sdp_func_python.skymodel.skymodel_imaging import (
 # from ska_sdp_func_python.visibility.visibility_geometry import (
 #     calculate_visibility_parallactic_angles,
 # )
-pytestmark = pytest.skip(
+pytest.skip(
     allow_module_level=True,
-    reason="Issues with dft_skycomponent_visibility in skymodel_imaging.py"
-    " ( import ska-sdp-func) and empty Images",
+    reason="FixMe",
 )
 
 # fix the below imports

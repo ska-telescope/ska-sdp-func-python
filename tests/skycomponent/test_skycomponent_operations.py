@@ -36,7 +36,7 @@ log = logging.getLogger("func-python-logger")
 log.setLevel(logging.WARNING)
 
 
-@pytest.fixture(scope="module", name="result_operations")
+@pytest.fixture(scope="module", name="input_params")
 def operations_fixture():
     """Fixture for operations.py unit tests"""
     home_coords = SkyCoord(
@@ -102,20 +102,20 @@ def operations_fixture():
     return params
 
 
-def test_find_nearest_skycomponent_index(result_operations):
+def test_find_nearest_skycomponent_index(input_params):
     """Check the index is 1"""
-    home = result_operations["home"]
-    components = result_operations["skycomponents_list"]
+    home = input_params["home"]
+    components = input_params["skycomponents_list"]
 
     index = find_nearest_skycomponent_index(home, components)
 
     assert index == 1
 
 
-def test_find_nearest_skycomponent(result_operations):
+def test_find_nearest_skycomponent(input_params):
     """Check the matching component is at index 1 and the seperation is 0"""
-    home = result_operations["home"]
-    components = result_operations["skycomponents_list"]
+    home = input_params["home"]
+    components = input_params["skycomponents_list"]
 
     best_sc, best_sc_seperation = find_nearest_skycomponent(home, components)
 
@@ -123,46 +123,46 @@ def test_find_nearest_skycomponent(result_operations):
     assert best_sc_seperation == 0
 
 
-def test_find_separation_skycomponents(result_operations):
+def test_find_separation_skycomponents(input_params):
     """Check the seperation"""
-    components = result_operations["skycomponents_list"]
+    components = input_params["skycomponents_list"]
     seperations = find_separation_skycomponents(components, components)
     expected_seperations = numpy.array([[0, 1.73628363], [1.73628363, 0]])
 
     assert seperations == pytest.approx(expected_seperations, 1e-7)
 
 
-def test_find_skycomponent_matches_atomic(result_operations):
+def test_find_skycomponent_matches_atomic(input_params):
     """Check the matches"""
-    components = result_operations["skycomponents_list"]
-    ref_components = result_operations["ref_skycomponents_list"]
+    components = input_params["skycomponents_list"]
+    ref_components = input_params["ref_skycomponents_list"]
     matches = find_skycomponent_matches_atomic(components, ref_components)
 
     assert len(matches) == 1
 
 
-def test_find_skycomponent_matches(result_operations):
+def test_find_skycomponent_matches(input_params):
     """Check matches"""
-    components = result_operations["skycomponents_list"]
-    ref_components = result_operations["ref_skycomponents_list"]
+    components = input_params["skycomponents_list"]
+    ref_components = input_params["ref_skycomponents_list"]
     matches = find_skycomponent_matches(components, ref_components)
 
     assert len(matches) == 1
 
 
-def test_select_components_by_separation(result_operations):
+def test_select_components_by_separation(input_params):
     """Check correct component is selected"""
-    home = result_operations["home"]
-    ref_components = result_operations["ref_skycomponents_list"]
+    home = input_params["home"]
+    ref_components = input_params["ref_skycomponents_list"]
     selected = select_components_by_separation(home, ref_components, rmax=1)
 
     assert selected == [ref_components[0]]
 
 
-def test_select_neighbouring_components(result_operations):
+def test_select_neighbouring_components(input_params):
     """Check correct component is selected"""
-    components = result_operations["skycomponents_list"]
-    target = result_operations["ref_skycomponents_list"]
+    components = input_params["skycomponents_list"]
+    target = input_params["ref_skycomponents_list"]
     target_index, target_sep = select_neighbouring_components(
         components, target
     )
@@ -171,9 +171,9 @@ def test_select_neighbouring_components(result_operations):
     assert (target_sep.deg == [pytest.approx(58.99740846, 1e-7), 0.0]).all()
 
 
-def test_remove_neighbouring_components(result_operations):
+def test_remove_neighbouring_components(input_params):
     """Check correct component is compressed (only index 1 should remain)"""
-    components = result_operations["skycomponents_list"]
+    components = input_params["skycomponents_list"]
     distance = 1  # in radians
 
     compressed_targets = remove_neighbouring_components(components, distance)
@@ -181,34 +181,34 @@ def test_remove_neighbouring_components(result_operations):
     assert compressed_targets[0] == [0, 1]
 
 
-def test_filter_skycomponents_by_flux(result_operations):
+def test_filter_skycomponents_by_flux(input_params):
     """Check a skycomponent is filtered out"""
 
-    components = result_operations["skycomponents_list"]
+    components = input_params["skycomponents_list"]
     new_components = filter_skycomponents_by_flux(components, flux_min=5)
 
     assert len(components) == 2
     assert len(new_components) == 1
 
 
-def test_insert_skycomponent(result_operations):
+def test_insert_skycomponent(input_params):
     """Check a skycomponent is inserted to the image"""
     image = create_image(
-        npixel=512, cellsize=0.0001, phasecentre=result_operations["home"]
+        npixel=512, cellsize=0.0001, phasecentre=input_params["home"]
     )
-    component = result_operations["skycomponents_list"][0]
+    component = input_params["skycomponents_list"][0]
 
     new_image = insert_skycomponent(image, component)
 
     assert new_image != image
 
 
-def test_restore_skycomponent(result_operations):
+def test_restore_skycomponent(input_params):
     """Check a skycomponent is restored to the image"""
     image = create_image(
-        npixel=512, cellsize=0.0001, phasecentre=result_operations["home"]
+        npixel=512, cellsize=0.0001, phasecentre=input_params["home"]
     )
-    component = result_operations["skycomponents_list"][0]
+    component = input_params["skycomponents_list"][0]
     clean_beam = {"bmaj": 0.1, "bmin": 0.05, "bpa": -60.0}
     new_image = restore_skycomponent(image, component, clean_beam=clean_beam)
 
@@ -218,26 +218,26 @@ def test_restore_skycomponent(result_operations):
 @pytest.mark.skip(
     reason="Better understanding of Vornoi needed to make a useful unit test"
 )
-def test_voronoi_decomposition(result_operations):
+def test_voronoi_decomposition(input_params):
     """Check Vornoi decompostion"""
     image = create_image(
-        npixel=512, cellsize=0.0001, phasecentre=result_operations["home"]
+        npixel=512, cellsize=0.0001, phasecentre=input_params["home"]
     )
-    image_component = result_operations["ref_skycomponents_list"][1]
+    image_component = input_params["ref_skycomponents_list"][1]
     # Get an image that isn't empty (insert skycomonent)
     image = insert_skycomponent(image, image_component)
-    components = result_operations["ref_skycomponents_list"]
+    components = input_params["ref_skycomponents_list"]
     v_structure, v_image = voronoi_decomposition(image, components)
 
 
 @pytest.mark.skip(
     reason="Need better understanding of function to build meaningful test"
 )
-def test_partition_skycomponent_neighbours(result_operations):
+def test_partition_skycomponent_neighbours(input_params):
     """Check skycompoentns are partitioned correctly"""
 
-    components = result_operations["ref_skycomponents_list"]
-    target = [result_operations["ref_skycomponents_list"][0]]
+    components = input_params["ref_skycomponents_list"]
+    target = [input_params["ref_skycomponents_list"][0]]
 
     partitioned_comps = partition_skycomponent_neighbours(components, target)
 
@@ -248,15 +248,15 @@ def test_partition_skycomponent_neighbours(result_operations):
     reason="Unable to set frequency and flux correctly for "
     "a multi-frequency skycomponent"
 )
-def test_fit_skycomponent_spectral_index(result_operations):
+def test_fit_skycomponent_spectral_index(input_params):
     """Check fits multi-frequency skycomponents"""
-    single_freq_comp = result_operations["skycomponents_list"][0]
+    single_freq_comp = input_params["skycomponents_list"][0]
     sf_spec_indx = fit_skycomponent_spectral_index(single_freq_comp)
 
     frequency = numpy.linspace(0.9e8, 1.1e8, 3)
     flux = numpy.ones(shape=(3, 1), dtype=float)
     multi_freq_comp = SkyComponent(
-        direction=result_operations["home"],
+        direction=input_params["home"],
         frequency=frequency,
         name="multi_freq_sc",
         flux=flux,

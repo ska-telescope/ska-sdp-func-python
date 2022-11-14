@@ -28,7 +28,7 @@ log = logging.getLogger("func-python-logger")
 log.setLevel(logging.WARNING)
 
 
-@pytest.fixture(scope="module", name="result_weighting")
+@pytest.fixture(scope="module", name="input_params")
 def weighting_fixture():
     """Fixture for weighting.py unit tests"""
 
@@ -74,22 +74,22 @@ def weighting_fixture():
     return params
 
 
-def test_tapering_gaussian(result_weighting):
+def test_tapering_gaussian(input_params):
     """Apply a Gaussian taper to the visibility and check to see if
     the PSF size is close
     """
     size_required = 0.020
-    result_weighting["componentvis"] = weight_visibility(
-        result_weighting["componentvis"],
-        result_weighting["model"],
+    input_params["componentvis"] = weight_visibility(
+        input_params["componentvis"],
+        input_params["model"],
         algoritm="uniform",
     )
-    result_weighting["componentvis"] = taper_visibility_gaussian(
-        result_weighting["componentvis"], beam=size_required
+    input_params["componentvis"] = taper_visibility_gaussian(
+        input_params["componentvis"], beam=size_required
     )
     psf, sumwt = invert_visibility(
-        result_weighting["componentvis"],
-        result_weighting["model"],
+        input_params["componentvis"],
+        input_params["model"],
         dopsf=True,
         context="2d",
     )
@@ -103,23 +103,23 @@ def test_tapering_gaussian(result_weighting):
     )
 
 
-def test_tapering_tukey(result_weighting):
+def test_tapering_tukey(input_params):
     """Apply a Tukey window taper and output the psf and FT of the PSF.
        No quantitative check.
 
     :return:
     """
-    result_weighting["componentvis"] = weight_visibility(
-        result_weighting["componentvis"],
-        result_weighting["model"],
+    input_params["componentvis"] = weight_visibility(
+        input_params["componentvis"],
+        input_params["model"],
         algorithm="uniform",
     )
-    result_weighting["componentvis"] = taper_visibility_tukey(
-        result_weighting["componentvis"], tukey=0.1
+    input_params["componentvis"] = taper_visibility_tukey(
+        input_params["componentvis"], tukey=0.1
     )
     psf, sumwt = invert_visibility(
-        result_weighting["componentvis"],
-        result_weighting["model"],
+        input_params["componentvis"],
+        input_params["model"],
         dopsf=True,
         context="2d",
     )

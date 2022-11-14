@@ -27,7 +27,7 @@ log = logging.getLogger("func-python-logger")
 log.setLevel(logging.WARNING)
 
 
-@pytest.fixture(scope="module", name="result_taylor_terms")
+@pytest.fixture(scope="module", name="input_params")
 def taylor_terms_fixture():
 
     phase_centre = SkyCoord(
@@ -59,9 +59,9 @@ def taylor_terms_fixture():
     return params
 
 
-def test_calculate_taylor_terms(result_taylor_terms):
+def test_calculate_taylor_terms(input_params):
     """Check interpolate_list = 2 as, 2 skycomponents given"""
-    sc = result_taylor_terms["skycomponents"]
+    sc = input_params["skycomponents"]
     sc_list = [sc, sc]
 
     taylor_term_list = calculate_skycomponent_list_taylor_terms(
@@ -75,12 +75,12 @@ def test_calculate_taylor_terms(result_taylor_terms):
     reason="This function uses many taylor_terms functions,"
     "testing those individually"
 )
-def test_find_skycomponents_frequency_taylor_terms(result_taylor_terms):
+def test_find_skycomponents_frequency_taylor_terms(input_params):
 
     im = create_image(
         npixel=512,
         cellsize=0.00015,
-        phasecentre=result_taylor_terms["phasecentre"],
+        phasecentre=input_params["phasecentre"],
         nchan=1,
     )
     im["pixels"].data = numpy.ones(shape=im["pixels"].data.shape)
@@ -92,9 +92,9 @@ def test_find_skycomponents_frequency_taylor_terms(result_taylor_terms):
     assert len(sc_list[0]) == 3
 
 
-def test_interpolate_skycomponents_frequency(result_taylor_terms):
+def test_interpolate_skycomponents_frequency(input_params):
     """Check interpolate_list = 2 as, 2 skycomponents given"""
-    sc = result_taylor_terms["skycomponents"]
+    sc = input_params["skycomponents"]
     sc_list = [sc, sc]
 
     interpolate_list = interpolate_skycomponents_frequency(
@@ -105,10 +105,10 @@ def test_interpolate_skycomponents_frequency(result_taylor_terms):
     assert len(interpolate_list) == 2
 
 
-def test_transpose_skycomponents_to_channels(result_taylor_terms):
+def test_transpose_skycomponents_to_channels(input_params):
     """Check that transpose list returns list of len = 1, as here nchan = 1"""
 
-    sc = result_taylor_terms["skycomponents"]
+    sc = input_params["skycomponents"]
     sc_list = [sc, sc]
     transpose_list = transpose_skycomponents_to_channels(
         sc_list,
@@ -117,10 +117,10 @@ def test_transpose_skycomponents_to_channels(result_taylor_terms):
     assert len(transpose_list) == 1
 
 
-def test_gather_skycomponents_from_channels(result_taylor_terms):
+def test_gather_skycomponents_from_channels(input_params):
     """Check gather_list1/2 = 2/3, as there are 2/3 skycomponents
     in each list"""
-    sc = result_taylor_terms["skycomponents"]
+    sc = input_params["skycomponents"]
     sc_list1 = [sc, sc]
     sc_list2 = [sc, sc, sc]
     sc_list_of_lists1 = [sc_list1, sc_list1]

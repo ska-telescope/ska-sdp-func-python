@@ -26,7 +26,7 @@ log.setLevel(logging.WARNING)
 log.addHandler(logging.StreamHandler(sys.stdout))
 
 
-@pytest.fixture(scope="module", name="result_ng")
+@pytest.fixture(scope="module", name="input_params")
 def ng_fixture():
 
     verbosity = 0
@@ -65,11 +65,11 @@ def ng_fixture():
     return params
 
 
-def test_predict_ng(result_ng):
+def test_predict_ng(input_params):
 
-    vis = result_ng["visibility"]
-    model = result_ng["model"]
-    verbosity = result_ng["verbosity"]
+    vis = input_params["visibility"]
+    model = input_params["model"]
+    verbosity = input_params["verbosity"]
     original_vis = vis.copy(deep=True)
     vis = predict_ng(vis, model, verbosity=verbosity)
     vis["vis"].data = vis["vis"].data - original_vis["vis"].data
@@ -89,10 +89,10 @@ def test_predict_ng(result_ng):
 
 
 @pytest.mark.skip(reason="invert_ng returns an empty image")
-def test_invert_ng(result_ng):
-    vis = result_ng["visibility"]
-    model = result_ng["model"]
-    verbosity = result_ng["verbosity"]
+def test_invert_ng(input_params):
+    vis = input_params["visibility"]
+    model = input_params["model"]
+    verbosity = input_params["verbosity"]
     dirty = invert_ng(
         vis,
         model,
@@ -103,10 +103,10 @@ def test_invert_ng(result_ng):
     assert numpy.max(numpy.abs(dirty[0]["pixels"].data))
 
 
-def test_invert_ng_psf(result_ng):
-    vis = result_ng["visibility"]
-    model = result_ng["model"]
-    verbosity = result_ng["verbosity"]
+def test_invert_ng_psf(input_params):
+    vis = input_params["visibility"]
+    model = input_params["model"]
+    verbosity = input_params["verbosity"]
     dirty = invert_ng(
         vis,
         model,

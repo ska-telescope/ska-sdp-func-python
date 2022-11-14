@@ -28,7 +28,7 @@ log.setLevel(logging.WARNING)
 log.setLevel(logging.WARNING)
 
 
-@pytest.fixture(scope="module", name="result_iterators")
+@pytest.fixture(scope="module", name="input_params")
 def iterators_fixture():
     """Fixture for the iterators.py unit tests"""
     phase_centre = SkyCoord(
@@ -62,7 +62,7 @@ def iterators_fixture():
     return params
 
 
-def test_raster(result_iterators):
+def test_raster(input_params):
     """Test a raster iterator across an image. The test is to check that the
     value of the subimages is multiplied by two.
 
@@ -72,7 +72,7 @@ def test_raster(result_iterators):
         m31original = create_image(
             npixel=npixel,
             cellsize=0.00015,
-            phasecentre=result_iterators["phasecentre"],
+            phasecentre=input_params["phasecentre"],
         )
         m31original["pixels"].data = numpy.ones(
             shape=m31original["pixels"].data.shape, dtype=float
@@ -88,7 +88,7 @@ def test_raster(result_iterators):
                     m31model = create_image(
                         npixel=npixel,
                         cellsize=0.00015,
-                        phasecentre=result_iterators["phasecentre"],
+                        phasecentre=input_params["phasecentre"],
                     )
                     m31model["pixels"].data = numpy.ones(
                         shape=m31model["pixels"].data.shape, dtype=float
@@ -147,9 +147,9 @@ def test_raster(result_iterators):
                     )
 
 
-def test_raster_exception(result_iterators):
+def test_raster_exception(input_params):
     """Check that raster captures the right exceptions"""
-    m31original = result_iterators["image"]
+    m31original = input_params["image"]
     m31original["pixels"].data = numpy.ones(
         shape=m31original["pixels"].data.shape, dtype=float
     )
@@ -159,7 +159,7 @@ def test_raster_exception(result_iterators):
 
     for nraster, overlap in [(-1, -1), (-1, 0), (1e6, 127)]:
         with pytest.raises(AssertionError):
-            m31model = result_iterators["image"]
+            m31model = input_params["image"]
             m31model["pixels"].data = numpy.ones(
                 shape=m31model["pixels"].data.shape, dtype=float
             )
@@ -170,11 +170,12 @@ def test_raster_exception(result_iterators):
 
     for nraster, overlap in [(2, 513)]:
         with pytest.raises(ValueError):
-            m31model = result_iterators["image"]
+            m31model = input_params["image"]
             for patch in image_raster_iter(
                 m31model, facets=nraster, overlap=overlap
             ):
                 patch["pixels"].data *= 2.0
+
 
 @pytest.mark.skip("Test uses image from file")
 def test_channelise(result_iterators):
