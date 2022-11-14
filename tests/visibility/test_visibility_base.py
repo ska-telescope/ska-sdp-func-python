@@ -24,7 +24,7 @@ from ska_sdp_func_python.visibility.base import (
 )
 
 
-@pytest.fixture(scope="module", name="result_base")
+@pytest.fixture(scope="module", name="base_params")
 def visibility_operations_fixture():
     lowcore = create_named_configuration("LOWBD2-CORE")
     times = (numpy.pi / 43200.0) * numpy.arange(0.0, 300.0, 30.0)
@@ -72,9 +72,9 @@ def visibility_operations_fixture():
     return parameters
 
 
-def test_phase_rotation_identity(result_base):
+def test_phase_rotation_identity(base_params):
     """Check phaserotate_visibility consisitently gives good results"""
-    vis = result_base["visibility"]
+    vis = base_params["visibility"]
     newphasecenters = [
         SkyCoord(182, -35, unit=u.deg),
         SkyCoord(182, -30, unit=u.deg),
@@ -89,28 +89,28 @@ def test_phase_rotation_identity(result_base):
         original_uvw = vis.uvw
         rotatedvis = phaserotate_visibility(
             phaserotate_visibility(vis, newphasecentre, tangent=False),
-            result_base["phasecentre"],
+            base_params["phasecentre"],
             tangent=False,
         )
         assert_allclose(rotatedvis.uvw, original_uvw, rtol=1e-7)
         assert_allclose(rotatedvis.vis, original_vis, rtol=1e-7)
 
 
-def test_phase_rotation(result_base):
+def test_phase_rotation(base_params):
     """Check that phaserotate_visibility gives the same answer as offsetting phase centre "manually" """
-    vis = result_base["visibility"]
+    vis = base_params["visibility"]
     # Predict visibilities with new phase centre independently
     ha_diff = (
-        -(result_base["compabsdirection"].ra - result_base["phasecentre"].ra)
+        -(base_params["compabsdirection"].ra - base_params["phasecentre"].ra)
         .to(u.rad)
         .value
     )
     vispred = create_visibility(
-        result_base["lowcore"],
-        result_base["times"] + ha_diff,
-        result_base["frequency"],
-        channel_bandwidth=result_base["channel_bandwidth"],
-        phasecentre=result_base["compabsdirection"],
+        base_params["lowcore"],
+        base_params["times"] + ha_diff,
+        base_params["frequency"],
+        channel_bandwidth=base_params["channel_bandwidth"],
+        phasecentre=base_params["compabsdirection"],
         weight=1.0,
         polarisation_frame=PolarisationFrame("stokesIQUV"),
         times_are_ha=True,
@@ -119,7 +119,7 @@ def test_phase_rotation(result_base):
     # Should yield the same results as rotation
     rotatedvis = phaserotate_visibility(
         vis,
-        newphasecentre=result_base["compabsdirection"],
+        newphasecentre=base_params["compabsdirection"],
         tangent=False,
     )
     assert_allclose(rotatedvis.vis, vispred.vis, rtol=3e-6)
@@ -130,9 +130,9 @@ def test_phase_rotation(result_base):
     )
 
 
-def test_phase_rotation_inverse(result_base):
+def test_phase_rotation_inverse(base_params):
     """Check that using phase_rotate twice makes no difference"""
-    vis = result_base["visibility"]
+    vis = base_params["visibility"]
     there = SkyCoord(
         ra=+250.0 * u.deg, dec=-60.0 * u.deg, frame="icrs", equinox="J2000"
     )
@@ -140,7 +140,7 @@ def test_phase_rotation_inverse(result_base):
     original_uvw = vis.uvw
     rotatedvis = phaserotate_visibility(
         phaserotate_visibility(vis, there, tangent=False, inverse=False),
-        result_base["phasecentre"],
+        base_params["phasecentre"],
         tangent=False,
         inverse=False,
     )
@@ -148,19 +148,19 @@ def test_phase_rotation_inverse(result_base):
     assert_allclose(rotatedvis["vis"].data, original_vis.data, rtol=1e-7)
 
 
-def test_calculate_visibility_phasor(result_base):
+def test_calculate_visibility_phasor(base_params):
     """Check calculate_visibility_phasor gives the correct phasor"""
-    direction = result_base["phasecentre"]
-    vis = result_base["visibility"]
+    direction = base_params["phasecentre"]
+    vis = base_params["visibility"]
 
     phasor = calculate_visibility_phasor(direction, vis)
 
     assert (phasor == 1).all()
 
 
-def test_calculate_visibility_uvw_lambda(result_base):
+def test_calculate_visibility_uvw_lambda(base_params):
     """Check calculate_visibility_uvw_lambda updates the uvw values"""
-    vis = result_base["visibility"]
+    vis = base_params["visibility"]
 
     updated_vis = calculate_visibility_uvw_lambda(vis)
     expected_uvw = numpy.einsum(
