@@ -9,19 +9,21 @@ import astropy.units as u
 import numpy
 from astropy.coordinates import SkyCoord
 from numpy.testing import assert_allclose, assert_array_almost_equal
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.configuration.config_create import (
+    create_named_configuration,
+)
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility import create_visibility
 
 from ska_sdp_func_python.imaging.dft import (
     dft_skycomponent_visibility,
-    idft_visibility_skycomponent,
     extract_direction_and_flux,
+    idft_visibility_skycomponent,
 )
-from ska_sdp_datamodels.configuration.config_create import create_named_configuration
-from ska_sdp_func_python.visibility.base import (
-    phaserotate_visibility,
-)
+from ska_sdp_func_python.visibility.base import phaserotate_visibility
 
 
 class TestVisibilityDFTOperations(unittest.TestCase):
@@ -45,7 +47,9 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         pcof = self.phasecentre.skyoffset_frame()
         self.compreldirection = self.compabsdirection.transform_to(pcof)
         self.comp = SkyComponent(
-            direction=self.compreldirection, frequency=self.frequency, flux=self.flux
+            direction=self.compreldirection,
+            frequency=self.frequency,
+            flux=self.flux,
         )
 
     def test_phase_rotation_stokesi(self):
@@ -81,7 +85,9 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         )
         self.vismodel = dft_skycomponent_visibility(self.vis, self.comp)
         # Predict visibilities with new phase centre independently
-        ha_diff = -(self.compabsdirection.ra - self.phasecentre.ra).to(u.rad).value
+        ha_diff = (
+            -(self.compabsdirection.ra - self.phasecentre.ra).to(u.rad).value
+        )
         vispred = create_visibility(
             self.lowcore,
             self.times + ha_diff,
@@ -112,7 +118,9 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         )
         self.vismodel = dft_skycomponent_visibility(self.vis, self.comp)
         # Predict visibilities with new phase centre independently
-        ha_diff = -(self.compabsdirection.ra - self.phasecentre.ra).to(u.rad).value
+        ha_diff = (
+            -(self.compabsdirection.ra - self.phasecentre.ra).to(u.rad).value
+        )
         vispred = create_visibility(
             self.lowcore,
             self.times + ha_diff,
@@ -132,7 +140,10 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         assert_allclose(rotatedvis.uvw, vismodel2.uvw, rtol=3e-6)
 
     def test_dft_idft_stokesiquv_visibility(self):
-        for vpol in [PolarisationFrame("linear"), PolarisationFrame("circular")]:
+        for vpol in [
+            PolarisationFrame("linear"),
+            PolarisationFrame("circular"),
+        ]:
             self.vis = create_visibility(
                 self.lowcore,
                 self.times,
@@ -143,8 +154,12 @@ class TestVisibilityDFTOperations(unittest.TestCase):
                 polarisation_frame=vpol,
             )
             self.vismodel = dft_skycomponent_visibility(self.vis, self.comp)
-            rcomp, weights = idft_visibility_skycomponent(self.vismodel, self.comp)
-            assert_allclose(self.comp.flux, numpy.real(rcomp[0].flux), rtol=1e-10)
+            rcomp, weights = idft_visibility_skycomponent(
+                self.vismodel, self.comp
+            )
+            assert_allclose(
+                self.comp.flux, numpy.real(rcomp[0].flux), rtol=1e-10
+            )
 
     def test_extract_direction_and_flux(self):
         """
@@ -164,7 +179,9 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         expected_direction = numpy.array(
             [[1.42961744e-02, -7.15598688e-05, -1.02198084e-04]]
         )
-        result_direction, result_flux = extract_direction_and_flux(self.comp, vis)
+        result_direction, result_flux = extract_direction_and_flux(
+            self.comp, vis
+        )
 
         assert_array_almost_equal(result_direction, expected_direction)
         assert (result_flux == self.comp.flux.astype(complex)).all()
@@ -188,8 +205,12 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         expected_direction = numpy.array(
             [[1.42961744e-02, -7.15598688e-05, -1.02198084e-04]]
         )
-        expected_flux = self.flux[:, 0].astype(complex).reshape((self.flux.shape[0], 1))
-        result_direction, result_flux = extract_direction_and_flux(self.comp, vis)
+        expected_flux = (
+            self.flux[:, 0].astype(complex).reshape((self.flux.shape[0], 1))
+        )
+        result_direction, result_flux = extract_direction_and_flux(
+            self.comp, vis
+        )
 
         assert_array_almost_equal(result_direction, expected_direction)
         assert (result_flux == expected_flux).all()
@@ -197,4 +218,3 @@ class TestVisibilityDFTOperations(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
