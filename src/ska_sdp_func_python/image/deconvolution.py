@@ -49,7 +49,9 @@ from astropy.convolution import Gaussian2DKernel, convolve_fft
 from astropy.modeling import fitting, models
 from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
-from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
+from ska_sdp_datamodels.science_data_model.polarisation_model import (
+    PolarisationFrame,
+)
 
 from ska_sdp_func_python.image.cleaners import (
     hogbom,
@@ -528,7 +530,6 @@ def complex_hogbom_kernel_list(
             residual_array,
             PolarisationFrame("stokesIQUV"),
             dirty.image_acc.wcs,
-
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)
@@ -945,14 +946,14 @@ def msclean_kernel_list(
                     % (prefix, pol, channel)
                 )
         comp_image = Image.constructor(
-                comp_array,
-                dirty.image_acc.polarisation_frame,
-                dirty.image_acc.wcs,
+            comp_array,
+            dirty.image_acc.polarisation_frame,
+            dirty.image_acc.wcs,
         )
         residual_image = Image.constructor(
-                residual_array,
-                dirty.image_acc.polarisation_frame,
-                dirty.image_acc.wcs,
+            residual_array,
+            dirty.image_acc.polarisation_frame,
+            dirty.image_acc.wcs,
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)

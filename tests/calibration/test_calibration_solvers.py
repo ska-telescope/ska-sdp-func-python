@@ -24,6 +24,7 @@ from ska_sdp_datamodels.visibility import create_visibility
 
 from ska_sdp_func_python.calibration.operations import apply_gaintable
 from ska_sdp_func_python.calibration.solvers import solve_gaintable
+
 # from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 
 pytest.skip(

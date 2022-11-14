@@ -117,12 +117,8 @@ def test_overlap():
 
 def test_restore(input_params):
     """Unit tests for the restore_cube function"""
-    input_params["model"].data_vars["pixels"].data[
-        0, 0, 256, 256
-    ] = 1.0
-    cmodel = restore_cube(
-        input_params["model"], input_params["psf"]
-    )
+    input_params["model"].data_vars["pixels"].data[0, 0, 256, 256] = 1.0
+    cmodel = restore_cube(input_params["model"], input_params["psf"])
     assert numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7, numpy.max(
         cmodel["pixels"].data
     )
@@ -131,9 +127,7 @@ def test_restore(input_params):
 def test_restore_list(input_params):
     """Unit tests for the restore_list function"""
     input_params["model"]["pixels"].data[0, 0, 256, 256] = 1.0
-    cmodel = restore_list(
-        [input_params["model"]], [input_params["psf"]]
-    )[0]
+    cmodel = restore_list([input_params["model"]], [input_params["psf"]])[0]
     assert numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7, numpy.max(
         cmodel["pixels"].data
     )
@@ -398,10 +392,24 @@ def test_hogbom_kernel_list_multiple_dirty(input_params):
     _check_hogbom_kernel_list_test_results(comp_list[1], residual_list[1])
 
 
-def test_hogbom_kernel_list_multiple_dirty_window_shape():
+def test_hogbom_kernel_list_multiple_dirty_window_shape(input_params):
     """
     Bugfix: hogbom_kernel_list produced an IndexError.
     Test the second branch of the if statement
     when dirty_list has more than one elements.
     """
-    test_hogbom_kernel_list_multiple_dirty(window_shape="quarter")
+    prefix = "test_hogbom_list"
+    dirty_list = [input_params["dirty"], input_params["dirty"]]
+    psf_list = [input_params["psf"], input_params["psf"]]
+    window_list = find_window_list(dirty_list, prefix, window_shape="quarter")
+
+    comp_list, residual_list = hogbom_kernel_list(
+        dirty_list, prefix, psf_list, window_list
+    )
+
+    assert len(comp_list) == 2
+    assert len(residual_list) == 2
+    # because the two dirty images and psfs are the same,
+    # the expected results are also the same
+    _check_hogbom_kernel_list_test_results(comp_list[0], residual_list[0])
+    _check_hogbom_kernel_list_test_results(comp_list[1], residual_list[1])

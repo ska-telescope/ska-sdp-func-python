@@ -19,7 +19,6 @@ import logging
 from typing import List
 
 import numpy
-from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 
 log = logging.getLogger("func-python-logger")
@@ -100,7 +99,6 @@ def calculate_image_frequency_moments(
         moment_data,
         im.image_acc.polarisation_frame,
         moment_wcs,
-
     )
 
 
@@ -158,7 +156,6 @@ def calculate_image_from_frequency_taylor_terms(
         newim_data,
         polarisation_frame=im.image_acc.polarisation_frame,
         wcs=im.image_acc.wcs,
-
     )
     return newim
 
@@ -284,7 +281,6 @@ def calculate_image_list_from_frequency_taylor_terms(
             newim_data,
             polarisation_frame=im_list[chan].image_acc.polarisation_frame,
             wcs=im_list[chan].image_acc.wcs,
-
         )
 
         newims.append(newim)

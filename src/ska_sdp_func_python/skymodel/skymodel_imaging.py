@@ -8,7 +8,6 @@
 __all__ = ["skymodel_calibrate_invert", "skymodel_predict_calibrate"]
 
 import numpy
-from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
 from ska_sdp_func_python.calibration import apply_gaintable
 from ska_sdp_func_python.imaging.base import normalise_sumwt

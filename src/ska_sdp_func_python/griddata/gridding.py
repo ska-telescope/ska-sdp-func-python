@@ -41,9 +41,9 @@ import numpy
 import numpy.testing
 from ska_sdp_datamodels.gridded_visibility.grid_vis_model import GridData
 from ska_sdp_datamodels.image.image_model import Image
-from ska_sdp_func_python.fourier_transforms.fft_support import ifft
 
 from ska_sdp_func_python.fourier_transforms import fft
+from ska_sdp_func_python.fourier_transforms.fft_support import ifft
 
 log = logging.getLogger("func-python-logger")
 
@@ -594,10 +594,10 @@ def fft_griddata_to_image(griddata, template, gcf=None):
         im_data = ifft(griddata["pixels"].data) * float(nx) * float(ny)
     else:
         im_data = (
-                ifft(griddata["pixels"].data)
-                * gcf["pixels"].data
-                * float(nx)
-                * float(ny)
+            ifft(griddata["pixels"].data)
+            * gcf["pixels"].data
+            * float(nx)
+            * float(ny)
         )
 
     return Image.constructor(
