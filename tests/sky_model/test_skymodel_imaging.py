@@ -22,7 +22,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent, SkyModel
 from ska_sdp_datamodels.visibility.vis_create import create_visibility
 
-from ska_sdp_func_python.skymodel.skymodel_imaging import (
+from ska_sdp_func_python.sky_model.skymodel_imaging import (
     skymodel_calibrate_invert,
     skymodel_predict_calibrate,
 )

@@ -47,7 +47,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 )
 from ska_sdp_datamodels.visibility.vis_model import Visibility
 
-from ska_sdp_func_python.griddata.gridding import (
+from ska_sdp_func_python.grid_data.gridding import (
     degrid_visibility_from_griddata,
     fft_griddata_to_image,
     fft_image_to_griddata,

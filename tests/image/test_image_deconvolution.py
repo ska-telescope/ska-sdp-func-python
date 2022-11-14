@@ -32,7 +32,7 @@ from ska_sdp_func_python.imaging.imaging import (
     invert_visibility,
     predict_visibility,
 )
-from ska_sdp_func_python.skycomponent.operations import restore_skycomponent
+from ska_sdp_func_python.sky_component.operations import restore_skycomponent
 
 log = logging.getLogger("func-python-logger")
 

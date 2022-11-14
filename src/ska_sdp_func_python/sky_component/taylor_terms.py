@@ -25,7 +25,7 @@ from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_func_python.image.taylor_terms import (
     calculate_frequency_taylor_terms_from_image_list,
 )
-from ska_sdp_func_python.skycomponent.operations import (
+from ska_sdp_func_python.sky_component.operations import (
     find_skycomponents,
     fit_skycomponent,
 )

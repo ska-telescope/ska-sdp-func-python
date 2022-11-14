@@ -23,7 +23,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility.vis_create import create_visibility
 
-from ska_sdp_func_python.griddata.gridding import (
+from ska_sdp_func_python.grid_data.gridding import (
     degrid_visibility_from_griddata,
     fft_griddata_to_image,
     fft_image_to_griddata,
@@ -32,7 +32,7 @@ from ska_sdp_func_python.griddata.gridding import (
     griddata_merge_weights,
     griddata_visibility_reweight,
 )
-from ska_sdp_func_python.skycomponent.operations import insert_skycomponent
+from ska_sdp_func_python.sky_component.operations import insert_skycomponent
 
 log = logging.getLogger("func-python-logger")
 
