@@ -1,6 +1,7 @@
 # pylint: disable=invalid-name, too-many-locals, unused-variable
 # pylint: disable=too-many-statements
 # pylint: disable=import-error, no-name-in-module, import-outside-toplevel
+# flake8: noqa: E203
 """
 Functions that implement prediction of and imaging from visibilities
 using the GPU-based gridder (WAGG version),
@@ -26,11 +27,10 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
 )
 from ska_sdp_datamodels.visibility.vis_model import Visibility
 
-from src.ska_sdp_func_python.imaging.base import (
+from ska_sdp_func_python.imaging.base import (
     normalise_sumwt,
     shift_vis_to_image,
 )
-from src.ska_sdp_func_python.parameters import get_parameter
 
 log = logging.getLogger("func-python-logger")
 
@@ -63,10 +63,10 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     if model is None:
         return bvis
 
-    nthreads = get_parameter(kwargs, "threads", 4)  # noqa: F841
-    epsilon = get_parameter(kwargs, "epsilon", 1e-12)
-    do_wstacking = get_parameter(kwargs, "do_wstacking", True)
-    verbosity = get_parameter(kwargs, "verbosity", 0)  # noqa: F841
+    nthreads = kwargs.get("threads", 4)
+    epsilon = kwargs.get("epsilon", 1e-12)
+    do_wstacking = kwargs.get("do_wstacking", True)
+    verbosity = kwargs.get("verbosity", 0)
 
     newbvis = bvis.copy(deep=True, zero=True)
 
@@ -115,8 +115,10 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
                 None,
                 pixsize,
                 pixsize,
-                epsilon,
-                do_wstacking,
+                epsilon=epsilon,
+                do_wstaking=do_wstacking,
+                nthreads=nthreads,
+                verbosity=verbosity,
             ).T
     else:
         for vpol in range(vnpol):
@@ -129,8 +131,10 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
                     None,
                     pixsize,
                     pixsize,
-                    epsilon,
-                    do_wstacking,
+                    epsilon=epsilon,
+                    do_wstacking=do_wstacking,
+                    nthreads=nthreads,
+                    verbosity=verbosity,
                 )[:, 0]
     vis = convert_pol_frame(
         vis_temp.T,
@@ -182,10 +186,10 @@ def invert_wg(
 
     im = model.copy(deep=True)
 
-    nthreads = get_parameter(kwargs, "threads", 4)  # noqa: F841
-    epsilon = get_parameter(kwargs, "epsilon", 1e-12)
-    do_wstacking = get_parameter(kwargs, "do_wstacking", True)
-    verbosity = get_parameter(kwargs, "verbosity", 0)  # noqa: F841
+    nthreads = kwargs.get("threads", 4)
+    epsilon = kwargs.get("epsilon", 1e-12)
+    do_wstacking = kwargs.get("do_wstacking", True)
+    verbosity = kwargs.get("verbosity", 0)
 
     bvis_shifted = bvis.copy(deep=True)
     bvis_shifted = shift_vis_to_image(
@@ -253,6 +257,7 @@ def invert_wg(
                     pixsize,
                     epsilon,
                     do_wstacking,
+                    nthreads=nthreads,
                 )
                 im["pixels"].data[0, pol] += dirty.T
             sum_weight[0, pol] += numpy.sum(weight_temp[pol, :, :].T)

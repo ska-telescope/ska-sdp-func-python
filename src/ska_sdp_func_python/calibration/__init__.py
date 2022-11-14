@@ -4,4 +4,5 @@
 """
 from .chain_calibration import *
 from .jones import *
+from .operations import *
 from .solvers import *

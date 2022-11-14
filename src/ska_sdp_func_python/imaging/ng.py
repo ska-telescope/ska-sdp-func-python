@@ -27,12 +27,10 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
 )
 from ska_sdp_datamodels.visibility.vis_model import Visibility
 
-# fix the below imports
-from src.ska_sdp_func_python.imaging.base import (
+from ska_sdp_func_python.imaging.base import (
     normalise_sumwt,
     shift_vis_to_image,
 )
-from src.ska_sdp_func_python.parameters import get_parameter
 
 log = logging.getLogger("func-python-logger")
 
@@ -55,10 +53,10 @@ def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     assert isinstance(model, Image), model
     assert model.image_acc.is_canonical()
 
-    nthreads = get_parameter(kwargs, "threads", 4)
-    epsilon = get_parameter(kwargs, "epsilon", 1e-12)
-    do_wstacking = get_parameter(kwargs, "do_wstacking", True)
-    verbosity = get_parameter(kwargs, "verbosity", 0)  # noqa: F841
+    nthreads = kwargs.get("threads", 4)
+    epsilon = kwargs.get("epsilon", 1e-12)
+    do_wstacking = kwargs.get("do_wstacking", True)
+    verbosity = kwargs.get("verbosity", 0)
 
     newbvis = bvis.copy(deep=True, zero=True)
 
@@ -107,6 +105,7 @@ def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
                 epsilon,
                 do_wstacking,
                 nthreads,
+                verbosity,
             ).T
     else:
         for vpol in range(vnpol):
@@ -168,14 +167,12 @@ def invert_ng(
     assert isinstance(model, Image), model
     assert model.image_acc.is_canonical()
 
-    # assert isinstance(bvis, Visibility), bvis
-
     im = model.copy(deep=True)
 
-    nthreads = get_parameter(kwargs, "threads", 4)
-    epsilon = get_parameter(kwargs, "epsilon", 1e-12)
-    do_wstacking = get_parameter(kwargs, "do_wstacking", True)
-    verbosity = get_parameter(kwargs, "verbosity", 0)
+    nthreads = kwargs.get("threads", 4)
+    epsilon = kwargs.get("epsilon", 1e-12)
+    do_wstacking = kwargs.get("do_wstacking", True)
+    verbosity = kwargs.get("verbosity", 0)
 
     sbvis = bvis.copy(deep=True)
     sbvis = shift_vis_to_image(sbvis, im, tangent=True, inverse=False)

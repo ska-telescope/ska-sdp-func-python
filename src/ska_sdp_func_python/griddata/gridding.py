@@ -40,11 +40,10 @@ import logging
 import numpy
 import numpy.testing
 from ska_sdp_datamodels.gridded_visibility.grid_vis_model import GridData
+from ska_sdp_datamodels.image.image_model import Image
 
-from ska_sdp_func_python.fourier_transforms import fft, ifft
-
-# fix the below imports
-from src.ska_sdp_func_python.image.operations import create_image_from_array
+from ska_sdp_func_python.fourier_transforms import fft
+from ska_sdp_func_python.fourier_transforms.fft_support import ifft
 
 log = logging.getLogger("func-python-logger")
 
@@ -56,6 +55,7 @@ def convolution_mapping_visibility(
 
     :param vis:
     :param griddata:
+    :param chan:
     :param cf:
     :param channel_tolerance:
     :return:
@@ -80,6 +80,9 @@ def spatial_mapping(griddata, u, v, w, cf=None):
     """Map u,v,w per row into coordinates in the grid
 
     :param cf:
+    :param u:
+    :param v:
+    :param w:
     :param griddata:
     :return:
     """
@@ -353,7 +356,7 @@ def griddata_merge_weights(gd_list):
 
     gd.griddata_acc.griddata_wcs.wcs.cdelt[3] = bandwidth
     gd.griddata_acc.griddata_wcs.wcs.crval[3] = frequency / len(gd_list)
-    return (gd, sumwt)
+    return gd, sumwt
 
 
 def griddata_visibility_reweight(
@@ -364,6 +367,7 @@ def griddata_visibility_reweight(
         https://casadocs.readthedocs.io/en/latest/notebooks/synthesis_imaging.html
 
     :param weighting:
+    :param robustness:
     :param vis: visibility to be reweighted
     :param griddata: GridData holding gridded weights
     :return: Visibility with imaging_weights corrected
@@ -577,11 +581,10 @@ def fft_griddata_to_image(griddata, template, gcf=None):
      If imaginary is true the data array is complex
 
     :param griddata:
+    :param template:
     :param gcf: Grid correction image
     :return:
     """
-    # assert isinstance(griddata, GridData)
-
     ny, nx = (
         griddata["pixels"].data.shape[-2],
         griddata["pixels"].data.shape[-1],
@@ -597,16 +600,17 @@ def fft_griddata_to_image(griddata, template, gcf=None):
             * float(ny)
         )
 
-    return create_image_from_array(
+    return Image.constructor(
         im_data,
-        template.image_acc.wcs,
         griddata.griddata_acc.polarisation_frame,
+        template.image_acc.wcs,
     )
 
 
 def fft_image_to_griddata(im, griddata, gcf=None):
     """Fill griddata with transform of im
 
+    :param im:
     :param griddata:
     :param gcf: Grid correction image
     :return:

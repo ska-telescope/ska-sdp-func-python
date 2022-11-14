@@ -8,14 +8,12 @@
 import logging
 
 import numpy
+from ska_sdp_datamodels.image.image_create import create_image
 
 from ska_sdp_func_python.image.taylor_terms import (
     calculate_image_frequency_moments,
 )
-
-# fix the below imports
-from src.ska_sdp_func_python.image.operations import create_empty_image_like
-from src.ska_sdp_func_python.imaging.base import normalise_sumwt
+from ska_sdp_func_python.imaging.base import normalise_sumwt
 
 log = logging.getLogger("func-python-logger")
 
@@ -31,8 +29,13 @@ def sum_invert_results(image_list):
         sumwt = image_list[0][1]
         return im, sumwt
 
-    im = create_empty_image_like(image_list[0][0])
-    sumwt = image_list[0][1].copy()
+    im = create_image(
+        image_list[0][0]["pixels"].data.shape[3],
+        numpy.deg2rad(numpy.abs(image_list[0][0].image_acc.wcs.wcs.cdelt[1])),
+        image_list[0][0].image_acc.phasecentre,
+    )
+
+    sumwt = image_list[0][1]
     sumwt *= 0.0
 
     for i, arg in enumerate(image_list):

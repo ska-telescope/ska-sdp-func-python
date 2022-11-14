@@ -47,6 +47,7 @@ from typing import List
 import numpy
 from astropy.convolution import Gaussian2DKernel, convolve_fft
 from astropy.modeling import fitting, models
+from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
@@ -62,19 +63,14 @@ from ska_sdp_func_python.image.gather_scatter import (
     image_gather_channels,
     image_scatter_channels,
 )
+from ska_sdp_func_python.image.operations import (
+    convert_clean_beam_to_degrees,
+    convert_clean_beam_to_pixels,
+)
 from ska_sdp_func_python.image.taylor_terms import (
     calculate_image_list_frequency_moments,
     calculate_image_list_from_frequency_taylor_terms,
 )
-
-# fix the below imports
-from src.ska_sdp_func_python.image.operations import (
-    convert_clean_beam_to_degrees,
-    convert_clean_beam_to_pixels,
-    create_empty_image_like,
-    create_image_from_array,
-)
-from src.ska_sdp_func_python.parameters import get_parameter
 
 log = logging.getLogger("func-python-logger")
 
@@ -135,7 +131,7 @@ def deconvolve_list(
 
     """
 
-    window_shape = get_parameter(kwargs, "window_shape", None)
+    window_shape = kwargs.get("window_shape", None)
     window_list = find_window_list(
         dirty_list, prefix, window_shape=window_shape
     )
@@ -146,7 +142,8 @@ def deconvolve_list(
 
     check_psf_peak(psf_list)
 
-    algorithm = get_parameter(kwargs, "algorithm", "msclean")
+    algorithm = kwargs.get("algorithm", "msclean")
+
     if algorithm == "msclean":
         comp_image_list, residual_image_list = msclean_kernel_list(
             dirty_list,
@@ -218,15 +215,15 @@ def radler_deconvolve_list(
     :return: component image_list
 
     """
-
     import radler as rd  # pylint: disable=import-error
 
-    algorithm = get_parameter(kwargs, "algorithm", "msclean")
-    n_iterations = get_parameter(kwargs, "niter", 500)
-    clean_threshold = get_parameter(kwargs, "threshold", 0.001)
-    loop_gain = get_parameter(kwargs, "gain", 0.7)
-    ms_scales = get_parameter(kwargs, "scales", [])
-    cellsize = get_parameter(kwargs, "cellsize", 0.005)
+    algorithm = kwargs.get("algorithm", "msclean")
+    n_iterations = kwargs.get("niter", 500)
+    clean_threshold = kwargs.get("threshold", 0.001)
+    loop_gain = kwargs.get("gain", 0.7)
+    ms_scales = kwargs.get("scales", [])
+    cellsize = kwargs.get("cellsize", 0.005)
+
     settings = rd.Settings()
     settings.trimmed_image_width = dirty_list[0].pixels.shape[2]
     settings.trimmed_image_height = dirty_list[0].pixels.shape[3]
@@ -270,7 +267,13 @@ def radler_deconvolve_list(
         reached_threshold = False
         reached_threshold = radler_object.perform(reached_threshold, 0)
 
-        x_im = create_empty_image_like(dirty)
+        x_im = create_image(
+            dirty["pixels"].data.shape[3],
+            cellsize=numpy.deg2rad(
+                numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
+            ),
+            phasecentre=dirty.image_acc.phasecentre,
+        )
         x_im["pixels"].data = numpy.expand_dims(restored_radler, axis=(0, 1))
         comp_image_list.append(x_im)
 
@@ -324,7 +327,7 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
                 % prefix
             )
         elif window_shape == "no_edge":
-            edge = get_parameter(kwargs, "window_edge", 16)
+            edge = kwargs.get("window_edge", 16)
             nx = dirty["pixels"].shape[3]
             ny = dirty["pixels"].shape[2]
             window_array = numpy.zeros_like(dirty["pixels"].data)
@@ -340,7 +343,7 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
                 "Window shape %s is not recognized" % window_shape
             )
 
-        mask = get_parameter(kwargs, "mask", None)
+        mask = kwargs.get("mask", None)
         if isinstance(mask, Image):
             if window_array is not None:
                 log.warning(
@@ -349,10 +352,10 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
                 )
                 window_array = mask["pixels"].data
         if window_array is not None:
-            window_image = create_image_from_array(
+            window_image = Image.constructor(
                 window_array,
-                dirty.image_acc.wcs,
                 dirty.image_acc.polarisation_frame,
+                dirty.image_acc.wcs,
             )
         else:
             window_image = None
@@ -518,15 +521,15 @@ def complex_hogbom_kernel_list(
                     )
                 if pol == 2:
                     continue
-        comp_image = create_image_from_array(
+        comp_image = Image.constructor(
             comp_array,
+            PolarisationFrame("stokesIQUV"),
             dirty.image_acc.wcs,
-            polarisation_frame=PolarisationFrame("stokesIQUV"),
         )
-        residual_image = create_image_from_array(
+        residual_image = Image.constructor(
             residual_array,
+            PolarisationFrame("stokesIQUV"),
             dirty.image_acc.wcs,
-            polarisation_frame=PolarisationFrame("stokesIQUV"),
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)
@@ -546,19 +549,19 @@ def common_arguments(**kwargs):
     :param kwargs:
     :return: fracthresh, gain, niter, thresh, scales
     """
-    gain = get_parameter(kwargs, "gain", 0.1)
+    gain = kwargs.get("gain", 0.1)
     if gain <= 0.0 or gain >= 2.0:
         raise ValueError("Loop gain must be between 0 and 2")
-    thresh = get_parameter(kwargs, "threshold", 0.0)
+    thresh = kwargs.get("threshold", 0.0)
     if thresh < 0.0:
         raise ValueError("Threshold must be positive or zero")
-    niter = get_parameter(kwargs, "niter", 100)
+    niter = kwargs.get("niter", 100)
     if niter < 0:
         raise ValueError("niter must be greater than zero")
-    fracthresh = get_parameter(kwargs, "fractional_threshold", 0.01)
+    fracthresh = kwargs.get("fractional_threshold", 0.01)
     if fracthresh < 0.0 or fracthresh > 1.0:
         raise ValueError("Fractional threshold should be in range 0.0, 1.0")
-    scales = get_parameter(kwargs, "scales", [0, 3, 10, 30])
+    scales = kwargs.get("scales", [0, 3, 10, 30])
 
     return fracthresh, gain, niter, thresh, scales
 
@@ -643,13 +646,15 @@ def hogbom_kernel_list(
                     "hogbom_kernel_list %s: Skipping pol %d, channel %d"
                     % (prefix, pol, channel)
                 )
-        comp_image = create_image_from_array(
-            comp_array, dirty.image_acc.wcs, dirty.image_acc.polarisation_frame
-        )
-        residual_image = create_image_from_array(
-            residual_array,
-            dirty.image_acc.wcs,
+        comp_image = Image.constructor(
+            comp_array,
             dirty.image_acc.polarisation_frame,
+            dirty.image_acc.wcs,
+        )
+        residual_image = Image.constructor(
+            residual_array,
+            dirty.image_acc.polarisation_frame,
+            dirty.image_acc.wcs,
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)
@@ -695,13 +700,15 @@ def mmclean_kernel_list(
 
     """
 
-    findpeak = get_parameter(kwargs, "findpeak", "RASCIL")
+    findpeak = kwargs.get("findpeak", "RASCIL")
+
     log.info(
         "mmclean_kernel_list %s: "
         "Starting Multi-scale multi-frequency clean of each polarisation separately"
         % prefix
     )
-    nmoment = get_parameter(kwargs, "nmoment", 3)
+    nmoment = kwargs.get("nmoment", 3)
+
     if not nmoment >= 1:
         raise ValueError(
             "Number of frequency moments must be greater than or equal to one"
@@ -757,7 +764,8 @@ def mmclean_kernel_list(
 
     fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
 
-    gain = get_parameter(kwargs, "gain", 0.7)
+    gain = kwargs.get("gain", 0.7)
+
     if not 0.0 < gain < 2.0:
         raise ValueError("Loop gain must be between 0 and 2")
 
@@ -816,15 +824,15 @@ def mmclean_kernel_list(
                 )
         else:
             log.info("deconvolve_cube %s: Skipping pol %d" % (prefix, pol))
-    comp_taylor = create_image_from_array(
+    comp_taylor = Image.constructor(
         comp_array,
-        dirty_taylor.image_acc.wcs,
         dirty_taylor.image_acc.polarisation_frame,
+        dirty_taylor.image_acc.wcs,
     )
-    residual_taylor = create_image_from_array(
+    residual_taylor = Image.constructor(
         residual_array,
-        dirty_taylor.image_acc.wcs,
         dirty_taylor.image_acc.polarisation_frame,
+        dirty_taylor.image_acc.wcs,
     )
     log.info(
         "mmclean_kernel_list %s: calculating spectral image lists from frequency moment images"
@@ -937,13 +945,15 @@ def msclean_kernel_list(
                     "msclean_kernel_list %s: Skipping pol %d, channel %d"
                     % (prefix, pol, channel)
                 )
-        comp_image = create_image_from_array(
-            comp_array, dirty.image_acc.wcs, dirty.image_acc.polarisation_frame
-        )
-        residual_image = create_image_from_array(
-            residual_array,
-            dirty.image_acc.wcs,
+        comp_image = Image.constructor(
+            comp_array,
             dirty.image_acc.polarisation_frame,
+            dirty.image_acc.wcs,
+        )
+        residual_image = Image.constructor(
+            residual_array,
+            dirty.image_acc.polarisation_frame,
+            dirty.image_acc.wcs,
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)

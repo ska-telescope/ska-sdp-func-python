@@ -25,14 +25,10 @@ from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_func_python.image.taylor_terms import (
     calculate_frequency_taylor_terms_from_image_list,
 )
-
-# fix the below imports
-from src.ska_sdp_func_python import (
-    copy_skycomponent,
+from ska_sdp_func_python.skycomponent.operations import (
     find_skycomponents,
     fit_skycomponent,
 )
-from src.ska_sdp_func_python.parameters import get_parameter
 
 log = logging.getLogger("func-python-logger")
 
@@ -77,7 +73,7 @@ def calculate_skycomponent_list_taylor_terms(
             taylor_term_data = numpy.zeros([1, sc.polarisation_frame.npol])
             for chan in range(nchan):
                 taylor_term_data[0] += pinv[moment, chan] * sc.flux[chan, 0]
-            taylor_term_sc = copy_skycomponent(sc)
+            taylor_term_sc = sc.copy()
             taylor_term_sc.flux = taylor_term_data
             taylor_term_sc.frequency = reference_frequency
             taylor_term_sc_list.append(taylor_term_sc)
@@ -113,7 +109,7 @@ def find_skycomponents_frequency_taylor_terms(
     moment0_list = calculate_frequency_taylor_terms_from_image_list(
         dirty_list, nmoment=1, reference_frequency=reference_frequency
     )
-    threshold = get_parameter(kwargs, "component_threshold", numpy.inf)
+    threshold = kwargs.get("component_threshold", numpy.inf)
     try:
         moment0_skycomponents = find_skycomponents(
             moment0_list[0], threshold=threshold
@@ -134,7 +130,7 @@ def find_skycomponents_frequency_taylor_terms(
 
     found_component_list = []
     for isc, sc in enumerate(moment0_skycomponents):
-        found_component = copy_skycomponent(sc)
+        found_component = sc.copy()
         found_component.frequency = frequency
         found_component.flux = numpy.array(
             [
@@ -177,7 +173,7 @@ def interpolate_skycomponents_frequency(
     # Now fit in frequency and keep the model
     newsc_list = []
     for sc in sc_list:
-        newsc = copy_skycomponent(sc)
+        newsc = sc.copy()
         x = (frequency - reference_frequency) / reference_frequency
         y = sc.flux
         coeffs = polynomial.polyfit(x, y, nmoment - 1)
@@ -201,7 +197,7 @@ def transpose_skycomponents_to_channels(
     for chan in range(nchan):
         chan_sc_list = []
         for comp in sc_list:
-            newcomp = copy_skycomponent(comp)
+            newcomp = comp.copy()
             newcomp.frequency = numpy.array([comp.frequency[chan]])
             newcomp.flux = comp.flux[chan, :][numpy.newaxis, :]
             chan_sc_list.append(newcomp)
@@ -224,7 +220,7 @@ def gather_skycomponents_from_channels(
     nchan = len(sc_list)
     newsc_list = []
     for source in range(nsource):
-        newcomp = copy_skycomponent(sc_list[0][source])
+        newcomp = sc_list[0][source].copy()
         flux = numpy.array(
             [sc_list[chan][source].flux[0, :] for chan in range(nchan)]
         )

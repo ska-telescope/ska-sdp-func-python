@@ -10,3 +10,5 @@ from .cleaners import *
 from .deconvolution import *
 from .gather_scatter import *
 from .iterators import *
+from .operations import *
+from .taylor_terms import *

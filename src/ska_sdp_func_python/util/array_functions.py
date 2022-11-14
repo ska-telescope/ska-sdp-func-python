@@ -1,6 +1,7 @@
 # pylint: disable=invalid-name, unused-variable
 # pylint: disable=import-outside-toplevel, import-error
 # pylint: disable=too-many-arguments, too-many-locals
+# flake8: noqa: E203
 """Useful array functions.
 
 """
