@@ -61,7 +61,6 @@ def apply_gaintable(
             # Lookup the gain for this set of visibilities
             gain = gt["gain"].data[row]
             cgain = numpy.conjugate(gt["gain"].data[row])
-            gainwt = gt["weight"].data[row]
 
             # The shape of the mueller matrix is
             nant, nchan, nrec, _ = gain.shape

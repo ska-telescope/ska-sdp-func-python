@@ -34,7 +34,7 @@ from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility.vis_model import Visibility
 
 # fix imports below
-from ska_sdp_func.dft import dft_point_v00
+from ska_sdp_func.visibility import dft_point_v00
 
 from ska_sdp_func_python.util.coordinate_support import skycoord_to_lmn
 from ska_sdp_func_python.visibility.base import calculate_visibility_phasor
@@ -360,7 +360,7 @@ def idft_visibility_skycomponent(
 
     for comp in sc:
         # assert isinstance(comp, SkyComponent), comp
-        newcomp = copy_skycomponent(comp)
+        newcomp = comp.copy()
 
         phasor = numpy.conjugate(
             calculate_visibility_phasor(comp.direction, vis)
