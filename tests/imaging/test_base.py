@@ -31,7 +31,7 @@ from ska_sdp_func_python.imaging.base import (
 log = logging.getLogger("func-python-logger")
 
 
-@pytest.fixture(scope="module", name="result_base")
+@pytest.fixture(scope="module", name="input_params")
 def base_fixture():
     lowcore = create_named_configuration("LOWBD2-CORE")
     times = (numpy.pi / 43200.0) * numpy.arange(0.0, 300.0, 30.0)
@@ -71,13 +71,13 @@ def base_fixture():
     return params
 
 
-def test_shift_vis_to_image(result_base):
+def test_shift_vis_to_image(input_params):
     """Unit tests for shift_vis_to_image function:
     check that the phasecentre does change
     """
-    vis = result_base["visibility"]
+    vis = input_params["visibility"]
     old_pc = vis.attrs["phasecentre"]
-    shifted_vis = shift_vis_to_image(vis, result_base["image"])
+    shifted_vis = shift_vis_to_image(vis, input_params["image"])
     expected_phase_centre = SkyCoord(
         ra=-180.0 * units.deg,
         dec=+35.0 * units.deg,
@@ -90,24 +90,24 @@ def test_shift_vis_to_image(result_base):
 
 
 @pytest.mark.skip(reason="gcfcf examples needed for predict_awprojection")
-def test_predict_awprojection(result_base):
-    vis = result_base["visibility"]
+def test_predict_awprojection(input_params):
+    vis = input_params["visibility"]
     svis = predict_awprojection(
         vis,
-        result_base["image"],
+        input_params["image"],
     )
 
     assert vis != svis
 
 
-def test_fill_vis_for_psf(result_base):
+def test_fill_vis_for_psf(input_params):
     """Unit tests for fill_vis_for_psf function"""
-    svis = fill_vis_for_psf(result_base["visibility"])
+    svis = fill_vis_for_psf(input_params["visibility"])
 
     assert (svis["vis"].data[...] == 1.0 + 0.0j).all()
 
 
-def test_create_image_from_visibility(result_base):
+def test_create_image_from_visibility(input_params):
     """Unit tests for create_image_from_visibility function:
     check image created here is the same as image in result_base
     """
@@ -117,20 +117,20 @@ def test_create_image_from_visibility(result_base):
         frame="icrs",
         equinox="J2000",
     )
-    expected_image = result_base["image"]
+    expected_image = input_params["image"]
     new_image = create_image_from_visibility(
-        vis=result_base["visibility"],
+        vis=input_params["visibility"],
         phasecentre=phase_centre,
     )
 
     assert (new_image == expected_image).all()
 
 
-def test_normalise_sumwt(result_base):
+def test_normalise_sumwt(input_params):
     """Unit tests for normalise_sumwt function:
     check image created here is the same as image in result_base
     """
-    image = result_base["image"]
+    image = input_params["image"]
     sumwt = image
     norm_image = normalise_sumwt(image, sumwt)
 
@@ -138,18 +138,18 @@ def test_normalise_sumwt(result_base):
 
 
 @pytest.mark.skip(reason="Need more info on gcfcf values")
-def test_invert_awprojection(result_base):
+def test_invert_awprojection(input_params):
     """Unit tests for normalise_sumwt function:
     check image created here is the same as image in result_base
     """
-    vis = result_base["visibility"]
-    image = result_base["image"]
+    vis = input_params["visibility"]
+    image = input_params["image"]
     inverted_im = invert_awprojection(vis, image, gcfcf="")
 
     assert inverted_im != image
 
 
-def test_visibility_recentre(result_base):
+def test_visibility_recentre():
     """Unit tests for normalise_sumwt function:
     check image created here is the same as image in result_base
     """

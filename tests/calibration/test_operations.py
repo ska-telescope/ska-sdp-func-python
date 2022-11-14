@@ -28,8 +28,8 @@ from ska_sdp_func_python.calibration.operations import (
 log = logging.getLogger("func-python-logger")
 
 
-@pytest.fixture(scope="module", name="results_operations")
-def operations_fixture():
+@pytest.fixture(scope="module", name="input_params")
+def input_vis_gt():
     """Fixture for the operations unit tests"""
     # Create a visibility object
     lowcore = create_named_configuration("LOWBD2-CORE")
@@ -77,59 +77,59 @@ def operations_fixture():
     return parameters
 
 
-def test_apply_gaintable(results_operations):
+def test_apply_gaintable(input_params):
     """
     Unit test for the apply_gaintable function
     """
 
-    vis = results_operations["visibility2"]
-    new_vis = apply_gaintable(
-        results_operations["visibility1"],
-        results_operations["gaintable2"],
+    vis = input_params["visibility2"]
+    result = apply_gaintable(
+        input_params["visibility1"],
+        input_params["gaintable2"],
         use_flags=numpy.ones((1, 1, 1, 1)),
     )
-    assert (new_vis["vis"].data == vis["vis"].data).all()
-    assert (new_vis["weight"].data == vis["weight"].data / 2).all()
+    assert (result["vis"].data == vis["vis"].data).all()
+    assert (result["weight"].data == vis["weight"].data / 2).all()
 
 
-def test_multiply_gaintables(results_operations):
+def test_multiply_gaintables(input_params):
     """
     Unit test for the multiply_gaintable function
     """
     gt = create_gaintable_from_visibility(  # pylint: disable=invalid-name
-        results_operations["visibility1"]
+        input_params["visibility1"]
     )
-    dgt = create_gaintable_from_visibility(results_operations["visibility2"])
+    dgt = create_gaintable_from_visibility(input_params["visibility2"])
 
-    gt_multiplied = multiply_gaintables(gt, dgt)
+    result = multiply_gaintables(gt, dgt)
 
     assert (
-        gt_multiplied["gain"].data
+        result["gain"].data
         == numpy.einsum(
             "...ik,...ij->...kj", gt["gain"].data, dgt["gain"].data
         )
     ).all()
     assert (
-        gt_multiplied["weight"].data
+        result["weight"].data
         == (gt["weight"].data * dgt["weight"].data)
     ).all()
 
 
-def test_concatenate_gaintables(results_operations):
+def test_concatenate_gaintables(input_params):
     """
     Unit test for the multiply_gaintable function
     """
 
     gt_list = [
-        results_operations["gaintable1"],
-        results_operations["gaintable2"],
+        input_params["gaintable1"],
+        input_params["gaintable2"],
     ]
 
-    gt_concat = concatenate_gaintables(gt_list)
+    result = concatenate_gaintables(gt_list)
 
     assert (len(gt_list[0]) + len(gt_list[1])) == (
-        len(results_operations["gaintable1"])
-        + len(results_operations["gaintable2"])
+        len(input_params["gaintable1"])
+        + len(input_params["gaintable2"])
     )
-    assert len(gt_concat) == len(results_operations["gaintable1"])
-    assert len(gt_concat) == len(results_operations["gaintable2"])
+    assert len(result) == len(input_params["gaintable1"])
+    assert len(result) == len(input_params["gaintable2"])

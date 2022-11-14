@@ -38,6 +38,7 @@ from ska_sdp_func_python.skycomponent.operations import (
 # )
 # from src.ska_sdp_func_python.imaging.primary_beams import create_pb_generic
 
+pytest.skip(allow_module_level=True, reason="FixMe")
 
 log = logging.getLogger("func-python-logger")
 
@@ -214,7 +215,6 @@ def _invert_base(
     )
 
 
-@pytest.mark.skip(reason="Image pol is empty")
 def test_predict_visibility(result_imaging):
     _predict_base(
         result_imaging["visibility"],
@@ -238,7 +238,6 @@ def test_predict_visibility_point(result_imaging):
     )
 
 
-@pytest.mark.skip(reason="Image pol is empty")
 def test_invert_visibility(result_imaging):
     _invert_base(
         vis=result_imaging["visibility"],
@@ -252,7 +251,6 @@ def test_invert_visibility(result_imaging):
     )
 
 
-@pytest.mark.skip(reason="Image pol is empty")
 def test_invert_visibility_spec_I(result_imaging):
     _invert_base(
         vis=result_imaging["visibility"],

@@ -22,7 +22,7 @@ from ska_sdp_datamodels.visibility.vis_create import create_visibility
 
 from ska_sdp_func_python.imaging.wg import invert_wg, predict_wg
 
-pytestmark = pytest.skip(allow_module_level=True, reason="Imports for WAGG")
+pytest.skip(allow_module_level=True, reason="Imports for WAGG")
 
 log = logging.getLogger("func-python-logger")
 
