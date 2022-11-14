@@ -40,7 +40,8 @@ import logging
 import numpy
 import numpy.testing
 from ska_sdp_datamodels.gridded_visibility.grid_vis_model import GridData
-from ska_sdp_datamodels.image.image_create import create_image
+from ska_sdp_datamodels.image.image_model import Image
+from ska_sdp_func_python.fourier_transforms.fft_support import ifft
 
 from ska_sdp_func_python.fourier_transforms import fft
 
@@ -584,12 +585,25 @@ def fft_griddata_to_image(griddata, template, gcf=None):
     :param gcf: Grid correction image
     :return:
     """
-    nx = griddata["pixels"].data.shape[-1]
+    ny, nx = (
+        griddata["pixels"].data.shape[-2],
+        griddata["pixels"].data.shape[-1],
+    )
 
-    return create_image(
-        npixel=nx,
-        cellsize=numpy.deg2rad(numpy.abs(template.image_acc.wcs.wcs.cdelt[1])),
-        phasecentre=template.image_acc.phasecentre,
+    if gcf is None:
+        im_data = ifft(griddata["pixels"].data) * float(nx) * float(ny)
+    else:
+        im_data = (
+                ifft(griddata["pixels"].data)
+                * gcf["pixels"].data
+                * float(nx)
+                * float(ny)
+        )
+
+    return Image.constructor(
+        im_data,
+        griddata.griddata_acc.polarisation_frame,
+        template.image_acc.wcs,
     )
 
 

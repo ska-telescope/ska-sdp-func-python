@@ -49,6 +49,7 @@ from astropy.convolution import Gaussian2DKernel, convolve_fft
 from astropy.modeling import fitting, models
 from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
+from ska_sdp_datamodels.science_data_model.polarisation_model import PolarisationFrame
 
 from ska_sdp_func_python.image.cleaners import (
     hogbom,
@@ -349,12 +350,10 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
                 )
                 window_array = mask["pixels"].data
         if window_array is not None:
-            window_image = create_image(
-                window_array.shape[3],
-                cellsize=numpy.deg2rad(
-                    numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
-                ),
-                phasecentre=dirty.image_acc.phasecentre,
+            window_image = Image.constructor(
+                window_array,
+                dirty.image_acc.polarisation_frame,
+                dirty.image_acc.wcs,
             )
         else:
             window_image = None
@@ -520,19 +519,16 @@ def complex_hogbom_kernel_list(
                     )
                 if pol == 2:
                     continue
-        comp_image = create_image(
-            psf["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(
-                numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
-            ),
-            phasecentre=dirty.image_acc.phasecentre,
+        comp_image = Image.constructor(
+            comp_array,
+            PolarisationFrame("stokesIQUV"),
+            dirty.image_acc.wcs,
         )
-        residual_image = create_image(
-            psf["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(
-                numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
-            ),
-            phasecentre=dirty.image_acc.phasecentre,
+        residual_image = Image.constructor(
+            residual_array,
+            PolarisationFrame("stokesIQUV"),
+            dirty.image_acc.wcs,
+
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)
@@ -649,19 +645,15 @@ def hogbom_kernel_list(
                     "hogbom_kernel_list %s: Skipping pol %d, channel %d"
                     % (prefix, pol, channel)
                 )
-        comp_image = create_image(
-            dirty["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(
-                numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
-            ),
-            phasecentre=dirty.image_acc.phasecentre,
+        comp_image = Image.constructor(
+            comp_array,
+            dirty.image_acc.polarisation_frame,
+            dirty.image_acc.wcs,
         )
-        residual_image = create_image(
-            dirty["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(
-                numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
-            ),
-            phasecentre=dirty.image_acc.phasecentre,
+        residual_image = Image.constructor(
+            residual_array,
+            dirty.image_acc.polarisation_frame,
+            dirty.image_acc.wcs,
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)
@@ -831,19 +823,15 @@ def mmclean_kernel_list(
                 )
         else:
             log.info("deconvolve_cube %s: Skipping pol %d" % (prefix, pol))
-    comp_taylor = create_image(
-        psf_taylor["pixels"].data.shape[3],
-        cellsize=numpy.deg2rad(
-            numpy.abs(dirty_taylor.image_acc.wcs.wcs.cdelt[1])
-        ),
-        phasecentre=dirty_taylor.image_acc.phasecentre,
+    comp_taylor = Image.constructor(
+        comp_array,
+        dirty_taylor.image_acc.polarisation_frame,
+        dirty_taylor.image_acc.wcs,
     )
-    residual_taylor = create_image(
-        psf_taylor["pixels"].data.shape[3],
-        cellsize=numpy.deg2rad(
-            numpy.abs(dirty_taylor.image_acc.wcs.wcs.cdelt[1])
-        ),
-        phasecentre=dirty_taylor.image_acc.phasecentre,
+    residual_taylor = Image.constructor(
+        residual_array,
+        dirty_taylor.image_acc.polarisation_frame,
+        dirty_taylor.image_acc.wcs,
     )
     log.info(
         "mmclean_kernel_list %s: calculating spectral image lists from frequency moment images"
@@ -956,19 +944,15 @@ def msclean_kernel_list(
                     "msclean_kernel_list %s: Skipping pol %d, channel %d"
                     % (prefix, pol, channel)
                 )
-        comp_image = create_image(
-            dirty["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(
-                numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
-            ),
-            phasecentre=dirty.image_acc.phasecentre,
+        comp_image = Image.constructor(
+                comp_array,
+                dirty.image_acc.polarisation_frame,
+                dirty.image_acc.wcs,
         )
-        residual_image = create_image(
-            dirty["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(
-                numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
-            ),
-            phasecentre=dirty.image_acc.phasecentre,
+        residual_image = Image.constructor(
+                residual_array,
+                dirty.image_acc.polarisation_frame,
+                dirty.image_acc.wcs,
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)

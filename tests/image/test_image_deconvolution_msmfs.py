@@ -14,6 +14,7 @@ from ska_sdp_datamodels.configuration import (
     decimate_configuration,
 )
 from ska_sdp_datamodels.image.image_create import create_image
+from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
@@ -98,10 +99,10 @@ def deconvolution_msmfs_fixture():
     psf = image_scatter_channels(psf)
     window = numpy.ones(shape=model["pixels"].shape, dtype=bool)
     window[..., 65:192, 65:192] = True
-    innerquarter = create_image(
-        npixel=512,
-        cellsize=0.001,
-        phasecentre=phasecentre,
+    innerquarter = Image.constructor(
+        window,
+        polarisation_frame=PolarisationFrame("stokesI"),
+        wcs=model.image_acc.wcs,
     )
     innerquarter = image_scatter_channels(innerquarter)
     # sensitivity = create_pb(model, "LOW")
