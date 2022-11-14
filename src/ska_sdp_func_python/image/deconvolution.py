@@ -524,14 +524,14 @@ def complex_hogbom_kernel_list(
                 if pol == 2:
                     continue
         comp_image = create_image(
-            comp_array[3],
+            psf["pixels"].data.shape[3],
             cellsize=numpy.deg2rad(
                 numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
             ),
             phasecentre=dirty.image_acc.phasecentre,
         )
         residual_image = create_image(
-            residual_array[3],
+            psf["pixels"].data.shape[3],
             cellsize=numpy.deg2rad(
                 numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
             ),
@@ -835,14 +835,14 @@ def mmclean_kernel_list(
         else:
             log.info("deconvolve_cube %s: Skipping pol %d" % (prefix, pol))
     comp_taylor = create_image(
-        comp_array[3],
+        psf_taylor["pixels"].data.shape[3],
         cellsize=numpy.deg2rad(
             numpy.abs(dirty_taylor.image_acc.wcs.wcs.cdelt[1])
         ),
         phasecentre=dirty_taylor.image_acc.phasecentre,
     )
     residual_taylor = create_image(
-        residual_array[3],
+        psf_taylor["pixels"].data.shape[3],
         cellsize=numpy.deg2rad(
             numpy.abs(dirty_taylor.image_acc.wcs.wcs.cdelt[1])
         ),
@@ -960,14 +960,14 @@ def msclean_kernel_list(
                     % (prefix, pol, channel)
                 )
         comp_image = create_image(
-            comp_array[3],
+            dirty["pixels"].data.shape[3],
             cellsize=numpy.deg2rad(
                 numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
             ),
             phasecentre=dirty.image_acc.phasecentre,
         )
         residual_image = create_image(
-            residual_array[3],
+            dirty["pixels"].data.shape[3],
             cellsize=numpy.deg2rad(
                 numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
             ),

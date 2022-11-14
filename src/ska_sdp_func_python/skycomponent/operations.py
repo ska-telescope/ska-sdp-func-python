@@ -867,7 +867,7 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
     image_shape = im["pixels"].data[0, 0].shape
     # isotropic at the moment!
 
-    newsc = SkyComponent.copy(sc)
+    newsc = sc.copy()
 
     try:
         p_init = models.Gaussian2D(

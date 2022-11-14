@@ -64,7 +64,7 @@ def skymodel_predict_calibrate(
             # First do the DFT for the components
             if len(skymodel.components) > 0:
                 if skymodel.mask is not None or pb is not None:
-                    comps = SkyComponent.copy(skymodel.components)
+                    comps = skymodel.components.copy()
                     if skymodel.mask is not None:
                         comps = apply_beam_to_skycomponent(
                             comps, skymodel.mask
@@ -115,7 +115,7 @@ def skymodel_predict_calibrate(
         # First do the DFT or the components
         if len(skymodel.components) > 0:
             if skymodel.mask is not None:
-                comps = SkyComponent.copy(skymodel.components)
+                comps = skymodel.components.copy()
                 comps = apply_beam_to_skycomponent(comps, skymodel.mask)
                 v = dft_skycomponent_visibility(v, comps, **kwargs)
             else:

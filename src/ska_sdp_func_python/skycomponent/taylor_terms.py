@@ -73,7 +73,7 @@ def calculate_skycomponent_list_taylor_terms(
             taylor_term_data = numpy.zeros([1, sc.polarisation_frame.npol])
             for chan in range(nchan):
                 taylor_term_data[0] += pinv[moment, chan] * sc.flux[chan, 0]
-            taylor_term_sc = SkyComponent.copy(sc)
+            taylor_term_sc = sc.copy()
             taylor_term_sc.flux = taylor_term_data
             taylor_term_sc.frequency = reference_frequency
             taylor_term_sc_list.append(taylor_term_sc)
@@ -130,7 +130,7 @@ def find_skycomponents_frequency_taylor_terms(
 
     found_component_list = []
     for isc, sc in enumerate(moment0_skycomponents):
-        found_component = SkyComponent.copy(sc)
+        found_component = sc.copy()
         found_component.frequency = frequency
         found_component.flux = numpy.array(
             [
@@ -173,7 +173,7 @@ def interpolate_skycomponents_frequency(
     # Now fit in frequency and keep the model
     newsc_list = []
     for sc in sc_list:
-        newsc = SkyComponent.copy(sc)
+        newsc = sc.copy()
         x = (frequency - reference_frequency) / reference_frequency
         y = sc.flux
         coeffs = polynomial.polyfit(x, y, nmoment - 1)
@@ -197,7 +197,7 @@ def transpose_skycomponents_to_channels(
     for chan in range(nchan):
         chan_sc_list = []
         for comp in sc_list:
-            newcomp = SkyComponent.copy(comp)
+            newcomp = comp.copy()
             newcomp.frequency = numpy.array([comp.frequency[chan]])
             newcomp.flux = comp.flux[chan, :][numpy.newaxis, :]
             chan_sc_list.append(newcomp)
@@ -220,7 +220,7 @@ def gather_skycomponents_from_channels(
     nchan = len(sc_list)
     newsc_list = []
     for source in range(nsource):
-        newcomp = SkyComponent.copy(sc_list[0][source])
+        newcomp = sc_list[0][source].copy()
         flux = numpy.array(
             [sc_list[chan][source].flux[0, :] for chan in range(nchan)]
         )
