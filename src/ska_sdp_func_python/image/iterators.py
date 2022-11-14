@@ -14,7 +14,6 @@ import logging
 import numpy
 from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
-from ska_sdp_datamodels.image.image_model import Image
 
 from ska_sdp_func_python.util.array_functions import tukey_filter
 
@@ -228,5 +227,4 @@ def image_channel_iter(im: Image, subimages=1) -> collections.abc.Iterable:
             im["pixels"].data[channel:channel_max, ...],
             im.image_acc.polarisation_frame,
             wcs,
-
         )

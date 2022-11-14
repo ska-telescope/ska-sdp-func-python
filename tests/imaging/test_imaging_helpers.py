@@ -93,8 +93,8 @@ def test_sum_predict_results(input_params):
     sum_results = sum_predict_results(input_params["visibility_list"])
 
     assert (
-            sum_results["vis"].data
-            == 3 * input_params["visibility_list"][0]["vis"].data
+        sum_results["vis"].data
+        == 3 * input_params["visibility_list"][0]["vis"].data
     ).all()
 
 

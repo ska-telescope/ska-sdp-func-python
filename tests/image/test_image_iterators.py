@@ -178,9 +178,10 @@ def test_raster_exception(input_params):
 
 
 @pytest.mark.skip("Test uses image from file")
-def test_channelise(result_iterators):
+def test_channelise():
     """Unit test for the image_channel_iter function"""
-    m31cube = create_test_image(
+    # pylint: disable=E0602
+    m31cube = create_test_image(  # noqa: F821
         frequency=numpy.linspace(1e8, 1.1e8, 128),
         polarisation_frame=PolarisationFrame("stokesI"),
     )
@@ -188,4 +189,3 @@ def test_channelise(result_iterators):
     for subimages in [128, 16, 8, 2, 1]:
         for slab in image_channel_iter(m31cube, subimages=subimages):
             assert slab["pixels"].data.shape[0] == 128 // subimages
-

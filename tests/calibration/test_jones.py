@@ -20,43 +20,39 @@ log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
 
-DIAGONAL = numpy.array(
-    [[1.0 + 0.0j, 0.0 + 0.0j], [0.0 + 0.0j, 1.0 + 0.0]]
-)
+DIAGONAL = numpy.array([[1.0 + 0.0j, 0.0 + 0.0j], [0.0 + 0.0j, 1.0 + 0.0]])
 SKEW = numpy.array([[0.0 + 0.0j, 1.0 + 0.0j], [1.0 + 0.0j, 0.0 + 0.0]])
-LEAKAGE = numpy.array(
-    [[1.0 + 0.0j, 0.0 + 0.1j], [0.0 - 0.1j, 1.0 + 0.0]]
-)
+LEAKAGE = numpy.array([[1.0 + 0.0j, 0.0 + 0.1j], [0.0 - 0.1j, 1.0 + 0.0]])
 UNBALANCED = numpy.array(
     [[100.0 + 0.0j, 0.0 + 0.0j], [0.0 + 0.0j, 0.03 + 0.0]]
 )
 
 
-@pytest.mark.parametrize("flux, jones_matrix", [
-    (numpy.array([100.0, 0.0, 0.0, 0.0]), DIAGONAL),
-    (numpy.array([100.0, 100.0, 0.0, 0.0]), DIAGONAL),
-    (numpy.array([100.0, 0.0, 100.0, 0.0]), DIAGONAL),
-    (numpy.array([100.0, 0.0, 0.0, 100.0]), DIAGONAL),
-    (numpy.array([100.0, 1.0, -10.0, +60.0]), DIAGONAL),
-
-    (numpy.array([100.0, 0.0, 0.0, 0.0]), SKEW),
-    (numpy.array([100.0, 100.0, 0.0, 0.0]), SKEW),
-    (numpy.array([100.0, 0.0, 100.0, 0.0]), SKEW),
-    (numpy.array([100.0, 0.0, 0.0, 100.0]), SKEW),
-    (numpy.array([100.0, 1.0, -10.0, +60.0]), SKEW),
-
-    (numpy.array([100.0, 0.0, 0.0, 0.0]), LEAKAGE),
-    (numpy.array([100.0, 100.0, 0.0, 0.0]), LEAKAGE),
-    (numpy.array([100.0, 0.0, 100.0, 0.0]), LEAKAGE),
-    (numpy.array([100.0, 0.0, 0.0, 100.0]), LEAKAGE),
-    (numpy.array([100.0, 1.0, -10.0, +60.0]), LEAKAGE),
-
-    (numpy.array([100.0, 0.0, 0.0, 0.0]), UNBALANCED),
-    (numpy.array([100.0, 100.0, 0.0, 0.0]), UNBALANCED),
-    (numpy.array([100.0, 0.0, 100.0, 0.0]), UNBALANCED),
-    (numpy.array([100.0, 0.0, 0.0, 100.0]), UNBALANCED),
-    (numpy.array([100.0, 1.0, -10.0, +60.0]), UNBALANCED),
-])
+@pytest.mark.parametrize(
+    "flux, jones_matrix",
+    [
+        (numpy.array([100.0, 0.0, 0.0, 0.0]), DIAGONAL),
+        (numpy.array([100.0, 100.0, 0.0, 0.0]), DIAGONAL),
+        (numpy.array([100.0, 0.0, 100.0, 0.0]), DIAGONAL),
+        (numpy.array([100.0, 0.0, 0.0, 100.0]), DIAGONAL),
+        (numpy.array([100.0, 1.0, -10.0, +60.0]), DIAGONAL),
+        (numpy.array([100.0, 0.0, 0.0, 0.0]), SKEW),
+        (numpy.array([100.0, 100.0, 0.0, 0.0]), SKEW),
+        (numpy.array([100.0, 0.0, 100.0, 0.0]), SKEW),
+        (numpy.array([100.0, 0.0, 0.0, 100.0]), SKEW),
+        (numpy.array([100.0, 1.0, -10.0, +60.0]), SKEW),
+        (numpy.array([100.0, 0.0, 0.0, 0.0]), LEAKAGE),
+        (numpy.array([100.0, 100.0, 0.0, 0.0]), LEAKAGE),
+        (numpy.array([100.0, 0.0, 100.0, 0.0]), LEAKAGE),
+        (numpy.array([100.0, 0.0, 0.0, 100.0]), LEAKAGE),
+        (numpy.array([100.0, 1.0, -10.0, +60.0]), LEAKAGE),
+        (numpy.array([100.0, 0.0, 0.0, 0.0]), UNBALANCED),
+        (numpy.array([100.0, 100.0, 0.0, 0.0]), UNBALANCED),
+        (numpy.array([100.0, 0.0, 100.0, 0.0]), UNBALANCED),
+        (numpy.array([100.0, 0.0, 0.0, 100.0]), UNBALANCED),
+        (numpy.array([100.0, 1.0, -10.0, +60.0]), UNBALANCED),
+    ],
+)
 def test_apply_jones(flux, jones_matrix):
     """
     Unit tests for the apply_jones function

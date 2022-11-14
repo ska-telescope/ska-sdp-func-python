@@ -110,8 +110,7 @@ def test_multiply_gaintables(input_params):
         )
     ).all()
     assert (
-        result["weight"].data
-        == (gt["weight"].data * dgt["weight"].data)
+        result["weight"].data == (gt["weight"].data * dgt["weight"].data)
     ).all()
 
 
@@ -128,8 +127,7 @@ def test_concatenate_gaintables(input_params):
     result = concatenate_gaintables(gt_list)
 
     assert (len(gt_list[0]) + len(gt_list[1])) == (
-        len(input_params["gaintable1"])
-        + len(input_params["gaintable2"])
+        len(input_params["gaintable1"]) + len(input_params["gaintable2"])
     )
     assert len(result) == len(input_params["gaintable1"])
     assert len(result) == len(input_params["gaintable2"])
