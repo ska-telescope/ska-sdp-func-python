@@ -16,9 +16,16 @@ url = "https://artefact.skao.int/repository/pypi-internal/simple"
 python = "^3.9"
 astroplan = "^0.8"
 astropy = "^5.1"
+ducc0 = "^0.27.0"
 numpy = "^1.23.4"
+photutils = "^1.5.0"
+scipy = "^1.9.3"
+ska-sdp-datamodels = "^0.1.2"
+ska-sdp-func = { git = "https://gitlab.com/ska-telescope/sdp/ska-sdp-func.git", branch = "main"}
 xarray = "^2022.10.0"
-ska-sdp-datamodels = "^0.1.0"
+
+radler = {version = "^0.0.1", optional = true}
+pyfftw = {version = "^0.13.0", optional = true}
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
@@ -29,6 +36,10 @@ pylint = "^2.12.2"
 pytest = "^7.1.1"
 pytest-cov = "^3.0.0"
 pylint-junit = "^0.3.2"
+
+[tool.poetry.extras]
+radler = ["radler"]
+fft_support = ["pyfftw"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
