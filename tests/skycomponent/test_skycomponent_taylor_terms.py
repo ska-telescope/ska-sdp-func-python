@@ -73,7 +73,7 @@ def test_calculate_taylor_terms(result_taylor_terms):
 
 @pytest.mark.skip(
     reason="This function uses many taylor_terms functions,"
-           "testing those individually"
+    "testing those individually"
 )
 def test_find_skycomponents_frequency_taylor_terms(result_taylor_terms):
 
@@ -119,7 +119,7 @@ def test_transpose_skycomponents_to_channels(result_taylor_terms):
 
 def test_gather_skycomponents_from_channels(result_taylor_terms):
     """Check gather_list1/2 = 2/3, as there are 2/3 skycomponents
-        in each list"""
+    in each list"""
     sc = result_taylor_terms["skycomponents"]
     sc_list1 = [sc, sc]
     sc_list2 = [sc, sc, sc]

@@ -1,4 +1,7 @@
-# pylint: disable:invalid-name
+# pylint: disable=invalid-name, disable=too-many-locals
+# pylint: disable= missing-function-docstring
+# pylint: disable=import-error, unused-variable
+
 """ Unit processing_components for coordinate support
 
 """

@@ -85,7 +85,7 @@ def test_transit_time(geo_params):
 
 def test_transit_time_below_horizon(geo_params):
     """Check calculate_transit_times returns correct values
-        below the horizon"""
+    below the horizon"""
     phasecentre = SkyCoord(
         ra=+180.0 * u.deg, dec=+80.0 * u.deg, frame="icrs", equinox="J2000"
     )

@@ -1,9 +1,8 @@
+# pylint: disable=unused-variable, invalid-name, consider-using-f-string
 """ Unit tests for visibility weighting
 """
 
 import logging
-import os
-import tempfile
 
 import numpy
 import pytest
@@ -31,15 +30,14 @@ log.setLevel(logging.WARNING)
 
 @pytest.fixture(scope="module", name="result_weighting")
 def weighting_fixture():
+    """Fixture for weighting.py unit tests"""
 
     npixel = 512
-    persist = os.getenv("FUNC_PYTHON_PERSIST", False)
     image_pol = PolarisationFrame("stokesI")
     lowcore = create_named_configuration("LOWBD2", rmax=600)
     times = (numpy.pi / 12.0) * numpy.linspace(-3.0, 3.0, 5)
     frequency = numpy.array([1e8])
     channel_bandwidth = numpy.array([1e7])
-    image_pol = image_pol
     vis_pol = PolarisationFrame("stokesI")
     f = numpy.array([100.0])
     numpy.array([f])
@@ -72,12 +70,11 @@ def weighting_fixture():
     params = {
         "componentvis": componentvis,
         "model": model,
-        "persist": persist,
     }
     return params
 
 
-def test_tapering_Gaussian(result_weighting):
+def test_tapering_gaussian(result_weighting):
     """Apply a Gaussian taper to the visibility and check to see if
     the PSF size is close
     """
@@ -96,11 +93,6 @@ def test_tapering_Gaussian(result_weighting):
         dopsf=True,
         context="2d",
     )
-    if result_weighting["persist"]:
-        with tempfile.TemporaryDirectory() as tempdir:
-            psf.image_acc.export_to_fits(
-                f"{tempdir}/test_weighting_gaussian_taper_psf.fits"
-            )
     fit = fit_psf(psf)
 
     assert (
@@ -131,11 +123,6 @@ def test_tapering_tukey(result_weighting):
         dopsf=True,
         context="2d",
     )
-    if result_weighting["persist"]:
-        with tempfile.TemporaryDirectory() as tempdir:
-            psf.image_acc.export_to_fits(
-                f"{tempdir}/test_weighting_tukey_taper_psf.fits"
-            )
     fit = fit_psf(psf)
     assert (
         numpy.abs(fit["bmaj"] - 0.14492670913355402) < 1.0

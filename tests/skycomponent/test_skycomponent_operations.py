@@ -1,3 +1,4 @@
+# pylint: disable= unused-variable
 """ Unit tests for skycomponent operations
 
 """
@@ -36,7 +37,8 @@ log.setLevel(logging.WARNING)
 
 
 @pytest.fixture(scope="module", name="result_operations")
-def taylor_terms_fixture():
+def operations_fixture():
+    """Fixture for operations.py unit tests"""
     home_coords = SkyCoord(
         ra=+10.0 * u.deg, dec=-40.0 * u.deg, frame="icrs", equinox="J2000"
     )
@@ -226,13 +228,6 @@ def test_voronoi_decomposition(result_operations):
     image = insert_skycomponent(image, image_component)
     components = result_operations["ref_skycomponents_list"]
     v_structure, v_image = voronoi_decomposition(image, components)
-
-
-@pytest.mark.skip(
-    reason="Better understanding of Vornoi needed to make a useful unit test"
-)
-def test_image_voronoi_iter(result_operations):
-    """Placeholder"""
 
 
 @pytest.mark.skip(
