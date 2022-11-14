@@ -27,8 +27,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
 )
 from ska_sdp_datamodels.visibility.vis_model import Visibility
 
-# fix the below imports
-from src.ska_sdp_func_python.imaging.base import (
+from ska_sdp_func_python.imaging.base import (
     normalise_sumwt,
     shift_vis_to_image,
 )
