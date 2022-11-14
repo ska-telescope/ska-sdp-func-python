@@ -1,5 +1,3 @@
-# pylint: skip-file
-# flake8: noqa
 """ Unit tests for visibility base
 
 

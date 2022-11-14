@@ -244,12 +244,14 @@ def test_partition_skycomponent_neighbours(result_operations):
     assert partitioned_comps == [components]
 
 
-@pytest.mark.skip(
-    reason="Unable to set frequency and flux correctly for "
-    "a multi-frequency skycomponent"
-)
-def test_fit_skycomponent_spectral_index(result_operations):
-    """Check fits multi-frequency skycomponents"""
+# @pytest.mark.skip(
+#     reason="Unable to set frequency and flux correctly for "
+#     "a multi-frequency skycomponent"
+# )
+def test_fit_skycomponent_spectral_index_flux_of_1(result_operations):
+    """Check multi-frequency skycomponents returns 0
+        as log10(1) is 0
+    """
     single_freq_comp = result_operations["skycomponents_list"][0]
     sf_spec_indx = fit_skycomponent_spectral_index(single_freq_comp)
 
@@ -267,4 +269,25 @@ def test_fit_skycomponent_spectral_index(result_operations):
     mf_spec_indx = fit_skycomponent_spectral_index(multi_freq_comp)
 
     assert sf_spec_indx == 0.0
-    assert mf_spec_indx == 1
+    assert mf_spec_indx == 0.0
+
+
+def test_fit_skycomponent_spectral_index_flux_not_1(result_operations):
+    """Check multi-frequency skycomponents returns the correctindex
+    """
+    single_freq_comp = result_operations["skycomponents_list"][0]
+
+    frequency = numpy.linspace(0.9e8, 1.1e8, 3)
+    flux = numpy.random.rand(3, 1)
+    multi_freq_comp = SkyComponent(
+        direction=result_operations["home"],
+        frequency=frequency,
+        name="multi_freq_sc",
+        flux=flux,
+        shape="Point",
+        polarisation_frame=PolarisationFrame("stokesI"),
+    )
+
+    mf_spec_indx = fit_skycomponent_spectral_index(multi_freq_comp)
+
+    assert mf_spec_indx > 0
