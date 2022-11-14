@@ -290,4 +290,4 @@ def test_fit_skycomponent_spectral_index_flux_not_1(result_operations):
 
     mf_spec_indx = fit_skycomponent_spectral_index(multi_freq_comp)
 
-    assert mf_spec_indx > 0
+    assert mf_spec_indx != 0
