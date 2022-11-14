@@ -212,11 +212,6 @@ def image_channel_iter(im: Image, subimages=1) -> collections.abc.Iterable:
     ), f"subimages {subimages} does not match length of channels {len(channels)}"
 
     for i, channel in enumerate(channels):
-        if i + 1 < len(channels):
-            channel_max = channels[i + 1]
-        else:
-            channel_max = nchan
-
         # Adjust WCS
         wcs = im.image_acc.wcs.deepcopy()
         wcs.wcs.crpix[3] -= channel

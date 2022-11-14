@@ -433,7 +433,6 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
 
     w.wcs.radesys = kwargs.get("frame", "ICRS")
     w.wcs.equinox = kwargs.get("equinox", 2000.0)
-    chunksize = kwargs.get("chunksize", None)
     im = create_image(npixel, cellsize, phase_centre)
     return im
 

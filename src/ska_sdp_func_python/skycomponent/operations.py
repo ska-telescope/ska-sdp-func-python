@@ -290,7 +290,7 @@ def find_skycomponents(
     segments = segmentation.detect_sources(
         image_sum, threshold, npixels=npixels, kernel=kernel
     )
-    if segments == None:
+    if segments is None:
         raise ValueError("find_skycomponents: Failed to find any components")
 
     log.info("find_skycomponents: Identified %d segments" % segments.nlabels)
@@ -591,9 +591,6 @@ def insert_skycomponent(
     :param support: Support of kernel (7)
     :return: Image
     """
-
-    ##assert isinstance(im, Image)
-
     support = int(support / bandwidth)
 
     nchan, npol, ny, nx = im["pixels"].data.shape
@@ -938,9 +935,6 @@ def fit_skycomponent_spectral_index(sc: SkyComponent):
     :param sc: SkyComponent
     :return: spec_indx
     """
-    # Function after taken log
-    power_law_func = lambda a, b, x: a * x + b
-
     nchan = sc.frequency.shape[0]
 
     if nchan <= 1:
