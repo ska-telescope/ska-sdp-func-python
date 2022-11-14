@@ -26,7 +26,7 @@ from ska_sdp_func_python.imaging.imaging import (
     predict_visibility,
 )
 from ska_sdp_func_python.imaging.weighting import weight_visibility
-from ska_sdp_func_python.skycomponent.operations import (
+from ska_sdp_func_python.sky_component.operations import (
     find_nearest_skycomponent,
     find_skycomponents,
     insert_skycomponent,

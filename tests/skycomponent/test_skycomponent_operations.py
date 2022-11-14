@@ -14,7 +14,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 )
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
-from ska_sdp_func_python.skycomponent.operations import (
+from ska_sdp_func_python.sky_component.operations import (
     filter_skycomponents_by_flux,
     find_nearest_skycomponent,
     find_nearest_skycomponent_index,

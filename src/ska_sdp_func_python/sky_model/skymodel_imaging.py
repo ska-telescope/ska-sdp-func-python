@@ -16,7 +16,7 @@ from ska_sdp_func_python.imaging.imaging import (
     invert_visibility,
     predict_visibility,
 )
-from ska_sdp_func_python.skycomponent.operations import (
+from ska_sdp_func_python.sky_component.operations import (
     apply_beam_to_skycomponent,
 )
 from ska_sdp_func_python.visibility import concatenate_visibility

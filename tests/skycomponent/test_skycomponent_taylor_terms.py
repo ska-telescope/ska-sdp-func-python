@@ -14,7 +14,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 )
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
-from ska_sdp_func_python.skycomponent.taylor_terms import (
+from ska_sdp_func_python.sky_component.taylor_terms import (
     calculate_skycomponent_list_taylor_terms,
     find_skycomponents_frequency_taylor_terms,
     gather_skycomponents_from_channels,

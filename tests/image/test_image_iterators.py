@@ -20,7 +20,7 @@ from ska_sdp_func_python.image.iterators import (
     image_channel_iter,
     image_raster_iter,
 )
-from ska_sdp_func_python.skycomponent.operations import insert_skycomponent
+from ska_sdp_func_python.sky_component.operations import insert_skycomponent
 
 log = logging.getLogger("func-python-logger")
 log.setLevel(logging.WARNING)
