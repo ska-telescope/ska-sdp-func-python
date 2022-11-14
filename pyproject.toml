@@ -22,10 +22,11 @@ photutils = "^1.5.0"
 scipy = "^1.9.3"
 ska-sdp-datamodels = "^0.1.2"
 ska-sdp-func = { git = "https://gitlab.com/ska-telescope/sdp/ska-sdp-func.git", branch = "main"}
-xarray = "^2022.10.0"
+xarray = "^2022.11.0"
 
 radler = {version = "^0.0.1", optional = true}
 pyfftw = {version = "^0.13.0", optional = true}
+cmake = "^3.24.3"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
@@ -42,5 +43,5 @@ radler = ["radler"]
 fft_support = ["pyfftw"]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.0.0", "cmake>=3.24.4"]
 build-backend = "poetry.core.masonry.api"
