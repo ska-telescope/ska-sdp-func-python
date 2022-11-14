@@ -38,7 +38,7 @@ from ska_sdp_func_python.imaging.weighting import (
     weight_visibility,
 )
 
-pytestmark = pytest.skip(allow_module_level=True)
+pytest.skip(allow_module_level=True, reason="FixMe")
 # fix the below imports
 # from ska_sdp_func_python import create_pb
 # from ska_sdp_func_python.imaging.primary_beams import create_low_test_beam

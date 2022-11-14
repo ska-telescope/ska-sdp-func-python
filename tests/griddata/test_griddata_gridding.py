@@ -40,8 +40,8 @@ log.setLevel(logging.WARNING)
 log.addHandler(logging.StreamHandler(sys.stdout))
 
 
-@pytest.fixture(scope="module", name="result_gridding")
-def gridding_fixture():
+@pytest.fixture(scope="module", name="input_params")
+def input_for_gridding_fixture():
     """Pytest fixture for the gridding.py unit tests"""
 
     npixel = 256
@@ -89,82 +89,82 @@ def gridding_fixture():
 
 
 @pytest.mark.skip(reason="Convolution Function issues")
-def test_grid_visibility_to_griddata(result_gridding):
+def test_grid_visibility_to_griddata(input_params):
     """Unit tests for grid_visibility_to_griddata function:
     check that griddata is updated
     """
-    conv_func = result_gridding["convolution_function"]
-    grid_data = result_gridding["grid_data"]
-    vis = result_gridding["visibility"]
-    new_grid_data = grid_visibility_to_griddata(vis, grid_data, conv_func)
+    conv_func = input_params["convolution_function"]
+    grid_data = input_params["grid_data"]
+    vis = input_params["visibility"]
+    result = grid_visibility_to_griddata(vis, grid_data, conv_func)
 
-    assert new_grid_data != grid_data
+    assert result != grid_data
 
 
-def test_grid_visibility_weight_to_griddata(result_gridding):
+def test_grid_visibility_weight_to_griddata(input_params):
     """Unit tests for grid_visibility_to_griddata function:
     check that griddata is updated
     """
-    grid_data = result_gridding["grid_data"]
-    vis = result_gridding["visibility"]
-    new_gd, sumwt = grid_visibility_weight_to_griddata(vis, grid_data)
+    grid_data = input_params["grid_data"]
+    vis = input_params["visibility"]
+    result_gd, _ = grid_visibility_weight_to_griddata(vis, grid_data)
 
-    assert new_gd != grid_data
+    assert result_gd != grid_data
 
 
-def test_griddata_merge_weights(result_gridding):
+def test_griddata_merge_weights(input_params):
     """Unit tests for griddata_merge_weights function:
     check that griddata is updated and sumwt is 3
     """
-    grid_data = result_gridding["grid_data"]
+    grid_data = input_params["grid_data"]
     gd_list = [(grid_data, 1), (grid_data, 1), (grid_data, 1)]
-    new_gd, sumwt = griddata_merge_weights(gd_list)
+    result_gd, result_sumwt = griddata_merge_weights(gd_list)
 
-    assert new_gd != grid_data
-    assert sumwt == 3
+    assert result_gd != grid_data
+    assert result_sumwt == 3
 
 
-def test_griddata_visibility_reweight(result_gridding):
+def test_griddata_visibility_reweight(input_params):
     """Unit tests for griddata_visibility_reweight function:
     check that vis is updated
     """
-    grid_data = result_gridding["grid_data"]
-    vis = result_gridding["visibility"]
-    weighted_vis = griddata_visibility_reweight(vis, grid_data)
+    grid_data = input_params["grid_data"]
+    vis = input_params["visibility"]
+    result = griddata_visibility_reweight(vis, grid_data)
 
-    assert weighted_vis != vis
+    assert result != vis
 
 
 @pytest.mark.skip(reason="Convolution Function issue")
-def test_degrid_visibility_from_griddata(result_gridding):
+def test_degrid_visibility_from_griddata(input_params):
     """Unit tests for degrid_visibility_from_griddata function:
     check that vis is updated
     """
-    conv_func = result_gridding["convolution_function"]
-    grid_data = result_gridding["grid_data"]
-    vis = result_gridding["visibility"]
-    new_vis = degrid_visibility_from_griddata(vis, grid_data, conv_func)
+    conv_func = input_params["convolution_function"]
+    grid_data = input_params["grid_data"]
+    vis = input_params["visibility"]
+    result = degrid_visibility_from_griddata(vis, grid_data, conv_func)
 
-    assert new_vis == vis
+    assert result == vis
 
 
-def test_fft_griddata_to_image(result_gridding):
+def test_fft_griddata_to_image(input_params):
     """Unit tests for fft_griddata_to_image function:
     check that vis is updated
     """
-    grid_data = result_gridding["grid_data"]
-    image = result_gridding["image"]
-    new_image = fft_griddata_to_image(grid_data, image)
+    grid_data = input_params["grid_data"]
+    image = input_params["image"]
+    result = fft_griddata_to_image(grid_data, image)
 
-    assert new_image != image
+    assert result != image
 
 
-def test_fft_image_to_griddata(result_gridding):
+def test_fft_image_to_griddata(input_params):
     """Unit tests for fft_griddata_to_image function:
     check that vis is updated
     """
-    grid_data = result_gridding["grid_data"]
-    image = result_gridding["image"]
-    new_gd = fft_image_to_griddata(image, grid_data)
+    grid_data = input_params["grid_data"]
+    image = input_params["image"]
+    result = fft_image_to_griddata(image, grid_data)
 
-    assert new_gd != grid_data
+    assert result != grid_data
