@@ -88,9 +88,9 @@ def test_predict_ng(input_params):
     )
 
 
-@pytest.mark.skip(reason="invert_ng returns an empty image")
 def test_invert_ng(input_params):
     vis = input_params["visibility"]
+    vis["vis"].data = numpy.random.rand(5, 27966, 1, 1)
     model = input_params["model"]
     verbosity = input_params["verbosity"]
     dirty = invert_ng(
