@@ -1,19 +1,15 @@
 # pylint: skip-file
+# flake8: noqa
 """ Unit tests for calibration solution
 
 
 """
-import pytest
-
-pytest.skip(
-    allow_module_level=True,
-    reason="not able importing ska-sdp-func in dft_skycomponent_visibility",
-)
 import logging
 import unittest
 
 import astropy.units as u
 import numpy
+import pytest
 from astropy.coordinates import SkyCoord
 from numpy.random import default_rng
 from ska_sdp_datamodels.calibration.calibration_create import (
@@ -29,6 +25,11 @@ from ska_sdp_datamodels.visibility import create_visibility
 from ska_sdp_func_python.calibration.operations import apply_gaintable
 from ska_sdp_func_python.calibration.solvers import solve_gaintable
 from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
+
+pytest.skip(
+    allow_module_level=True,
+    reason="not able importing ska-sdp-func in dft_skycomponent_visibility",
+)
 
 log = logging.getLogger("func-python-logger")
 

@@ -15,15 +15,14 @@ from astropy.wcs import FITSFixedWarning
 from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_functions import (
-    convert_stokes_to_linear,
-    convert_stokes_to_circular,
-    convert_linear_to_stokes,
     convert_circular_to_stokes,
+    convert_linear_to_stokes,
+    convert_stokes_to_circular,
+    convert_stokes_to_linear,
 )
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-
 
 warnings.simplefilter("ignore", FITSFixedWarning)
 log = logging.getLogger("func-python-logger")
@@ -95,29 +94,37 @@ def convert_stokes_to_polimage(
         cimarr = convert_stokes_to_linear(im["pixels"].data)
         return create_image(
             cimarr["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
-            phasecentre=cimarr.image_acc.phasecentre
+            cellsize=numpy.deg2rad(
+                numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])
+            ),
+            phasecentre=cimarr.image_acc.phasecentre,
         )
     elif polarisation_frame == PolarisationFrame("linearnp"):
         cimarr = convert_stokes_to_linear(im["pixels"].data)
         return create_image(
             cimarr["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
-            phasecentre=cimarr.image_acc.phasecentre
+            cellsize=numpy.deg2rad(
+                numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])
+            ),
+            phasecentre=cimarr.image_acc.phasecentre,
         )
     elif polarisation_frame == PolarisationFrame("circular"):
         cimarr = convert_stokes_to_circular(im["pixels"].data)
         return create_image(
             cimarr["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
-            phasecentre=cimarr.image_acc.phasecentre
+            cellsize=numpy.deg2rad(
+                numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])
+            ),
+            phasecentre=cimarr.image_acc.phasecentre,
         )
     elif polarisation_frame == PolarisationFrame("circularnp"):
         cimarr = convert_stokes_to_circular(im["pixels"].data)
         return create_image(
             cimarr["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
-            phasecentre=cimarr.image_acc.phasecentre
+            cellsize=numpy.deg2rad(
+                numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])
+            ),
+            phasecentre=cimarr.image_acc.phasecentre,
         )
     elif polarisation_frame == PolarisationFrame("stokesI"):
         return create_image(
@@ -160,35 +167,43 @@ def convert_polimage_to_stokes(im: Image, complex_image=False, **kwargs):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
         return create_image(
             cimarr["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
-            phasecentre=cimarr.image_acc.phasecentre
+            cellsize=numpy.deg2rad(
+                numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])
+            ),
+            phasecentre=cimarr.image_acc.phasecentre,
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("linearnp"):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
         return create_image(
             cimarr["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
-            phasecentre=cimarr.image_acc.phasecentre
+            cellsize=numpy.deg2rad(
+                numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])
+            ),
+            phasecentre=cimarr.image_acc.phasecentre,
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("circular"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
         return create_image(
             cimarr["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
-            phasecentre=cimarr.image_acc.phasecentre
+            cellsize=numpy.deg2rad(
+                numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])
+            ),
+            phasecentre=cimarr.image_acc.phasecentre,
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("circularnp"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
         return create_image(
             cimarr["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])),
-            phasecentre=cimarr.image_acc.phasecentre
+            cellsize=numpy.deg2rad(
+                numpy.abs(cimarr.image_acc.wcs.wcs.cdelt[1])
+            ),
+            phasecentre=cimarr.image_acc.phasecentre,
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("stokesI"):
         return create_image(
             im["pixels"].data.shape[3],
             cellsize=numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-            phasecentre=im.image_acc.phasecentre
+            phasecentre=im.image_acc.phasecentre,
         )
     else:
         raise ValueError(

@@ -4,7 +4,6 @@
 
 """
 import logging
-import os
 
 import numpy
 import pytest
@@ -27,7 +26,6 @@ log.setLevel(logging.WARNING)
 @pytest.fixture(scope="module", name="result_gather_scatter")
 def gather_scatter_fixture():
     """Fixture for the gather_scatter.py unit tests"""
-    persist = os.getenv("FUNC_PYTHON_PERSIST", False)
     phase_centre = SkyCoord(
         ra=+180.0 * units.deg,
         dec=-35.0 * units.deg,
@@ -35,7 +33,6 @@ def gather_scatter_fixture():
         equinox="J2000",
     )
     params = {
-        "persist": persist,
         "phase_centre": phase_centre,
     }
     return params
@@ -253,8 +250,8 @@ def test_scatter_gather_facet_overlap_taper(result_gather_scatter):
 
 
 def test_scatter_gather_channel(result_gather_scatter):
-    """Unit test for image_scatter_channels & image_gather_channels functions
-    """
+    """Unit test for image_scatter_channels &
+    image_gather_channels functions"""
     for nchan in [128, 16]:
         m31cube = create_image(
             npixel=512,

@@ -17,11 +17,11 @@ from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_func_python.skycomponent.taylor_terms import (
     calculate_skycomponent_list_taylor_terms,
     find_skycomponents_frequency_taylor_terms,
+    gather_skycomponents_from_channels,
+    interpolate_skycomponents_frequency,
+    transpose_skycomponents_to_channels,
 )
 
-pytestmark = pytest.skip(
-    allow_module_level=True, reason="Needs copy_skycomponents"
-)
 log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
@@ -31,11 +31,15 @@ log.setLevel(logging.WARNING)
 def taylor_terms_fixture():
 
     phase_centre = SkyCoord(
-        ra=+15.0 * u.deg, dec=-45.0 * u.deg, frame="icrs", equinox="J2000"
+        ra=+180.0 * u.deg,
+        dec=-60.0 * u.deg,
+        frame="icrs",
+        equinox="J2000",
     )
-    frequency = numpy.linspace(0.9e8, 1.1e8, 9)
+
+    frequency = numpy.array([1.1e8])
     name = "test_sc"
-    flux = numpy.array([1, 1])
+    flux = numpy.ones((1, 1))
     shape = "Point"
     polarisation_frame = PolarisationFrame("stokesI")
 
@@ -56,26 +60,77 @@ def taylor_terms_fixture():
 
 
 def test_calculate_taylor_terms(result_taylor_terms):
+    """Check interpolate_list = 2 as, 2 skycomponents given"""
     sc = result_taylor_terms["skycomponents"]
+    sc_list = [sc, sc]
 
-    taylor_term_list = calculate_skycomponent_list_taylor_terms(sc, nmoment=3)
-    assert len(taylor_term_list) == 10
+    taylor_term_list = calculate_skycomponent_list_taylor_terms(
+        sc_list,
+        nmoment=3,
+    )
+    assert len(taylor_term_list) == 2
 
 
+@pytest.mark.skip(
+    reason="This function uses many taylor_terms functions,"
+           "testing those individually"
+)
 def test_find_skycomponents_frequency_taylor_terms(result_taylor_terms):
-    im_list = [
-        create_image(
-            npixel=512,
-            cellsize=0.001,
-            phasecentre=result_taylor_terms["phasecentre"],
-            frequency=[f],
-        )
-        for f in result_taylor_terms["frequency"]
-    ]
 
-    for moment in [1, 2, 3]:
-        sc_list = find_skycomponents_frequency_taylor_terms(
-            im_list, nmoment=moment, component_threshold=20.0
-        )
-        assert len(sc_list) == 9
-        assert len(sc_list[0]) == 3
+    im = create_image(
+        npixel=512,
+        cellsize=0.00015,
+        phasecentre=result_taylor_terms["phasecentre"],
+        nchan=1,
+    )
+    im["pixels"].data = numpy.ones(shape=im["pixels"].data.shape)
+
+    im_list = [im]
+
+    sc_list = find_skycomponents_frequency_taylor_terms(im_list, nmoment=3)
+    assert len(sc_list) == 2
+    assert len(sc_list[0]) == 3
+
+
+def test_interpolate_skycomponents_frequency(result_taylor_terms):
+    """Check interpolate_list = 2 as, 2 skycomponents given"""
+    sc = result_taylor_terms["skycomponents"]
+    sc_list = [sc, sc]
+
+    interpolate_list = interpolate_skycomponents_frequency(
+        sc_list,
+        nmoment=3,
+    )
+
+    assert len(interpolate_list) == 2
+
+
+def test_transpose_skycomponents_to_channels(result_taylor_terms):
+    """Check that transpose list returns list of len = 1, as here nchan = 1"""
+
+    sc = result_taylor_terms["skycomponents"]
+    sc_list = [sc, sc]
+    transpose_list = transpose_skycomponents_to_channels(
+        sc_list,
+    )
+
+    assert len(transpose_list) == 1
+
+
+def test_gather_skycomponents_from_channels(result_taylor_terms):
+    """Check gather_list1/2 = 2/3, as there are 2/3 skycomponents
+        in each list"""
+    sc = result_taylor_terms["skycomponents"]
+    sc_list1 = [sc, sc]
+    sc_list2 = [sc, sc, sc]
+    sc_list_of_lists1 = [sc_list1, sc_list1]
+    sc_list_of_lists2 = [sc_list2, sc_list2, sc_list2]
+    gather_list1 = gather_skycomponents_from_channels(
+        sc_list_of_lists1,
+    )
+    gather_list2 = gather_skycomponents_from_channels(
+        sc_list_of_lists2,
+    )
+
+    assert len(gather_list1) == 2
+    assert len(gather_list2) == 3

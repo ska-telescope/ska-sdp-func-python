@@ -23,11 +23,12 @@ __all__ = ["solve_gaintable"]
 import logging
 
 import numpy
-from ska_sdp_datamodels.calibration.calibration_model import GainTable
 from ska_sdp_datamodels.calibration.calibration_create import (
     create_gaintable_from_visibility,
 )
+from ska_sdp_datamodels.calibration.calibration_model import GainTable
 from ska_sdp_datamodels.visibility.vis_model import Visibility
+
 from ska_sdp_func_python.visibility.operations import divide_visibility
 
 log = logging.getLogger("func-python-logger")

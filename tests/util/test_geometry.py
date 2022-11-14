@@ -18,6 +18,7 @@ from ska_sdp_func_python.util.geometry import (
 
 @pytest.fixture(scope="module", name="geo_params")
 def geometry_fixture():
+    """Fixture for the geometry.py unit tests"""
     location = EarthLocation(
         lon=116.76444824 * u.deg, lat=-26.824722084 * u.deg, height=300.0
     )
@@ -37,6 +38,7 @@ def geometry_fixture():
 
 
 def test_azel(geo_params):
+    """Check calculate_azel returns the correct values"""
     utc_times = Time(
         numpy.arange(0.0, 1.0, 0.1) + geo_params["utc_time"].mjd,
         format="mjd",
@@ -52,24 +54,27 @@ def test_azel(geo_params):
 
 
 def test_hourangles(geo_params):
-    ha = calculate_hourangles(
+    """Check calculate_hourangles returns the correct values"""
+    h_angles = calculate_hourangles(
         geo_params["location"],
         geo_params["utc_time"],
         geo_params["phasecentre"],
     )
-    numpy.testing.assert_array_almost_equal(ha[0].deg, 36.881315)
+    numpy.testing.assert_array_almost_equal(h_angles[0].deg, 36.881315)
 
 
 def test_parallacticangles(geo_params):
-    pa = calculate_parallactic_angles(
+    """Check calculate_parallactic_angles returns the correct values"""
+    p_angles = calculate_parallactic_angles(
         geo_params["location"],
         geo_params["utc_time"],
         geo_params["phasecentre"],
     )
-    numpy.testing.assert_array_almost_equal(pa[0].deg, 85.756057)
+    numpy.testing.assert_array_almost_equal(p_angles[0].deg, 85.756057)
 
 
 def test_transit_time(geo_params):
+    """Check calculate_transit_time returns the correct values"""
     transit_time = calculate_transit_time(
         geo_params["location"],
         geo_params["utc_time"],
@@ -79,6 +84,8 @@ def test_transit_time(geo_params):
 
 
 def test_transit_time_below_horizon(geo_params):
+    """Check calculate_transit_times returns correct values
+        below the horizon"""
     phasecentre = SkyCoord(
         ra=+180.0 * u.deg, dec=+80.0 * u.deg, frame="icrs", equinox="J2000"
     )
@@ -89,5 +96,6 @@ def test_transit_time_below_horizon(geo_params):
 
 
 def test_utc_to_ms_epoch(geo_params):
+    """Check calculate_utc_to_ms_epoch returns the correct values"""
     ms_epoch = utc_to_ms_epoch(geo_params["utc_time"])
     numpy.testing.assert_array_almost_equal(ms_epoch, 5084553600.0)

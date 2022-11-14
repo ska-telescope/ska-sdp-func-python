@@ -27,7 +27,7 @@ log.setLevel(logging.WARNING)
 def taylor_terms_fixture():
     """Fixture for the taylor_terms.py unit tests"""
     npixel = 512
-    cellsize = 0.0001
+    cellsize = 0.00015
     phase_centre = SkyCoord(
         ra=+180.0 * units.deg,
         dec=-60.0 * units.deg,

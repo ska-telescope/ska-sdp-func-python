@@ -10,13 +10,12 @@ __all__ = [
 
 import copy
 import logging
+
 import numpy.linalg
 import xarray
-
 from astropy.time import Time
 from ska_sdp_datamodels.calibration.calibration_model import GainTable
 from ska_sdp_datamodels.visibility.vis_model import Visibility
-
 
 log = logging.getLogger("func-python-logger")
 

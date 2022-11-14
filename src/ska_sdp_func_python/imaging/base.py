@@ -36,28 +36,28 @@ import astropy.units as units
 import astropy.wcs as wcs
 import numpy
 from astropy.wcs.utils import pixel_to_skycoord
+from ska_sdp_datamodels import physical_constants
+from ska_sdp_datamodels.gridded_visibility.grid_vis_create import (
+    create_griddata_from_image,
+)
+from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
 from ska_sdp_datamodels.visibility.vis_model import Visibility
-from ska_sdp_datamodels import physical_constants
-from ska_sdp_datamodels.image.image_create import create_image
-from ska_sdp_datamodels.gridded_visibility.grid_vis_create import (
-    create_griddata_from_image,
-)
 
 from ska_sdp_func_python.griddata.gridding import (
-    grid_visibility_to_griddata,
-    fft_griddata_to_image,
     degrid_visibility_from_griddata,
+    fft_griddata_to_image,
     fft_image_to_griddata,
+    grid_visibility_to_griddata,
 )
-from ska_sdp_func_python.visibility.base import phaserotate_visibility
 from ska_sdp_func_python.image.operations import (
     convert_polimage_to_stokes,
     convert_stokes_to_polimage,
 )
+from ska_sdp_func_python.visibility.base import phaserotate_visibility
 
 log = logging.getLogger("func-python-logger")
 

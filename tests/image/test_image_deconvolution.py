@@ -1,4 +1,5 @@
 # pylint: disable=duplicate-code
+# flake8: noqa: E203
 """ Unit tests for image deconvolution
 
 
@@ -92,8 +93,8 @@ def deconvolution_fixture():
 
 def overlaptest(a1, a2, s1, s2):
     #
-    a1[s1[0]: s1[1], s1[2]: s1[3]] = 1
-    a2[s2[0]: s2[1], s2[2]: s2[3]] = 1
+    a1[s1[0] : s1[1], s1[2] : s1[3]] = 1
+    a2[s2[0] : s2[1], s2[2] : s2[3]] = 1
     return numpy.sum(a1) == numpy.sum(a2)
 
 
@@ -383,7 +384,7 @@ def test_hogbom_kernel_list_single_dirty(result_deconvolution):
 
 
 @pytest.mark.skip(
-    reason="assertion error in cleaners.py tol is 1e-7 and erro is 1e-6"
+    reason="assertion error in cleaners.py tol is 1e-7 and error is 1e-6"
 )
 def test_hogbom_kernel_list_multiple_dirty(result_deconvolution):
     """

@@ -1,3 +1,4 @@
+# pylint: disable:invalid-name
 """ Unit processing_components for coordinate support
 
 """

@@ -27,17 +27,15 @@ import collections
 import copy
 import logging
 import warnings
-from typing import Union, List
+from typing import List, Union
 
 import astropy.units as u
 import numpy
 from astropy.convolution import Gaussian2DKernel
-from astropy.coordinates import SkyCoord
-from astropy.coordinates import match_coordinates_sky
-from astropy.modeling import models, fitting
+from astropy.coordinates import SkyCoord, match_coordinates_sky
+from astropy.modeling import fitting, models
 from astropy.stats import gaussian_fwhm_to_sigma
-from astropy.wcs.utils import pixel_to_skycoord
-from astropy.wcs.utils import skycoord_to_pixel
+from astropy.wcs.utils import pixel_to_skycoord, skycoord_to_pixel
 from photutils import segmentation
 from scipy import interpolate
 from scipy.optimize import minpack
@@ -50,18 +48,18 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
-from ska_sdp_func_python.image.operations import convert_clean_beam_to_pixels
-from ska_sdp_func_python.calibration.jones import apply_jones
-from ska_sdp_func_python.util.array_functions import (
-    insert_function_sinc,
-    insert_function_L,
-    insert_function_pswf,
-    insert_array,
-)
 
 # Fix imports below
-# from ska_sdp_func_python.skycomponent import copy_skycomponent
+from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
+
+from ska_sdp_func_python.calibration.jones import apply_jones
+from ska_sdp_func_python.image.operations import convert_clean_beam_to_pixels
+from ska_sdp_func_python.util.array_functions import (
+    insert_array,
+    insert_function_L,
+    insert_function_pswf,
+    insert_function_sinc,
+)
 
 log = logging.getLogger("func-python-logger")
 
@@ -381,7 +379,6 @@ def apply_beam_to_skycomponent(
     :param sc: SkyComponent or list of SkyComponents
     :return: List of skycomponents
     """
-    ##assert isinstance(beam, Image)
     single = not isinstance(sc, collections.abc.Iterable)
 
     if single:
@@ -870,7 +867,7 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
     image_shape = im["pixels"].data[0, 0].shape
     # isotropic at the moment!
 
-    newsc = copy_skycomponent(sc)
+    newsc = SkyComponent.copy(sc)
 
     try:
         p_init = models.Gaussian2D(

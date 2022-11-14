@@ -16,8 +16,8 @@ from ska_sdp_datamodels.visibility.vis_model import Visibility
 
 from ska_sdp_func_python.util.coordinate_support import (
     skycoord_to_lmn,
-    xyz_to_uvw,
     uvw_to_xyz,
+    xyz_to_uvw,
 )
 
 log = logging.getLogger("func-python-logger")
@@ -26,7 +26,7 @@ log = logging.getLogger("func-python-logger")
 def calculate_visibility_phasor(direction, vis):
     """Calculate the phasor for a component for a Visibility
 
-    :param comp:
+    :param direction:
     :param vis:
     :return:
     """
@@ -50,7 +50,7 @@ def calculate_visibility_uvw_lambda(vis):
     :param vis: Visibility
     :return: Visibility with updated uvw_lambda
     """
-    k = vis.frequency.data / physical_constants.c_m_s
+    k = vis.frequency.data / physical_constants.C_M_S
     uvw_lambda = numpy.einsum("tbs,k->tbks", vis.uvw.data, k)
     vis.visibility_acc.uvw_lambda = uvw_lambda
     return vis

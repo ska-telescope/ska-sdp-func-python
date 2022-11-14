@@ -106,6 +106,7 @@ def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
                 epsilon,
                 do_wstacking,
                 nthreads,
+                verbosity,
             ).T
     else:
         for vpol in range(vnpol):

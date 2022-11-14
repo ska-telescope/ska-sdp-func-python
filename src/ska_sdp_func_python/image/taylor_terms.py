@@ -280,7 +280,9 @@ def calculate_image_list_from_frequency_taylor_terms(
 
         newim = create_image(
             moment_image["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(numpy.abs(moment_image.image_acc.wcs.wcs.cdelt[1])),
+            cellsize=numpy.deg2rad(
+                numpy.abs(moment_image.image_acc.wcs.wcs.cdelt[1])
+            ),
             phasecentre=moment_image.image_acc.phasecentre,
         )
 

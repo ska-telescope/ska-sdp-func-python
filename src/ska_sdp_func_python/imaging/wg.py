@@ -1,6 +1,7 @@
 # pylint: disable=invalid-name, too-many-locals, unused-variable
 # pylint: disable=too-many-statements
 # pylint: disable=import-error, no-name-in-module, import-outside-toplevel
+# flake8: noqa: E203
 """
 Functions that implement prediction of and imaging from visibilities
 using the GPU-based gridder (WAGG version),
@@ -114,9 +115,10 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
                 None,
                 pixsize,
                 pixsize,
-                epsilon,
-                do_wstacking,
+                epsilon=epsilon,
+                do_wstaking=do_wstacking,
                 nthreads=nthreads,
+                verbosity=verbosity,
             ).T
     else:
         for vpol in range(vnpol):
@@ -129,8 +131,10 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
                     None,
                     pixsize,
                     pixsize,
-                    epsilon,
-                    do_wstacking,
+                    epsilon=epsilon,
+                    do_wstacking=do_wstacking,
+                    nthreads=nthreads,
+                    verbosity=verbosity,
                 )[:, 0]
     vis = convert_pol_frame(
         vis_temp.T,
@@ -253,7 +257,7 @@ def invert_wg(
                     pixsize,
                     epsilon,
                     do_wstacking,
-                    nthreads=nthreads
+                    nthreads=nthreads,
                 )
                 im["pixels"].data[0, pol] += dirty.T
             sum_weight[0, pol] += numpy.sum(weight_temp[pol, :, :].T)

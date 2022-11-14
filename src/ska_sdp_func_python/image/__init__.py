@@ -9,6 +9,6 @@ A canonical image has 4 dimensional data array, and 4 axes: RA---SIN, DEC---SIN,
 from .cleaners import *
 from .deconvolution import *
 from .gather_scatter import *
-from .operations import *
 from .iterators import *
+from .operations import *
 from .taylor_terms import *

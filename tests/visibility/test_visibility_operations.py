@@ -1,4 +1,5 @@
-# pylint: disable=duplicate-code, invalid-name, unsupported-assignment-operation
+# pylint: disable=duplicate-code, invalid-name,
+# pylint: disable=unsupported-assignment-operation
 """ Unit tests for visibility operations
 
 
@@ -25,8 +26,7 @@ from ska_sdp_func_python.visibility.operations import (
 
 @pytest.fixture(scope="module", name="result_operations")
 def visibility_operations_fixture():
-    """ Fixture for operations.py unit tests
-    """
+    """Fixture for operations.py unit tests"""
     lowcore = create_named_configuration("LOWBD2-CORE")
     times = (numpy.pi / 43200.0) * numpy.arange(0.0, 300.0, 30.0)
     frequency = numpy.linspace(1.0e8, 1.1e8, 3)
@@ -59,8 +59,7 @@ def visibility_operations_fixture():
 
 
 def test_concatenate_visibility(result_operations):
-    """ Unit test for the concatenate_visibility function
-    """
+    """Unit test for the concatenate_visibility function"""
     vis = create_visibility(
         result_operations["lowcore"],
         result_operations["times"],
@@ -93,8 +92,8 @@ def test_concatenate_visibility(result_operations):
 
 
 def test_divide_visibility(result_operations):
-    """ Unit test for the divide_visibility function with StokesI polarisation
-    """
+    """Unit test for the divide_visibility function
+    with StokesI polarisation"""
     vis = create_visibility(
         result_operations["lowcore"],
         result_operations["times"],
@@ -123,8 +122,7 @@ def test_divide_visibility(result_operations):
 
 
 def test_divide_visibility_pol(result_operations):
-    """ Unit test for the divide_visibility function with linear polarisation
-    """
+    """Unit test for the divide_visibility function with linear polarisation"""
     vis = create_visibility(
         result_operations["lowcore"],
         result_operations["times"],
@@ -153,8 +151,7 @@ def test_divide_visibility_pol(result_operations):
 
 
 def test_divide_visibility_singular(result_operations):
-    """ Unit test for the divide_visibility function with linear polarisation
-    """
+    """Unit test for the divide_visibility function with linear polarisation"""
     vis = create_visibility(
         result_operations["lowcore"],
         result_operations["times"],
@@ -193,8 +190,7 @@ def test_divide_visibility_singular(result_operations):
 
 
 def test_subtract(result_operations):
-    """ Unit test for the subtract_visibility function
-    """
+    """Unit test for the subtract_visibility function"""
     vis1 = create_visibility(
         result_operations["lowcore"],
         result_operations["times"],

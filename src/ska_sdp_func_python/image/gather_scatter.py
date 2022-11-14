@@ -12,15 +12,14 @@ __all__ = [
 ]
 
 import logging
-import numpy
 from typing import List
 
+import numpy
 import xarray
 from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 
 from ska_sdp_func_python.image.iterators import image_raster_iter
-
 
 log = logging.getLogger("func-python-logger")
 
@@ -82,7 +81,8 @@ def image_gather_facets(
     out = create_image(
         im["pixels"].data.shape[3],
         cellsize=numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-        phasecentre=im.image_acc.phasecentre)
+        phasecentre=im.image_acc.phasecentre,
+    )
     if overlap > 0:
         flat = create_image(
             im["pixels"].data.shape[3],
@@ -103,7 +103,8 @@ def image_gather_facets(
         sum_flats = create_image(
             im["pixels"].data.shape[3],
             cellsize=numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-            phasecentre=im.image_acc.phasecentre)
+            phasecentre=im.image_acc.phasecentre,
+        )
 
         if return_flat:
             i = 0
@@ -140,10 +141,11 @@ def image_gather_facets(
         return out
 
     # if no overlap
-    flat = create_image(im["pixels"].data.shape[3],
-                        cellsize=numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-                        phasecentre=im.image_acc.phasecentre
-                        )
+    flat = create_image(
+        im["pixels"].data.shape[3],
+        cellsize=numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
+        phasecentre=im.image_acc.phasecentre,
+    )
     flat["pixels"].data[...] = 1.0
 
     if return_flat:

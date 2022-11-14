@@ -17,7 +17,6 @@ from ska_sdp_datamodels.image.image_model import Image
 
 from ska_sdp_func_python.util.array_functions import tukey_filter
 
-
 log = logging.getLogger("func-python-logger")
 
 
@@ -150,7 +149,8 @@ def image_raster_iter(
                     flat = create_image(
                         subim["pixels"].data.shape[3],
                         cellsize=numpy.deg2rad(numpy.abs(wcs.wcs.cdelt[1])),
-                        phasecentre=im.image_acc.phasecentre,)
+                        phasecentre=im.image_acc.phasecentre,
+                    )
                     if taper == "linear":
                         flat["pixels"].data[..., :, :] = numpy.outer(
                             taper_linear(dy, overlap),

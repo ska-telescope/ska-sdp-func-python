@@ -32,12 +32,12 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
 )
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility.vis_model import Visibility
-from ska_sdp_func_python.visibility.base import calculate_visibility_phasor
-from ska_sdp_func_python.util.coordinate_support import skycoord_to_lmn
 
 # fix imports below
 from ska_sdp_func.dft import dft_point_v00
-from ska_sdp_func_python.skycomponent import copy_skycomponent
+
+from ska_sdp_func_python.util.coordinate_support import skycoord_to_lmn
+from ska_sdp_func_python.visibility.base import calculate_visibility_phasor
 
 log = logging.getLogger("func-python-logger")
 
@@ -159,7 +159,7 @@ def dft_kernel(
             # Note: this is not needed for the RASCIL DFT, because numpy
             # correctly broadcasts the shapes at the place where its needed.
             comp_flux = numpy.ones(
-                (vfluxes.shape[0], len(vis.frequency), vfluxes.shape[-1]),
+                (vfluxes.shape[0], len(vfluxes.frequency), vfluxes.shape[-1]),
                 dtype=complex,
             )
             comp_flux[:, :, :] = vfluxes

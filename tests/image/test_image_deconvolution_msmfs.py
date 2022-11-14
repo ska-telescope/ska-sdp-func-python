@@ -129,7 +129,7 @@ def test_deconvolve_mmclean_no_taylor(result_deconv_msmfs):
         window_shape="quarter",
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
-    save_and_check_images(
+    check_images(
         "mmclean_no_taylor",
         comp,
         residual,
@@ -155,7 +155,7 @@ def test_deconvolve_mmclean_no_taylor_edge(result_deconv_msmfs):
         window_edge=32,
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
-    save_and_check_images(
+    check_images(
         "mmclean_no_taylor_edge",
         comp,
         residual,
@@ -180,7 +180,7 @@ def test_deconvolve_mmclean_no_taylor_noscales(result_deconv_msmfs):
         window_shape="quarter",
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
-    save_and_check_images(
+    check_images(
         "mmclean_notaylor_noscales",
         comp,
         residual,
@@ -205,7 +205,7 @@ def test_deconvolve_mmclean_linear(result_deconv_msmfs):
         window_shape="quarter",
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
-    save_and_check_images(
+    check_images(
         "mmclean_linear",
         comp,
         residual,
@@ -231,7 +231,7 @@ def test_deconvolve_mmclean_linear_sensitivity(result_deconv_msmfs):
         window_shape="quarter",
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
-    save_and_check_images(
+    check_images(
         "mmclean_linear_sensitivity",
         comp,
         residual,
@@ -256,7 +256,7 @@ def test_deconvolve_mmclean_linear_noscales(result_deconv_msmfs):
         window_shape="quarter",
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
-    save_and_check_images(
+    check_images(
         "mmclean_linear_noscales",
         comp,
         residual,
@@ -281,7 +281,7 @@ def test_deconvolve_mmclean_quadratic(result_deconv_msmfs):
         window_shape="quarter",
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
-    save_and_check_images(
+    check_images(
         "mmclean_quadratic",
         comp,
         residual,
@@ -306,7 +306,7 @@ def test_deconvolve_mmclean_quadratic_noscales(result_deconv_msmfs):
         window_shape="quarter",
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
-    save_and_check_images(
+    check_images(
         "mmclean_quadratic_noscales",
         comp,
         residual,
@@ -316,7 +316,7 @@ def test_deconvolve_mmclean_quadratic_noscales(result_deconv_msmfs):
     )
 
 
-def save_and_check_images(
+def check_images(
     result_deconv_msmfs,
     tag,
     comp,
@@ -356,7 +356,7 @@ def test_deconvolve_mmclean_quadratic_psf_support(result_deconv_msmfs):
         psf_support=32,
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
-    save_and_check_images(
+    check_images(
         "mmclean_quadratic_psf",
         comp,
         residual,

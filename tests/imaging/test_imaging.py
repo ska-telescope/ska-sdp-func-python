@@ -21,7 +21,6 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility.vis_create import create_visibility
 
-# from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 from ska_sdp_func_python.imaging.imaging import (
     invert_visibility,
     predict_visibility,
@@ -88,7 +87,6 @@ def imaging_fixture():
     )
 
     model = insert_skycomponent(model, components)
-    # vis = dft_skycomponent_visibility(vis, components)
     params = {
         "components": components,
         "image": model,

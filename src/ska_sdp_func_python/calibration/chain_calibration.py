@@ -73,8 +73,9 @@ import numpy
 from ska_sdp_datamodels.calibration.calibration_create import (
     create_gaintable_from_visibility,
 )
-from ska_sdp_func_python.calibration.solvers import solve_gaintable
+
 from ska_sdp_func_python.calibration.operations import apply_gaintable
+from ska_sdp_func_python.calibration.solvers import solve_gaintable
 
 log = logging.getLogger("func-python-logger")
 
