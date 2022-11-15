@@ -493,14 +493,14 @@ def advise_wide_field(
 
     isblock = isinstance(vis, Visibility)
 
-    max_wavelength = physical_constants.c_m_s / numpy.min(vis.frequency.data)
+    max_wavelength = physical_constants.C_M_S / numpy.min(vis.frequency.data)
     if verbose:
         log.info(
             "advise_wide_field: (max_wavelength) "
             "Maximum wavelength %.3f (meters)" % (max_wavelength)
         )
 
-    min_wavelength = physical_constants.c_m_s / numpy.max(vis.frequency.data)
+    min_wavelength = physical_constants.C_M_S / numpy.max(vis.frequency.data)
     if verbose:
         log.info(
             "advise_wide_field: (min_wavelength) "
