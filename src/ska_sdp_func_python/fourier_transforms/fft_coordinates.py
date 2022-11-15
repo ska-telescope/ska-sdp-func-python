@@ -72,8 +72,8 @@ def coordinates2Offset(npixel: int, cx: int, cy: int, quadrant=False):
     2. (0,0) at pixel (cx, cy,floor(n/2))
 
     :param npixel: Number of pixels (integer)
-    :param cx: location of delay centre def:npixel//2
-    :param cy: location of delay centre def:npixel//2
+    :param cx: location of delay centre int(npixel//2)
+    :param cy: location of delay centre int(npixel//2)
     :return: Grid (2D array)
     """
     if cx is None:
@@ -165,8 +165,8 @@ def w_beam(npixel, field_of_view, w, cx=None, cy=None, remove_shift=False):
     :param npixel: Size of the grid in pixels
     :param field_of_view: Field of view
     :param w: Baseline distance to the projection plane
-    :param cx: location of delay centre def:npixel//2
-    :param cy: location of delay centre def:npixel//2
+    :param cx: location of delay centre int(npixel//2)
+    :param cy: location of delay centre int(npixel//2)
     :param remove_shift: Remove overall phase shift at the centre of the image
     :return: npixel x npixel array with the far field
     """

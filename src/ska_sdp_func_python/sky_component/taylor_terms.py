@@ -36,7 +36,7 @@ log = logging.getLogger("func-python-logger")
 def calculate_skycomponent_list_taylor_terms(
     sc_list: List[SkyComponent], nmoment=1, reference_frequency=None
 ) -> List[List[SkyComponent]]:
-    """Calculate frequency taylor terms for a list of skycomponents
+    """Calculate frequency taylor terms for a List of SkyComponents
 
     :param sc_list: List of SkyComponent
     :param nmoment: Number of moments/Taylor terms to use
@@ -95,7 +95,7 @@ def find_skycomponents_frequency_taylor_terms(
     :param dirty_list: List of images to be searched. These should be different frequencies
     :param nmoment: Number of moments to be fitted
     :param reference_frequency: Reference frequency (default None uses centre frequency)
-    :return: list of skycomponents
+    :return: List of SkyComponents
     """
     frequency = numpy.array([d.frequency[0] for d in dirty_list])
 
@@ -156,7 +156,7 @@ def interpolate_skycomponents_frequency(
 
      Each skycomponent in a list is interpolated in frequency using a Taylor series expansion.
 
-    :param sc_list: List of skycomponents to be interpolated (in frequency_
+    :param sc_list: List of SkyComponents to be interpolated (in frequency_
     :param nmoment: Number of moments to be fitted
     :param reference_frequency: Reference frequency (default None uses central frequency)
     :return: list of interpolated skycomponents

@@ -323,7 +323,9 @@ def uvw_to_eci(uvw, ha, dec):
      Hour angle and declination can be given as single values or arrays
      of the same length. Angles can be given as radians or astropy
      quantities with a valid conversion.
-    TODO: This function doesn't look right.
+    TODO: This function doesn't look right. It is returning the same uvw as input,
+          and not using ha and dec at all.
+          We need to revisit this.
 
     :param uvw::math:`(u,v,w)` co-ordinates of antennas in array
     :param ha: hour angle of phase tracking centre (:math:`ha = ra - lst`)

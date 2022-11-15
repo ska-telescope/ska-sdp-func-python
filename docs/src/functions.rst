@@ -3,8 +3,8 @@
 .. toctree::
   :maxdepth: 2
 
-Important Functions
-===================
+Functions
+=========
 
 
 Visibility weighting and tapering

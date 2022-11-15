@@ -68,7 +68,7 @@ def find_nearest_skycomponent_index(home, comps) -> int:
     """Find nearest component in a list to a given direction (home)
 
     :param home: Home direction
-    :param comps: list of skycomponents
+    :param comps: List of SkyComponents
     :return: index of best in comps
     """
     if len(comps) == 0:
@@ -85,7 +85,7 @@ def find_nearest_skycomponent(home: SkyCoord, comps) -> (SkyComponent, float):
     """Find nearest component to a given direction
 
     :param home: Home direction
-    :param comps: list of skycomponents
+    :param comps: List of SkyComponents
     :return: Index of nearest component
     """
     best_index = find_nearest_skycomponent_index(home, comps)
@@ -188,7 +188,7 @@ def select_components_by_separation(
     """Select components with a range in separation
 
     :param home: Home direction
-    :param comps: list of skycomponents
+    :param comps: List of SkyComponents
     :param rmin: minimum range
     :param rmax: maximum range
     :return: selected components
@@ -227,7 +227,7 @@ def select_neighbouring_components(comps, target_comps):
 def remove_neighbouring_components(comps, distance):
     """Remove the faintest of a pair of components that are within a specified distance
 
-    :param comps: List of skycomponents
+    :param comps: List of SkyComponents
     :param distance: Minimum distance
     :return: Indices of components in target_comps, selected components
     """
@@ -261,7 +261,7 @@ def find_skycomponents(
     :param fwhm: Full width half maximum of gaussian in pixels
     :param threshold: Threshold for component detection. Default: 1 Jy.
     :param npixels: Number of connected pixels required
-    :return: list of skycomponents
+    :return: List of SkyComponents
     """
 
     # assert isinstance(im, Image)
@@ -378,7 +378,7 @@ def apply_beam_to_skycomponent(
     :param phasecentre: Phase Centre of beam (astropy.Coord)
     :param beam: primary beam (Image)
     :param sc: SkyComponent or list of SkyComponents
-    :return: List of skycomponents
+    :return: List of SkyComponents
     """
     single = not isinstance(sc, collections.abc.Iterable)
 
@@ -464,7 +464,7 @@ def apply_voltage_pattern_to_skycomponent(
     :param inverse: Inverse application?
     :param vp: voltage pattern as complex image
     :param sc: SkyComponent or list of SkyComponents
-    :return: List of skycomponents
+    :return: List of SkyComponents
     """
     # assert isinstance(vp, Image)
     assert (

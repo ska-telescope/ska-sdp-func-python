@@ -53,7 +53,7 @@ def convolution_mapping_visibility(vis, griddata, chan, cf=None):
 
     :param vis: Visibility to be gridded
     :param griddata: GridData
-    :param chan: The chanel to be gridded
+    :param chan: The channel to be gridded
     :param cf: ConvolutionFunction
     :return:
     """

@@ -44,7 +44,6 @@ def solve_gaintable(
     crosspol=False,
     normalise_gains=True,
     jones_type="T",
-    **kwargs,
 ) -> GainTable:
     """Solve a gain table by fitting an observed visibility
          to a model visibility
@@ -78,9 +77,7 @@ def solve_gaintable(
 
     if gt is None:
         log.debug("solve_gaintable: creating new gaintable")
-        gt = create_gaintable_from_visibility(
-            vis, jones_type=jones_type, **kwargs
-        )
+        gt = create_gaintable_from_visibility(vis, jones_type=jones_type)
     else:
         log.debug("solve_gaintable: starting from existing gaintable")
 
@@ -295,10 +292,10 @@ def gain_substitution_scalar(gain, x, xwt):
          for point source equivalent visibilities
     TODO: Check this function description
 
-    :param gain: gains
-    :param gwt: gain weight
-    :param x: Equivalent point source visibility[nants, nants, ...]
-    :return: gain [nants, ...], weight [nants, ...]
+    :param gain: gains (numpy.array of shape [nant, nchan, nrec, nrec])
+    :param x: Equivalent point source visibility [nants, nants, nchan, npol]
+    :param xwt: Equivalent point source weight [nants, nants, nchan]?
+    :return: gain [nants, nchan, nrec, nrec], weight [nants, nchan, nrec, nrec]
 
     """
     nants, nchan, nrec, _ = gain.shape
@@ -309,7 +306,7 @@ def gain_substitution_scalar(gain, x, xwt):
     xxwt = x * xwt[:, :, :]
     cgain = numpy.conjugate(gain)
     gcg = gain[:, :] * cgain[:, :]
-    # Optimzied
+
     n_top = numpy.einsum("ik...,ijk...->jk...", gain, xxwt)
     n_bot = numpy.einsum("ik...,ijk...->jk...", gcg, xwt).real
 
@@ -343,13 +340,13 @@ def solve_antenna_gains_itsubs_nocrossdata(
 
     :param gain: gains
     :param gwt: gain weight
-    :param x: Equivalent point source visibility[nants, nants, ...]
-    :param xwt: Equivalent point source weight [nants, nants, ...]
+    :param x: Equivalent point source visibility [nants, nants, nchan, npol]
+    :param xwt: Equivalent point source weight [nants, nants, nchan]
     :param niter: Number of iterations
     :param tol: tolerance on solution change
     :param phase_only: Do solution for only the phase? (default True)
     :param refant: Reference antenna for phase (default=0.0)
-    :return: gain [nants, ...], weight [nants, ...]
+    :return: gain [nants, nchan, nrec, nrec], weight [nants, nchan, nrec, nrec]
     """
 
     # This implementation is sub-optimal. TODO: Reimplement IQ, IV calibration
@@ -379,7 +376,7 @@ def solve_antenna_gains_itsubs_nocrossdata(
         tol=tol,
         phase_only=phase_only,
         refant=refant,
-    )  # for ant1 in range(nants):
+    )
 
 
 def solve_antenna_gains_itsubs_matrix(
@@ -399,13 +396,13 @@ def solve_antenna_gains_itsubs_matrix(
 
     :param gain: gains
     :param gwt: gain weight
-    :param x: Equivalent point source visibility[nants, nants, ...]
-    :param xwt: Equivalent point source weight [nants, nants, ...]
+    :param x: Equivalent point source visibility[nants, nants, nchan, npol]
+    :param xwt: Equivalent point source weight [nants, nants, nchan]
     :param niter: Number of iterations
     :param tol: tolerance on solution change
     :param phase_only: Do solution for only the phase? (default True)
     :param refant: Reference antenna for phase (default=0.0)
-    :return: gain [nants, ...], weight [nants, ...]
+    :return: gain [nants, nchan, nrec, nrec], weight [nants, nchan, nrec, nrec]
     """
 
     nants, _, nchan, npol = x.shape
@@ -449,11 +446,12 @@ def gain_substitution_matrix(gain, x, xwt):
     """
     Substitute gains across all baselines of gain
          for point source equivalent visibilities
+    TODO: Check this function description
 
-    :param gain: gain [nant, ...]
-    :param x: Point source equivalent visibility [nant, ...]
-    :param xwt: Point source equivalent weight [nant, ...]
-    :return: gain [nants, ...], weight [nants, ...]
+    :param gain: gains (numpy.array of shape [nant, nchan, nrec, nrec])
+    :param x: Equivalent point source visibility [nants, nants, nchan, npol]
+    :param xwt: Equivalent point source weight [nants, nants, nchan]
+    :return: gain [nants, nchan, nrec, nrec], weight [nants, nchan, nrec, nrec]
     """
     nants, nchan, nrec, _ = gain.shape
 
@@ -489,10 +487,10 @@ def solution_residual_scalar(gain, x, xwt):
     """Calculate residual across all baselines of gain
          for point source equivalent visibilities
 
-    :param gain: gain [nant, ...]
-    :param x: Point source equivalent visibility [nant, ...]
-    :param xwt: Point source equivalent weight [nant, ...]
-    :return: residual[...]
+    :param gain: gains (numpy.array of shape [nant, nchan, nrec, nrec])
+    :param x: Equivalent point source visibility [nants, nants, nchan, npol]
+    :param xwt: Equivalent point source weight [nants, nants, nchan]
+    :return: residual[nchan, nrec, nrec]
     """
 
     nant, nchan, nrec, _ = gain.shape
@@ -527,10 +525,10 @@ def solution_residual_matrix(gain, x, xwt):
     """Calculate residual across all baselines of gain
          for point source equivalent visibilities
 
-    :param gain: gain [nant, ...]
-    :param x: Point source equivalent visibility [nant, ...]
-    :param xwt: Point source equivalent weight [nant, ...]
-    :return: residual[...]
+    :param gain: gains (numpy.array of shape [nant, nchan, nrec, nrec])
+    :param x: Equivalent point source visibility [nants, nants, nchan, npol]
+    :param xwt: Equivalent point source weight [nants, nants, nchan]
+    :return: residual[nchan, nrec, nrec]
     """
 
     nants, _, nchan, nrec, _ = x.shape
