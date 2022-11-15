@@ -79,7 +79,7 @@ def shift_vis_to_image(
     nchan, npol, ny, nx = im["pixels"].data.shape
 
     # Convert the FFT definition of the phase center to world coordinates (1 relative)
-    # This is the only place in RASCIL where the relationship between the image and visibility
+    # This is the only place where the relationship between the image and visibility
     # frames is defined.
 
     image_phasecentre = pixel_to_skycoord(

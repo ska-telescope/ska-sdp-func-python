@@ -41,11 +41,13 @@ the code does not pass all of them.
 When you are ready to make a new release (maintainers only):
 
   - Check out the master branch
-  - Create an issue in the [Release Management](https://jira.skatelescope.org/projects/REL/summary) project
   - Update the version number in `.release` with
     - `make bump-patch-release`,
     - `make bump-minor-release`, or
     - `make bump-major-release`
   - Set the Python package version number with `make python-set-release`
+  - Manually update the documentation version in `docs/src/conf.py`
+  - Manually replace `main` with the new version number in `CHANGELOG.md`
   - Create the git tag with `make git-create-tag`
+    When it asks for the JIRA ticket, use the ORCA ticket that you are working on
   - Push the changes with `make git-push-tag`

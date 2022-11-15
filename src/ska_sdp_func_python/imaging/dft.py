@@ -163,7 +163,7 @@ def dft_kernel(
             # this will break DFT if bvis is for multiple channels;
             # here we broadcast vfluxes to have the correct shape that
             # matches with the bvis.
-            # Note: this is not needed for the RASCIL DFT, because numpy
+            # Note: this is not needed for the func_python DFT, because numpy
             # correctly broadcasts the shapes at the place where its needed.
             comp_flux = numpy.ones(
                 (vfluxes.shape[0], len(vfluxes.frequency), vfluxes.shape[-1]),

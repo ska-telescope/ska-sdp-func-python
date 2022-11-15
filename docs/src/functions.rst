@@ -1,10 +1,10 @@
-.. _rascil_functions:
+.. _functions:
 
 .. toctree::
   :maxdepth: 2
 
-Functions
-=========
+Important Functions
+===================
 
 
 Visibility weighting and tapering
