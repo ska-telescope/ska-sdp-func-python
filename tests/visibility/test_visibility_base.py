@@ -97,7 +97,10 @@ def test_phase_rotation_identity(base_params):
 
 
 def test_phase_rotation(base_params):
-    """Check that phaserotate_visibility gives the same answer as offsetting phase centre "manually" """
+    """
+    Check that phaserotate_visibility gives the same answer
+    as offsetting phase centre "manually"
+    """
     vis = base_params["visibility"]
     # Predict visibilities with new phase centre independently
     ha_diff = (

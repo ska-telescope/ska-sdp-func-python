@@ -1,7 +1,5 @@
-# pylint: disable=invalid-name, unused-variable, unused-argument
-# pylint: disable=import-error
-""" geometry
-
+"""
+Geometry
 """
 
 __all__ = [
@@ -88,7 +86,8 @@ def utc_to_ms_epoch(ts):
          epoch suitable for using in a Measurement Set
 
     :param ts:  An astropy Time object.
-    :result: The epoch time ``t`` in seconds suitable for fields in measurement sets.
+    :result: The epoch time ``t`` in seconds suitable
+             for fields in measurement sets.
     """
     # Use astropy Time
     epoch_s = ts.mjd * 24 * 60 * 60.0

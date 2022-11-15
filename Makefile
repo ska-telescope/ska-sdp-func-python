@@ -7,9 +7,7 @@ PROJECT_NAME = ska-sdp-func-python
 # flake8 switches
 # W503: line break before binary operator
 # E203: whitespace before ':'
-# E501: line too long
-# These need to be eventually addressed
-PYTHON_SWITCHES_FOR_FLAKE8 = --ignore=W503,E203,E501
+PYTHON_SWITCHES_FOR_FLAKE8 = --ignore=W503,E203
 
 # W0511: fixme (don't report TODOs)
 # R0801: duplicate-code (some are duplicated between the main function and utils

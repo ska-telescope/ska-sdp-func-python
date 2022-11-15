@@ -1,3 +1,7 @@
+"""
+Pytest fixtures
+"""
+
 import numpy
 import pytest
 from astropy import units

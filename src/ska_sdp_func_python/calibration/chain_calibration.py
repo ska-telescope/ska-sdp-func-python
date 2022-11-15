@@ -1,7 +1,5 @@
-# pylint: disable=invalid-name, too-many-arguments, unused-argument
-# pylint: disable=logging-format-interpolation,consider-using-f-string,logging-fstring-interpolation
-# pylint: disable=import-error, no-name-in-module
-""" Functions to solve for and apply chains of antenna/station gain tables.
+"""
+Functions to solve for and apply chains of antenna/station gain tables.
 
 Calibration control is via a calibration_controls dictionary
 created by:py:func:`chain_calibration.create_calibration_controls`.
@@ -58,7 +56,7 @@ For example::
                                               calibration_context='TGB',
                                               do_selfcal=True)
 
-"""
+"""  # noqa: E501
 
 __all__ = [
     "calibrate_chain",
@@ -91,7 +89,8 @@ def create_calibration_controls():
          B: Bandpass
          I: Ionosphere
 
-     Therefore first get this default dictionary and then adjust parameters as desired.
+     Therefore first get this default dictionary and then
+     adjust parameters as desired.
      The calibrate function takes a context string e.g. TGB.
      It then calibrates each of these Jones matrices in turn
 
@@ -133,15 +132,20 @@ def apply_calibration_chain(
     tol=1e-6,
     **kwargs,
 ):
-    """Calibrate using algorithm specified by calibration_context and the calibration controls
+    """
+    Calibrate using algorithm specified by calibration_context
+    and the calibration controls
 
-     The context string can denote a sequence of calibrations e.g. TGB with different timescales.
+    The context string can denote a sequence of calibrations
+    e.g. TGB with different timescales.
 
     :param vis:
     :param model_vis:
-    :param calibration_context: calibration contexts in order of correction e.g. 'TGB'
+    :param calibration_context: calibration contexts in order
+                    of correction e.g. 'TGB'
     :param control: controls dictionary, modified as necessary
-    :param iteration: Iteration number to be compared to the 'first_selfcal' field.
+    :param iteration: Iteration number to be compared
+                    to the 'first_selfcal' field.
     :param kwargs:
     :return: Calibrated data_models, dict(gaintables)
     """
@@ -180,15 +184,19 @@ def calibrate_chain(
     tol=1e-6,
     **kwargs,
 ):
-    """Calibrate using algorithm specified by calibration_context
+    """
+    Calibrate using algorithm specified by calibration_context
 
-     The context string can denote a sequence of calibrations e.g. TGB with different timescales.
+    The context string can denote a sequence of calibrations
+    e.g. TGB with different timescales.
 
     :param vis:
     :param model_vis:
-    :param calibration_context: calibration contexts in order of correction e.g. 'TGB'
+    :param calibration_context: calibration contexts in
+                      order of correction e.g. 'TGB'
     :param controls: controls dictionary, modified as necessary
-    :param iteration: Iteration number to be compared to the 'first_selfcal' field.
+    :param iteration: Iteration number to be compared
+                      to the 'first_selfcal' field.
     :param kwargs:
     :return: Calibrated data_models, dict(gaintables)
     """
@@ -245,9 +253,8 @@ def calibrate_chain(
                 )
             else:
                 log.debug(
-                    "calibrate_chain: Jones matrix {} not solved, iteration {}".format(
-                        c, iteration
-                    )
+                    "calibrate_chain: Jones matrix {} "
+                    "not solved, iteration {}".format(c, iteration)
                 )
 
         return avis, gaintables
@@ -272,9 +279,11 @@ def solve_calibrate_chain(
 
     :param vis:
     :param model_vis:
-    :param calibration_context: calibration contexts in order of correction e.g. 'TGB'
+    :param calibration_context: calibration contexts in order
+                      of correction e.g. 'TGB'
     :param controls: controls dictionary, modified as necessary
-    :param iteration: Iteration number to be compared to the 'first_selfcal' field.
+    :param iteration: Iteration number to be compared to the
+                      'first_selfcal' field.
     :param kwargs:
     :return: Calibrated data_models, dict(gaintables)
     """
@@ -312,7 +321,8 @@ def solve_calibrate_chain(
                 )
                 context_message = (
                     f"Model is non-zero: solving for Jones matrix {c}, "
-                    f"iteration {iteration}, frequency {fmin:4g} - {fmax:4g} Hz"
+                    f"iteration {iteration}, frequency "
+                    f"{fmin:4g} - {fmax:4g} Hz"
                 )
                 qa = gaintables[c].gaintable_acc.qa_gain_table(
                     context=context_message
@@ -321,7 +331,8 @@ def solve_calibrate_chain(
             else:
                 log.info(
                     f"No model data: cannot solve for Jones matrix {c}, "
-                    f"iteration {iteration}, frequency {fmin:4g} - {fmax:4g} Hz"
+                    f"iteration {iteration}, frequency "
+                    f"{fmin:4g} - {fmax:4g} Hz"
                 )
         else:
             log.info(

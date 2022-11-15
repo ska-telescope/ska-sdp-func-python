@@ -1,9 +1,8 @@
-# pylint: disable=invalid-name, too-many-locals, unused-argument
-# pylint: disable=unbalanced-tuple-unpacking
-# pylint: disable=import-error
-"""Coordinate support
+"""
+Coordinate support
 
-We follow the casa definition of coordinate systems http://casa.nrao.edu/Memos/CoordConvention.pdf:
+We follow the casa definition of coordinate systems
+http://casa.nrao.edu/Memos/CoordConvention.pdf:
 
 UVW is a right-handed coordinate system, with W pointing towards the
 source, and a baseline convention of:math:`ant2 - ant1` where
@@ -122,9 +121,9 @@ def ecef_to_lla(x, y, z):
 
 def enu_to_eci(enu, lat):
     """
-    Converts a baseline in [east, north, elevation] to earth-centered inertial coordinates
+    Converts a baseline in [east, north, elevation]
+    to earth-centered inertial coordinates
     for that baseline [x, y, z].
-
     """
     e, n, u = numpy.hsplit(
         enu, 3
@@ -139,9 +138,8 @@ def enu_to_eci(enu, lat):
 
 def eci_to_enu(eci, lat):
     """
-    Converts a baseline in earth-centered inertial coordinates [x, y, z] to [east, north,
-    elevation] for that baseline.
-
+    Converts a baseline in earth-centered inertial coordinates
+    [x, y, z] to [east, north, elevation] for that baseline.
     """
 
     x, y, z = numpy.hsplit(
@@ -400,8 +398,9 @@ def xyz_to_baselines(ants_xyz, ha_range, dec):
      for a range of hour angles (i.e. non-snapshot observation)
      to create a uvw sampling distribution
 
-    :param ants_xyz::math:`(x,y,z)` co-ordinates of antennas in array
-    :param ha_range: list of hour angle values for astronomical source as function of time
+    :param ants_xyz: `(x,y,z)` co-ordinates of antennas in array
+    :param ha_range: list of hour angle values for astronomical source
+                     as function of time
     :param dec: declination of astronomical source [constant, not:math:`f(t)`]
     """
 
@@ -471,7 +470,8 @@ def simulate_point(dist_uvw, l, m):  # noqa: E741
      FT relationship becomes an exponential, evaluated at
      (uvw.lmn)
 
-    :param dist_uvw::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
+    :param dist_uvw: `(u,v,w)` distribution of projected baselines
+                     (in wavelengths)
     :param l: horizontal direction cosine relative to phase tracking centre
     :param m: orthogonal directon cosine relative to phase tracking centre
     """
@@ -497,7 +497,8 @@ def simulate_point_antenna(dist_uvw, l, m):  # noqa: E741
      FT relationship becomes an exponential, evaluated at
      (uvw.lmn)
 
-    :param dist_uvw::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
+    :param dist_uvw: `(u,v,w)` distribution of projected baselines
+                     (in wavelengths)
     :param l: horizontal direction cosine relative to phase tracking centre
     :param m: orthogonal directon cosine relative to phase tracking centre
     """
@@ -515,7 +516,7 @@ def visibility_shift(uvw, vis, dl, dm):
      shifted as well to work correctly.
 
     :param uvw:
-    :param vis::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
+    :param vis: `(u,v,w)` distribution of projected baselines (in wavelengths)
     :param vis: Input visibilities
     :param dl: Horizontal shift distance as directional cosine
     :param dm: Vertical shift distance as directional cosine
@@ -537,7 +538,7 @@ def uvw_transform(uvw, transform_matrix):
      approach to interferometric mosaicing." Astronomy and Astrophysics
      Supplement Series 120 (1996): 375-384.
 
-    :param uvw::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
+    :param uvw: `(u,v,w)` distribution of projected baselines (in wavelengths)
     :param transform_matrix: 2x2 matrix for image transformation
     :return: New baseline coordinates
     """
@@ -549,7 +550,9 @@ def uvw_transform(uvw, transform_matrix):
 
 
 def parallactic_angle(ha, dec, lat):
-    """Calculate parallactic angle of source at ha, dec observed from site at latitude dec
+    """
+    Calculate parallactic angle of source at ha, dec
+    observed from site at latitude dec
 
      H = t - α
      sin(a) = sin(δ) sin(φ) + cos(δ) cos(φ) cos(H)

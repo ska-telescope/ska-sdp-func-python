@@ -1,9 +1,5 @@
-# pylint: disable=invalid-name, unused-variable
-# pylint: disable=import-outside-toplevel, import-error
-# pylint: disable=too-many-arguments, too-many-locals
-# flake8: noqa: E203
-"""Useful array functions.
-
+"""
+Useful array functions.
 """
 
 __all__ = [
@@ -155,7 +151,8 @@ def insert_array(
     :param flux: Flux[nchan, npol]
     :param bandwidth: Support of data in uv plane
     :param support: Support of function in image space
-    :param insert_function: insert_function_L or insert_function_Sinc or insert_function_pswf
+    :param insert_function: insert_function_L or
+                insert_function_Sinc or insert_function_pswf
     :return:
     """
     nchan, npol, ny, nx = im.shape

@@ -1,21 +1,17 @@
-# pylint: disable=invalid-name, unused-argument, too-many-locals
-# pylint: disable=unnecessary-dunder-call, unused-variable
-# pylint: disable=unbalanced-tuple-unpacking, no-else-return
-# pylint: disable=too-many-instance-attributes
-# pylint: disable=consider-using-f-string, logging-not-lazy, logging-format-interpolation
-# pylint: disable=import-error, no-name-in-module
-""" Imaging is based on use of the FFT to
-perform Fourier transforms efficiently. Since the observed visibility data_models
+"""
+Imaging is based on use of the FFT to perform Fourier transforms
+efficiently. Since the observed visibility data_models
 do not arrive naturally on grid points, the sampled points are
 resampled on the FFT grid using a convolution function to
 smear out the sample points. The resulting grid points are then FFT'ed.
-The result can be corrected for the griddata
-convolution function by division in the image plane of the transform.
+The result can be corrected for the griddata convolution function by
+division in the image plane of the transform.
 
 This module contains functions for performing the
 griddata process and the inverse degridding process.
 
-The GridData data model is used to hold the specification of the desired result.
+The GridData data model is used to hold the specification
+of the desired result.
 
 GridData, ConvolutionFunction and Vis
 always have the same PolarisationFrame. Conversion to
@@ -51,7 +47,8 @@ log = logging.getLogger("func-python-logger")
 def convolution_mapping_visibility(
     vis, griddata, chan, cf=None, channel_tolerance=1e-8
 ):
-    """Find the mappings between visibility, griddata, and convolution function
+    """Find the mappings between visibility, griddata,
+    and convolution function
 
     :param vis:
     :param griddata:
@@ -111,9 +108,10 @@ def spatial_mapping(griddata, u, v, w, cf=None):
         ).astype("int")
 
         if ndu > 1 and ndv > 1:
-            # We now have the location of grid points, convert back to uv space and
-            # find the remainder (in wavelengths). We then use this to calculate the
-            # subsampling indices (DUU, DVV)
+            # We now have the location of grid points,
+            # convert back to uv space and find the remainder
+            # (in wavelengths). We then use this to calculate
+            # the subsampling indices (DUU, DVV)
             wu_grid, wv_grid = grid_wcs.sub([1, 2]).wcs_pix2world(
                 pu_grid, pv_grid, 0
             )
@@ -208,7 +206,8 @@ def grid_visibility_to_griddata(vis, griddata, cf):
             [nrows * nbaselines, nvchan, nvpol]
         ).T
     )
-    # Do this in place to avoid creating a new copy. Doing the conjugation outside the loop
+    # Do this in place to avoid creating a new copy.
+    # Doing the conjugation outside the loop
     # reduces run time immensely
     ccf = numpy.conjugate(cf["pixels"].data)
     ccf = numpy.nan_to_num(ccf)
@@ -262,7 +261,8 @@ def grid_visibility_to_griddata(vis, griddata, cf):
                 sumwt[imchan, pol] += fwtt[pol, vchan, row]
             if num_skipped > 0:
                 log.warning(
-                    "warning visibility_to_griddata gridding: skipped %d visbility",
+                    "warning visibility_to_griddata gridding: "
+                    "skipped %d visbility",
                     num_skipped,
                 )
 
@@ -325,7 +325,8 @@ def grid_visibility_weight_to_griddata(vis, griddata: GridData):
                 sumwt[imchan, pol] += fwtt[pol, vchan, row]
             if num_skipped > 0:
                 log.warning(
-                    "warning visibility_weight_to_griddata gridding: skipped %d visbility",
+                    "warning visibility_weight_to_griddata gridding: "
+                    "skipped %d visbility",
                     num_skipped,
                 )
 
@@ -448,7 +449,8 @@ def griddata_visibility_reweight(
 
             # visbility in grid
             if weighting == "uniform":
-                # This is the asymptotic version of the robust equation for infinite robustness
+                # This is the asymptotic version of the robust
+                # equation for infinite robustness
                 fimwtt[pol, vchan, :][
                     numpy.logical_and(uv_ingrid_mask, gdwt_all > 0.0)
                 ] *= (

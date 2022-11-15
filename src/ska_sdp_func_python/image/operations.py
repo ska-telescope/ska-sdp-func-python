@@ -1,5 +1,5 @@
-""" Image operations visible to the Execution Framework as Components
-
+"""
+Image operations visible to the Execution Framework as Components
 """
 
 __all__ = [
@@ -33,7 +33,8 @@ def convert_clean_beam_to_degrees(im, beam_pixels):
 
     :param im: Image
     :param beam_pixels:
-    :return: dict e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}. Units are deg, deg, deg
+    :return: dict e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}.
+             Units are deg, deg, deg
     """
     # cellsize in radians
     cellsize = numpy.deg2rad(im.image_acc.wcs.wcs.cdelt[1])
@@ -57,7 +58,8 @@ def convert_clean_beam_to_pixels(model, clean_beam):
     """Convert clean beam to pixels
 
     :param model:
-    :param clean_beam: e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}. Units are deg, deg, deg
+    :param clean_beam: e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}.
+                Units are deg, deg, deg
     :return:
     """
     to_mm = numpy.sqrt(8.0 * numpy.log(2.0))
