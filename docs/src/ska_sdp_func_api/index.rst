@@ -6,10 +6,10 @@ Processing Components
 
    calibration/index
    fourier_transforms/index
-   griddata/index
+   grid_data/index
    image/index
    imaging/index
-   skycomponent/index
-   skymodel/index
+   sky_component/index
+   sky_model/index
    util/index
    visibility/index

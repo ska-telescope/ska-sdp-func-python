@@ -27,9 +27,6 @@ late seventies.
 .. automodapi::    ska_sdp_func_python.calibration.operations
   :no-inheritance-diagram:
 
-.. automodapi::    ska_sdp_func_python.calibration.pointing
-  :no-inheritance-diagram:
-
 .. automodapi::    ska_sdp_func_python.calibration.solvers
   :no-inheritance-diagram:
 
