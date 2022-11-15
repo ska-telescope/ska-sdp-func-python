@@ -4,3 +4,16 @@ sphinx
 sphinx_rtd_theme
 sphinx_automodapi
 sphinx-argparse
+
+# Additional packages needed to be installed
+# so that the docs can render the API correctly
+# without the need of mocking every single import
+astroplan
+astropy
+ducc0
+numpy
+photutils
+scipy
+ska_sdp_datamodels
+ska_sdp_func
+xarray
