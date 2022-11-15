@@ -4,7 +4,7 @@ Fourier processing
 ******************
 
 For wide field imaging with w term correction, the Nifty Gridder is supported and has the best performance.
-It is installed via pip as part of the install process.See more information on nifty-gridder at:
+It is installed via pip as part of the install process. See more information on nifty-gridder at:
 
     https://gitlab.mpcdf.mpg.de/ift/nifty_gridder
 
@@ -18,7 +18,7 @@ At the workflow level, such as imaging and pipeline workflows, use context='ng'.
 ska-sdp-func-python model
 ------------
 
-If only wterm needs to be corrected, the Nifty Gridder is the best option. However ska-sdp-func-python another approach.
+If only wterm needs to be corrected, the Nifty Gridder is the best option. However ska-sdp-func-python is another approach.
 There are many algorithms for imaging, using different approaches to correct for various effects:
 
 + Simple 2D transforms
@@ -36,4 +36,4 @@ framework decomposes the overall transform into suitable linear combinations of 
 The full layering is:
 
 + Nifty Gridder provides optimised wstack/wprojection imaging and should be the default.
-+ AW projection is also possible using the 2d gridder and a suitable gridding convolution function.
++ AW projection is also possible using the 2D gridder and a suitable gridding convolution function.
