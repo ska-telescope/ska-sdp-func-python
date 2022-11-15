@@ -36,9 +36,9 @@ log = logging.getLogger("func-python-logger")
 def calculate_skycomponent_list_taylor_terms(
     sc_list: List[SkyComponent], nmoment=1, reference_frequency=None
 ) -> List[List[SkyComponent]]:
-    """Calculate frequency taylor terms for a list of skycomponents
+    """Calculate frequency taylor terms for a List of SkyComponents
 
-    :param sc_list: List of SkyComponent
+    :param sc_list: List of SkyComponents
     :param nmoment: Number of moments/Taylor terms to use
     :param reference_frequency: Reference frequency (default None uses centre point)
     :return: SkyComponents as one component per Taylor term
@@ -95,7 +95,7 @@ def find_skycomponents_frequency_taylor_terms(
     :param dirty_list: List of images to be searched. These should be different frequencies
     :param nmoment: Number of moments to be fitted
     :param reference_frequency: Reference frequency (default None uses centre frequency)
-    :return: list of skycomponents
+    :return: List of SkyComponents
     """
     frequency = numpy.array([d.frequency[0] for d in dirty_list])
 
@@ -150,16 +150,16 @@ def find_skycomponents_frequency_taylor_terms(
 
 
 def interpolate_skycomponents_frequency(
-    sc_list, nmoment=1, reference_frequency=None, **kwargs
+    sc_list, nmoment=1, reference_frequency=None
 ) -> List[SkyComponent]:
-    """Smooth skycomponent fluxes by fitting polynomial in frequency
+    """Smooth SkyComponent fluxes by fitting polynomial in frequency
 
-     Each skycomponent in a list is interpolated in frequency using a Taylor series expansion.
+     Each SkyComponent in a list is interpolated in frequency using a Taylor series expansion.
 
-    :param sc_list: List of skycomponents to be interpolated (in frequency_
+    :param sc_list: List of SkyComponents to be interpolated (in frequency_
     :param nmoment: Number of moments to be fitted
     :param reference_frequency: Reference frequency (default None uses central frequency)
-    :return: list of interpolated skycomponents
+    :return: list of interpolated SkyComponents
     """
     frequency = sc_list[0].frequency
 
@@ -186,8 +186,8 @@ def interpolate_skycomponents_frequency(
 def transpose_skycomponents_to_channels(
     sc_list: List[SkyComponent],
 ) -> List[List[SkyComponent]]:
-    """Tranpose a component list from [source,chan] to [chan,source]
-
+    """
+    Tranpose a SkyComponent list from [source,chan] to [chan,source]
 
     :param sc_list: List of SkyComponents
     :return: List[List[SkyComponent]]
@@ -208,12 +208,12 @@ def transpose_skycomponents_to_channels(
 def gather_skycomponents_from_channels(
     sc_list: List[List[SkyComponent]],
 ) -> List[SkyComponent]:
-    """Gather a component list from [chan][source] to [source]
+    """Gather a SkyComponent list from [chan][source] to [source]
 
      This function converts list of lists of single frequency skycomponents into
-     a list of multi-frequency skycomponents
+     a list of multi-frequency SkyComponents
 
-    :param sc_list:
+    :param sc_list: List of SkyComponents
     :return: List[List[SkyComponent]]
     """
     nsource = len(sc_list[0])

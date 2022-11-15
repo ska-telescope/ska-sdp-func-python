@@ -1,5 +1,3 @@
-# pylint: disable=invalid-name, too-many-arguments, unused-argument
-# pylint: disable=import-error, no-name-in-module
 """
 Functions that perform gather/scatter operations on Images.
 """

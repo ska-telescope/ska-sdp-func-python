@@ -4,6 +4,7 @@ Base simple visibility operations, placed here to avoid circular dependencies
 
 __all__ = [
     "calculate_visibility_phasor",
+    "calculate_visibility_uvw_lambda",
     "phaserotate_visibility",
 ]
 
@@ -26,9 +27,9 @@ log = logging.getLogger("func-python-logger")
 def calculate_visibility_phasor(direction, vis):
     """Calculate the phasor for a component for a Visibility
 
-    :param direction:
-    :param vis:
-    :return:
+    :param direction: Direction (SkyCoords)
+    :param vis: Visibility
+    :return: Phasor (numpy.array)
     """
     # assert isinstance(vis, Visibility)
     ntimes, nbaseline, nchan, npol = vis["vis"].data.shape

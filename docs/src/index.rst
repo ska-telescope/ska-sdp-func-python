@@ -10,6 +10,4 @@ SKA SDP Python Processing Functions
   :maxdepth: 2
 
 
-*:ref:`genindex`
-*:ref:`modindex`
 

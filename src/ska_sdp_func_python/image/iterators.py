@@ -1,7 +1,4 @@
-# pylint: disable=invalid-name, too-many-locals, unused-argument
-# pylint: disable=too-many-branches, too-many-statements
-# pylint: disable=inconsistent-return-statements, unused-variable
-# pylint: disable=import-error, no-name-in-module
+# pylint: disable=inconsistent-return-statements
 """
 Functions that define and manipulate images. Images are just data and a World Coordinate System.
 """
@@ -22,7 +19,7 @@ log = logging.getLogger("func-python-logger")
 
 def image_raster_iter(
     im: Image, facets=1, overlap=0, taper="flat", make_flat=False
-) -> collections.abc.Iterable:
+):
     """Create an image_raster_iter generator,
     returning a list of subimages, optionally with overlaps
 

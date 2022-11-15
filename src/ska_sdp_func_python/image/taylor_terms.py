@@ -1,8 +1,3 @@
-# pylint: disable=invalid-name, too-many-lines, too-many-locals
-# pylint: disable=unused-argument, unused-variable, too-many-branches
-# pylint: disable=too-many-statements
-# pylint: disable=consider-using-f-string, logging-not-lazy, logging-format-interpolation
-# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
 """ Image functions using taylor terms in frequency
 
 """
@@ -298,7 +293,7 @@ def calculate_frequency_taylor_terms_from_image_list(
          w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
 
     :param im_list: Image list to be reconstructed
-    :param moment_image: Moment cube (constructed using calculate_image_frequency_moments)
+    :param nmoment: Number of moments to calculate
     :param reference_frequency: Reference frequency (default None uses average)
     :return: list of reconstructed images
     """
