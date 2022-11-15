@@ -16,4 +16,5 @@ photutils
 scipy
 ska_sdp_datamodels
 ska_sdp_func
+wagg
 xarray
