@@ -55,8 +55,12 @@ def concatenate_visibility(vis_list, dim="time"):
         concatenated_vis.__setattr__(
             "_imaging_weight",
             xarray.concat(
-                [vis._imaging_weight for vis in vis_list], dim=dim
-            ),  # pylint: disable=protected-access
+                [
+                    vis._imaging_weight  # pylint: disable=protected-access
+                    for vis in vis_list
+                ],
+                dim=dim,
+            ),
         )
     except TypeError:
         # if vis._imaging_weight is None, concat throws a TypeError

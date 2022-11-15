@@ -52,7 +52,8 @@ def solve_gaintable(
     :param niter: Number of iterations (default 30)
     :param tol: Iteration stops when the fractional change
                  in the gain solution is below this tolerance
-    :param crosspol: Do solutions including cross polarisations i.e. XY, YX or RL, LR
+    :param crosspol: Do solutions including cross polarisations
+                     i.e. XY, YX or RL, LR
     :param normalise_gains: Normalise the gains?
     :param jones_type: Type of calibration matrix T or G or B
     :param timeslice: Time interval between solutions (s)

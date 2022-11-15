@@ -36,8 +36,10 @@ def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):
                     that is removed in each iteration
     :param thresh: Cleaning stops when the maximum of the absolute deviation
                     of the residual is less than this value
-    :param niter: Maximum number of components to make if the threshold `thresh` is not hit
-    :param fracthresh: The predefined fractional threshold at which to stop cleaning
+    :param niter: Maximum number of components to make if the
+                  threshold `thresh` is not hit
+    :param fracthresh: The predefined fractional threshold
+                       at which to stop cleaning
     :param prefix: Informational prefix for log messages
     :return: clean component Image, residual Image
     """
@@ -128,8 +130,10 @@ def hogbom_complex(
     The starting-point for the code was the standard Hogbom
     clean algorithm available in RASCIL.
 
-    :param dirty_q: (numpy array): The dirty Q Image, i.e., the Q Image to be deconvolved.
-    :param dirty_u: (numpy array): The dirty U Image, i.e., the U Image to be deconvolved.
+    :param dirty_q: (numpy array): The dirty Q Image,
+                        i.e., the Q Image to be deconvolved.
+    :param dirty_u: (numpy array): The dirty U Image,
+                        i.e., the U Image to be deconvolved.
     :param psf_q: (numpy array): The point spread-function in Stokes Q.
     :param psf_u: (numpy array): The point spread-function in Stokes U.
     :param window: (float): Regions where clean components are allowed.
@@ -873,7 +877,8 @@ def find_global_optimum(
     :param ihsmmpsf: inverse of Hessian scale scale moment moment psf
     :param smresidual: scale convolutions of frequency moment residuals
     :param windowstack: Window for the search (an array)
-    :param sensitivity: Sensitivity array: search is on sensitivity * residual images
+    :param sensitivity: Sensitivity array:
+                search is on sensitivity * residual images
     :param findpeak: Algorithm: Algorithm1 or CASA or RASCIL
     :return: (Optimum scale, x, y, optimum moment)
     """

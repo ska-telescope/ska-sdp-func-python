@@ -151,8 +151,8 @@ def enu_to_eci(enu, lat):
 
 def eci_to_enu(eci, lat):
     """
-    Converts a baseline in earth-centered inertial coordinates [x, y, z] to [east, north,
-    elevation] for that baseline.
+    Converts a baseline in earth-centered inertial coordinates
+    [x, y, z] to [east, north, elevation] for that baseline.
 
     :param eci: Array of [x, y, z]
     :param lat: Latitude
@@ -315,16 +315,16 @@ def eci_to_uvw(xyz, ha, dec):
 
 def uvw_to_eci(uvw, ha, dec):
     """
-     Rotate:math:`(x,y,z)` positions relative to a sky position at
-    :math:`(ha, dec)` to earth coordinates. Can be used for both
-     antenna positions as well as for baselines.
+    Rotate `(x,y,z)` positions relative to a sky position at
+    `(ha, dec)` to earth coordinates. Can be used for both
+    antenna positions as well as for baselines.
 
-     Hour angle and declination can be given as single values or arrays
-     of the same length. Angles can be given as radians or astropy
-     quantities with a valid conversion.
-    TODO: This function doesn't look right. It is returning the same uvw as input,
-          and not using ha and dec at all.
-          We need to revisit this.
+    Hour angle and declination can be given as single values or arrays
+    of the same length. Angles can be given as radians or astropy
+    quantities with a valid conversion.
+    TODO: This function doesn't look right. It is returning
+        the same uvw as input, and not using ha and dec at all.
+        We need to revisit this.
 
     :param uvw::math:`(u,v,w)` co-ordinates of antennas in array
     :param ha: hour angle of phase tracking centre (:math:`ha = ra - lst`)

@@ -262,7 +262,8 @@ def multiply_gaintables(
 
     :param gt: First GainTable
     :param dgt: Second GainTable
-    :param time_tolerance: Maximum tolerance of time separation in the GainTable data
+    :param time_tolerance: Maximum tolerance of time s
+                eparation in the GainTable data
     :return: Multiplication product
     """
 

@@ -139,9 +139,11 @@ def apply_calibration_chain(
 
     :param vis: Visibility
     :param gaintables: GainTables to perform calibration
-    :param calibration_context: calibration contexts in order of correction e.g. 'TGB'
+    :param calibration_context: calibration contexts in order
+                    of correction e.g. 'TGB'
     :param controls: controls dictionary, modified as necessary
-    :param iteration: Iteration number to be compared to the 'first_selfcal' field.
+    :param iteration: Iteration number to be compared
+                    to the 'first_selfcal' field.
     :return: Calibrated data_models, dict(gaintables)
     """
 
@@ -185,9 +187,11 @@ def calibrate_chain(
     :param vis: Visibility containing the observed data_models
     :param modelvis: Visibility containing the visibility predicted by a model
     :param gaintables: Existing GainTables
-    :param calibration_context: calibration contexts in order of correction e.g. 'TGB'
+    :param calibration_context: calibration contexts in order
+                of correction e.g. 'TGB'
     :param controls: controls dictionary, modified as necessary
-    :param iteration: Iteration number to be compared to the 'first_selfcal' field.
+    :param iteration: Iteration number to be compared to
+                the 'first_selfcal' field.
     :param tol: Iteration stops when the fractional change
                  in the gain solution is below this tolerance
     :return: Calibrated data_models, dict(gaintables)
@@ -268,11 +272,13 @@ def solve_calibrate_chain(
      e.g. TGB with different timescales.
 
     :param vis: Visibility containing the observed data_models
-    :param modelvis: Visibility containing the visibility predicted by a model
+    :param model_vis: Visibility containing the visibility predicted by a model
     :param gaintables: Existing GainTables
-    :param calibration_context: calibration contexts in order of correction e.g. 'TGB'
+    :param calibration_context: calibration contexts in order
+                    of correction e.g. 'TGB'
     :param controls: controls dictionary, modified as necessary
-    :param iteration: Iteration number to be compared to the 'first_selfcal' field.
+    :param iteration: Iteration number to be compared to
+                    the 'first_selfcal' field.
     :param tol: Iteration stops when the fractional change
                  in the gain solution is below this tolerance
     :return: Calibrated data_models, dict(gaintables)

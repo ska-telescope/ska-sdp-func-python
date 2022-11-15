@@ -589,7 +589,8 @@ def hogbom_kernel_list(
     See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
 
     :param dirty_list: List of dirty images
-    :param prefix: Informational string to be used in log messages e.g. "cycle 1, subimage 42"
+    :param prefix: Informational string to be used in log messages
+                e.g. "cycle 1, subimage 42"
     :param psf_list: List of Point Spread Function
     :param window_list: List of window images
     :param gain: loop gain (float) 0.1
@@ -598,7 +599,7 @@ def hogbom_kernel_list(
     :param scales: Scales (in pixels) for multiscale ([0, 3, 10, 30])
     :param nmoment: Number of frequency moments (default 3)
     :param findpeak: Method of finding peak in mfsclean:
-                   'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
+                'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
 
     :return: component image_list, residual image_list
     """

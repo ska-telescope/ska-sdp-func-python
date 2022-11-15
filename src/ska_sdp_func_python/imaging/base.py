@@ -183,7 +183,8 @@ def predict_awprojection(
 
     :param vis: visibility to be predicted
     :param model: model image
-    :param gcfcf: (Grid correction function i.e. in image space, Convolution function i.e. in uv space)
+    :param gcfcf: (Grid correction function i.e. in image space,
+                  Convolution function i.e. in uv space)
     :return: resulting visibility (in place works)
     """
 
