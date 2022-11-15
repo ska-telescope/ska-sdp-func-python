@@ -298,7 +298,7 @@ def calculate_frequency_taylor_terms_from_image_list(
          w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
 
     :param im_list: Image list to be reconstructed
-    :param moment_image: Moment cube (constructed using calculate_image_frequency_moments)
+    :param nmoment: Number of moments to calculate
     :param reference_frequency: Reference frequency (default None uses average)
     :return: list of reconstructed images
     """

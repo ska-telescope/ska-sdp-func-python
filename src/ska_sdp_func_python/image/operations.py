@@ -5,6 +5,8 @@
 __all__ = [
     "convert_polimage_to_stokes",
     "convert_stokes_to_polimage",
+    "convert_clean_beam_to_degrees",
+    "convert_clean_beam_to_pixels",
 ]
 
 import logging
@@ -32,7 +34,7 @@ def convert_clean_beam_to_degrees(im, beam_pixels):
     """Convert clean beam in pixels to deg deg, deg
 
     :param im: Image
-    :param beam_pixels:
+    :param beam_pixels: Beam size in pixels
     :return: dict e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}. Units are deg, deg, deg
     """
     # cellsize in radians
@@ -56,7 +58,7 @@ def convert_clean_beam_to_degrees(im, beam_pixels):
 def convert_clean_beam_to_pixels(model, clean_beam):
     """Convert clean beam to pixels
 
-    :param model:
+    :param model: Model image containing beam information
     :param clean_beam: e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}. Units are deg, deg, deg
     :return:
     """
@@ -85,7 +87,7 @@ def convert_stokes_to_polimage(
     :returns: Complex image
 
     See also
-        :py:func:`rascil.processing_components.image.operations.convert_polimage_to_stokes`
+        :py:func:`ska_sdp_func_python.image.operations.convert_polimage_to_stokes`
         :py:func:`ska_sdp_datamodels.polarisation.convert_circular_to_stokes`
         :py:func:`ska_sdp_datamodels.polarisation.convert_linear_to_stokes`
     """
@@ -149,7 +151,7 @@ def convert_polimage_to_stokes(im: Image, complex_image=False, **kwargs):
     :returns: Complex or Real image
 
     See also
-        :py:func:`rascil.processing_components.image.operations.convert_stokes_to_polimage`
+        :py:func:`ska_sdp_func_python.image.operations.convert_stokes_to_polimage`
         :py:func:`ska_sdp_datamodels.polarisation.convert_stokes_to_circular`
         :py:func:`ska_sdp_datamodels.polarisation.convert_stokes_to_linear`
 

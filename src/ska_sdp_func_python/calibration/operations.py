@@ -253,13 +253,13 @@ def apply_gaintable(
 def multiply_gaintables(
     gt: GainTable, dgt: GainTable, time_tolerance=1e-3
 ) -> GainTable:
-    """Multiply two gaintables
+    """Multiply two GainTables
 
     Returns gt * dgt
 
-    :param gt:
-    :param dgt:
-    :return:
+    :param gt: First GainTable
+    :param dgt: Second GainTable
+    :return: Multiplication product
     """
 
     # Test if times align
@@ -295,10 +295,10 @@ def multiply_gaintables(
 
 
 def concatenate_gaintables(gt_list, dim="time"):
-    """Concatenate a list of gaintables
+    """Concatenate a list of GainTables
 
-    :param gt_list: List of gaintables
-    :return: Concatendated gaintable
+    :param gt_list: List of GainTables
+    :return: Concatenated GainTable
     """
 
     if len(gt_list) == 0:

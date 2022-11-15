@@ -167,7 +167,7 @@ def invert_wg(
 
     :param dopsf: Make the PSF instead of the dirty image
     :param bvis: Visibility to be inverted
-    :param im: image template (not changed)
+    :param model: image template (not changed)
     :param normalise: normalise by the sum of weights (True)
     :return: (resulting image, sum of the weights for each frequency and polarization)
 

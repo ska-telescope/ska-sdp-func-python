@@ -284,6 +284,7 @@ def check_psf_peak(psf_list):
     """Check that all PSFs in a list have unit peak
 
     :param psf_list: List of PSF images
+    :return: True if peak exists
     """
     for ipsf, psf in enumerate(psf_list):
         pmax = psf["pixels"].data.max()
@@ -414,7 +415,7 @@ def complex_hogbom_kernel_list(
 
     :param dirty_list: Image dirty image
     :param psf_list: Image Point Spread Function
-    :param window: Window array (Bool) - clean where True
+    :param window_list: Window array (Bool) - clean where True
     :param gain: loop gain (float) 0.q
     :param threshold: Clean threshold (0.0)
     :param fractional_threshold: Fractional threshold (0.01)
@@ -575,22 +576,21 @@ def hogbom_kernel_list(
 ):
     """Hogbom Clean, operating of lists of single frequency images
 
-      See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
+     See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
 
     :param dirty_list: List of dirty images
-     :param prefix: Informational string to be used in log messages e.g. "cycle 1, subimage 42"
-     :param psf_list: List of Point Spread Function
-     :param window_list: List of window images
-     :param sensitivity_list: List of sensitivity images
-     :param gain: loop gain (float) 0.1
-     :param threshold: Clean threshold (0.0)
-     :param fractional_threshold: Fractional threshold (0.01)
-     :param scales: Scales (in pixels) for multiscale ([0, 3, 10, 30])
-     :param nmoment: Number of frequency moments (default 3)
-     :param findpeak: Method of finding peak in mfsclean:
-                    'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
+    :param prefix: Informational string to be used in log messages e.g. "cycle 1, subimage 42"
+    :param psf_list: List of Point Spread Function
+    :param window_list: List of window images
+    :param gain: loop gain (float) 0.1
+    :param threshold: Clean threshold (0.0)
+    :param fractional_threshold: Fractional threshold (0.01)
+    :param scales: Scales (in pixels) for multiscale ([0, 3, 10, 30])
+    :param nmoment: Number of frequency moments (default 3)
+    :param findpeak: Method of finding peak in mfsclean:
+                   'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
 
-     :return: component image_list, residual image_list
+    :return: component image_list, residual image_list
     """
 
     log.info(
@@ -683,8 +683,6 @@ def mmclean_kernel_list(
     :param psf_list: List of Point Spread Function
     :param window_list: List of window images
     :param sensitivity_list: List of sensitivity images
-    :return: component image_list, residual image_list
-
     :return: component image_list, residual image_list
 
      The following optional arguments can be passed via kwargs:

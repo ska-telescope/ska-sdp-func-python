@@ -130,17 +130,16 @@ def apply_calibration_chain(
     calibration_context="T",
     controls=None,
     iteration=0,
-    tol=1e-6,
     **kwargs,
 ):
     """Calibrate using algorithm specified by calibration_context and the calibration controls
 
      The context string can denote a sequence of calibrations e.g. TGB with different timescales.
 
-    :param vis:
-    :param model_vis:
+    :param vis: Visibility
+    :param gaintables: GainTables to perform calibration
     :param calibration_context: calibration contexts in order of correction e.g. 'TGB'
-    :param control: controls dictionary, modified as necessary
+    :param controls: controls dictionary, modified as necessary
     :param iteration: Iteration number to be compared to the 'first_selfcal' field.
     :param kwargs:
     :return: Calibrated data_models, dict(gaintables)
@@ -184,11 +183,14 @@ def calibrate_chain(
 
      The context string can denote a sequence of calibrations e.g. TGB with different timescales.
 
-    :param vis:
-    :param model_vis:
+    :param vis: Visibility containing the observed data_models
+    :param modelvis: Visibility containing the visibility predicted by a model
+    :param gaintables: Existing GainTables
     :param calibration_context: calibration contexts in order of correction e.g. 'TGB'
     :param controls: controls dictionary, modified as necessary
     :param iteration: Iteration number to be compared to the 'first_selfcal' field.
+    :param tol: Iteration stops when the fractional change
+                 in the gain solution is below this tolerance
     :param kwargs:
     :return: Calibrated data_models, dict(gaintables)
     """
@@ -270,11 +272,14 @@ def solve_calibrate_chain(
      The context string can denote a sequence of calibrations
      e.g. TGB with different timescales.
 
-    :param vis:
-    :param model_vis:
+    :param vis: Visibility containing the observed data_models
+    :param modelvis: Visibility containing the visibility predicted by a model
+    :param gaintables: Existing GainTables
     :param calibration_context: calibration contexts in order of correction e.g. 'TGB'
     :param controls: controls dictionary, modified as necessary
     :param iteration: Iteration number to be compared to the 'first_selfcal' field.
+    :param tol: Iteration stops when the fractional change
+                 in the gain solution is below this tolerance
     :param kwargs:
     :return: Calibrated data_models, dict(gaintables)
     """

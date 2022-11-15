@@ -65,11 +65,13 @@ from astropy.coordinates import CartesianRepresentation, SkyCoord
 
 
 def lla_to_ecef(lat, lon, alt):
-    """Convert WGS84 spherical coordinates to ECEF cartesian coordinates.
-    :param lat:
-    :param lon:
-    :param alt:
-    :result ecef:
+    """
+    Convert WGS84 spherical coordinates to ECEF cartesian coordinates.
+
+    :param lat: Latitude in radians
+    :param lon: Longitude in radians
+    :param alt: Altitude in radians
+    :result ecef: Cartesian coordinates (x, y, z)
     """
     WGS84_a = 6378137.00000000
     WGS84_b = 6356752.31424518
@@ -88,6 +90,12 @@ def ecef_to_lla(x, y, z):
     """
     Convert earth-centered, earth-fixed coordinates to (rad), longitude
     (rad), elevation (m) using Bowring's method.
+
+    :param x: Cartesian x
+    :param y: Cartesian y
+    :param z: Cartesian z
+
+    :return: LLA coordinates (lat, lon, alt)
     """
 
     WGS84_a = 6378137.00000000
@@ -125,6 +133,10 @@ def enu_to_eci(enu, lat):
     Converts a baseline in [east, north, elevation] to earth-centered inertial coordinates
     for that baseline [x, y, z].
 
+    :param enu: Array of [east, north, elevation]
+    :param lat: Latitude
+
+    :return: Array of [x, y, z]
     """
     e, n, u = numpy.hsplit(
         enu, 3
@@ -142,6 +154,10 @@ def eci_to_enu(eci, lat):
     Converts a baseline in earth-centered inertial coordinates [x, y, z] to [east, north,
     elevation] for that baseline.
 
+    :param eci: Array of [x, y, z]
+    :param lat: Latitude
+
+    :return: Array of [east, north, elevation]
     """
 
     x, y, z = numpy.hsplit(
@@ -156,7 +172,9 @@ def eci_to_enu(eci, lat):
 
 
 def enu_to_ecef(location, enu):
-    """Convert ENU coordinates relative to reference location to ECEF coordinates.
+    """
+    Convert ENU coordinates relative to reference location to ECEF coordinates.
+
     :param location: Current WGS84 coordinate
     :param enu: local xyz coordinate
     :result: ECEF
@@ -183,7 +201,10 @@ def enu_to_ecef(location, enu):
 
 
 def ecef_to_enu(location, xyz):
-    """Convert ECEF coordinates to ENU coordinates relative to reference location.
+
+    """
+    Convert ECEF coordinates to ENU coordinates relative to reference location.
+
     :param location: Current WGS84 coordinate
     :param xyz: ECEF coordinate
     :result: enu
@@ -272,6 +293,8 @@ def eci_to_uvw(xyz, ha, dec):
     :param xyz::math:`(x,y,z)` co-ordinates of antennas in array
     :param ha: hour angle of phase tracking centre (:math:`ha = ra - lst`)
     :param dec: declination of phase tracking centre.
+
+    :return : uvw
     """
 
     x, y, z = numpy.hsplit(
@@ -300,10 +323,13 @@ def uvw_to_eci(uvw, ha, dec):
      Hour angle and declination can be given as single values or arrays
      of the same length. Angles can be given as radians or astropy
      quantities with a valid conversion.
+    TODO: This function doesn't look right.
 
     :param uvw::math:`(u,v,w)` co-ordinates of antennas in array
     :param ha: hour angle of phase tracking centre (:math:`ha = ra - lst`)
     :param dec: declination of phase tracking centre
+
+    :return: ECI coordinates
     """
 
     u, v, w = numpy.hsplit(
@@ -327,6 +353,8 @@ def xyz_to_uvw(xyz, ha, dec):
     :param xyz::math:`(x,y,z)` co-ordinates of antennas in array
     :param ha: hour angle of phase tracking centre (:math:`ha = ra - lst`)
     :param dec: declination of phase tracking centre.
+
+    :return: xyz
     """
 
     # return eci_to_uvw(xyz, ha, dec)
@@ -358,6 +386,8 @@ def uvw_to_xyz(uvw, ha, dec):
     :param uvw::math:`(u,v,w)` co-ordinates of antennas in array
     :param ha: hour angle of phase tracking centre (:math:`ha = ra - lst`)
     :param dec: declination of phase tracking centre
+
+    :return: xyz
     """
     # return uvw_to_eci(uvw, ha, dec)
     u, v, w = numpy.hsplit(
@@ -381,6 +411,7 @@ def baselines(ants_uvw):
      uvw co-ordinate system station positions
 
     :param ants_uvw: `(u,v,w)` co-ordinates of antennas in array
+    :return: baselines in (u,v,w)
     """
 
     res = []
@@ -403,6 +434,8 @@ def xyz_to_baselines(ants_xyz, ha_range, dec):
     :param ants_xyz::math:`(x,y,z)` co-ordinates of antennas in array
     :param ha_range: list of hour angle values for astronomical source as function of time
     :param dec: declination of astronomical source [constant, not:math:`f(t)`]
+
+    :return: baselines in (u,v,w)
     """
 
     dist_uvw = numpy.concatenate(
@@ -422,6 +455,11 @@ def skycoord_to_lmn(pos: SkyCoord, phasecentre: SkyCoord):
     * l,m a tangential plane of the sky sphere
 
     Note that this means that l increases east-wards
+
+    :param pos: position in SkyCoord
+    :param phasecentre: phase centre in SkyCoord
+
+    :return: l,m,n
     """
 
     # Determine relative sky position
@@ -444,6 +482,9 @@ def lmn_to_skycoord(lmn, phasecentre: SkyCoord):
     * l,m a tangential plane of the sky sphere
 
     Note that this means that l increases east-wards
+
+    :param lmn: lmn coordinates
+    :param phasecentre: phase centre in SkyCoord
     """
 
     # Convert l,m,n to SkyCoord convention, also enforce celestial sphere
@@ -474,6 +515,8 @@ def simulate_point(dist_uvw, l, m):  # noqa: E741
     :param dist_uvw::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
     :param l: horizontal direction cosine relative to phase tracking centre
     :param m: orthogonal directon cosine relative to phase tracking centre
+
+    :return:  Complex array of visibility data
     """
 
     # vector direction to source
@@ -500,6 +543,8 @@ def simulate_point_antenna(dist_uvw, l, m):  # noqa: E741
     :param dist_uvw::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
     :param l: horizontal direction cosine relative to phase tracking centre
     :param m: orthogonal directon cosine relative to phase tracking centre
+
+    :return: Complex array of visibility data
     """
 
     # vector direction to source
@@ -514,8 +559,7 @@ def visibility_shift(uvw, vis, dl, dm):
      based on simple FFT laws. It will require kernels to be suitably
      shifted as well to work correctly.
 
-    :param uvw:
-    :param vis::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
+    :param uvw: :math:`(u,v,w)` distribution of projected baselines (in wavelengths)
     :param vis: Input visibilities
     :param dl: Horizontal shift distance as directional cosine
     :param dm: Vertical shift distance as directional cosine
@@ -559,7 +603,7 @@ def parallactic_angle(ha, dec, lat):
     :param ha: Hour angle (radians)
     :param dec: Declination (radians)
     :param lat: Site latitude (radians)
-    :return:
+    :return: Angle in radians
     """
     return numpy.arctan2(
         numpy.cos(lat) * numpy.sin(ha),
@@ -582,7 +626,7 @@ def pa_z(ha, dec, lat):
     :param ha: Hour angle (radians)
     :param dec: Declination (radians)
     :param lat: Site latitude (radians)
-    :return:
+    :return: Angle in radians
     """
     sinz = numpy.sin(dec) * numpy.sin(lat) + numpy.cos(dec) * numpy.cos(
         lat
@@ -608,9 +652,9 @@ def hadec_to_azel(ha, dec, latitude):
      cosel cosaz = coslat sindec - sinlat cosdec cosha
      cosel sinaz = - cosdec sinha
 
-    :param ha:
-    :param dec:
-    :param latitude:
+    :param ha: Hour angle (radians)
+    :param dec: Declination (radians)
+    :param latitude: Site latitude (radians)
     :return: az, el
     """
     coslat = numpy.cos(latitude)
@@ -636,9 +680,9 @@ def azel_to_hadec(az, el, latitude):
      cosdec cosha = coslat sinel - sinlat cosel cosaz
      cosdec sinha = -cosel sinaz
 
-    :param az:
-    :param el:
-    :param latitude:
+    :param az: Azimuth (radians)
+    :param el: Elevation (radians)
+    :param latitude: Site latitude (radians)
     :return: ha, dec
     """
     cosel = numpy.cos(el)

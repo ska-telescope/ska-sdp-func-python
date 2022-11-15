@@ -59,6 +59,7 @@ def solve_gaintable(
     :param tol: Iteration stops when the fractional change
                  in the gain solution is below this tolerance
     :param crosspol: Do solutions including cross polarisations i.e. XY, YX or RL, LR
+    :param normalise_gains: Normalise the gains?
     :param jones_type: Type of calibration matrix T or G or B
     :return: GainTable containing solution
 
@@ -245,6 +246,7 @@ def solve_antenna_gains_itsubs_scalar(
     :param tol: tolerance on solution change
     :param phase_only: Do solution for only the phase? (default True)
     :param refant: Reference antenna for phase (default=0)
+    :param damping: Damping parameter
     :return: gain [nants, ...], weight [nants, ...]
 
     """
@@ -288,6 +290,17 @@ def solve_antenna_gains_itsubs_scalar(
 
 
 def gain_substitution_scalar(gain, x, xwt):
+    """
+    Substitute gains across all baselines of gain
+         for point source equivalent visibilities
+    TODO: Check this function description
+
+    :param gain: gains
+    :param gwt: gain weight
+    :param x: Equivalent point source visibility[nants, nants, ...]
+    :return: gain [nants, ...], weight [nants, ...]
+
+    """
     nants, nchan, nrec, _ = gain.shape
 
     newgain1 = numpy.ones_like(gain, dtype="complex128")
@@ -433,6 +446,15 @@ def solve_antenna_gains_itsubs_matrix(
 
 
 def gain_substitution_matrix(gain, x, xwt):
+    """
+    Substitute gains across all baselines of gain
+         for point source equivalent visibilities
+
+    :param gain: gain [nant, ...]
+    :param x: Point source equivalent visibility [nant, ...]
+    :param xwt: Point source equivalent weight [nant, ...]
+    :return: gain [nants, ...], weight [nants, ...]
+    """
     nants, nchan, nrec, _ = gain.shape
 
     # We are going to work with Jones 2x2 matrix formalism

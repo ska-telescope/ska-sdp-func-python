@@ -19,7 +19,14 @@ This and related modules contain various approachs for dealing with the wide-fie
 extra phase term in the Fourier transform cannot be ignored.
 """
 
-__all__ = ["dft_skycomponent_visibility", "idft_visibility_skycomponent"]
+__all__ = [
+    "dft_skycomponent_visibility",
+    "extract_direction_and_flux",
+    "dft_kernel",
+    "dft_cpu_looped",
+    "dft_gpu_raw_kernel",
+    "idft_visibility_skycomponent",
+]
 
 import collections
 import logging

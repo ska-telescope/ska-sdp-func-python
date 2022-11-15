@@ -82,9 +82,9 @@ def concatenate_visibility_frequency(bvis_list):
 def subtract_visibility(vis, model_vis, inplace=False):
     """Subtract model_vis from vis, returning new visibility
 
-    :param vis:
-    :param model_vis:
-    :return:
+    :param vis: Visibility to be subtracted from
+    :param model_vis: Visibility to subtract with
+    :return: Subtracted visibility
     """
 
     assert vis.vis.shape == model_vis.vis.shape, (
@@ -148,9 +148,9 @@ def divide_visibility(vis: Visibility, modelvis: Visibility):
 
      Zero divisions are avoided and the corresponding weight set to zero.
 
-    :param vis:
-    :param modelvis:
-    :return:
+    :param vis: Visibility to be divided
+    :param modelvis: Visibility to divide with
+    :return: Divided Visibility
     """
 
     x = numpy.zeros_like(vis.visibility_acc.flagged_vis)

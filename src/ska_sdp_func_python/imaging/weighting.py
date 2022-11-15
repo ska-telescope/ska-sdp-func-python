@@ -42,7 +42,7 @@ def weight_visibility(
      This is done collectively so the weights are summed over all vis_lists and then
      corrected
 
-    :param vis_list:
+    :param vis_list: List of Visibilities
     :param model_imagelist: Model required to determine weighting parameters
     :param weighting: Type of weighting (uniform or robust or natural)
     :param robustness: Robustness parameter
@@ -109,7 +109,7 @@ def taper_visibility_tukey(vis, tukey=0.1):
      edge-tukey, a square-shaped taper that smooths the edge set by the uv grid and -taper-edge.
 
      These are cumulative. If You can reset the imaging_weights
-     using:py:mod:`processing_components.imaging.weighting.weight_visibility`
+     using:py:mod:`ska_sdp_func_python.imaging.weighting.weight_visibility`
 
     :param vis: visibility with imaging_weight's to be tapered
     :return: visibility with imaging_weight column modified

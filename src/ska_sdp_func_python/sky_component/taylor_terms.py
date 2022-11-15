@@ -186,8 +186,8 @@ def interpolate_skycomponents_frequency(
 def transpose_skycomponents_to_channels(
     sc_list: List[SkyComponent],
 ) -> List[List[SkyComponent]]:
-    """Tranpose a component list from [source,chan] to [chan,source]
-
+    """
+    Tranpose a component list from [source,chan] to [chan,source]
 
     :param sc_list: List of SkyComponents
     :return: List[List[SkyComponent]]
@@ -213,7 +213,7 @@ def gather_skycomponents_from_channels(
      This function converts list of lists of single frequency skycomponents into
      a list of multi-frequency skycomponents
 
-    :param sc_list:
+    :param sc_list: List of SkyComponents
     :return: List[List[SkyComponent]]
     """
     nsource = len(sc_list[0])

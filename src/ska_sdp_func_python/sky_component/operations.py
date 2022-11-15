@@ -98,7 +98,7 @@ def find_separation_skycomponents(comps_test, comps_ref=None):
 
     :param comps_test: List of components to be test
     :param comps_ref: If None then set to comps_test
-    :return:
+    :return: Distance matrix
     """
     if comps_ref is None:
         ncomps = len(comps_test)
@@ -138,7 +138,7 @@ def find_skycomponent_matches_atomic(comps_test, comps_ref, tol=1e-7):
     :param comps_test: skycomponents to test
     :param comps_ref: reference skycomponents
     :param tol: Tolerance in rad
-    :return:
+    :return: List of matched SkyComponents
     """
     separations = find_separation_skycomponents(comps_test, comps_ref)
     matches = []
@@ -161,7 +161,7 @@ def find_skycomponent_matches(comps_test, comps_ref, tol=1e-7):
     :param comps_test: skycomponents to test
     :param comps_ref: reference skycomponents
     :param tol: Tolerance in rad
-    :return:
+    :return: List of matched SkyComponents
     """
     catalog_test = SkyCoord(
         ra=[c.direction.ra for c in comps_test],
@@ -227,7 +227,7 @@ def select_neighbouring_components(comps, target_comps):
 def remove_neighbouring_components(comps, distance):
     """Remove the faintest of a pair of components that are within a specified distance
 
-    :param comps: skycomponents
+    :param comps: List of skycomponents
     :param distance: Minimum distance
     :return: Indices of components in target_comps, selected components
     """
@@ -261,7 +261,7 @@ def find_skycomponents(
     :param fwhm: Full width half maximum of gaussian in pixels
     :param threshold: Threshold for component detection. Default: 1 Jy.
     :param npixels: Number of connected pixels required
-    :return: list of sky components
+    :return: list of skycomponents
     """
 
     # assert isinstance(im, Image)
@@ -374,8 +374,9 @@ def apply_beam_to_skycomponent(
 
     if inverse==True, do an inverse where we subtract the primary beam from the skycomponents
     if inverse==False, do a multiplication of beam and skycomponent fluxes
-    :param phasecentre:
-    :param beam: primary beam
+
+    :param phasecentre: Phase Centre of beam (astropy.Coord)
+    :param beam: primary beam (Image)
     :param sc: SkyComponent or list of SkyComponents
     :return: List of skycomponents
     """
@@ -460,7 +461,7 @@ def apply_voltage_pattern_to_skycomponent(
     Requires a complex Image with the correct ordering of polarisation axes:
     e.g. RR, LL, RL, LR or XX, YY, XY, YX
 
-    :param inverse:
+    :param inverse: Inverse application?
     :param vp: voltage pattern as complex image
     :param sc: SkyComponent or list of SkyComponents
     :return: List of skycomponents
@@ -563,7 +564,7 @@ def filter_skycomponents_by_flux(sc, flux_min=-numpy.inf, flux_max=numpy.inf):
     :param sc: List of SkyComponents
     :param flux_min: Minimum I flux
     :param flux_max: Maximum I flux
-    :return:
+    :return: Filtered list of SkyComponents
     """
     newcomps = list()
     for comp in sc:
@@ -586,7 +587,7 @@ def insert_skycomponent(
 
     :param im: Image
     :param sc: SkyComponent or list of SkyComponents
-    :param insert_method: '' | 'Sinc' | 'Lanczos'
+    :param insert_method: 'Nearest' | 'Sinc' | 'Lanczos' | 'PSWF'
     :param bandwidth: Fractional of uv plane to optimise over (1.0)
     :param support: Support of kernel (7)
     :return: Image
@@ -766,10 +767,10 @@ def voronoi_decomposition(im, comps):
     def voronoi_vertex(vy, vx, vertex_y, vertex_x):
         """Return the nearest Voronoi vertex
 
-        :param vy:
-        :param vx:
-        :param vertex_y:
-        :param vertex_x:
+        :param vy: Voronoi y index
+        :param vx: Voronoi x index
+        :param vertex_y: Vertex y index
+        :param vertex_x: Vertex x index
         :return:
         """
         return numpy.argmin(numpy.hypot(vy - vertex_y, vx - vertex_x))
@@ -828,9 +829,9 @@ def image_voronoi_iter(
 def partition_skycomponent_neighbours(comps, targets):
     """Partition sky components by nearest target source
 
-    :param comps:
-    :param targets:
-    :return:
+    :param comps: List of SkyComponents
+    :param targets: List of targets
+    :return: Partitioned SkyComponents
     """
     idx, d2d = select_neighbouring_components(comps, targets)
 
@@ -848,8 +849,8 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
     """Fit a two dimensional Gaussian skycomponent using astropy.modeling
 
     :params im: Input image
-    :params sc: SkyComponent
-    :return: SkyComponent
+    :params sc: single SkyComponent
+    :return: SkyComponent after fitting
     """
     pixloc = numpy.round(
         skycoord_to_pixel(sc.direction, im.image_acc.wcs, origin=0)
@@ -929,11 +930,11 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
 
 
 def fit_skycomponent_spectral_index(sc: SkyComponent):
-
-    """Fit the spectral index for a multi frequency skycomponent
+    """
+    Fit the spectral index for a multi frequency skycomponent
 
     :param sc: SkyComponent
-    :return: spec_indx
+    :return: spectral index (float)
     """
     nchan = sc.frequency.shape[0]
 
