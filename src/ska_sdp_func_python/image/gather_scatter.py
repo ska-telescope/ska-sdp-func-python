@@ -182,14 +182,10 @@ def image_scatter_channels(im: Image, subimages=None) -> List[Image]:
     ]
 
 
-def image_gather_channels(
-    image_list: List[Image], im: Image = None, subimages=0
-) -> Image:
+def image_gather_channels(image_list: List[Image]) -> Image:
     """Gather a list of subimages back into an image
 
     :param image_list: List of subimages
-    :param im: Output image
-    :param subimages: Number of image partitions on each axis (2)
     :return: list of subimages
     """
     return xarray.concat(image_list, dim="frequency")

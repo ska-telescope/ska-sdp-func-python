@@ -261,9 +261,7 @@ def test_scatter_gather_channel(phase_centre):
         )
         for subimages in [16, 8, 2, 1]:
             image_list = image_scatter_channels(m31cube, subimages=subimages)
-            m31cuberec = image_gather_channels(
-                image_list, m31cube, subimages=subimages
-            )
+            m31cuberec = image_gather_channels(image_list)
             diff = m31cube["pixels"].data - m31cuberec["pixels"].data
             assert numpy.max(numpy.abs(diff)) == 0.0, (
                 "Scatter gather failed for %d" % subimages
@@ -282,7 +280,7 @@ def test_gather_channel(phase_centre):
             shape=m31cube["pixels"].data.shape, dtype=float
         )
         image_list = image_scatter_channels(m31cube, subimages=nchan)
-        m31cuberec = image_gather_channels(image_list, None, subimages=nchan)
+        m31cuberec = image_gather_channels(image_list)
         assert m31cube["pixels"].shape == m31cuberec["pixels"].shape
         diff = m31cube["pixels"].data - m31cuberec["pixels"].data
         assert numpy.max(numpy.abs(diff)) == 0.0, (

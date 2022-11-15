@@ -55,7 +55,7 @@ def skymodel_predict_calibrate(
     vis_slices = []
     if get_pb is not None:
         # TODO: Expand control of the grouping, coord and step
-        for time, vis_slice in v.groupby("time", squeeze=False):
+        for _, vis_slice in v.groupby("time", squeeze=False):
 
             pb = get_pb(vis_slice, skymodel.image)
 
@@ -184,7 +184,7 @@ def skymodel_calibrate_invert(
 
     if get_pb is not None:
         # TODO: Expand control of the grouping, coord and step
-        for time, vis_slice in bvis_cal.groupby("time", squeeze=False):
+        for _, vis_slice in bvis_cal.groupby("time", squeeze=False):
 
             pb = get_pb(vis_slice, skymodel.image)
 

@@ -78,7 +78,7 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     )
 
     # Get the image properties
-    m_nchan, m_npol, ny, nx = model["pixels"].data.shape
+    m_nchan, m_npol, _, _ = model["pixels"].data.shape
     # Check if the number of frequency channels matches in bvis and a model
     if m_npol != vnpol:
         log.error(
@@ -226,7 +226,7 @@ def invert_wg(
     flipped_uvw[:, 0] *= -1.0
     flipped_uvw[:, 2] *= -1.0
 
-    nchan, npol, ny, nx = im["pixels"].data.shape
+    nchan, npol, _, _ = im["pixels"].data.shape
     im["pixels"].data[...] = 0.0
     sum_weight = numpy.zeros([nchan, npol])
 

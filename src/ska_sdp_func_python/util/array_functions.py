@@ -155,7 +155,7 @@ def insert_array(
                 insert_function_Sinc or insert_function_pswf
     :return:
     """
-    nchan, npol, ny, nx = im.shape
+    nchan, npol, _, _ = im.shape
     intx = int(numpy.round(x))
     inty = int(numpy.round(y))
     fracx = x - intx

@@ -39,7 +39,7 @@ def apply_gaintable(
     :return: input vis with gains applied
 
     """
-    ntimes, nants, nchan, nrec, _ = gt.gain.shape
+    ntimes, nants, nchan, _, _ = gt.gain.shape
 
     if inverse:
         log.debug("apply_gaintable: Apply inverse gaintable")
@@ -64,7 +64,7 @@ def apply_gaintable(
             cgain = numpy.conjugate(gt["gain"].data[row])
 
             # The shape of the mueller matrix is
-            nant, nchan, nrec, _ = gain.shape
+            nant, nchan, _, _ = gain.shape
             baselines = vis.baselines.data
 
             # Try to ignore visibility flags in application of gains.

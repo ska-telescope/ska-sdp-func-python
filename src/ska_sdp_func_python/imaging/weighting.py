@@ -32,9 +32,7 @@ from ska_sdp_func_python.util.array_functions import tukey_filter
 log = logging.getLogger("func-python-logger")
 
 
-def weight_visibility(
-    vis, model, weighting="uniform", robustness=0.0, **kwargs
-):
+def weight_visibility(vis, model, weighting="uniform", robustness=0.0):
     """
     Weight the visibility data
 
@@ -45,7 +43,6 @@ def weight_visibility(
     :param model_imagelist: Model required to determine weighting parameters
     :param weighting: Type of weighting (uniform or robust or natural)
     :param robustness: Robustness parameter
-    :param kwargs: Parameters for functions in graphs
     :return: Reweighted vis
     """
 
@@ -55,7 +52,7 @@ def weight_visibility(
     griddata = create_griddata_from_image(
         model, polarisation_frame=vis.visibility_acc.polarisation_frame
     )
-    griddata, sumwt = grid_visibility_weight_to_griddata(vis, griddata)
+    griddata, _ = grid_visibility_weight_to_griddata(vis, griddata)
     vis = griddata_visibility_reweight(
         vis, griddata, weighting=weighting, robustness=robustness
     )

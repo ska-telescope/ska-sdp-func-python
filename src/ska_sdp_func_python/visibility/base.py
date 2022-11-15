@@ -32,7 +32,7 @@ def calculate_visibility_phasor(direction, vis):
     """
     # assert isinstance(vis, Visibility)
     ntimes, nbaseline, nchan, npol = vis["vis"].data.shape
-    l, m, n = skycoord_to_lmn(direction, vis.phasecentre)
+    l, m, _ = skycoord_to_lmn(direction, vis.phasecentre)
     s = numpy.array([l, m, numpy.sqrt(1 - l**2 - m**2) - 1.0])
 
     phasor = numpy.ones([ntimes, nbaseline, nchan, npol], dtype="complex")
@@ -71,7 +71,7 @@ def phaserotate_visibility(
     :param inverse: Actually do the opposite
     :return: Visibility or Visibility
     """
-    l, m, n = skycoord_to_lmn(newphasecentre, vis.phasecentre)
+    _, _, n = skycoord_to_lmn(newphasecentre, vis.phasecentre)
 
     # No significant change?
     if numpy.abs(n) < 1e-15:

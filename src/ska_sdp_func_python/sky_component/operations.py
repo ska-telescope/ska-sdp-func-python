@@ -77,7 +77,7 @@ def find_nearest_skycomponent_index(home, comps) -> int:
         ra=[c.direction.ra for c in comps],
         dec=[c.direction.dec for c in comps],
     )
-    idx, dist2d, dist3d = match_coordinates_sky(home, catalog)
+    idx, _, _ = match_coordinates_sky(home, catalog)
     return idx
 
 
@@ -143,7 +143,7 @@ def find_skycomponent_matches_atomic(comps_test, comps_ref, tol=1e-7):
     """
     separations = find_separation_skycomponents(comps_test, comps_ref)
     matches = []
-    for test, comp_test in enumerate(comps_test):
+    for test, _ in enumerate(comps_test):
         best = numpy.argmin(separations[:, test])
         best_sep = separations[best, test]
         if best_sep < tol:
@@ -172,9 +172,9 @@ def find_skycomponent_matches(comps_test, comps_ref, tol=1e-7):
         ra=[c.direction.ra for c in comps_ref],
         dec=[c.direction.dec for c in comps_ref],
     )
-    idx, dist2d, dist3d = match_coordinates_sky(catalog_test, catalog_ref)
+    idx, dist2d, _ = match_coordinates_sky(catalog_test, catalog_ref)
     matches = list()
-    for test, comp_test in enumerate(comps_test):
+    for test, _ in enumerate(comps_test):
         best = idx[test]
         best_sep = dist2d[test].rad
         if best_sep < tol:
@@ -221,7 +221,7 @@ def select_neighbouring_components(comps, target_comps):
 
     from astropy.coordinates import match_coordinates_sky
 
-    idx, d2d, d3d = match_coordinates_sky(all_catalog, target_catalog)
+    idx, d2d, _ = match_coordinates_sky(all_catalog, target_catalog)
     return idx, d2d
 
 
@@ -388,7 +388,7 @@ def apply_beam_to_skycomponent(
     if single:
         sc = [sc]
 
-    nchan, npol, ny, nx = beam["pixels"].data.shape
+    _, _, ny, nx = beam["pixels"].data.shape
 
     log.debug(
         "apply_beam_to_skycomponent: Processing %d components" % (len(sc))
@@ -690,7 +690,6 @@ def restore_skycomponent(
     im: Image,
     sc: Union[SkyComponent, List[SkyComponent]],
     clean_beam=None,
-    support=8,
 ) -> Image:
     """Restore a SkyComponent into an image
 
@@ -698,11 +697,10 @@ def restore_skycomponent(
     :param sc: SkyComponent or list of SkyComponents
     :param clean_beam: dict e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}.
                        Units are deg, deg, deg
-    :param support: Support of kernel (7)
     :return: Image
     """
 
-    nchan, npol, ny, nx = im["pixels"].data.shape
+    nchan, npol, _, _ = im["pixels"].data.shape
 
     if not isinstance(sc, collections.abc.Iterable):
         sc = [sc]
@@ -790,7 +788,7 @@ def voronoi_decomposition(im, comps):
     points = [(x[i], y[i]) for i, _ in enumerate(x)]
     vor = Voronoi(points)
 
-    nchan, npol, ny, nx = im["pixels"].data.shape
+    _, _, ny, nx = im["pixels"].data.shape
     vertex_image = numpy.zeros([ny, nx]).astype("int")
     for j in range(ny):
         for i in range(nx):
@@ -819,7 +817,7 @@ def image_voronoi_iter(
             im.image_acc.phasecentre,
         )
     else:
-        vor, vertex_array = voronoi_decomposition(im, components)
+        _, vertex_array = voronoi_decomposition(im, components)
 
         nregions = numpy.max(vertex_array) + 1
         for region in range(nregions):
@@ -841,7 +839,7 @@ def partition_skycomponent_neighbours(comps, targets):
     :param targets:
     :return:
     """
-    idx, d2d = select_neighbouring_components(comps, targets)
+    idx, _ = select_neighbouring_components(comps, targets)
 
     from itertools import compress
 

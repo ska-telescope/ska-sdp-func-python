@@ -140,14 +140,13 @@ def convert_stokes_to_polimage(
         )
 
 
-def convert_polimage_to_stokes(im: Image, complex_image=False, **kwargs):
+def convert_polimage_to_stokes(im: Image):
     """Convert a polarisation image to stokes IQUV (complex)
 
     For example:
         imIQUV = convert_polimage_to_stokes(impol)
 
     :param im: Complex Image in linear or circular
-    :param complex_image: Return complex image?
     :returns: Complex or Real image
 
     See also
@@ -156,14 +155,7 @@ def convert_polimage_to_stokes(im: Image, complex_image=False, **kwargs):
         :py:func:`ska_sdp_datamodels.polarisation.convert_stokes_to_linear`
 
     """
-    # assert isinstance(im, Image)
     assert im["pixels"].data.dtype == "complex", im["pixels"].data.dtype
-
-    def to_required(cimarr):
-        if complex_image:
-            return cimarr
-        else:
-            return numpy.real(cimarr)
 
     if im.image_acc.polarisation_frame == PolarisationFrame("linear"):
         cimarr = convert_linear_to_stokes(im["pixels"].data)

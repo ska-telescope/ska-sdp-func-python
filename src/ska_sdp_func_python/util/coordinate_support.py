@@ -289,6 +289,8 @@ def eci_to_uvw(xyz, ha, dec):
     return numpy.hstack([u, v, w])
 
 
+# pylint: disable=unused-argument
+# we need to figure out why this function doesn't use these args
 def uvw_to_eci(uvw, ha, dec):
     """
      Rotate:math:`(x,y,z)` positions relative to a sky position at

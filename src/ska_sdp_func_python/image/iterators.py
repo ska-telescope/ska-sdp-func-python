@@ -73,7 +73,7 @@ def image_raster_iter(
     if im is None:
         return im
 
-    nchan, npol, ny, nx = im["pixels"].data.shape
+    _, _, ny, nx = im["pixels"].data.shape
     assert facets <= ny, "Cannot have more raster elements than pixels"
     assert facets <= nx, "Cannot have more raster elements than pixels"
 
@@ -127,7 +127,7 @@ def image_raster_iter(
 
             return taper1d
 
-        def taper_flat(npixels, over):
+        def taper_flat(npixels):
             return numpy.ones([npixels])
 
         i = 0
@@ -169,7 +169,10 @@ def image_raster_iter(
                         )
                     else:
                         flat["pixels"].data[..., :, :] = numpy.outer(
-                            taper_flat(dy, overlap), taper_flat(dx, overlap)
+                            taper_flat(dy),
+                            taper_flat(
+                                dx,
+                            ),
                         )
                     yield flat
                 else:
@@ -203,7 +206,7 @@ def image_channel_iter(im: Image, subimages=1) -> collections.abc.Iterable:
     assert isinstance(im, Image), im
     assert im.image_acc.is_canonical()
 
-    nchan, npol, ny, nx = im["pixels"].data.shape
+    nchan = im["pixels"].data.shape[0]
 
     assert (
         subimages <= nchan

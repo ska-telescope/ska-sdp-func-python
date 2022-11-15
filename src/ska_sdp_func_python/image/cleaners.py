@@ -720,7 +720,7 @@ def msmfsclean(
     lpsf = psf / pmax
     ldirty = dirty / pmax
 
-    nmoment, ny, nx = dirty.shape
+    nmoment = dirty.shape[0]
     if nmoment > 1:
         assert psf.shape[0] == 2 * nmoment
 
@@ -935,7 +935,6 @@ def update_scale_moment_residual(
     """Update residual by subtracting the effect of
     model update for each moment"""
     # Lines 30 - 32 of Algorithm 1.
-    nscales, nmoment, _, _ = smresidual.shape
     smresidual[:, :, lhs[0] : lhs[1], lhs[2] : lhs[3]] -= gain * numpy.einsum(
         "stqxy,q->stxy",
         ssmmpsf[mscale, :, :, :, rhs[0] : rhs[1], rhs[2] : rhs[3]],
@@ -1061,7 +1060,7 @@ def find_optimum_scale_zero_moment(smpsol, sensitivity, windowstack):
     :param smpsol: Decoupled residual images for each scale and moment
     :return: x, y, optimum scale for peak
     """
-    nscales, nmoment, nx, ny = smpsol.shape
+    nscales = smpsol.shape[0]
     sscale = 0
     sx = 0
     sy = 0

@@ -69,7 +69,7 @@ def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     vist = numpy.zeros([vnpol, vnchan, nbaselines * nrows], dtype="complex")
 
     # Get the image properties
-    m_nchan, m_npol, ny, nx = model["pixels"].data.shape
+    m_nchan, m_npol, _, _ = model["pixels"].data.shape
     # Check if the number of frequency channels matches in bvis and a model
     #        assert (m_nchan == v_nchan)
     assert m_npol == vnpol
@@ -213,7 +213,7 @@ def invert_ng(
     fuvw[:, 0] *= -1.0
     fuvw[:, 2] *= -1.0
 
-    nchan, npol, ny, nx = im["pixels"].data.shape
+    nchan, npol, _, _ = im["pixels"].data.shape
     im["pixels"].data[...] = 0.0
     sumwt = numpy.zeros([nchan, npol])
 

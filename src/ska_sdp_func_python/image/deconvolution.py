@@ -187,7 +187,6 @@ def deconvolve_list(
 def radler_deconvolve_list(
     dirty_list: List[Image],
     psf_list: List[Image],
-    prefix="",
     **kwargs,
 ) -> (List[Image]):
 
@@ -210,7 +209,6 @@ def radler_deconvolve_list(
 
     :param dirty_list: list of dirty image
     :param psf_list: list of point spread function
-    :param prefix: Informational message for logging
     :param algorithm: Cleaning algorithm:
                 'msclean'|'iuwt'|'more_sane'|'generic_clean'
     :param gain: loop gain (float) 0.7
@@ -322,7 +320,7 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
         return None
 
     windows = []
-    for channel, dirty in enumerate(dirty_list):
+    for _, dirty in enumerate(dirty_list):
         if window_shape == "quarter":
             log.info("deconvolve_cube %s: window is inner quarter" % prefix)
             qx = dirty["pixels"].shape[3] // 4
@@ -371,14 +369,13 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
     return windows
 
 
-def bound_psf_list(dirty_list, prefix, psf_list, psf_support=None, **kwargs):
+def bound_psf_list(dirty_list, prefix, psf_list, psf_support=None):
     """Calculate the PSF within a given support
 
     :param dirty_list: Dirty image, used for default sizes
     :param prefix: Informational prefix to log messages
     :param psf_list: Point Spread Function
     :param psf_support: The half width of a box centered on the psf centre
-    :param kwargs:
     :return: psf: bounded point spread function
                   (i.e. with smaller size in x and y)
     """
@@ -436,7 +433,7 @@ def complex_hogbom_kernel_list(
         "clean of each channel separately"
     )
 
-    fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
+    fracthresh, gain, niter, thresh, _ = common_arguments(**kwargs)
 
     comp_images = []
     residual_images = []
@@ -611,7 +608,7 @@ def hogbom_kernel_list(
         "each polarisation and channel separately" % prefix
     )
 
-    fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
+    fracthresh, gain, niter, thresh, _ = common_arguments(**kwargs)
 
     comp_images = []
     residual_images = []
@@ -1152,7 +1149,7 @@ def deconvolve_cube(
     return comp, residual
 
 
-def fit_psf(psf: Image, **kwargs):
+def fit_psf(psf: Image):
     """Fit a two dimensional Gaussian to a PSF using astropy.modeling
 
     :params psf: Input PSF

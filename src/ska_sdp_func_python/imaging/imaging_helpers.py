@@ -35,7 +35,7 @@ def sum_invert_results(image_list):
     sumwt = image_list[0][1]
     sumwt *= 0.0
 
-    for i, arg in enumerate(image_list):
+    for _, arg in enumerate(image_list):
         if arg is not None:
             im["pixels"].data += (
                 arg[1][..., numpy.newaxis, numpy.newaxis]

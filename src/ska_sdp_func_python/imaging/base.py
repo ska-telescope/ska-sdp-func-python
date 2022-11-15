@@ -78,7 +78,7 @@ def shift_vis_to_image(
     :param inverse: Do the inverse operation True|False
     :return: visibility with phase shift applied and phasecentre updated
     """
-    nchan, npol, ny, nx = im["pixels"].data.shape
+    _, _, ny, nx = im["pixels"].data.shape
 
     # Convert the FFT definition of the phase center to world
     # coordinates (1 relative). This is the only place in RASCIL
@@ -171,7 +171,7 @@ def normalise_sumwt(im: Image, sumwt, min_weight=0.1, flat_sky=False) -> Image:
 
 
 def predict_awprojection(
-    vis: Visibility, model: Image, gcfcf=None, **kwargs
+    vis: Visibility, model: Image, gcfcf=None
 ) -> Visibility:
     """
     Predict using convolutional degridding and an AW kernel
@@ -192,8 +192,6 @@ def predict_awprojection(
     assert not numpy.isnan(
         numpy.sum(model["pixels"].data)
     ), "NaNs present in input model"
-
-    _, _, ny, nx = model["pixels"].data.shape
 
     if gcfcf is None:
         raise ValueError("predict_awprojection: gcfcf not specified")
@@ -468,7 +466,6 @@ def advise_wide_field(
     oversampling_synthesised_beam=3.0,
     guard_band_image=6.0,
     facets=1,
-    wprojection_planes=1,
     verbose=True,
 ):
     """
@@ -489,7 +486,6 @@ def advise_wide_field(
     :param guard_band_image: Number of primary beam
             half-widths-to-half-maximum to image (def: 6)
     :param facets: Number of facets on each axis
-    :param wprojection_planes: Number of planes in wprojection
     :return: dict of advice
     """
 

@@ -44,9 +44,7 @@ from ska_sdp_func_python.fourier_transforms.fft_support import ifft
 log = logging.getLogger("func-python-logger")
 
 
-def convolution_mapping_visibility(
-    vis, griddata, chan, cf=None, channel_tolerance=1e-8
-):
+def convolution_mapping_visibility(vis, griddata, chan, cf=None):
     """Find the mappings between visibility, griddata,
     and convolution function
 
@@ -54,7 +52,6 @@ def convolution_mapping_visibility(
     :param griddata:
     :param chan:
     :param cf:
-    :param channel_tolerance:
     :return:
     """
     assert (
@@ -89,7 +86,7 @@ def spatial_mapping(griddata, u, v, w, cf=None):
             == griddata.griddata_acc.polarisation_frame
         )
 
-        nchan, npol, nw, ndv, ndu, nv, nu = cf.convolutionfunction_acc.shape
+        _, _, nw, ndv, ndu, _, _ = cf.convolutionfunction_acc.shape
 
         grid_wcs = griddata.griddata_acc.griddata_wcs
         cf_wcs = cf.convolutionfunction_acc.cf_wcs
@@ -159,8 +156,6 @@ def spatial_mapping(griddata, u, v, w, cf=None):
 
         return pu_grid, pu_offset, pv_grid, pv_offset, pwc_grid, pwc_fraction
     else:
-        nchan, npol, nv, nu = griddata.griddata_acc.shape
-
         grid_wcs = griddata.griddata_acc.griddata_wcs
         # UV mapping:
         # We use the grid_wcs's to do the coordinate conversion
@@ -227,7 +222,7 @@ def grid_visibility_to_griddata(vis, griddata, cf):
             pv_grid,
             pv_offset,
             pwc_grid,
-            pwc_fraction,
+            _,
         ) = convolution_mapping_visibility(vis, griddata, vchan, cf)
         for pol in range(nvpol):
             num_skipped = 0
@@ -282,10 +277,9 @@ def grid_visibility_weight_to_griddata(vis, griddata: GridData):
         == griddata.griddata_acc.polarisation_frame
     )
 
-    nchan, npol, ny, nx = griddata.griddata_acc.shape
+    nchan, npol, _, _ = griddata.griddata_acc.shape
     sumwt = numpy.zeros([nchan, npol])
 
-    _, _, gv, gu = griddata["pixels"].data.shape
     vis_to_im = numpy.round(
         griddata.griddata_acc.griddata_wcs.sub([4]).wcs_world2pix(
             vis.frequency.data, 0
@@ -486,7 +480,7 @@ def griddata_visibility_reweight(
     return vis
 
 
-def degrid_visibility_from_griddata(vis, griddata, cf, **kwargs):
+def degrid_visibility_from_griddata(vis, griddata, cf):
     """Degrid blockVisibility from a GridData
         Note: if parameter oversampling_synthesised_beam in advise_wide_field()
               has been set less than 2, some visibilities would be discarded.
@@ -494,7 +488,6 @@ def degrid_visibility_from_griddata(vis, griddata, cf, **kwargs):
     :param vis: visibility to be degridded
     :param griddata: GridData containing image
     :param cf: Convolution function (as GridData)
-    :param kwargs:
     :return: Visibility
     """
     assert (
@@ -508,7 +501,6 @@ def degrid_visibility_from_griddata(vis, griddata, cf, **kwargs):
 
     newvis = vis.copy(deep=True, zero=True)
 
-    nchan, npol, nz, oversampling, _, support, _ = cf["pixels"].data.shape
     vis_to_im = numpy.round(
         griddata.griddata_acc.griddata_wcs.sub([4]).wcs_world2pix(
             vis.frequency.data, 0
@@ -533,7 +525,7 @@ def degrid_visibility_from_griddata(vis, griddata, cf, **kwargs):
             pv_grid,
             pv_offset,
             pwc_grid,
-            pwc_fraction,
+            _,
         ) = convolution_mapping_visibility(vis, griddata, vchan, cf)
         num_skipped = 0
         for pol in range(nvpol):

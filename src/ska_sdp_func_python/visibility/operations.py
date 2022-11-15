@@ -55,8 +55,12 @@ def concatenate_visibility(vis_list, dim="time"):
         concatenated_vis.__setattr__(
             "_imaging_weight",
             xarray.concat(
-                [vis._imaging_weight for vis in vis_list], dim=dim
-            ),  # pylint: disable=protected-access
+                [
+                    vis._imaging_weight  # pylint: disable=protected-access
+                    for vis in vis_list
+                ],
+                dim=dim,
+            ),
         )
     except TypeError:
         # if vis._imaging_weight is None, concat throws a TypeError
@@ -120,7 +124,7 @@ def remove_continuum_visibility(
         vis.frequency[0] - vis.frequency[nchan // 2]
     )
     for row in range(vis.nvis):
-        for ibaseline, baseline in enumerate(vis.baselines):
+        for ibaseline, _ in enumerate(vis.baselines):
             for pol in range(vis.visibility_acc.polarisation_frame.npol):
                 wt = numpy.sqrt(
                     vis.visibility_acc.flagged_weight[row, ibaseline, :, pol]
@@ -188,15 +192,9 @@ def integrate_visibility_by_channel(vis: Visibility) -> Visibility:
     :param vis: Visibility
     :return: Visibility
     """
-
-    # assert isinstance(vis, Visibility), vis
-
     vis_shape = list(vis.vis.shape)
-    ntimes, nbaselines, nchan, npol = vis_shape
+    nchan = vis_shape[2]
     vis_shape[-2] = 1
-    # newvis['flags'].data[..., 0,:] = numpy.sum(vis.flags.data, axis=-2)
-    # newvis['flags'].data[newvis['flags'].data < nchan] = 0
-    # newvis['flags'].data[newvis['flags'].data > 1] = 1
     flags = numpy.sum(vis.flags.data, axis=-2)[..., numpy.newaxis, :]
     flags[flags < nchan] = 0
     flags[flags > 1] = 1
@@ -243,11 +241,8 @@ def average_visibility_by_channel(
     :param channel_average: Number of channels to average
     :return: List[Visibility]
     """
-
-    # assert isinstance(vis, Visibility), vis
-
     vis_shape = list(vis.vis.shape)
-    ntimes, nbaselines, nchan, npol = vis_shape
+    nchan = vis_shape[2]
 
     newvis_list = []
     ochannels = range(nchan)

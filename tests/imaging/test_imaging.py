@@ -112,9 +112,7 @@ def _checkcomponents(
 
     for comp in comps:
         # Check for agreement in direction
-        ocomp, separation = find_nearest_skycomponent(
-            comp.direction, components
-        )
+        _, separation = find_nearest_skycomponent(comp.direction, components)
         assert separation / cellsize < positionthreshold, (
             "Component differs in position %.3f pixels" % separation / cellsize
         )
@@ -227,7 +225,7 @@ def test_predict_visibility(result_imaging):
 
 def test_predict_visibility_point(result_imaging):
     result_imaging["image"]["pixels"].data[...] = 0.0
-    nchan, npol, ny, nx = result_imaging["image"].image_acc.shape
+    _, _, ny, nx = result_imaging["image"].image_acc.shape
     result_imaging["image"]["pixels"].data[0, 0, ny // 2, nx // 2] = 1.0
     vis = predict_visibility(
         result_imaging["visibility"], result_imaging["image"], context="2d"

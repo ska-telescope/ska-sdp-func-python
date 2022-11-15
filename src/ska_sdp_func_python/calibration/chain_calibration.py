@@ -129,8 +129,6 @@ def apply_calibration_chain(
     calibration_context="T",
     controls=None,
     iteration=0,
-    tol=1e-6,
-    **kwargs,
 ):
     """
     Calibrate using algorithm specified by calibration_context
@@ -146,7 +144,6 @@ def apply_calibration_chain(
     :param control: controls dictionary, modified as necessary
     :param iteration: Iteration number to be compared
                     to the 'first_selfcal' field.
-    :param kwargs:
     :return: Calibrated data_models, dict(gaintables)
     """
 
@@ -182,7 +179,6 @@ def calibrate_chain(
     controls=None,
     iteration=0,
     tol=1e-6,
-    **kwargs,
 ):
     """
     Calibrate using algorithm specified by calibration_context
@@ -197,7 +193,6 @@ def calibrate_chain(
     :param controls: controls dictionary, modified as necessary
     :param iteration: Iteration number to be compared
                       to the 'first_selfcal' field.
-    :param kwargs:
     :return: Calibrated data_models, dict(gaintables)
     """
     if controls is None:
@@ -270,7 +265,6 @@ def solve_calibrate_chain(
     controls=None,
     iteration=0,
     tol=1e-6,
-    **kwargs,
 ):
     """Calibrate using algorithm specified by calibration_context
 
@@ -284,7 +278,6 @@ def solve_calibrate_chain(
     :param controls: controls dictionary, modified as necessary
     :param iteration: Iteration number to be compared to the
                       'first_selfcal' field.
-    :param kwargs:
     :return: Calibrated data_models, dict(gaintables)
     """
     if controls is None:
