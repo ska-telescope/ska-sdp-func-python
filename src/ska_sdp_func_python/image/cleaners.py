@@ -1,4 +1,4 @@
-# pylint: disable=too-many-lines, bad-string-format-type
+# pylint: disable=too-many-lines, bad-string-format-type, redefined-builtin
 """ Image Deconvolution functions
 
 """
