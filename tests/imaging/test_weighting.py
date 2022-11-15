@@ -82,7 +82,7 @@ def test_tapering_gaussian(input_params):
     input_params["componentvis"] = weight_visibility(
         input_params["componentvis"],
         input_params["model"],
-        algoritm="uniform",
+        weighting="uniform",
     )
     input_params["componentvis"] = taper_visibility_gaussian(
         input_params["componentvis"], beam=size_required
@@ -112,7 +112,7 @@ def test_tapering_tukey(input_params):
     input_params["componentvis"] = weight_visibility(
         input_params["componentvis"],
         input_params["model"],
-        algorithm="uniform",
+        weighting="uniform",
     )
     input_params["componentvis"] = taper_visibility_tukey(
         input_params["componentvis"], tukey=0.1

@@ -183,7 +183,6 @@ def deconvolve_list(
 def radler_deconvolve_list(
     dirty_list: List[Image],
     psf_list: List[Image],
-    prefix="",
     **kwargs,
 ) -> (List[Image]):
 
@@ -365,14 +364,13 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
     return windows
 
 
-def bound_psf_list(dirty_list, prefix, psf_list, psf_support=None, **kwargs):
+def bound_psf_list(dirty_list, prefix, psf_list, psf_support=None):
     """Calculate the PSF within a given support
 
     :param dirty_list: Dirty image, used for default sizes
     :param prefix: Informational prefix to log messages
     :param psf_list: Point Spread Function
     :param psf_support: The half width of a box centered on the psf centre
-    :param kwargs:
     :return: psf: bounded point spread function (i.e. with smaller size in x and y)
     """
     psfs = []
@@ -1129,7 +1127,7 @@ def deconvolve_cube(
     return comp, residual
 
 
-def fit_psf(psf: Image, **kwargs):
+def fit_psf(psf: Image):
     """Fit a two dimensional Gaussian to a PSF using astropy.modeling
 
     :params psf: Input PSF

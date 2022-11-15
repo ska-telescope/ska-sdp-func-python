@@ -52,12 +52,13 @@ log = logging.getLogger("func-python-logger")
 def dft_skycomponent_visibility(
     vis: Visibility,
     sc: Union[SkyComponent, List[SkyComponent]],
-    **kwargs,
+    dft_compute_kernel=None,
 ) -> Visibility:
     """DFT to get the visibility from a SkyComponent, for Visibility
 
     :param vis: Visibility
     :param sc: SkyComponent or list of SkyComponents
+    :param dft_compute_kernel: string: cpu_looped, gpu_cupy_raw or proc_func
     :return: Visibility
     """
     if sc is None or (isinstance(sc, list) and len(sc) == 0):
@@ -66,7 +67,10 @@ def dft_skycomponent_visibility(
     direction_cosines, vfluxes = extract_direction_and_flux(sc, vis)
 
     vis["vis"].data = dft_kernel(
-        direction_cosines, vfluxes, vis.visibility_acc.uvw_lambda, **kwargs
+        direction_cosines,
+        vfluxes,
+        vis.visibility_acc.uvw_lambda,
+        dft_compute_kernel=dft_compute_kernel,
     )
 
     return vis
@@ -133,7 +137,7 @@ def extract_direction_and_flux(sc, vis):
 
 
 def dft_kernel(
-    direction_cosines, vfluxes, uvw_lambda, dft_compute_kernel=None, **kwargs
+    direction_cosines, vfluxes, uvw_lambda, dft_compute_kernel=None
 ):
     """CPU computational kernel for DFT, choice dependent on dft_compute_kernel
 
@@ -141,7 +145,6 @@ def dft_kernel(
     :param vfluxes: Fluxes [ncomp, nchan, npol]
     :param uvw_lambda: UVW in lambda [ntimes, nbaselines, nchan, 3]
     :param dft_compute_kernel: string: cpu_looped, gpu_cupy_raw or proc_func
-    :param kwargs: Kernel arguments (needed for future expansion)
     :return: Vis [ntimes, nbaselines, nchan, npol]
     """
 

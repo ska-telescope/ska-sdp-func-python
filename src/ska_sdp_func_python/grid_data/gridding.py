@@ -481,7 +481,7 @@ def griddata_visibility_reweight(
     return vis
 
 
-def degrid_visibility_from_griddata(vis, griddata, cf, **kwargs):
+def degrid_visibility_from_griddata(vis, griddata, cf):
     """Degrid blockVisibility from a GridData
         Note: if parameter oversampling_synthesised_beam in advise_wide_field()
               has been set less than 2, some visibilities would be discarded.
@@ -489,7 +489,6 @@ def degrid_visibility_from_griddata(vis, griddata, cf, **kwargs):
     :param vis: Visibility to be degridded
     :param griddata: GridData containing image
     :param cf: Convolution function (as GridData)
-    :param kwargs:
     :return: Visibility
     """
     assert (

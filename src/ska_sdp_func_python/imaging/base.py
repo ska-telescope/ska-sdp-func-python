@@ -163,7 +163,7 @@ def normalise_sumwt(im: Image, sumwt, min_weight=0.1, flat_sky=False) -> Image:
 
 
 def predict_awprojection(
-    vis: Visibility, model: Image, gcfcf=None, **kwargs
+    vis: Visibility, model: Image, gcfcf=None
 ) -> Visibility:
     """Predict using convolutional degridding and an AW kernel
 
@@ -212,7 +212,6 @@ def invert_awprojection(
     dopsf: bool = False,
     normalise: bool = True,
     gcfcf=None,
-    **kwargs
 ) -> (Image, numpy.ndarray):
     """Invert using convolutional degridding and an AW kernel
 
@@ -253,7 +252,7 @@ def invert_awprojection(
     if normalise:
         result = normalise_sumwt(result, sumwt)
 
-    result = convert_polimage_to_stokes(result, **kwargs)
+    result = convert_polimage_to_stokes(result)
 
     assert not numpy.isnan(
         numpy.sum(result["pixels"].data)
@@ -307,6 +306,7 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     parameters. This is a convenience function and does not transform the visibilities.
 
     :param vis: Visibility
+
     :param phasecentre: Phasecentre (Skycoord)
     :param channel_bandwidth: Channel width (Hz)
     :param cellsize: Cellsize (radians)

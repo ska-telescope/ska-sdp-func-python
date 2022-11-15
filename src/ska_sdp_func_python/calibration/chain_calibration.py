@@ -158,9 +158,7 @@ def apply_calibration_chain(
 
         for c in calibration_context:
             if iteration >= controls[c]["first_selfcal"]:
-                avis = apply_gaintable(
-                    vis, gaintables[c], timeslice=controls[c]["timeslice"]
-                )
+                avis = apply_gaintable(vis, gaintables[c])
 
         return avis
 
@@ -218,7 +216,6 @@ def calibrate_chain(
                     avis,
                     amvis,
                     gt=gaintables[c],
-                    timeslice=controls[c]["timeslice"],
                     phase_only=controls[c]["phase_only"],
                     crosspol=controls[c]["shape"] == "matrix",
                     tol=tol,
@@ -239,7 +236,6 @@ def calibrate_chain(
                     avis,
                     gaintables[c],
                     inverse=True,
-                    timeslice=controls[c]["timeslice"],
                 )
             else:
                 log.debug(
@@ -304,7 +300,6 @@ def solve_calibrate_chain(
                     avis,
                     amvis,
                     gt=gaintables[c],
-                    timeslice=controls[c]["timeslice"],
                     phase_only=controls[c]["phase_only"],
                     crosspol=controls[c]["shape"] == "matrix",
                     tol=tol,

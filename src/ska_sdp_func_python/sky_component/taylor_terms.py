@@ -150,7 +150,7 @@ def find_skycomponents_frequency_taylor_terms(
 
 
 def interpolate_skycomponents_frequency(
-    sc_list, nmoment=1, reference_frequency=None, **kwargs
+    sc_list, nmoment=1, reference_frequency=None
 ) -> List[SkyComponent]:
     """Smooth skycomponent fluxes by fitting polynomial in frequency
 
