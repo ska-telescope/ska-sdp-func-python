@@ -1,6 +1,6 @@
 .. _ska_sdp_func_python_griddata:
 
-.. py:currentmodule:: ska_sdp_func_python.griddata
+.. py:currentmodule:: ska_sdp_func_python.grid_data
 
 *************
 Gridding Data

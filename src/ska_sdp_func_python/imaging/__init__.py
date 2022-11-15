@@ -24,7 +24,7 @@ can also be used::
 
     dirty, sumwt = invert_visibility(vis, model, verbosity=2, context="ng")
 
-The convolutional gridding functions are to be found in griddata module
+The convolutional gridding functions are to be found in the grid_data module
 
 """
 from .base import *
