@@ -96,8 +96,9 @@ def find_nearest_skycomponent(home: SkyCoord, comps) -> (SkyComponent, float):
 def find_separation_skycomponents(comps_test, comps_ref=None):
     """Find the matrix of separations for two lists of components
 
-    :param comps_test: List of components to be test
-    :param comps_ref: If None then set to comps_test
+    :param comps_test: List of SkyComponents to be tested
+    :param comps_ref: List of SkyComponents to compare with,
+                        If None then set to comps_test
     :return: Distance matrix
     """
     if comps_ref is None:
@@ -129,14 +130,14 @@ def find_separation_skycomponents(comps_test, comps_ref=None):
 
 
 def find_skycomponent_matches_atomic(comps_test, comps_ref, tol=1e-7):
-    """Match a list of candidates to a reference set of skycomponents
+    """Match a list of candidates to a reference set of SkyComponents
 
     find_skycomponent_matches is faster since it uses the astropy catalog matching
 
     many to one is allowed.
 
-    :param comps_test: skycomponents to test
-    :param comps_ref: reference skycomponents
+    :param comps_test: SkyComponents to test
+    :param comps_ref: reference SkyComponents
     :param tol: Tolerance in rad
     :return: List of matched SkyComponents
     """
@@ -154,12 +155,12 @@ def find_skycomponent_matches_atomic(comps_test, comps_ref, tol=1e-7):
 
 
 def find_skycomponent_matches(comps_test, comps_ref, tol=1e-7):
-    """Match a list of candidates to a reference set of skycomponents
+    """Match a list of candidates to a reference set of SkyComponents
 
     many to one is allowed.
 
-    :param comps_test: skycomponents to test
-    :param comps_ref: reference skycomponents
+    :param comps_test: SkyComponents to test
+    :param comps_ref: Reference SkyComponents
     :param tol: Tolerance in rad
     :return: List of matched SkyComponents
     """
@@ -191,7 +192,7 @@ def select_components_by_separation(
     :param comps: List of SkyComponents
     :param rmin: minimum range
     :param rmax: maximum range
-    :return: selected components
+    :return: selected SkyComponents
     """
     selected = list()
     for comp in comps:
@@ -204,8 +205,8 @@ def select_components_by_separation(
 def select_neighbouring_components(comps, target_comps):
     """Assign components to nearest in the target
 
-    :param comps: skycomponents
-    :param target_comps: Target skycomponents
+    :param comps: List of SkyComponents
+    :param target_comps: Target SkyComponents
     :return: Indices of components in target_comps
     """
     target_catalog = SkyCoord(
@@ -375,7 +376,7 @@ def apply_beam_to_skycomponent(
     if inverse==True, do an inverse where we subtract the primary beam from the skycomponents
     if inverse==False, do a multiplication of beam and skycomponent fluxes
 
-    :param phasecentre: Phase Centre of beam (astropy.Coord)
+    :param phasecentre: Phase Centre of beam (astropy.SkyCoord)
     :param beam: primary beam (Image)
     :param sc: SkyComponent or list of SkyComponents
     :return: List of SkyComponents
@@ -466,7 +467,7 @@ def apply_voltage_pattern_to_skycomponent(
     :param sc: SkyComponent or list of SkyComponents
     :return: List of SkyComponents
     """
-    # assert isinstance(vp, Image)
+
     assert (
         vp.image_acc.polarisation_frame == PolarisationFrame("linear")
     ) or (vp.image_acc.polarisation_frame == PolarisationFrame("circular"))
@@ -858,7 +859,6 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
     sl_y = slice(pixloc[1] - 7, pixloc[1] + 8)
     sl_x = slice(pixloc[0] - 7, pixloc[0] + 8)
 
-    # im["pixels"].data[0,0,150,121]
     y, x = numpy.mgrid[sl_y, sl_x]
     z = im["pixels"].data[0, 0, sl_y, sl_x]
 
@@ -934,7 +934,7 @@ def fit_skycomponent_spectral_index(sc: SkyComponent):
     Fit the spectral index for a multi frequency skycomponent
 
     :param sc: SkyComponent
-    :return: spectral index (float)
+    :return: Spectral index (float)
     """
     nchan = sc.frequency.shape[0]
 

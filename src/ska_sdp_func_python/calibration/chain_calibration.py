@@ -218,6 +218,7 @@ def calibrate_chain(
                     gt=gaintables[c],
                     phase_only=controls[c]["phase_only"],
                     crosspol=controls[c]["shape"] == "matrix",
+                    timeslice=controls[c]["timeslice"],
                     tol=tol,
                 )
                 log.debug(
@@ -302,6 +303,7 @@ def solve_calibrate_chain(
                     gt=gaintables[c],
                     phase_only=controls[c]["phase_only"],
                     crosspol=controls[c]["shape"] == "matrix",
+                    timeslice=controls[c]["timeslice"],
                     tol=tol,
                 )
                 context_message = (

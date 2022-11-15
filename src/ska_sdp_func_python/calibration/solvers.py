@@ -44,6 +44,7 @@ def solve_gaintable(
     crosspol=False,
     normalise_gains=True,
     jones_type="T",
+    timeslice=None,
 ) -> GainTable:
     """Solve a gain table by fitting an observed visibility
          to a model visibility
@@ -60,6 +61,7 @@ def solve_gaintable(
     :param crosspol: Do solutions including cross polarisations i.e. XY, YX or RL, LR
     :param normalise_gains: Normalise the gains?
     :param jones_type: Type of calibration matrix T or G or B
+    :param timeslice: Time interval between solutions (s)
     :return: GainTable containing solution
 
     """
@@ -77,7 +79,9 @@ def solve_gaintable(
 
     if gt is None:
         log.debug("solve_gaintable: creating new gaintable")
-        gt = create_gaintable_from_visibility(vis, jones_type=jones_type)
+        gt = create_gaintable_from_visibility(
+            vis, jones_type=jones_type, timeslice=timeslice
+        )
     else:
         log.debug("solve_gaintable: starting from existing gaintable")
 

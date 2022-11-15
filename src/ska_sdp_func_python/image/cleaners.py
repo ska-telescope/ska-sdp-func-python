@@ -1,9 +1,4 @@
-# pylint: disable=invalid-name, too-many-lines, too-many-locals
-# pylint: disable=unused-argument, unused-variable, too-many-branches
-# pylint: disable=too-many-statements, too-many-arguments, redefined-builtin
-# pylint: disable=unbalanced-tuple-unpacking, bad-string-format-type
-# pylint: disable=consider-using-f-string, logging-not-lazy, logging-format-interpolation
-# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
+# pylint: disable=too-many-lines, bad-string-format-type
 """ Image Deconvolution functions
 
 """
