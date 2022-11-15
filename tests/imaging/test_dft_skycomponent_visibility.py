@@ -36,8 +36,10 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         f = numpy.array([100.0, 20.0, -10.0, 1.0])
         self.flux = numpy.array([f, 0.8 * f, 0.6 * f])
 
-        # The phase centre is absolute and the component is specified relative (for now).
-        # This means that the component should end up at the position phasecentre+compredirection
+        # The phase centre is absolute and the component
+        # is specified relative (for now).
+        # This means that the component should end up at
+        # the position phasecentre+compredirection
         self.phasecentre = SkyCoord(
             ra=+180.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
         )
@@ -57,8 +59,10 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         f = numpy.array([100.0])
         self.flux = numpy.array([f, 0.8 * f, 0.6 * f])
 
-        # The phase centre is absolute and the component is specified relative (for now).
-        # This means that the component should end up at the position phasecentre+compredirection
+        # The phase centre is absolute and the component is
+        # specified relative (for now).
+        # This means that the component should end up at
+        # the position phasecentre+compredirection
         self.phasecentre = SkyCoord(
             ra=+180.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
         )

@@ -1,9 +1,5 @@
-# pylint: disable=invalid-name, too-many-arguments, too-many-statements
-# pylint: disable=too-many-nested-blocks, too-many-branches
-# pylint: disable=unused-variable, too-many-locals, no-else-return
-# pylint: disable=import-error, no-name-in-module
-"""Functions to invert and predict from skymodels
-
+"""
+Functions to invert and predict from skymodels
 """
 __all__ = ["skymodel_calibrate_invert", "skymodel_predict_calibrate"]
 
@@ -31,10 +27,11 @@ def skymodel_predict_calibrate(
     get_pb=None,
     **kwargs
 ):
-    """Predict visibility for a skymodel, optionally applying calibration
+    """
+    Predict visibility for a skymodel, optionally applying calibration
 
-     A skymodel consists of an image and a list of components, optionally with
-     a gaintable.
+     A skymodel consists of an image and a list of components,
+     optionally with a gaintable.
 
      The function get_pb should have the signature:
 
@@ -47,9 +44,11 @@ def skymodel_predict_calibrate(
     :param context: Imaging context 2d or ng or awprojection
     :param get_pb: Function to get a primary beam
     :param docal: Apply calibration table in skymodel
-    :param inverse: True means correction of calibration, False means application of calibration
+    :param inverse: True means correction of calibration,
+                    False means application of calibration
     :param kwargs: Parameters for functions in components
-    :return: Visibility with dft of components, fft of image, gaintable applied (optional)
+    :return: Visibility with dft of components, fft of image,
+             gaintable applied (optional)
     """
     v = bvis.copy(deep=True, zero=True)
 
@@ -78,8 +77,8 @@ def skymodel_predict_calibrate(
                         vis_slice, skymodel.components, **kwargs
                     )
 
-            # Now do the FFT of the image, after multiplying by the mask and primary
-            # beam
+            # Now do the FFT of the image, after multiplying
+            # by the mask and primary beam
             if skymodel.image is not None:
                 if numpy.max(numpy.abs(skymodel.image["pixels"].data)) > 0.0:
                     imgv = vis_slice.copy(deep=True, zero=True)
@@ -122,8 +121,8 @@ def skymodel_predict_calibrate(
                     v, skymodel.components, **kwargs
                 )
 
-        # Now do the FFT of the image, after multiplying by the mask and primary
-        # beam
+        # Now do the FFT of the image, after multiplying
+        # by the mask and primary beam
         if skymodel.image is not None:
             if numpy.max(numpy.abs(skymodel.image["pixels"].data)) > 0.0:
                 imgv = v.copy(deep=True, zero=True)

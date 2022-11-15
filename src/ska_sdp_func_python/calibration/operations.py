@@ -1,5 +1,5 @@
-""" Functions for calibration.
-
+"""
+Functions for calibration.
 """
 
 __all__ = [
@@ -29,7 +29,8 @@ def apply_gaintable(
 
         V_corrected = {g_i * g_j^*}^-1 V_obs
 
-    If the visibility data are polarised e.g. polarisation_frame("linear") then the inverse operator
+    If the visibility data are polarised
+    e.g. polarisation_frame("linear") then the inverse operator
     represents an actual inverse of the gains.
 
     :param vis: visibility to have gains applied
@@ -66,8 +67,8 @@ def apply_gaintable(
             nant, nchan, nrec, _ = gain.shape
             baselines = vis.baselines.data
 
-            # Try to ignore visibility flags in application of gains. Should have no impact
-            # and will save time in applying the flags
+            # Try to ignore visibility flags in application of gains.
+            # Should have no impact and will save time in applying the flags
             use_flags = kwargs["use_flags"]
             flagged = (
                 use_flags and numpy.max(vis["flags"][vis_rows].data) > 0.0
@@ -239,7 +240,8 @@ def apply_gaintable(
             else:
                 times = Time(vis.time / 86400.0, format="mjd", scale="utc")
                 log.warning(
-                    "No row in gaintable for visibility row, time range  {} to {}".format(
+                    "No row in gaintable for visibility "
+                    "row, time range  {} to {}".format(
                         times[0].isot, times[-1].isot
                     )
                 )

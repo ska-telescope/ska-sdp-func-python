@@ -1,9 +1,5 @@
-# pylint: disable=invalid-name, unused-argument
-
-# pylint: disable=consider-using-f-string, logging-not-lazy,logging-fstring-interpolation
-# pylint: disable=import-error, no-name-in-module, useless-import-alias
-""" SkyComponent functions using taylor terms in frequency
-
+"""
+SkyComponent functions using taylor terms in frequency
 """
 
 __all__ = [
@@ -18,7 +14,7 @@ import logging
 from typing import List
 
 import numpy
-from numpy.polynomial import polynomial as polynomial
+from numpy.polynomial import polynomial
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
@@ -40,7 +36,8 @@ def calculate_skycomponent_list_taylor_terms(
 
     :param sc_list: List of SkyComponent
     :param nmoment: Number of moments/Taylor terms to use
-    :param reference_frequency: Reference frequency (default None uses centre point)
+    :param reference_frequency: Reference frequency
+                    (default None uses centre point)
     :return: SkyComponents as one component per Taylor term
     """
     if len(sc_list) == 0:
@@ -51,8 +48,8 @@ def calculate_skycomponent_list_taylor_terms(
             len(sc_list[0].frequency) // 2
         ]
     log.debug(
-        "calculate_image_from_frequency_moments: Reference frequency = %.3f (MHz)"
-        % (1e-6 * reference_frequency)
+        "calculate_image_from_frequency_moments: "
+        "Reference frequency = %.3f (MHz)" % (1e-6 * reference_frequency)
     )
 
     channel_moment_coupling = numpy.zeros([nchan, nmoment])
@@ -92,9 +89,11 @@ def find_skycomponents_frequency_taylor_terms(
 
          w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
 
-    :param dirty_list: List of images to be searched. These should be different frequencies
+    :param dirty_list: List of images to be searched.
+                    These should be different frequencies
     :param nmoment: Number of moments to be fitted
-    :param reference_frequency: Reference frequency (default None uses centre frequency)
+    :param reference_frequency: Reference frequency
+                    (default None uses centre frequency)
     :return: list of skycomponents
     """
     frequency = numpy.array([d.frequency[0] for d in dirty_list])
@@ -102,8 +101,8 @@ def find_skycomponents_frequency_taylor_terms(
     if reference_frequency is None:
         reference_frequency = frequency[len(frequency) // 2]
     log.debug(
-        "find_skycomponents_frequency_taylor_terms: Reference frequency = %.3f (MHz)"
-        % (1e-6 * reference_frequency)
+        "find_skycomponents_frequency_taylor_terms: "
+        "Reference frequency = %.3f (MHz)" % (1e-6 * reference_frequency)
     )
 
     moment0_list = calculate_frequency_taylor_terms_from_image_list(
@@ -116,14 +115,16 @@ def find_skycomponents_frequency_taylor_terms(
         )
     except ValueError:
         log.info(
-            "find_skycomponents_frequency_taylor_terms: No skycomponents found in moment 0"
+            "find_skycomponents_frequency_taylor_terms: "
+            "No skycomponents found in moment 0"
         )
         return []
 
     ncomps = len(moment0_skycomponents)
     if ncomps > 0:
         log.info(
-            f"find_skycomponents_frequency_taylor_terms: found {ncomps} skycomponents in moment 0"
+            f"find_skycomponents_frequency_taylor_terms: "
+            f"found {ncomps} skycomponents in moment 0"
         )
     else:
         return []
@@ -154,11 +155,13 @@ def interpolate_skycomponents_frequency(
 ) -> List[SkyComponent]:
     """Smooth skycomponent fluxes by fitting polynomial in frequency
 
-     Each skycomponent in a list is interpolated in frequency using a Taylor series expansion.
+     Each skycomponent in a list is interpolated in
+     frequency using a Taylor series expansion.
 
     :param sc_list: List of skycomponents to be interpolated (in frequency_
     :param nmoment: Number of moments to be fitted
-    :param reference_frequency: Reference frequency (default None uses central frequency)
+    :param reference_frequency: Reference frequency
+                (default None uses central frequency)
     :return: list of interpolated skycomponents
     """
     frequency = sc_list[0].frequency
@@ -210,8 +213,9 @@ def gather_skycomponents_from_channels(
 ) -> List[SkyComponent]:
     """Gather a component list from [chan][source] to [source]
 
-     This function converts list of lists of single frequency skycomponents into
-     a list of multi-frequency skycomponents
+     This function converts list of lists of single
+     frequency skycomponents into a list of
+     multi-frequency skycomponents
 
     :param sc_list:
     :return: List[List[SkyComponent]]

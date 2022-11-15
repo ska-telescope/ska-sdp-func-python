@@ -1,13 +1,12 @@
-# pylint: disable=invalid-name, too-many-arguments
-# pylint: disable=import-error
-""" Support for coordinates in FFTs
+"""
+Support for coordinates in FFTs
 
 All grids and images are considered quadratic and centered around
-`npixel//2`, where `npixel` is the pixel width/height. This means that `npixel//2` is
-the zero frequency for FFT purposes, as is convention. Note that this
-means that for even `npixel` the grid is not symmetrical, which means that
-e.g. for convolution kernels odd image sizes are preferred.
-
+`npixel//2`, where `npixel` is the pixel width/height.
+This means that `npixel//2` is the zero frequency for FFT purposes,
+as is convention. Note that this means that for even `npixel` the
+grid is not symmetrical, which means that e.g. for convolution
+kernels odd image sizes are preferred.
 """
 
 __all__ = ["w_beam", "grdsf", "coordinates"]
@@ -24,11 +23,11 @@ def coordinateBounds(npixel):
 
     1. Step size is:math:`1/npixel`:
 
-       .. math:: \frac{high-low}{npixel-1} = \frac{1}{npixel}
+       \frac{high-low}{npixel-1} = \frac{1}{npixel}
 
     2. The coordinate:math:`\lfloor npixel/2\rfloor` falls exactly on zero:
 
-       .. math:: low + \left\lfloor\frac{npixel}{2}\right\rfloor * (high-low) = 0
+       low + \left\lfloor\frac{npixel}{2}\right\rfloor * (high-low) = 0
 
     This is the coordinate system for shifted FFTs.
     """

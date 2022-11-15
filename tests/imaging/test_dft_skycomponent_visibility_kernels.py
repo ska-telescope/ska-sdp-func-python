@@ -18,7 +18,7 @@ def test_dft_stokesiquv_visibility(compute_kernel, vis, comp):
         try:
             import cupy  # noqa: F401
         except ModuleNotFoundError:
-            return True
+            return
 
     new_vis = vis.copy(deep=True)
     result = dft_skycomponent_visibility(

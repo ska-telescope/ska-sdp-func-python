@@ -1,5 +1,3 @@
-# pylint: disable=invalid-name, too-many-arguments, unused-argument
-# pylint: disable=import-error, no-name-in-module
 """
 Functions that perform gather/scatter operations on Images.
 """
@@ -27,11 +25,14 @@ log = logging.getLogger("func-python-logger")
 def image_scatter_facets(
     im: Image, facets=1, overlap=0, taper=None
 ) -> List[Image]:
-    """Scatter an image into a list of subimages using the  image_raster_iterator
+    """
+    Scatter an image into a list of subimages using the
+    image_raster_iterator
 
-     If the overlap is greater than zero, we choose to keep all images the same size so the
-     other ring of facets are ignored. So if facets=4 and overlap > 0 then the scatter returns
-     (facets-2)**2 = 4 images.
+    If the overlap is greater than zero, we choose to keep
+    all images the same size so the other ring of facets are ignored.
+    So if facets=4 and overlap > 0 then the scatter returns
+    (facets-2)**2 = 4 images.
 
     :param im: Image
     :param facets: Number of image partitions on each axis (2)
@@ -58,14 +59,17 @@ def image_gather_facets(
     taper=None,
     return_flat=False,
 ):
-    """Gather a list of subimages back into an image using the  image_raster_iterator
+    """
+    Gather a list of subimages back into an image using the
+    image_raster_iterator
 
-     If the overlap is greater than zero, we choose to keep all images the same size so the
-     other ring of facets are ignored. So if facets=4 and overlap > 0 then the gather expects
-     (facets-2)**2 = 4 images.
+    If the overlap is greater than zero, we choose to keep
+    all images the same size so the other ring of facets are ignored.
+    So if facets=4 and overlap > 0 then the gather expects
+    (facets-2)**2 = 4 images.
 
-     To normalise the overlap we make a set of flats, gather that and divide.
-     The flat may be optionally returned instead of the result
+    To normalise the overlap we make a set of flats, gather that and divide.
+    The flat may be optionally returned instead of the result
 
     :param image_list: List of subimages
     :param im: Output image

@@ -1,8 +1,5 @@
-# pylint: disable=invalid-name, unused-variable
-# pylint: disable=unsubscriptable-object, logging-fstring-interpolation
-# pylint: disable=import-error, no-name-in-module
-""" Functions to aid operations on imaging results
-
+"""
+Functions to aid operations on imaging results
 """
 
 import logging
@@ -69,6 +66,7 @@ def sum_predict_results(results):
     :param results: List of visibilities to be summed
     :return: summed visibility
     """
+    # pylint: disable=unsubscriptable-object
     sum_results = None
     for result in results:
         if result is not None:
@@ -106,14 +104,16 @@ def threshold_list(
             )
             peak = max(peak, this_peak)
             log.info(
-                f"threshold_list: using moment 0, sub_image {i}, peak = {this_peak}"
+                f"threshold_list: using moment 0, sub_image {i}, "
+                f"peak = {this_peak}"
             )
         else:
             ref_chan = result["pixels"].data.shape[0] // 2
             this_peak = numpy.max(numpy.abs(result["pixels"].data[ref_chan]))
             peak = max(peak, this_peak)
             log.info(
-                f"threshold_list: using refchan {ref_chan} , sub_image {i}, peak = {this_peak}"
+                f"threshold_list: using refchan {ref_chan}, "
+                f"sub_image {i}, peak = {this_peak}"
             )
 
     actual = max(peak * fractional_threshold, threshold)

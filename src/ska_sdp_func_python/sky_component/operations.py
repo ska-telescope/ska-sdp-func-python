@@ -1,5 +1,5 @@
-"""Function to manage sky components.
-
+"""
+Function to manage sky components.
 """
 
 __all__ = [
@@ -131,7 +131,8 @@ def find_separation_skycomponents(comps_test, comps_ref=None):
 def find_skycomponent_matches_atomic(comps_test, comps_ref, tol=1e-7):
     """Match a list of candidates to a reference set of skycomponents
 
-    find_skycomponent_matches is faster since it uses the astropy catalog matching
+    find_skycomponent_matches is faster since it
+    uses the astropy catalog matching
 
     many to one is allowed.
 
@@ -225,7 +226,8 @@ def select_neighbouring_components(comps, target_comps):
 
 
 def remove_neighbouring_components(comps, distance):
-    """Remove the faintest of a pair of components that are within a specified distance
+    """Remove the faintest of a pair of components that
+    are within a specified distance
 
     :param comps: skycomponents
     :param distance: Minimum distance
@@ -255,7 +257,8 @@ def remove_neighbouring_components(comps, distance):
 def find_skycomponents(
     im: Image, fwhm=1.0, threshold=1.0, npixels=5
 ) -> List[SkyComponent]:
-    """Find gaussian components in Image above a certain threshold as SkyComponent
+    """Find gaussian components in Image above a certain
+    threshold as SkyComponent
 
     :param im: Image to be searched
     :param fwhm: Full width half maximum of gaussian in pixels
@@ -372,7 +375,8 @@ def apply_beam_to_skycomponent(
 ) -> Union[SkyComponent, List[SkyComponent]]:
     """Apply a primary beam to a SkyComponent
 
-    if inverse==True, do an inverse where we subtract the primary beam from the skycomponents
+    if inverse==True, do an inverse where we subtract the
+                      primary beam from the skycomponents
     if inverse==False, do a multiplication of beam and skycomponent fluxes
     :param phasecentre:
     :param beam: primary beam
@@ -454,8 +458,8 @@ def apply_voltage_pattern_to_skycomponent(
     For inverse==False, input polarisation_frame must be stokesIQUV, and
     output polarisation_frame is same as voltage pattern
 
-    For inverse==True, input polarisation_frame must be same as voltage pattern, and
-    output polarisation_frame is "stokesIQUV"
+    For inverse==True, input polarisation_frame must be same as voltage
+    pattern, and output polarisation_frame is "stokesIQUV"
 
     Requires a complex Image with the correct ordering of polarisation axes:
     e.g. RR, LL, RL, LR or XX, YY, XY, YX
@@ -519,7 +523,8 @@ def apply_voltage_pattern_to_skycomponent(
             x, y = int(round(float(pixloc[0]))), int(round(float(pixloc[1])))
             if 0 <= x < nx and 0 <= y < ny:
                 # Now we want to left and right multiply by the Jones matrices
-                # comp_flux = vp["pixels"].data[:, :, y, x] * comp_flux_cstokes * numpy.vp["pixels"].data[:, :, y, x]
+                # comp_flux = vp["pixels"].data[:, :, y, x] * comp_flux_cstokes
+                #             * numpy.vp["pixels"].data[:, :, y, x]
                 for chan in range(nchan):
                     ej = vp["pixels"].data[chan, :, y, x].reshape([2, 2])
                     cfs = comp_flux_cstokes[chan].reshape([2, 2])
@@ -674,7 +679,8 @@ def insert_skycomponent(
                 nbad += 1
     if nbad > 0:
         log.warning(
-            f"insert_skycomponent: {nbad} components of {len(sc)} do not fit on image"
+            f"insert_skycomponent: {nbad} components "
+            f"of {len(sc)} do not fit on image"
         )
 
     return im
@@ -690,7 +696,8 @@ def restore_skycomponent(
 
     :param im: Image
     :param sc: SkyComponent or list of SkyComponents
-    :param clean_beam: dict e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}. Units are deg, deg, deg
+    :param clean_beam: dict e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}.
+                       Units are deg, deg, deg
     :param support: Support of kernel (7)
     :return: Image
     """
@@ -756,7 +763,8 @@ def restore_skycomponent(
 def voronoi_decomposition(im, comps):
     """Construct a Voronoi decomposition of a set of components
 
-    The array return contains the index into the scipy.spatial.qhull.Voronoi structure
+    The array return contains the index into the
+    scipy.spatial.qhull.Voronoi structure
 
     :param im: Image
     :param comps: List of SkyComponents
@@ -796,7 +804,8 @@ def voronoi_decomposition(im, comps):
 def image_voronoi_iter(
     im: Image, components: list
 ) -> collections.abc.Iterable:
-    """Iterate through Voronoi decomposition, returning a generator yielding fullsize images
+    """Iterate through Voronoi decomposition, returning
+    a generator yielding fullsize images
 
     :param im: Image
     :param components: Components to define Voronoi decomposition
@@ -891,7 +900,8 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
             force_point_sources = kwargs["force_point_sources"]
         except KeyError:
             log.info(
-                "fit_skycomponent: force_point_sources not give, setting as default: True"
+                "fit_skycomponent: force_point_sources not give, "
+                "setting as default: True"
             )
             force_point_sources = True
 
