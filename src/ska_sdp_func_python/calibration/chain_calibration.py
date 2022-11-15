@@ -129,8 +129,6 @@ def apply_calibration_chain(
     calibration_context="T",
     controls=None,
     iteration=0,
-    tol=1e-6,
-    **kwargs,
 ):
     """
     Calibrate using algorithm specified by calibration_context
@@ -139,14 +137,11 @@ def apply_calibration_chain(
     The context string can denote a sequence of calibrations
     e.g. TGB with different timescales.
 
-    :param vis:
-    :param model_vis:
-    :param calibration_context: calibration contexts in order
-                    of correction e.g. 'TGB'
-    :param control: controls dictionary, modified as necessary
-    :param iteration: Iteration number to be compared
-                    to the 'first_selfcal' field.
-    :param kwargs:
+    :param vis: Visibility
+    :param gaintables: GainTables to perform calibration
+    :param calibration_context: calibration contexts in order of correction e.g. 'TGB'
+    :param controls: controls dictionary, modified as necessary
+    :param iteration: Iteration number to be compared to the 'first_selfcal' field.
     :return: Calibrated data_models, dict(gaintables)
     """
 
@@ -165,9 +160,7 @@ def apply_calibration_chain(
 
         for c in calibration_context:
             if iteration >= controls[c]["first_selfcal"]:
-                avis = apply_gaintable(
-                    vis, gaintables[c], timeslice=controls[c]["timeslice"]
-                )
+                avis = apply_gaintable(vis, gaintables[c])
 
         return avis
 
@@ -182,7 +175,6 @@ def calibrate_chain(
     controls=None,
     iteration=0,
     tol=1e-6,
-    **kwargs,
 ):
     """
     Calibrate using algorithm specified by calibration_context
@@ -190,14 +182,14 @@ def calibrate_chain(
     The context string can denote a sequence of calibrations
     e.g. TGB with different timescales.
 
-    :param vis:
-    :param model_vis:
-    :param calibration_context: calibration contexts in
-                      order of correction e.g. 'TGB'
+    :param vis: Visibility containing the observed data_models
+    :param modelvis: Visibility containing the visibility predicted by a model
+    :param gaintables: Existing GainTables
+    :param calibration_context: calibration contexts in order of correction e.g. 'TGB'
     :param controls: controls dictionary, modified as necessary
-    :param iteration: Iteration number to be compared
-                      to the 'first_selfcal' field.
-    :param kwargs:
+    :param iteration: Iteration number to be compared to the 'first_selfcal' field.
+    :param tol: Iteration stops when the fractional change
+                 in the gain solution is below this tolerance
     :return: Calibrated data_models, dict(gaintables)
     """
     if controls is None:
@@ -228,9 +220,9 @@ def calibrate_chain(
                     avis,
                     amvis,
                     gt=gaintables[c],
-                    timeslice=controls[c]["timeslice"],
                     phase_only=controls[c]["phase_only"],
                     crosspol=controls[c]["shape"] == "matrix",
+                    timeslice=controls[c]["timeslice"],
                     tol=tol,
                 )
                 log.debug(
@@ -249,7 +241,6 @@ def calibrate_chain(
                     avis,
                     gaintables[c],
                     inverse=True,
-                    timeslice=controls[c]["timeslice"],
                 )
             else:
                 log.debug(
@@ -270,21 +261,20 @@ def solve_calibrate_chain(
     controls=None,
     iteration=0,
     tol=1e-6,
-    **kwargs,
 ):
     """Calibrate using algorithm specified by calibration_context
 
      The context string can denote a sequence of calibrations
      e.g. TGB with different timescales.
 
-    :param vis:
-    :param model_vis:
-    :param calibration_context: calibration contexts in order
-                      of correction e.g. 'TGB'
+    :param vis: Visibility containing the observed data_models
+    :param modelvis: Visibility containing the visibility predicted by a model
+    :param gaintables: Existing GainTables
+    :param calibration_context: calibration contexts in order of correction e.g. 'TGB'
     :param controls: controls dictionary, modified as necessary
-    :param iteration: Iteration number to be compared to the
-                      'first_selfcal' field.
-    :param kwargs:
+    :param iteration: Iteration number to be compared to the 'first_selfcal' field.
+    :param tol: Iteration stops when the fractional change
+                 in the gain solution is below this tolerance
     :return: Calibrated data_models, dict(gaintables)
     """
     if controls is None:
@@ -314,9 +304,9 @@ def solve_calibrate_chain(
                     avis,
                     amvis,
                     gt=gaintables[c],
-                    timeslice=controls[c]["timeslice"],
                     phase_only=controls[c]["phase_only"],
                     crosspol=controls[c]["shape"] == "matrix",
+                    timeslice=controls[c]["timeslice"],
                     tol=tol,
                 )
                 context_message = (

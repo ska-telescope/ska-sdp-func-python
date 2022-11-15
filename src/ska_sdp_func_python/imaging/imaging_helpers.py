@@ -51,7 +51,7 @@ def sum_invert_results(image_list):
 def remove_sumwt(results):
     """Remove sumwt term in list of tuples (image, sumwt)
 
-    :param results:
+    :param results: List of tuples (image, sumwt)
     :return: A list of just the dirty images
     """
     try:
@@ -87,11 +87,12 @@ def threshold_list(
     """Find actual threshold for list of results, optionally using moment 0
 
     :param prefix: Prefix in log messages
-    :param imagelist:
+    :param imagelist: List of images
     :param threshold: Absolute threshold
     :param fractional_threshold: Fractional  threshold
     :param use_moment0: Use moment 0 for threshold
-    :return:
+    :param prefix: Prefix for logging information
+    :return: Actual threshold
     """
     peak = 0.0
     for i, result in enumerate(imagelist):

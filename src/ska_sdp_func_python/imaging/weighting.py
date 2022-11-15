@@ -32,20 +32,17 @@ from ska_sdp_func_python.util.array_functions import tukey_filter
 log = logging.getLogger("func-python-logger")
 
 
-def weight_visibility(
-    vis, model, weighting="uniform", robustness=0.0, **kwargs
-):
+def weight_visibility(vis, model, weighting="uniform", robustness=0.0):
     """
     Weight the visibility data
 
     This is done collectively so the weights are summed
     over all vis_lists and then corrected
 
-    :param vis_list:
+    :param vis_list: List of Visibilities
     :param model_imagelist: Model required to determine weighting parameters
     :param weighting: Type of weighting (uniform or robust or natural)
     :param robustness: Robustness parameter
-    :param kwargs: Parameters for functions in graphs
     :return: Reweighted vis
     """
 

@@ -36,6 +36,7 @@ def apply_gaintable(
     :param vis: visibility to have gains applied
     :param gt: Gaintable to be applied
     :param inverse: Apply the inverse (default=False)
+    :param use_flags: Use flags? (in kwargs)
     :return: input vis with gains applied
 
     """
@@ -255,13 +256,14 @@ def apply_gaintable(
 def multiply_gaintables(
     gt: GainTable, dgt: GainTable, time_tolerance=1e-3
 ) -> GainTable:
-    """Multiply two gaintables
+    """Multiply two GainTables
 
     Returns gt * dgt
 
-    :param gt:
-    :param dgt:
-    :return:
+    :param gt: First GainTable
+    :param dgt: Second GainTable
+    :param time_tolerance: Maximum tolerance of time separation in the GainTable data
+    :return: Multiplication product
     """
 
     # Test if times align
@@ -297,10 +299,11 @@ def multiply_gaintables(
 
 
 def concatenate_gaintables(gt_list, dim="time"):
-    """Concatenate a list of gaintables
+    """Concatenate a list of GainTables
 
-    :param gt_list: List of gaintables
-    :return: Concatendated gaintable
+    :param gt_list: List of GainTables
+    :param dim: Dimension to concatenate
+    :return: Concatenated GainTable
     """
 
     if len(gt_list) == 0:

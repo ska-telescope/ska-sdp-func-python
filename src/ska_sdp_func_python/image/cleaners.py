@@ -28,8 +28,6 @@ def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):
      This version operates on numpy arrays. deconvolve_cube
      provides a version for Images.
 
-    :param fracthresh:
-    :param prefix:
     :param dirty: The dirty Image, i.e., the Image to be deconvolved
     :param psf: The point spread-function
     :param window: Regions where clean components are allowed.
@@ -38,8 +36,9 @@ def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):
                     that is removed in each iteration
     :param thresh: Cleaning stops when the maximum of the absolute deviation
                     of the residual is less than this value
-    :param niter: Maximum number of components to make if the
-                    threshold `thresh` is not hit
+    :param niter: Maximum number of components to make if the threshold `thresh` is not hit
+    :param fracthresh: The predefined fractional threshold at which to stop cleaning
+    :param prefix: Informational prefix for log messages
     :return: clean component Image, residual Image
     """
 
@@ -129,10 +128,8 @@ def hogbom_complex(
     The starting-point for the code was the standard Hogbom
     clean algorithm available in RASCIL.
 
-    :param dirty_q: (numpy array): The dirty Q Image, i.e.,
-                            the Q Image to be deconvolved.
-    :param dirty_u: (numpy array): The dirty U Image, i.e.,
-                            the U Image to be deconvolved.
+    :param dirty_q: (numpy array): The dirty Q Image, i.e., the Q Image to be deconvolved.
+    :param dirty_u: (numpy array): The dirty U Image, i.e., the U Image to be deconvolved.
     :param psf_q: (numpy array): The point spread-function in Stokes Q.
     :param psf_u: (numpy array): The point spread-function in Stokes U.
     :param window: (float): Regions where clean components are allowed.
@@ -146,7 +143,7 @@ def hogbom_complex(
     :param fracthresh: (float): The predefined fractional threshold
                     at which to stop cleaning.
 
-    :return (comps.real, comps.imag, res.real, res.imag)
+    :return: (comps.real, comps.imag, res.real, res.imag)
     """
 
     assert 0.0 < gain < 2.0
@@ -211,8 +208,8 @@ def hogbom_complex(
 def overlapIndices(res, psf, peakx, peaky):
     """Find the indices where two arrays overlap
 
-    :param res:
-    :param psf:
+    :param res: Resolution of the 2D array in (nx, ny)
+    :param psf: PSF function
     :param peakx: peak in x
     :param peaky: peak in y
     :return: (limits in a1, limits in a2)
@@ -246,7 +243,8 @@ def overlapIndices(res, psf, peakx, peaky):
 def argmax(a):
     """Return unravelled index of the maximum
 
-    param: a: array to be searched
+    :param a: array to be searched
+    :return: Index of maximum
     """
     return numpy.unravel_index(a.argmax(), a.shape)
 
@@ -271,7 +269,6 @@ def msclean(
 
     This version operates on numpy arrays.
 
-    :param prefix: Informational prefix for log messages
     :param dirty: The dirty image, i.e., the image to be deconvolved
     :param psf: The point spread-function
     :param window: Regions where clean components are allowed.
@@ -287,6 +284,7 @@ def msclean(
     :param niter: Maximum number of components to make if the
                     threshold "thresh" is not hit
     :param scales: Scales (in pixels width) to be used
+    :param prefix: Informational prefix for log messages
     :return: clean component image, residual image
     """
 
@@ -583,6 +581,9 @@ def spheroidal_function(vnu):
 
     m=6, alpha = 1 from Schwab, Indirect Imaging (1984).
     This is one factor in the basis function.
+
+    :param vnu: Distance to edge
+    :return: PSWF value (float)
     """
 
     # Code adapted Anna's f90 PROFILE (gridder.f90) code
@@ -675,7 +676,6 @@ def msmfsclean(
     This version operates on numpy arrays that have been converted
     to moments on the last axis.
 
-    :param fracthresh:
     :param dirty: The dirty image, i.e., the image to be deconvolved
     :param psf: The point spread-function
     :param window: Regions where clean components are allowed.
@@ -872,11 +872,10 @@ def find_global_optimum(
     :param hsmmpsf: scale scale moment moment psf
     :param ihsmmpsf: inverse of Hessian scale scale moment moment psf
     :param smresidual: scale convolutions of frequency moment residuals
-    :param windowstack:
-    :param sensitivity: Sensitivity array: search is on
-                sensitivity * residual images
+    :param windowstack: Window for the search (an array)
+    :param sensitivity: Sensitivity array: search is on sensitivity * residual images
     :param findpeak: Algorithm: Algorithm1 or CASA or RASCIL
-    :return:
+    :return: (Optimum scale, x, y, optimum moment)
     """
     if findpeak == "Algorithm1":
         # Calculate the principal solution in moment-moment axes.
@@ -932,8 +931,20 @@ def find_global_optimum(
 def update_scale_moment_residual(
     smresidual, ssmmpsf, lhs, rhs, gain, mscale, mval
 ):
-    """Update residual by subtracting the effect of
-    model update for each moment"""
+    """
+    Update residual by subtracting the effect of model update for each moment
+    TODO: Docstrings for this function need to be checked
+
+    :param smresidual: scale convolutions of frequency moment residuals
+    :param ssmmpsf: scale scale moment moment psf
+    :param lhs: Left hand side index array
+    :param rhs: Right hand side index array
+    :param gain: Gain
+    :param mscale: Scale
+    :param mval: Moment
+
+    :return: Updated residuals
+    """
     # Lines 30 - 32 of Algorithm 1.
     nscales, nmoment, _, _ = smresidual.shape
     smresidual[:, :, lhs[0] : lhs[1], lhs[2] : lhs[3]] -= gain * numpy.einsum(
@@ -946,8 +957,20 @@ def update_scale_moment_residual(
 
 
 def update_moment_model(m_model, scalestack, lhs, rhs, gain, mscale, mval):
-    """Update model with an appropriately scaled and
-    centered blob for each moment"""
+    """
+    Update model with an appropriately scaled and centered blob for each moment
+
+    :param m_model: Moment model
+    :param scalestack: stack containing the scales
+    :param lhs: Left hand side index array
+    :param rhs: Right hand side index array
+    :param gain: Gain
+    :param mscale: Scale
+    :param mval: Moment
+
+    :return: Updated moment model
+
+    """
     # Lines 28 - 33 of Algorithm 1
     nmoment, _, _ = m_model.shape
     for t in range(nmoment):
@@ -967,7 +990,7 @@ def calculate_scale_moment_residual(residual, scalestack):
 
      Part of the initialisation for Algorithm 1: lines 12 - 17
 
-    :param scalestack:
+    :param scalestack: stack containing the scales
     :param residual: residual [nmoment, nx, ny]
     :return: scale-dependent moment residual [nscales, nmoment, nx, ny]
     """
@@ -988,7 +1011,7 @@ def calculate_scale_scale_moment_moment_psf(psf, scalestack):
 
      Part of the initialisation for Algorithm 1
 
-    :param scalestack:
+    :param scalestack: stack containing the scales
     :param psf: psf
     :return: scale-dependent moment psf
             [nscales, nscales, nmoment, nmoment, nx, ny]
@@ -1057,7 +1080,7 @@ def find_optimum_scale_zero_moment(smpsol, sensitivity, windowstack):
 
      Line 27 of Algorithm 1
 
-    :param windowstack:
+    :param windowstack: Window for the search (an array)
     :param smpsol: Decoupled residual images for each scale and moment
     :return: x, y, optimum scale for peak
     """

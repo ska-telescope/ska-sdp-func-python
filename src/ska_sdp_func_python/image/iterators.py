@@ -20,7 +20,7 @@ log = logging.getLogger("func-python-logger")
 # pylint: disable=inconsistent-return-statements
 def image_raster_iter(
     im: Image, facets=1, overlap=0, taper="flat", make_flat=False
-) -> collections.abc.Iterable:
+):
     """Create an image_raster_iter generator,
     returning a list of subimages, optionally with overlaps
 

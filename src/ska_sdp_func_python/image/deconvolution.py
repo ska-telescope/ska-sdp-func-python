@@ -187,7 +187,6 @@ def deconvolve_list(
 def radler_deconvolve_list(
     dirty_list: List[Image],
     psf_list: List[Image],
-    prefix="",
     **kwargs,
 ) -> (List[Image]):
 
@@ -290,6 +289,7 @@ def check_psf_peak(psf_list):
     """Check that all PSFs in a list have unit peak
 
     :param psf_list: List of PSF images
+    :return: True if peak exists
     """
     for ipsf, psf in enumerate(psf_list):
         pmax = psf["pixels"].data.max()
@@ -371,14 +371,13 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
     return windows
 
 
-def bound_psf_list(dirty_list, prefix, psf_list, psf_support=None, **kwargs):
+def bound_psf_list(dirty_list, prefix, psf_list, psf_support=None):
     """Calculate the PSF within a given support
 
     :param dirty_list: Dirty image, used for default sizes
     :param prefix: Informational prefix to log messages
     :param psf_list: Point Spread Function
     :param psf_support: The half width of a box centered on the psf centre
-    :param kwargs:
     :return: psf: bounded point spread function
                   (i.e. with smaller size in x and y)
     """
@@ -424,7 +423,7 @@ def complex_hogbom_kernel_list(
 
     :param dirty_list: Image dirty image
     :param psf_list: Image Point Spread Function
-    :param window: Window array (Bool) - clean where True
+    :param window_list: Window array (Bool) - clean where True
     :param gain: loop gain (float) 0.q
     :param threshold: Clean threshold (0.0)
     :param fractional_threshold: Fractional threshold (0.01)
@@ -590,18 +589,16 @@ def hogbom_kernel_list(
     See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
 
     :param dirty_list: List of dirty images
-    :param prefix: Informational string to be used in
-                log messages e.g. "cycle 1, subimage 42"
+    :param prefix: Informational string to be used in log messages e.g. "cycle 1, subimage 42"
     :param psf_list: List of Point Spread Function
     :param window_list: List of window images
-    :param sensitivity_list: List of sensitivity images
     :param gain: loop gain (float) 0.1
     :param threshold: Clean threshold (0.0)
     :param fractional_threshold: Fractional threshold (0.01)
     :param scales: Scales (in pixels) for multiscale ([0, 3, 10, 30])
     :param nmoment: Number of frequency moments (default 3)
     :param findpeak: Method of finding peak in mfsclean:
-            'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
+                   'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
 
     :return: component image_list, residual image_list
     """
@@ -698,8 +695,6 @@ def mmclean_kernel_list(
     :param psf_list: List of Point Spread Function
     :param window_list: List of window images
     :param sensitivity_list: List of sensitivity images
-    :return: component image_list, residual image_list
-
     :return: component image_list, residual image_list
 
      The following optional arguments can be passed via kwargs:
@@ -1152,7 +1147,7 @@ def deconvolve_cube(
     return comp, residual
 
 
-def fit_psf(psf: Image, **kwargs):
+def fit_psf(psf: Image):
     """Fit a two dimensional Gaussian to a PSF using astropy.modeling
 
     :params psf: Input PSF

@@ -12,7 +12,7 @@ def apply_jones(ej, cfs, inverse=False, min_det=1e-6):
     :param cfs: 2x2 matrix of stokes
     :param inverse: Calculate the inverse
     :param min_det: Minimum determinant in invert
-    :return:
+    :return: Jones matrix
     """
     if inverse:
         if numpy.abs(numpy.linalg.det(ej)) > min_det:

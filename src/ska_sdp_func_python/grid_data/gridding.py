@@ -44,17 +44,15 @@ from ska_sdp_func_python.fourier_transforms.fft_support import ifft
 log = logging.getLogger("func-python-logger")
 
 
-def convolution_mapping_visibility(
-    vis, griddata, chan, cf=None, channel_tolerance=1e-8
-):
-    """Find the mappings between visibility, griddata,
+def convolution_mapping_visibility(vis, griddata, chan, cf=None):
+    """
+    Find the mappings between visibility, griddata,
     and convolution function
 
-    :param vis:
-    :param griddata:
-    :param chan:
-    :param cf:
-    :param channel_tolerance:
+    :param vis: Visibility to be gridded
+    :param griddata: GridData
+    :param chan: The channel to be gridded
+    :param cf: ConvolutionFunction
     :return:
     """
     assert (
@@ -76,12 +74,12 @@ def convolution_mapping_visibility(
 def spatial_mapping(griddata, u, v, w, cf=None):
     """Map u,v,w per row into coordinates in the grid
 
-    :param cf:
-    :param u:
-    :param v:
-    :param w:
-    :param griddata:
-    :return:
+    :param cf: Convolution Function
+    :param u: Visibility u
+    :param v: Visibility v
+    :param w: Visibility w
+    :param griddata: GridData to be mapped
+    :return: Grid in u, grid in v
     """
     if cf is not None:
         assert (
@@ -338,8 +336,8 @@ def grid_visibility_weight_to_griddata(vis, griddata: GridData):
 def griddata_merge_weights(gd_list):
     """Merge weights into one grid
 
-    :param gd_list:
-    :return:
+    :param gd_list: List of GridDatas to be merged
+    :return: GridData, sum of weights
     """
     centre = len(gd_list) // 2
     gd = copy.deepcopy(gd_list[centre][0])
@@ -367,8 +365,8 @@ def griddata_visibility_reweight(
         The fundamental equations are from
         https://casadocs.readthedocs.io/en/latest/notebooks/synthesis_imaging.html
 
-    :param weighting:
-    :param robustness:
+    :param weighting: Mode of weighting, e.g. natural, uniform or robust
+    :param robustness: Robustness parameter
     :param vis: visibility to be reweighted
     :param griddata: GridData holding gridded weights
     :return: Visibility with imaging_weights corrected
@@ -486,15 +484,14 @@ def griddata_visibility_reweight(
     return vis
 
 
-def degrid_visibility_from_griddata(vis, griddata, cf, **kwargs):
+def degrid_visibility_from_griddata(vis, griddata, cf):
     """Degrid blockVisibility from a GridData
         Note: if parameter oversampling_synthesised_beam in advise_wide_field()
               has been set less than 2, some visibilities would be discarded.
 
-    :param vis: visibility to be degridded
+    :param vis: Visibility to be degridded
     :param griddata: GridData containing image
     :param cf: Convolution function (as GridData)
-    :param kwargs:
     :return: Visibility
     """
     assert (
@@ -582,10 +579,10 @@ def fft_griddata_to_image(griddata, template, gcf=None):
 
      If imaginary is true the data array is complex
 
-    :param griddata:
-    :param template:
+    :param griddata: GridData to perform FFT with
+    :param template: Image template
     :param gcf: Grid correction image
-    :return:
+    :return: Image after application
     """
     ny, nx = (
         griddata["pixels"].data.shape[-2],
@@ -612,10 +609,10 @@ def fft_griddata_to_image(griddata, template, gcf=None):
 def fft_image_to_griddata(im, griddata, gcf=None):
     """Fill griddata with transform of im
 
-    :param im:
-    :param griddata:
+    :param im: Image
+    :param griddata: GridData to be filled
     :param gcf: Grid correction image
-    :return:
+    :return: Filled GridData
     """
     # chan, pol, z, u, v, w
     assert (

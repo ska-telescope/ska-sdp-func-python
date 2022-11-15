@@ -22,6 +22,12 @@ from ska_sdp_func_python.util.geometry import (
 
 
 def get_direction_time_location(bvis):
+    """
+    Get the direction, time and location from Visibility data.
+
+    :param bvis: Visibility
+    return: location, UTC time, direction (SkyCoord)
+    """
     location = bvis.configuration.location
     if location is None:
         location = EarthLocation(
@@ -42,8 +48,8 @@ def get_direction_time_location(bvis):
 def calculate_visibility_hourangles(bvis):
     """Return hour angles for location, utc_time, and direction
 
-    :param bvis:
-    :return:
+    :param bvis: Visibility
+    :return: Hour angles
     """
 
     location, utc_time, direction = get_direction_time_location(bvis)
@@ -53,8 +59,8 @@ def calculate_visibility_hourangles(bvis):
 def calculate_visibility_parallactic_angles(bvis):
     """Return parallactic angles for location, utc_time, and direction
 
-    :param bvis:
-    :return:
+    :param bvis: Visibility
+    :return: Angle
     """
 
     location, utc_time, direction = get_direction_time_location(bvis)
@@ -64,11 +70,9 @@ def calculate_visibility_parallactic_angles(bvis):
 def calculate_visibility_transit_time(bvis, fraction_day=1e-10):
     """Find the UTC time of the nearest transit
 
-    :param fraction_day:
-    :param utc_time:
-    :param location:
-    :param direction: Direction of source
-    :return:
+    :param bvis: Visibility
+    :param fraction_day: Fraction of the day
+    :return: Transit time
     """
     location, utc_time, direction = get_direction_time_location(bvis)
     return calculate_transit_time(
@@ -79,10 +83,8 @@ def calculate_visibility_transit_time(bvis, fraction_day=1e-10):
 def calculate_visibility_azel(bvis):
     """Return az el for a location, utc_time, and direction
 
-    :param utc_time:
-    :param location:
-    :param direction: Direction of source
-    :return:
+    :param bvis: Visibility
+    :return: Az, El coordinates
     """
     location, utc_time, direction = get_direction_time_location(bvis)
     return calculate_azel(location, utc_time, direction)

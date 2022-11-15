@@ -44,7 +44,7 @@ def predict_visibility(
     :return: resulting visibility (in place works)
     """
     if context == "awprojection":
-        return predict_awprojection(vis, model, gcfcf=gcfcf, **kwargs)
+        return predict_awprojection(vis, model, gcfcf=gcfcf)
     if context == "2d":
         return predict_ng(vis, model, do_wstacking=False, **kwargs)
     if context == "ng":
@@ -86,7 +86,7 @@ def invert_visibility(
 
     if context == "awprojection":
         return invert_awprojection(
-            vis, im, dopsf=dopsf, normalise=normalise, gcfcf=gcfcf, **kwargs
+            vis, im, dopsf=dopsf, normalise=normalise, gcfcf=gcfcf
         )
     if context == "2d":
         return invert_ng(
