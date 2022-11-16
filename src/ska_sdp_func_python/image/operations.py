@@ -5,6 +5,8 @@ Image operations visible to the Execution Framework as Components
 __all__ = [
     "convert_polimage_to_stokes",
     "convert_stokes_to_polimage",
+    "convert_clean_beam_to_degrees",
+    "convert_clean_beam_to_pixels",
 ]
 
 import logging
@@ -32,7 +34,7 @@ def convert_clean_beam_to_degrees(im, beam_pixels):
     """Convert clean beam in pixels to deg deg, deg
 
     :param im: Image
-    :param beam_pixels:
+    :param beam_pixels: Beam size in pixels
     :return: dict e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}.
              Units are deg, deg, deg
     """
@@ -57,7 +59,7 @@ def convert_clean_beam_to_degrees(im, beam_pixels):
 def convert_clean_beam_to_pixels(model, clean_beam):
     """Convert clean beam to pixels
 
-    :param model:
+    :param model: Model image containing beam information
     :param clean_beam: e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}.
                 Units are deg, deg, deg
     :return:
@@ -87,7 +89,7 @@ def convert_stokes_to_polimage(
     :returns: Complex image
 
     See also
-        :py:func:`rascil.processing_components.image.operations.convert_polimage_to_stokes`
+        :py:func:`ska_sdp_func_python.image.operations.convert_polimage_to_stokes`
         :py:func:`ska_sdp_datamodels.polarisation.convert_circular_to_stokes`
         :py:func:`ska_sdp_datamodels.polarisation.convert_linear_to_stokes`
     """
@@ -150,15 +152,22 @@ def convert_polimage_to_stokes(im: Image):
     :returns: Complex or Real image
 
     See also
-        :py:func:`rascil.processing_components.image.operations.convert_stokes_to_polimage`
+        :py:func:`ska_sdp_func_python.image.operations.convert_stokes_to_polimage`
         :py:func:`ska_sdp_datamodels.polarisation.convert_stokes_to_circular`
         :py:func:`ska_sdp_datamodels.polarisation.convert_stokes_to_linear`
 
     """
     assert im["pixels"].data.dtype == "complex", im["pixels"].data.dtype
 
+    def _to_required(cimarr):
+        if complex_image:
+            return cimarr
+        else:
+            return numpy.real(cimarr)
+
     if im.image_acc.polarisation_frame == PolarisationFrame("linear"):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
+        cimarr = _to_required(cimarr)
         return create_image(
             cimarr["pixels"].data.shape[3],
             cellsize=numpy.deg2rad(
@@ -168,6 +177,7 @@ def convert_polimage_to_stokes(im: Image):
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("linearnp"):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
+        cimarr = _to_required(cimarr)
         return create_image(
             cimarr["pixels"].data.shape[3],
             cellsize=numpy.deg2rad(
@@ -177,6 +187,7 @@ def convert_polimage_to_stokes(im: Image):
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("circular"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
+        cimarr = _to_required(cimarr)
         return create_image(
             cimarr["pixels"].data.shape[3],
             cellsize=numpy.deg2rad(
@@ -186,6 +197,7 @@ def convert_polimage_to_stokes(im: Image):
         )
     elif im.image_acc.polarisation_frame == PolarisationFrame("circularnp"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
+        cimarr = _to_required(cimarr)
         return create_image(
             cimarr["pixels"].data.shape[3],
             cellsize=numpy.deg2rad(

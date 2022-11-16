@@ -149,8 +149,9 @@ def pad_mid(ff, npixel):
          This function does not handle odd-sized dimensions properly
 
     :param ff: The input far field. Should be smaller than npixelxnpixel.
-
     :param npixel:  The desired far field size
+
+    :return: Padded array
 
     """
     ny, nx = ff.shape[-2:]
@@ -179,6 +180,7 @@ def extract_mid(a, npixel):
 
     :param npixel: desired size of the section to extract
     :param a: grid from which to extract
+    :return: Section of grid
     """
     ny, nx = a.shape[-2:]
     cx = nx // 2
@@ -203,8 +205,8 @@ def extract_oversampled(a, xf, yf, kernel_oversampling, kernelwidth):
      kernel_oversampling*(npixel+2) to contain enough information
      in all circumstances
 
-    :param xf:
-    :param yf:
+    :param xf: Offset in x
+    :param yf: Offset in y
     :param a: grid from which to extract
     :param kernel_oversampling: oversampling factor
     :param kernelwidth: size of section

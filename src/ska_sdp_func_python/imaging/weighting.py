@@ -17,11 +17,11 @@ __all__ = [
 import logging
 
 import numpy
+from ska_sdp_datamodels import physical_constants
 from ska_sdp_datamodels.gridded_visibility.grid_vis_create import (
     create_griddata_from_image,
 )
 from ska_sdp_datamodels.image.image_model import Image
-from ska_sdp_datamodels.physical_constants import C_M_S
 
 from ska_sdp_func_python.grid_data.gridding import (
     grid_visibility_weight_to_griddata,
@@ -39,7 +39,7 @@ def weight_visibility(vis, model, weighting="uniform", robustness=0.0):
     This is done collectively so the weights are summed
     over all vis_lists and then corrected
 
-    :param vis_list:
+    :param vis_list: List of Visibilities
     :param model_imagelist: Model required to determine weighting parameters
     :param weighting: Type of weighting (uniform or robust or natural)
     :param robustness: Robustness parameter
@@ -80,7 +80,7 @@ def taper_visibility_gaussian(vis, beam=None):
     scale_factor = numpy.pi**2 * beam**2 / (4.0 * numpy.log(2.0))
 
     for chan, freq in enumerate(vis.frequency.data):
-        wave = C_M_S / freq
+        wave = physical_constants.C_M_S / freq
         uvdistsq = (
             vis.visibility_acc.u.data**2 + vis.visibility_acc.v.data**2
         ) / wave**2
@@ -114,7 +114,7 @@ def taper_visibility_tukey(vis, tukey=0.1):
     """
     oshape = vis.imaging_weight.data[..., 0, 0].shape
     for chan, freq in enumerate(vis.frequency.data):
-        wave = C_M_S / freq
+        wave = physical_constants.C_M_S / freq
         uvdist = numpy.sqrt(
             vis.visibility_acc.u.data**2 + vis.visibility_acc.v.data**2
         )

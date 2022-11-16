@@ -81,7 +81,7 @@ def shift_vis_to_image(
     _, _, ny, nx = im["pixels"].data.shape
 
     # Convert the FFT definition of the phase center to world
-    # coordinates (1 relative). This is the only place in RASCIL
+    # coordinates (1 relative). This is the only place
     # where the relationship between the image and visibility
     # frames is defined.
 
@@ -183,6 +183,8 @@ def predict_awprojection(
 
     :param vis: visibility to be predicted
     :param model: model image
+    :param gcfcf: (Grid correction function i.e. in image space,
+                  Convolution function i.e. in uv space)
     :return: resulting visibility (in place works)
     """
 
@@ -220,7 +222,6 @@ def invert_awprojection(
     dopsf: bool = False,
     normalise: bool = True,
     gcfcf=None,
-    **kwargs
 ) -> (Image, numpy.ndarray):
     """
     Invert using convolutional degridding and an AW kernel
@@ -264,7 +265,7 @@ def invert_awprojection(
     if normalise:
         result = normalise_sumwt(result, sumwt)
 
-    result = convert_polimage_to_stokes(result, **kwargs)
+    result = convert_polimage_to_stokes(result)
 
     assert not numpy.isnan(
         numpy.sum(result["pixels"].data)
@@ -276,9 +277,8 @@ def invert_awprojection(
 def fill_vis_for_psf(svis):
     """Fill the visibility for calculation of PSF
 
-    :param im:
-    :param svis:
-    :return: visibility with unit vis
+    :param svis: Visibility to be filled
+    :return: Visibility with unit vis
     """
     if svis.visibility_acc.polarisation_frame == PolarisationFrame("linear"):
         svis["vis"].data[..., 0] = 1.0 + 0.0j
@@ -321,7 +321,8 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     parameters. This is a convenience function and does
     not transform the visibilities.
 
-    :param vis:
+    :param vis: Visibility
+
     :param phasecentre: Phasecentre (Skycoord)
     :param channel_bandwidth: Channel width (Hz)
     :param cellsize: Cellsize (radians)
@@ -330,9 +331,6 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     :param equinox: Equinox for WCS (2000.0)
     :param nchan: Number of image channels (Default is 1 -> MFS)
     :return: image
-
-    See also
-        :py:func:`rascil.processing_components.image.operations.create_image`
     """
     log.debug(
         "create_image_from_visibility: "
@@ -478,7 +476,7 @@ def advise_wide_field(
         advice = advise_wide_field(vis, delA)
         wstep = kwargs.get("wstep")
 
-    :param vis:
+    :param vis: Visibility
     :param delA: Allowed coherence loss (def: 0.02)
     :param oversampling_synthesised_beam:
             Oversampling of the synthesized beam (def: 3.0)
@@ -491,14 +489,14 @@ def advise_wide_field(
 
     isblock = isinstance(vis, Visibility)
 
-    max_wavelength = physical_constants.c_m_s / numpy.min(vis.frequency.data)
+    max_wavelength = physical_constants.C_M_S / numpy.min(vis.frequency.data)
     if verbose:
         log.info(
             "advise_wide_field: (max_wavelength) "
             "Maximum wavelength %.3f (meters)" % (max_wavelength)
         )
 
-    min_wavelength = physical_constants.c_m_s / numpy.max(vis.frequency.data)
+    min_wavelength = physical_constants.C_M_S / numpy.max(vis.frequency.data)
     if verbose:
         log.info(
             "advise_wide_field: (min_wavelength) "
@@ -815,7 +813,11 @@ def advise_wide_field(
 
 
 def rad_deg_arcsec(x):
-    """Stringify x in radian and degress forms"""
+    """
+    Stringify x in radian and degree forms
+
+    :param x: float number
+    """
     return "%.3g (rad) %.3g (deg) %.3g (asec)" % (
         x,
         180.0 * x / numpy.pi,

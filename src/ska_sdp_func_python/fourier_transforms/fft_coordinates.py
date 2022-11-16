@@ -30,6 +30,9 @@ def coordinateBounds(npixel):
        low + \left\lfloor\frac{npixel}{2}\right\rfloor * (high-low) = 0
 
     This is the coordinate system for shifted FFTs.
+
+    :param npixel: Number of pixels (integer)
+    :return: Coordinates (integer)
     """
     if npixel % 2 == 0:
         return -0.5, 0.5 * (npixel - 2) / npixel
@@ -38,7 +41,12 @@ def coordinateBounds(npixel):
 
 
 def coordinates(npixel: int):
-    """1D array which spans [-.5,.5[ with 0 at position npixel/2"""
+    """
+    1D array which spans [-.5,.5[ with 0 at position npixel/2
+
+    :param npixel: Number of pixels (integer)
+    :return: 1D array containing coordinates
+    """
     return (numpy.arange(npixel) - npixel // 2) / npixel
 
 
@@ -47,6 +55,9 @@ def coordinates2(npixel: int):
 
     1. a step size of 2/npixel and
     2. (0,0) at pixel (floor(n/2),floor(n/2))
+
+    :param npixel: Number of pixels (integer)
+    :return: Grid (2D array) containing coordinates
     """
     return (numpy.mgrid[0:npixel, 0:npixel] - npixel // 2) / npixel
 
@@ -58,6 +69,11 @@ def coordinates2Offset(npixel: int, cx: int, cy: int, quadrant=False):
 
     1. a step size of 2/npixel and
     2. (0,0) at pixel (cx, cy,floor(n/2))
+
+    :param npixel: Number of pixels (integer)
+    :param cx: location of delay centre int(npixel//2)
+    :param cy: location of delay centre int(npixel//2)
+    :return: Grid (2D array)
     """
     if cx is None:
         cx = npixel // 2
@@ -81,6 +97,9 @@ def grdsf(nu):
     The griddata function is (1-NU**2)*GRDSF(NU) where NU is the distance
     to the edge. The grid correction function is just 1/GRDSF(NU) where NU
     is now the distance to the edge of the image.
+
+    :param nu: Distance to the edge
+    :return: griddata function, grid correction function (numpy.array)
     """
     p = numpy.array(
         [
@@ -145,8 +164,8 @@ def w_beam(npixel, field_of_view, w, cx=None, cy=None, remove_shift=False):
     :param npixel: Size of the grid in pixels
     :param field_of_view: Field of view
     :param w: Baseline distance to the projection plane
-    :param cx: location of delay centre def:npixel//2
-    :param cy: location of delay centre def:npixel//2
+    :param cx: location of delay centre int(npixel//2)
+    :param cy: location of delay centre int(npixel//2)
     :param remove_shift: Remove overall phase shift at the centre of the image
     :return: npixel x npixel array with the far field
     """

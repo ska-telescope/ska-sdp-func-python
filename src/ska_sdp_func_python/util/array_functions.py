@@ -28,14 +28,6 @@ def average_chunks(arr, wts, chunksize):
     if chunksize <= 1:
         return arr, wts
 
-    # Original codes
-    # places = range(0, len(arr), chunksize)
-    # chunks = numpy.add.reduceat(wts * arr, places)
-    # weights = numpy.add.reduceat(wts, places)
-    # chunks[weights > 0.0] = chunks[weights > 0.0] / weights[weights > 0.0]
-
-    # Codes optimized
-
     mask = numpy.zeros(
         ((len(arr) - 1) // chunksize + 1, arr.shape[0]), dtype=bool
     )
@@ -153,7 +145,7 @@ def insert_array(
     :param support: Support of function in image space
     :param insert_function: insert_function_L or
                 insert_function_Sinc or insert_function_pswf
-    :return:
+    :return: Image after insertion
     """
     nchan, npol, _, _ = im.shape
     intx = int(numpy.round(x))
