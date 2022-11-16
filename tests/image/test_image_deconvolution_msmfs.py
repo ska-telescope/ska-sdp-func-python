@@ -74,12 +74,13 @@ def deconvolution_msmfs_fixture():
 
     # Create image
     test_image = create_image(
-        npixel=256,
-        cellsize=0.001,
-        phasecentre=vis.phasecentre,
+        256,
+        0.001,
+        vis.phasecentre,
         polarisation_frame=PolarisationFrame("stokesI"),
-        frequency=frequency,
-        channel_bandwidth=channel_bandwidth,
+        frequency=frequency[0],
+        channel_bandwidth=channel_bandwidth[0],
+        nchan=nchan,
     )
     # beam = create_low_test_beam(test_image)
     # test_image["pixels"].data *= beam["pixels"].data

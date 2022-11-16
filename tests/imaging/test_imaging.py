@@ -73,7 +73,12 @@ def imaging_fixture():
     )
 
     model = create_image(
-        npixel=npixel, cellsize=0.0001, phasecentre=phase_centre
+        npixel,
+        0.0001,
+        phase_centre,
+        frequency=frequency[0],
+        channel_bandwidth=channelwidth[0],
+        nchan=len(frequency),
     )
     model["pixels"].data = numpy.ones(
         shape=model["pixels"].data.shape, dtype=float

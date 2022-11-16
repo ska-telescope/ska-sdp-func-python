@@ -274,10 +274,9 @@ def radler_deconvolve_list(
 
         x_im = create_image(
             dirty["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(
-                numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
-            ),
-            phasecentre=dirty.image_acc.phasecentre,
+            numpy.deg2rad(numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])),
+            dirty.image_acc.phasecentre,
+            nchan=dirty["pixels"].data.shape[0],
         )
         x_im["pixels"].data = numpy.expand_dims(restored_radler, axis=(0, 1))
         comp_image_list.append(x_im)

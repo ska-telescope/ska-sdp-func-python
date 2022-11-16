@@ -84,14 +84,16 @@ def image_gather_facets(
     """
     out = create_image(
         im["pixels"].data.shape[3],
-        cellsize=numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-        phasecentre=im.image_acc.phasecentre,
+        numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
+        im.image_acc.phasecentre,
+        nchan=im["pixels"].data.shape[0],
     )
     if overlap > 0:
         flat = create_image(
             im["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-            phasecentre=im.image_acc.phasecentre,
+            numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
+            im.image_acc.phasecentre,
+            nchan=im["pixels"].data.shape[0],
         )
         flat["pixels"].data[...] = 1.0
         flats = list(
@@ -106,8 +108,9 @@ def image_gather_facets(
 
         sum_flats = create_image(
             im["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-            phasecentre=im.image_acc.phasecentre,
+            numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
+            im.image_acc.phasecentre,
+            nchan=im["pixels"].data.shape[0],
         )
 
         if return_flat:
@@ -147,8 +150,9 @@ def image_gather_facets(
     # if no overlap
     flat = create_image(
         im["pixels"].data.shape[3],
-        cellsize=numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-        phasecentre=im.image_acc.phasecentre,
+        numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
+        im.image_acc.phasecentre,
+        nchan=im["pixels"].data.shape[0],
     )
     flat["pixels"].data[...] = 1.0
 

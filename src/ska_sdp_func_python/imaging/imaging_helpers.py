@@ -30,6 +30,7 @@ def sum_invert_results(image_list):
         image_list[0][0]["pixels"].data.shape[3],
         numpy.deg2rad(numpy.abs(image_list[0][0].image_acc.wcs.wcs.cdelt[1])),
         image_list[0][0].image_acc.phasecentre,
+        nchan=image_list[0][0]["pixels"].data.shape[0],
     )
 
     sumwt = image_list[0][1]

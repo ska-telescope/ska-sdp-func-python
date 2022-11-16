@@ -150,8 +150,9 @@ def image_raster_iter(
                 if overlap > 0 and make_flat:
                     flat = create_image(
                         subim["pixels"].data.shape[3],
-                        cellsize=numpy.deg2rad(numpy.abs(wcs.wcs.cdelt[1])),
-                        phasecentre=im.image_acc.phasecentre,
+                        numpy.deg2rad(numpy.abs(wcs.wcs.cdelt[1])),
+                        im.image_acc.phasecentre,
+                        nchan=subim["pixels"].data.shape[0],
                     )
                     if taper == "linear":
                         flat["pixels"].data[..., :, :] = numpy.outer(

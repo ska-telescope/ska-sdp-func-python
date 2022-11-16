@@ -41,6 +41,7 @@ def iterators_fixture():
         npixel=512,
         cellsize=0.00015,
         phasecentre=phase_centre,
+        nchan=1,
     )
 
     image_sc = SkyComponent(
@@ -70,9 +71,9 @@ def test_raster(input_params):
 
     for npixel in [256, 512, 1024]:
         m31original = create_image(
-            npixel=npixel,
-            cellsize=0.00015,
-            phasecentre=input_params["phasecentre"],
+            npixel,
+            0.00015,
+            input_params["phasecentre"],
         )
         m31original["pixels"].data = numpy.ones(
             shape=m31original["pixels"].data.shape, dtype=float
@@ -86,9 +87,9 @@ def test_raster(input_params):
             for overlap in [0, 2, 4, 8, 16]:
                 try:
                     m31model = create_image(
-                        npixel=npixel,
-                        cellsize=0.00015,
-                        phasecentre=input_params["phasecentre"],
+                        npixel,
+                        0.00015,
+                        input_params["phasecentre"],
                     )
                     m31model["pixels"].data = numpy.ones(
                         shape=m31model["pixels"].data.shape, dtype=float

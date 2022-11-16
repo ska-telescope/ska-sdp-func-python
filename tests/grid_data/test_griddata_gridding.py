@@ -65,7 +65,12 @@ def input_for_gridding_fixture():
         polarisation_frame=vis_pol,
     )
     image = create_image(
-        npixel=npixel, cellsize=cellsize, phasecentre=phase_centre
+        npixel,
+        cellsize,
+        phase_centre,
+        frequency=frequency[0],
+        channel_bandwidth=channelwidth[0],
+        nchan=len(frequency),
     )
     components = SkyComponent(
         phase_centre,

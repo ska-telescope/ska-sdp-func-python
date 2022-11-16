@@ -80,7 +80,7 @@ def skymodel_imaging_fixture():
         polarisation_frame=vis_pol,
     )
     gt = create_gaintable_from_visibility(vis, None, "T")
-    im = create_image(npixel, cellsize, phase_centre)
+    im = create_image(npixel, cellsize, phase_centre, nchan=1)
     im["pixels"].data = numpy.ones(shape=im["pixels"].data.shape, dtype=float)
     sky_component = SkyComponent(
         phase_centre,

@@ -819,6 +819,7 @@ def image_voronoi_iter(
             mask[3],
             numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
             im.image_acc.phasecentre,
+            nchan=mask[0],
         )
     else:
         vor, vertex_array = voronoi_decomposition(im, components)
@@ -833,6 +834,7 @@ def image_voronoi_iter(
                 mask[3],
                 numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
                 im.image_acc.phasecentre,
+                nchan=mask[0],
             )
 
 
