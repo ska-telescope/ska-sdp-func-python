@@ -27,6 +27,9 @@ from ska_sdp_func_python.visibility.base import phaserotate_visibility
 # TODO: convert to pytest
 
 
+# TODO: These pylint ignores will be gone once tests are in pytest
+# pylint: disable=attribute-defined-outside-init,missing-class-docstring
+# pylint: disable=too-many-instance-attributes
 class TestVisibilityDFTOperations(unittest.TestCase):
     def setUp(self):
         self.lowcore = create_named_configuration("LOWBD2", rmax=300.0)

@@ -1147,6 +1147,7 @@ def find_optimum_scale_zero_moment(smpsol, sensitivity, windowstack):
         if this_max > optimum:
             optimum = this_max
             sscale = scale
+            # pylint: disable=unbalanced-tuple-unpacking
             sx, sy = argmax(numpy.abs(smpsol[scale, 0, ...]))
 
     return sx, sy, sscale

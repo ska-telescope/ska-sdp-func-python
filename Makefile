@@ -10,6 +10,7 @@ PROJECT_NAME = ska-sdp-func-python
 PYTHON_SWITCHES_FOR_FLAKE8 = --ignore=W503,E203
 
 # W0511: fixme (don't report TODOs)
+# TODO: The following ones should be reviewed and fixed
 # R0801: duplicate-code (some are duplicated between the main function and utils
 #		 these will eventually need to be resolved
 # C0103: invalid-name
@@ -19,7 +20,6 @@ PYTHON_SWITCHES_FOR_FLAKE8 = --ignore=W503,E203
 # R0912: too-many-branches
 # R0915: too-many-statements
 # R1702: too-many-nested-blocks
-# TODO: review all these!!
-PYTHON_SWITCHES_FOR_PYLINT = --disable=W0511,R0801,C0103,R0914,R0913,R0912,R0915,R1702,W0105,W1202,W0201,C0115,R0902,R1735,W0622
+PYTHON_SWITCHES_FOR_PYLINT = --disable=W0511,R0801,C0103,R0914,R0913,R0912,R0915,R1702
 
 
