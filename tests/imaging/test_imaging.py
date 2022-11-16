@@ -1,7 +1,5 @@
-# pylint: disable=duplicate-code
-""" Unit tests for imaging functions
-
-
+"""
+Unit tests for imaging functions
 """
 # import functools
 import logging
@@ -102,20 +100,18 @@ def _checkcomponents(
     comps = find_skycomponents(
         dirty, fwhm=1.0, threshold=10 * fluxthreshold, npixels=5
     )
-    assert len(comps) == len(
-        components
-    ), "Different number of components found: original %d, recovered %d" % (
-        len(components),
-        len(comps),
+    assert len(comps) == len(components), (
+        f"Different number of components found: original "
+        f"{len(components)}, recovered {len(comps)}"
     )
     cellsize = numpy.deg2rad(abs(dirty.image_acc.wcs.wcs.cdelt[0]))
 
     for comp in comps:
         # Check for agreement in direction
         _, separation = find_nearest_skycomponent(comp.direction, components)
-        assert separation / cellsize < positionthreshold, (
-            "Component differs in position %.3f pixels" % separation / cellsize
-        )
+        assert (
+            separation / cellsize < positionthreshold
+        ), f"Component differs in position {separation / cellsize:.3f} pixels"
 
 
 def _predict_base(
@@ -148,15 +144,13 @@ def _predict_base(
     for pol in range(dirty[0].image_acc.npol):
         assert numpy.max(
             numpy.abs(dirty[0]["pixels"].data[:, pol])
-        ), "Residual image pol {} is empty".format(pol)
+        ), f"Residual image pol {pol} is empty"
 
     maxabs = numpy.max(numpy.abs(dirty[0]["pixels"].data))
     assert (
         maxabs < fluxthreshold
-    ), "Error %.3f greater than fluxthreshold %.3f " % (
-        maxabs,
-        fluxthreshold,
-    )
+    ), f"Error {maxabs:.3f} greater than fluxthreshold {fluxthreshold:.3f} "
+
     qa = dirty[0].image_acc.qa_image()
     numpy.testing.assert_allclose(
         qa.data["max"], flux_max, atol=1e-7, err_msg=f"{qa}"
@@ -195,11 +189,11 @@ def _invert_base(
     for pol in range(dirty[0].image_acc.npol):
         assert numpy.max(
             numpy.abs(dirty[0]["pixels"].data[:, pol])
-        ), "Dirty image pol {} is empty".format(pol)
+        ), f"Dirty image pol {pol} is empty"
     for chan in range(dirty[0].image_acc.nchan):
         assert numpy.max(
             numpy.abs(dirty[0]["pixels"].data[chan])
-        ), "Dirty image channel {} is empty".format(chan)
+        ), f"Dirty image channel {chan} is empty"
 
     if check_components:
         _checkcomponents(dirty[0], fluxthreshold, positionthreshold)

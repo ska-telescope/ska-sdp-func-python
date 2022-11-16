@@ -242,9 +242,9 @@ def apply_gaintable(
                 times = Time(vis.time / 86400.0, format="mjd", scale="utc")
                 log.warning(
                     "No row in gaintable for visibility "
-                    "row, time range  {} to {}".format(
-                        times[0].isot, times[-1].isot
-                    )
+                    "row, time range  %s to %s",
+                    times[0].isot,
+                    times[-1].isot,
                 )
 
             vis["vis"].data[vis_rows] = applied
@@ -284,16 +284,12 @@ def multiply_gaintables(
             gt["weight"].data *= dgt["weight"].data
         else:
             raise ValueError(
-                "Gain tables have illegal structures {} {}".format(
-                    str(gt), str(dgt)
-                )
+                f"Gain tables have illegal structures {str(gt)} {str(dgt)}"
             )
 
     else:
         raise ValueError(
-            "Gain tables have different structures {} {}".format(
-                str(gt), str(dgt)
-            )
+            f"Gain tables have different structures {str(gt)} {str(dgt)}"
         )
 
     return gt

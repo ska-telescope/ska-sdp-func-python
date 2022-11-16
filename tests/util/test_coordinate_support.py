@@ -1,9 +1,5 @@
-# pylint: disable=invalid-name, disable=too-many-locals
-# pylint: disable= missing-function-docstring
-# pylint: disable=import-error, unused-variable
-
-""" Unit processing_components for coordinate support
-
+"""
+Unit processing_components for coordinate support
 """
 import numpy
 from astropy import units as u
@@ -184,7 +180,7 @@ def test_phase_rotate():
             )
 
             # Determine phasor
-            l_p, m_p, n_p = skycoord_to_lmn(phasecentre, newphasecentre)
+            l_p, m_p, _ = skycoord_to_lmn(phasecentre, newphasecentre)
             phasor = simulate_point(uvw_rotated, l_p, m_p)
 
             for sourcepos in pos:

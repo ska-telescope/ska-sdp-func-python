@@ -137,18 +137,17 @@ def convert_stokes_to_polimage(
             PolarisationFrame("stokesI"),
         )
     else:
-        raise ValueError(
-            "Cannot convert stokes to %s" % (polarisation_frame.type)
-        )
+        raise ValueError(f"Cannot convert stokes to {polarisation_frame.type}")
 
 
-def convert_polimage_to_stokes(im: Image):
+def convert_polimage_to_stokes(im: Image, complex_image=False):
     """Convert a polarisation image to stokes IQUV (complex)
 
     For example:
         imIQUV = convert_polimage_to_stokes(impol)
 
     :param im: Complex Image in linear or circular
+    :param complex_image: Return complex image?
     :returns: Complex or Real image
 
     See also
@@ -213,6 +212,5 @@ def convert_polimage_to_stokes(im: Image):
         )
     else:
         raise ValueError(
-            "Cannot convert %s to stokes"
-            % (im.image_acc.polarisation_frame.type)
+            f"Cannot convert {im.image_acc.polarisation_frame.type} to stokes"
         )

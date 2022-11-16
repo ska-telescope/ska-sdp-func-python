@@ -49,7 +49,8 @@ def calculate_skycomponent_list_taylor_terms(
         ]
     log.debug(
         "calculate_image_from_frequency_moments: "
-        "Reference frequency = %.3f (MHz)" % (1e-6 * reference_frequency)
+        "Reference frequency = %.3f (MHz)",
+        1e-6 * reference_frequency,
     )
 
     channel_moment_coupling = numpy.zeros([nchan, nmoment])
@@ -102,7 +103,8 @@ def find_skycomponents_frequency_taylor_terms(
         reference_frequency = frequency[len(frequency) // 2]
     log.debug(
         "find_skycomponents_frequency_taylor_terms: "
-        "Reference frequency = %.3f (MHz)" % (1e-6 * reference_frequency)
+        "Reference frequency = %.3f (MHz)",
+        1e-6 * reference_frequency,
     )
 
     moment0_list = calculate_frequency_taylor_terms_from_image_list(
@@ -169,8 +171,9 @@ def interpolate_skycomponents_frequency(
     if reference_frequency is None:
         reference_frequency = frequency[len(frequency) // 2]
     log.debug(
-        "interpolate_skycomponents_frequency: Reference frequency = %.3f (MHz)"
-        % (1e-6 * reference_frequency)
+        "interpolate_skycomponents_frequency: "
+        "Reference frequency = %.3f (MHz)",
+        1e-6 * reference_frequency,
     )
 
     # Now fit in frequency and keep the model

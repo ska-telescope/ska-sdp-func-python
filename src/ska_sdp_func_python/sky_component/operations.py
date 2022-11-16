@@ -297,7 +297,7 @@ def find_skycomponents(
     if segments is None:
         raise ValueError("find_skycomponents: Failed to find any components")
 
-    log.info("find_skycomponents: Identified %d segments" % segments.nlabels)
+    log.info("find_skycomponents: Identified %d segments", segments.nlabels)
 
     comp_catalog = [
         [
@@ -357,7 +357,7 @@ def find_skycomponents(
             SkyComponent(
                 direction=SkyCoord(ra=ra, dec=dec),
                 frequency=im.frequency,
-                name="Segment %d" % segment,
+                name=f"Segment {segment}",
                 flux=point_flux,
                 shape="Point",
                 polarisation_frame=im.image_acc.polarisation_frame,
@@ -392,9 +392,7 @@ def apply_beam_to_skycomponent(
 
     _, _, ny, nx = beam["pixels"].data.shape
 
-    log.debug(
-        "apply_beam_to_skycomponent: Processing %d components" % (len(sc))
-    )
+    log.debug("apply_beam_to_skycomponent: Processing %d components", len(sc))
 
     ras = [comp.direction.ra.radian for comp in sc]
     decs = [comp.direction.dec.radian for comp in sc]
@@ -415,7 +413,7 @@ def apply_beam_to_skycomponent(
     total_flux = numpy.zeros_like(sc[0].flux)
     for icomp, comp in enumerate(sc):
 
-        assert comp.shape == "Point", "Cannot handle shape %s" % comp.shape
+        assert comp.shape == "Point", f"Cannot handle shape {comp.shape}"
 
         pixloc = (pixlocs[0][icomp], pixlocs[1][icomp])
         if not numpy.isnan(pixloc).any():
@@ -440,8 +438,9 @@ def apply_beam_to_skycomponent(
             )
 
     log.debug(
-        "apply_beam_to_skycomponent: %d components with total flux %s"
-        % (len(newsc), total_flux)
+        "apply_beam_to_skycomponent: %d components with total flux %s",
+        len(newsc),
+        total_flux,
     )
     if single:
         return newsc[0]
@@ -484,7 +483,7 @@ def apply_voltage_pattern_to_skycomponent(
 
     nchan, npol, ny, nx = vp["pixels"].data.shape
 
-    log.debug("apply_vp_to_skycomponent: Processing %d components" % (len(sc)))
+    log.debug("apply_vp_to_skycomponent: Processing %d components", len(sc))
 
     ras = [comp.direction.ra.radian for comp in sc]
     decs = [comp.direction.dec.radian for comp in sc]
@@ -507,7 +506,7 @@ def apply_voltage_pattern_to_skycomponent(
 
     for icomp, comp in enumerate(sc):
 
-        assert comp.shape == "Point", "Cannot handle shape %s" % comp.shape
+        assert comp.shape == "Point", f"Cannot handle shape {comp.shape}"
 
         # Convert to linear (xx, xy, yx, yy) or circular (rr, rl, lr, ll)
         nchan, npol = comp.flux.shape
@@ -555,8 +554,9 @@ def apply_voltage_pattern_to_skycomponent(
                 )
 
     log.debug(
-        "apply_vp_to_skycomponent: %d components with total flux %s"
-        % (len(newsc), total_flux)
+        "apply_vp_to_skycomponent: %d components with total flux %s",
+        len(newsc),
+        total_flux,
     )
     if single:
         return newsc[0]
@@ -605,7 +605,7 @@ def insert_skycomponent(
     if not isinstance(sc, collections.abc.Iterable):
         sc = [sc]
 
-    log.debug("insert_skycomponent: Using insert method %s" % insert_method)
+    log.debug("insert_skycomponent: Using insert method %s", insert_method)
 
     image_frequency = im.frequency.data
 
@@ -619,7 +619,7 @@ def insert_skycomponent(
     nbad = 0
     for icomp, comp in enumerate(sc):
 
-        assert comp.shape == "Point", "Cannot handle shape %s" % comp.shape
+        assert comp.shape == "Point", f"Cannot handle shape {comp.shape}"
 
         pixloc = (pixlocs[0][icomp], pixlocs[1][icomp])
         flux = numpy.zeros([nchan, npol])
@@ -721,7 +721,7 @@ def restore_skycomponent(
 
         if comp.shape != "Point":
             raise ValueError(
-                "restore_skycomponent: Cannot handle shape %s" % comp.shape
+                f"restore_skycomponent: Cannot handle shape {comp.shape}"
             )
 
         pixloc = (pixlocs[0][icomp], pixlocs[1][icomp])

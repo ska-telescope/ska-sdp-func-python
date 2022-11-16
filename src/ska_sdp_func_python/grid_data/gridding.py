@@ -117,22 +117,20 @@ def spatial_mapping(griddata, u, v, w, cf=None):
             pu_offset, pv_offset = numpy.round(
                 cf_wcs.sub([3, 4]).wcs_world2pix(wu_subsample, wv_subsample, 0)
             ).astype("int")
-            assert (
-                numpy.min(pu_offset) >= 0
-            ), "image sampling wrong: DU axis underflows: %f" % numpy.min(
-                pu_offset
+            assert numpy.min(pu_offset) >= 0, (
+                f"image sampling wrong: DU axis underflows: "
+                f"{numpy.min(pu_offset)}"
             )
             assert (
                 numpy.max(pu_offset) < cf["pixels"].data.shape[3]
-            ), "DU axis overflows: %f" % numpy.max(pu_offset)
-            assert (
-                numpy.min(pv_offset) >= 0
-            ), "image sampling wrong: DV axis underflows: %f" % numpy.min(
-                pv_offset
+            ), f"DU axis overflows: {numpy.max(pu_offset)}"
+            assert numpy.min(pv_offset) >= 0, (
+                f"image sampling wrong: DV axis underflows: "
+                f"{numpy.min(pv_offset)}"
             )
             assert (
                 numpy.max(pv_offset) < cf["pixels"].data.shape[4]
-            ), "DV axis overflows: %f" % numpy.max(pv_offset)
+            ), f"DV axis overflows: {numpy.max(pv_offset)}"
         else:
             pu_offset = numpy.zeros_like(pu_grid)
             pv_offset = numpy.zeros_like(pv_grid)
@@ -146,10 +144,10 @@ def spatial_mapping(griddata, u, v, w, cf=None):
                 print(cf.convolutionfunction_acc.cf_wcs.sub([5]).__repr__())
             assert (
                 numpy.min(pwc_grid) >= 0
-            ), "W axis underflows: %f" % numpy.min(pwc_grid)
+            ), f"W axis underflows: {numpy.min(pwc_grid)}"
             assert (
                 numpy.max(pwc_grid) < cf["pixels"].data.shape[2]
-            ), "W axis overflows: %f" % numpy.max(pwc_grid)
+            ), f"W axis overflows: {numpy.max(pwc_grid)}"
             pwc_fraction = pwc_pixel - pwc_grid
         else:
             pwc_fraction = numpy.zeros_like(pu_grid)
@@ -377,7 +375,7 @@ def griddata_visibility_reweight(
         "natural",
         "uniform",
         "robust",
-    ], "Weighting {} not supported".format(weighting)
+    ], f"Weighting {weighting} not supported"
 
     real_gd = numpy.real(griddata["pixels"].data)
 

@@ -50,18 +50,16 @@ def calculate_image_frequency_moments(
     channels = numpy.arange(nchan)
     freq = im.image_acc.wcs.sub(["spectral"]).wcs_pix2world(channels, 0)[0]
 
-    assert (
-        nmoment <= nchan
-    ), "Number of moments %d cannot exceed the number of channels %d" % (
-        nmoment,
-        nchan,
+    assert nmoment <= nchan, (
+        f"Number of moments {nmoment} cannot exceed "
+        f"the number of channels {nchan}"
     )
 
     if reference_frequency is None:
         reference_frequency = freq.data[nchan // 2]
     log.debug(
-        "calculate_image_frequency_moments: Reference frequency = %.3f (MHz)"
-        % (reference_frequency / 1e6)
+        "calculate_image_frequency_moments: Reference frequency = %.3f (MHz)",
+        reference_frequency / 1e6,
     )
 
     moment_data = numpy.zeros([nmoment, npol, ny, nx])
@@ -132,7 +130,8 @@ def calculate_image_from_frequency_taylor_terms(
         reference_frequency = im.frequency.data[nchan // 2]
     log.debug(
         "calculate_image_from_frequency_moments: "
-        "Reference frequency = %.3f (MHz)" % (1e-6 * reference_frequency)
+        "Reference frequency = %.3f (MHz)",
+        1e-6 * reference_frequency,
     )
 
     newim_data = numpy.zeros_like(im["pixels"].data[...])
@@ -197,15 +196,15 @@ def calculate_image_list_frequency_moments(
 
     if nmoment > nchan:
         raise ValueError(
-            "Number of moments %d cannot exceed the number of channels %d"
-            % (nmoment, nchan)
+            f"Number of moments {nmoment} cannot exceed "
+            f"the number of channels {nchan}"
         )
 
     if reference_frequency is None:
         reference_frequency = freq[nchan // 2]
     log.debug(
-        "calculate_image_frequency_moments: Reference frequency = %.3f (MHz)"
-        % (reference_frequency / 1e6)
+        "calculate_image_frequency_moments: Reference frequency = %.3f (MHz)",
+        reference_frequency / 1e6,
     )
 
     moment_data = numpy.zeros([nmoment, npol, ny, nx])
@@ -257,7 +256,8 @@ def calculate_image_list_from_frequency_taylor_terms(
         reference_frequency = frequency[nchan // 2]
     log.debug(
         "calculate_image_from_frequency_moments: "
-        "Reference frequency = %.3f (MHz)" % (1e-6 * reference_frequency)
+        "Reference frequency = %.3f (MHz)",
+        1e-6 * reference_frequency,
     )
 
     newims = []
@@ -312,7 +312,8 @@ def calculate_frequency_taylor_terms_from_image_list(
         reference_frequency = frequency[len(frequency) // 2]
     log.debug(
         "calculate_image_from_frequency_moments: "
-        "Reference frequency = %.3f (MHz)" % (1e-6 * reference_frequency)
+        "Reference frequency = %.3f (MHz)",
+        1e-6 * reference_frequency,
     )
 
     wcs = im_list[nchan // 2].image_acc.wcs.deepcopy()

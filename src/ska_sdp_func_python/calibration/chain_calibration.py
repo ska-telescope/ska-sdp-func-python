@@ -216,7 +216,7 @@ def calibrate_chain(
         for c in calibration_context:
             if iteration >= controls[c]["first_selfcal"]:
                 if c not in gaintables.keys():
-                    log.info("Creating new {} gaintable".format(c))
+                    log.info("Creating new %s gaintable", c)
                     gaintables[c] = create_gaintable_from_visibility(
                         avis, timeslice=controls[c]["timeslice"], jones_type=c
                     )
@@ -230,15 +230,13 @@ def calibrate_chain(
                     tol=tol,
                 )
                 log.debug(
-                    "calibrate_chain: Jones matrix {}, iteration {}".format(
-                        c, iteration
-                    )
+                    "calibrate_chain: Jones matrix %s, iteration %s",
+                    c,
+                    iteration,
                 )
                 log.debug(
                     gaintables[c].gaintable_acc.qa_gain_table(
-                        context="Jones matrix {}, iteration {}".format(
-                            c, iteration
-                        )
+                        context=f"Jones matrix {c}, iteration {iteration}"
                     )
                 )
                 avis = apply_gaintable(
@@ -248,8 +246,10 @@ def calibrate_chain(
                 )
             else:
                 log.debug(
-                    "calibrate_chain: Jones matrix {} "
-                    "not solved, iteration {}".format(c, iteration)
+                    "calibrate_chain: Jones matrix %s "
+                    "not solved, iteration %s",
+                    c,
+                    iteration,
                 )
 
         return avis, gaintables

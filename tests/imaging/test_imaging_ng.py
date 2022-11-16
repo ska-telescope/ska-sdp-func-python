@@ -1,6 +1,5 @@
-# pylint: disable=duplicate-code
-""" Unit tests for imaging using nifty gridder
-
+"""
+Unit tests for imaging using nifty gridder
 """
 import logging
 import sys
@@ -82,10 +81,7 @@ def test_predict_ng(input_params):
     )
 
     maxabs = numpy.max(numpy.abs(dirty[0]["pixels"].data))
-    assert maxabs < 1, "Error %.3f greater than fluxthreshold %.3f " % (
-        maxabs,
-        1,
-    )
+    assert maxabs < 1, f"Error {maxabs:.3f} greater than fluxthreshold 1"
 
 
 def test_invert_ng(input_params):

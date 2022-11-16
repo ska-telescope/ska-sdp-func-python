@@ -1,6 +1,5 @@
-# pylint: disable=duplicate-code
-""" Unit tests for image operations
-
+"""
+Unit tests for image operations
 """
 import logging
 import sys

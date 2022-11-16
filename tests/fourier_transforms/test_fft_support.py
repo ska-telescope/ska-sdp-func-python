@@ -1,6 +1,5 @@
-""" Unit processing_components for FFT support
-
-
+"""
+Unit processing_components for FFT support
 """
 import numpy
 from numpy.testing import assert_allclose
@@ -31,7 +30,7 @@ def test_pad_extract():
         # be equal or zero.
         equal = numpy.abs(cs_pad - cs2) < 1e-15
         zero = numpy.abs(cs_pad) < 1e-15
-        assert (equal + zero).all(), "Pad (%d, %d) failed" % (npixel, N2)
+        assert (equal + zero).all(), f"Pad ({npixel}, {N2}) failed"
         # And extracting the middle should recover the original data_models
         assert_allclose(extract_mid(cs_pad, npixel), cs)
 

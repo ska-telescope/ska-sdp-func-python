@@ -1,7 +1,5 @@
-# pylint: disable=duplicate-code
-"""Unit tests for image iteration
-
-
+"""
+Unit tests for image iteration
 """
 import logging
 import tempfile
@@ -98,23 +96,9 @@ def test_raster(input_params):
                     ):
                         assert patch["pixels"].data.shape[3] == (
                             m31model["pixels"].data.shape[3] // nraster
-                        ), (
-                            "Number of pixels in each patch: %d not as "
-                            "expected: %d"
-                            % (
-                                patch["pixels"].data.shape[3],
-                                (m31model["pixels"].data.shape[3] // nraster),
-                            )
                         )
                         assert patch["pixels"].data.shape[2] == (
                             m31model["pixels"].data.shape[2] // nraster
-                        ), (
-                            "Number of pixels in each patch: %d not as "
-                            "expected: %d"
-                            % (
-                                patch["pixels"].data.shape[2],
-                                (m31model["pixels"].data.shape[2] // nraster),
-                            )
                         )
                         patch["pixels"].data *= 2.0
 
