@@ -1,6 +1,5 @@
-# pylint: disable=duplicate-code
-""" Unit tests for base imaging functions
-
+"""
+Unit tests for base imaging functions
 """
 
 import logging
@@ -33,6 +32,7 @@ log = logging.getLogger("func-python-logger")
 
 @pytest.fixture(scope="module", name="input_params")
 def base_fixture():
+    """Fixture to generate inputs for tested functions"""
     lowcore = create_named_configuration("LOWBD2-CORE")
     times = (numpy.pi / 43200.0) * numpy.arange(0.0, 300.0, 30.0)
     frequency = numpy.linspace(0.8e8, 1.0e8, 5)
@@ -91,6 +91,9 @@ def test_shift_vis_to_image(input_params):
 
 @pytest.mark.skip(reason="gcfcf examples needed for predict_awprojection")
 def test_predict_awprojection(input_params):
+    """
+    Test predict_awprojection
+    """
     vis = input_params["visibility"]
     svis = predict_awprojection(
         vis,

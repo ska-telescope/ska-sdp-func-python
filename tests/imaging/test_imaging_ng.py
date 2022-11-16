@@ -27,7 +27,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 
 @pytest.fixture(scope="module", name="input_params")
 def ng_fixture():
-
+    """Fixture to generate inputs for tested functions"""
     verbosity = 0
     npixel = 256
     low = create_named_configuration("LOWBD2", rmax=750.0)
@@ -65,7 +65,7 @@ def ng_fixture():
 
 
 def test_predict_ng(input_params):
-
+    """Test predict_ng"""
     vis = input_params["visibility"]
     model = input_params["model"]
     verbosity = input_params["verbosity"]
@@ -85,6 +85,7 @@ def test_predict_ng(input_params):
 
 
 def test_invert_ng(input_params):
+    """Test invert_ng"""
     vis = input_params["visibility"]
     vis["vis"].data = numpy.random.rand(5, 27966, 1, 1)
     model = input_params["model"]
@@ -100,6 +101,7 @@ def test_invert_ng(input_params):
 
 
 def test_invert_ng_psf(input_params):
+    """Test invert_ng for PSF only"""
     vis = input_params["visibility"]
     model = input_params["model"]
     verbosity = input_params["verbosity"]

@@ -1,6 +1,5 @@
-""" Unit tests for visibility operations
-
-
+"""
+Unit tests for visibility operations
 """
 
 import unittest
@@ -24,6 +23,8 @@ from ska_sdp_func_python.imaging.dft import (
     idft_visibility_skycomponent,
 )
 from ska_sdp_func_python.visibility.base import phaserotate_visibility
+
+# TODO: convert to pytest
 
 
 class TestVisibilityDFTOperations(unittest.TestCase):
@@ -55,6 +56,9 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         )
 
     def test_phase_rotation_stokesi(self):
+        """
+        Test phase-rotating visibility: stokesI
+        """
         # Define the component and give it some spectral behaviour
         f = numpy.array([100.0])
         self.flux = numpy.array([f, 0.8 * f, 0.6 * f])
@@ -111,6 +115,9 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         assert_allclose(rotatedvis.uvw, vismodel2.uvw, rtol=3e-6)
 
     def test_phase_rotation_stokesiquv(self):
+        """
+        Test phase-rotating visibility: stokesIQUV
+        """
         self.vis = create_visibility(
             self.lowcore,
             self.times,
@@ -144,6 +151,9 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         assert_allclose(rotatedvis.uvw, vismodel2.uvw, rtol=3e-6)
 
     def test_dft_idft_stokesiquv_visibility(self):
+        """
+        Test iDFT, stokesIQUV
+        """
         for vpol in [
             PolarisationFrame("linear"),
             PolarisationFrame("circular"),

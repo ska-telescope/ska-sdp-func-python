@@ -17,6 +17,9 @@ from ska_sdp_func_python.util.coordinate_support import (
     xyz_to_uvw,
 )
 
+# FIXME!
+# pylint: disable=missing-function-docstring
+
 
 def test_xyz_at_latitude():
     def transform(x, y, z, lat):

@@ -35,7 +35,8 @@ from ska_sdp_func_python.sky_component.operations import (
 #     create_awterm_convolutionfunction,
 # )
 # from src.ska_sdp_func_python.imaging.primary_beams import create_pb_generic
-
+# FIXME!
+# pylint: disable=missing-function-docstring
 pytest.skip(allow_module_level=True, reason="FixMe")
 
 log = logging.getLogger("func-python-logger")

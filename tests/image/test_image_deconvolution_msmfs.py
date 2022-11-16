@@ -1,7 +1,5 @@
-# pylint: disable=duplicate-code
-"""Unit tests for image deconvolution vis MSMFS
-
-
+"""
+Unit tests for image deconvolution vis MSMFS
 """
 import logging
 
@@ -37,6 +35,8 @@ from ska_sdp_func_python.imaging.weighting import (
     weight_visibility,
 )
 
+# FIXME!
+# pylint: disable=missing-function-docstring
 pytest.skip(allow_module_level=True, reason="FixMe")
 # fix the below imports
 # from ska_sdp_func_python import create_pb

@@ -210,7 +210,9 @@ def solve_gaintable(
                 gt["residual"].data[row, ...] = 0.0
 
         else:
-            log.warning(f"Gaintable {gt.time}, vis time mismatch {vis.time}")
+            log.warning(
+                "Gaintable %s, vis time mismatch %s", gt.time, vis.time
+            )
 
     return gt
 

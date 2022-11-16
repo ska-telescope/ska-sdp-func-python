@@ -323,17 +323,24 @@ def solve_calibrate_chain(
                 qa = gaintables[c].gaintable_acc.qa_gain_table(
                     context=context_message
                 )
-                log.info(f"calibrate_chain: {qa}")
+                log.info("calibrate_chain: %s", qa)
             else:
                 log.info(
-                    f"No model data: cannot solve for Jones matrix {c}, "
-                    f"iteration {iteration}, frequency "
-                    f"{fmin:4g} - {fmax:4g} Hz"
+                    "No model data: cannot solve for Jones matrix %s, "
+                    "iteration %s, frequency %4g - %4g Hz",
+                    c,
+                    iteration,
+                    fmin,
+                    fmax,
                 )
         else:
             log.info(
-                f"Not solving for Jones matrix {c} this iteration: "
-                f"iteration {iteration}, frequency {fmin:4g} - {fmax:4g} Hz"
+                "Not solving for Jones matrix %s this iteration: "
+                "iteration %s, frequency %4g - %4g Hz",
+                c,
+                iteration,
+                fmin,
+                fmax,
             )
 
     return gaintables

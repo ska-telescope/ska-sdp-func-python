@@ -26,6 +26,7 @@ from ska_sdp_func_python.visibility.base import (
 
 @pytest.fixture(scope="module", name="base_params")
 def visibility_operations_fixture():
+    """Fixture to generate input params for tests"""
     lowcore = create_named_configuration("LOWBD2-CORE")
     times = (numpy.pi / 43200.0) * numpy.arange(0.0, 300.0, 30.0)
     frequency = numpy.linspace(1.0e8, 1.1e8, 3)

@@ -681,8 +681,9 @@ def insert_skycomponent(
                 nbad += 1
     if nbad > 0:
         log.warning(
-            f"insert_skycomponent: {nbad} components "
-            f"of {len(sc)} do not fit on image"
+            "insert_skycomponent: %s components of %s do not fit on image",
+            nbad,
+            len(sc),
         )
 
     return im
@@ -931,7 +932,7 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
             newsc.params = clean_gaussian
 
     except (minpack.error, ValueError) as err:
-        log.warning(f"fit_skycomponent: fit failed {err}")
+        log.warning("fit_skycomponent: fit failed  %s", err)
         return sc
 
     return newsc
