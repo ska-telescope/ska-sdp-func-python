@@ -1,6 +1,5 @@
-""" Unit tests for visibility base
-
-
+"""
+Unit tests for visibility base
 """
 import astropy.units as u
 import numpy

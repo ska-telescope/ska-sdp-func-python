@@ -313,9 +313,10 @@ def dft_gpu_raw_kernel(direction_cosines, uvw_lambda, vfluxes):
     """
     try:
         import cupy  # pylint: disable=import-outside-toplevel
-    except ModuleNotFoundError:
-        "cupy is not installed - cannot run CUDA"
-        raise ModuleNotFoundError("cupy is not installed - cannot run CUDA")
+    except ModuleNotFoundError as err:
+        raise ModuleNotFoundError(
+            "cupy is not installed - cannot run CUDA"
+        ) from err
 
     # Get the dimension sizes.
     (num_times, num_baselines, num_channels, _) = uvw_lambda.shape

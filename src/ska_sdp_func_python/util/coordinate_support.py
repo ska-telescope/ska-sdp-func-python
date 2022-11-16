@@ -138,9 +138,8 @@ def enu_to_eci(enu, lat):
 
     :return: Array of [x, y, z]
     """
-    e, n, u = numpy.hsplit(
-        enu, 3
-    )  # pylint: disable=unbalanced-tuple-unpacking
+    # pylint: disable=unbalanced-tuple-unpacking
+    e, n, u = numpy.hsplit(enu, 3)
 
     x = -numpy.sin(lat) * n + u * numpy.cos(lat)
     y = e
@@ -159,10 +158,8 @@ def eci_to_enu(eci, lat):
 
     :return: Array of [east, north, elevation]
     """
-
-    x, y, z = numpy.hsplit(
-        eci, 3
-    )  # pylint: disable=unbalanced-tuple-unpacking
+    # pylint: disable=unbalanced-tuple-unpacking
+    x, y, z = numpy.hsplit(eci, 3)
 
     e = y
     n = -numpy.sin(lat) * x + z * numpy.cos(lat)
@@ -181,9 +178,8 @@ def enu_to_ecef(location, enu):
     """
     # ECEF coordinates of reference point
 
-    e, n, u = numpy.hsplit(
-        enu, 3
-    )  # pylint: disable=unbalanced-tuple-unpacking
+    # pylint: disable=unbalanced-tuple-unpacking
+    e, n, u = numpy.hsplit(enu, 3)
 
     lon = location.geodetic[0].to(units.rad).value
     lat = location.geodetic[1].to(units.rad).value
@@ -212,9 +208,9 @@ def ecef_to_enu(location, xyz):
     lon = location.geodetic[0].to(units.rad).value
     lat = location.geodetic[1].to(units.rad).value
     alt = location.geodetic[2].to(units.m).value
-    x, y, z = numpy.hsplit(
-        xyz, 3
-    )  # pylint: disable=unbalanced-tuple-unpacking
+
+    # pylint: disable=unbalanced-tuple-unpacking
+    x, y, z = numpy.hsplit(xyz, 3)
 
     center_x, center_y, center_z = lla_to_ecef(lat, lon, alt)
 
@@ -265,11 +261,8 @@ def xyz_at_latitude(local_xyz, lat):
     :param local_xyz: Array of local XYZ coordinates
     :return: Celestial XYZ coordinates
     """
-
-    # return enu_to_eci(local_xyz, lat)
-    x, y, z = numpy.hsplit(
-        local_xyz, 3
-    )  # pylint: disable=unbalanced-tuple-unpacking
+    # pylint: disable=unbalanced-tuple-unpacking
+    x, y, z = numpy.hsplit(local_xyz, 3)
 
     lat2 = numpy.pi / 2 - lat
     y2 = -z * numpy.sin(lat2) + y * numpy.cos(lat2)
@@ -295,10 +288,8 @@ def eci_to_uvw(xyz, ha, dec):
 
     :return : uvw
     """
-
-    x, y, z = numpy.hsplit(
-        xyz, 3
-    )  # pylint: disable=unbalanced-tuple-unpacking
+    # pylint: disable=unbalanced-tuple-unpacking
+    x, y, z = numpy.hsplit(xyz, 3)
     u = numpy.sin(ha) * x + numpy.cos(ha) * y
     v = (
         -numpy.sin(dec) * numpy.cos(ha) * x
@@ -334,10 +325,8 @@ def uvw_to_eci(uvw, ha, dec):
 
     :return: ECI coordinates
     """
-
-    u, v, w = numpy.hsplit(
-        uvw, 3
-    )  # pylint: disable=unbalanced-tuple-unpacking
+    # pylint: disable=unbalanced-tuple-unpacking
+    u, v, w = numpy.hsplit(uvw, 3)
 
     return numpy.hstack([u, v, w])
 
@@ -359,11 +348,8 @@ def xyz_to_uvw(xyz, ha, dec):
 
     :return: xyz
     """
-
-    # return eci_to_uvw(xyz, ha, dec)
-    x, y, z = numpy.hsplit(
-        xyz, 3
-    )  # pylint: disable=unbalanced-tuple-unpacking
+    # pylint: disable=unbalanced-tuple-unpacking
+    x, y, z = numpy.hsplit(xyz, 3)
 
     # Two rotations:
     #  1. by 'ha' along the z axis
@@ -392,10 +378,8 @@ def uvw_to_xyz(uvw, ha, dec):
 
     :return: xyz
     """
-    # return uvw_to_eci(uvw, ha, dec)
-    u, v, w = numpy.hsplit(
-        uvw, 3
-    )  # pylint: disable=unbalanced-tuple-unpacking
+    # pylint: disable=unbalanced-tuple-unpacking
+    u, v, w = numpy.hsplit(uvw, 3)
 
     # Two rotations:
     #  1. by 'dec-90' along the u axis

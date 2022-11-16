@@ -846,8 +846,6 @@ def visibility_recentre(uvw, dl, dm):
     :param dm: Vertical shift to compensate for
     :returns: Visibility coordinates re-centrered on the peak of their w-kernel
     """
-
-    u, v, w = numpy.hsplit(
-        uvw, 3
-    )  # pylint: disable=unbalanced-tuple-unpacking
+    # pylint: disable=unbalanced-tuple-unpacking
+    u, v, w = numpy.hsplit(uvw, 3)
     return numpy.hstack([u - w * dl, v - w * dm, w])

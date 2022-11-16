@@ -16,7 +16,7 @@ __all__ = ["predict_ng", "invert_ng"]
 import copy
 import logging
 
-import ducc0.wgridder as ng  # pylint: disable=import-error
+import ducc0.wgridder as ng  # pylint: disable=import-error,no-name-in-module
 import numpy
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_functions import (

@@ -1,6 +1,5 @@
-# pylint: disable= unused-variable
-""" Unit tests for skycomponent operations
-
+"""
+Unit tests for skycomponent operations
 """
 import logging
 
@@ -215,6 +214,9 @@ def test_restore_skycomponent(input_params):
     assert new_image != image
 
 
+# FIXME
+# pylint: disable=unused-variable
+# TODO: fix test, it's missing the assert
 @pytest.mark.skip(
     reason="Better understanding of Vornoi needed to make a useful unit test"
 )

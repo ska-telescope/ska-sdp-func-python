@@ -81,6 +81,7 @@ def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):
     aiter = 0
     for i in range(niter):
         aiter = i + 1
+        # pylint: disable=unbalanced-tuple-unpacking
         if window is not None:
             mx, my = numpy.unravel_index(
                 (numpy.fabs(res * window)).argmax(), dirty.shape
@@ -193,6 +194,7 @@ def hogbom_complex(
         "hogbom: Max abs in dirty Image = %.6f", numpy.absolute(res).max()
     )
     for i in range(niter):
+        # pylint: disable=unbalanced-tuple-unpacking
         if window is not None:
             mx, my = numpy.unravel_index(
                 (numpy.absolute(res * window)).argmax(), dirty_complex.shape
@@ -585,6 +587,7 @@ def find_max_abs_stack(stack, sensitivity, windowstack, couplingmatrix):
         else:
             resid = stack[iscale, :, :] / couplingmatrix[iscale, iscale]
 
+        # pylint: disable=unbalanced-tuple-unpacking
         if sensitivity is not None:
             resid *= sensitivity
             mx, my = numpy.unravel_index(

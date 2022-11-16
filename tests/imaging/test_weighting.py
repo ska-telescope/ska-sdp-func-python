@@ -1,5 +1,5 @@
-# pylint: disable=unused-variable, invalid-name, consider-using-f-string
-""" Unit tests for visibility weighting
+"""
+Unit tests for visibility weighting
 """
 
 import logging
@@ -87,7 +87,7 @@ def test_tapering_gaussian(input_params):
     input_params["componentvis"] = taper_visibility_gaussian(
         input_params["componentvis"], beam=size_required
     )
-    psf, sumwt = invert_visibility(
+    psf, _ = invert_visibility(
         input_params["componentvis"],
         input_params["model"],
         dopsf=True,
@@ -97,10 +97,7 @@ def test_tapering_gaussian(input_params):
 
     assert (
         numpy.abs(fit["bmaj"] - 1.279952050682638) < 1
-    ), "Fit should be %f, actually is %f" % (
-        1.279952050682638,
-        fit["bmaj"],
-    )
+    ), f"Fit should be {1.279952050682638}, actually is {fit['bmaj']}"
 
 
 def test_tapering_tukey(input_params):
@@ -117,7 +114,7 @@ def test_tapering_tukey(input_params):
     input_params["componentvis"] = taper_visibility_tukey(
         input_params["componentvis"], tukey=0.1
     )
-    psf, sumwt = invert_visibility(
+    psf, _ = invert_visibility(
         input_params["componentvis"],
         input_params["model"],
         dopsf=True,
@@ -126,7 +123,4 @@ def test_tapering_tukey(input_params):
     fit = fit_psf(psf)
     assert (
         numpy.abs(fit["bmaj"] - 0.14492670913355402) < 1.0
-    ), "Fit should be %f, actually is %f" % (
-        0.14492670913355402,
-        fit["bmaj"],
-    )
+    ), f"Fit should be {0.14492670913355402}, actually is {fit['bmaj']}"

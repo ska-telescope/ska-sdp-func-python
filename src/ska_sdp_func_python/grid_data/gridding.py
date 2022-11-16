@@ -298,6 +298,7 @@ def grid_visibility_weight_to_griddata(vis, griddata: GridData):
 
     for vchan in range(nvchan):
         imchan = vis_to_im[vchan]
+        # pylint: disable=unbalanced-tuple-unpacking
         pu_grid, pv_grid = convolution_mapping_visibility(vis, griddata, vchan)
         num_skipped = 0
         for pol in range(nvpol):
@@ -409,6 +410,7 @@ def griddata_visibility_reweight(
     for pol in range(nvpol):
         for vchan in range(nvchan):
             imchan = vis_to_im[vchan]
+            # pylint: disable=unbalanced-tuple-unpacking
             (
                 pu_grid,
                 pv_grid,

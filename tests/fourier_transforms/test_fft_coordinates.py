@@ -1,6 +1,5 @@
-""" Unit processing_components for convolutional Gridding
-
-
+"""
+Unit processing_components for convolutional Gridding
 """
 import numpy
 

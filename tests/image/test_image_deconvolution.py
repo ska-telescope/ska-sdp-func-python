@@ -1,8 +1,6 @@
-# pylint: disable=duplicate-code
 # flake8: noqa: E203
-""" Unit tests for image deconvolution
-
-
+"""
+Unit tests for image deconvolution
 """
 import logging
 
