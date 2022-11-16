@@ -154,16 +154,16 @@ def spatial_mapping(griddata, u, v, w, cf=None):
             pwc_grid = numpy.zeros_like(pu_grid)
 
         return pu_grid, pu_offset, pv_grid, pv_offset, pwc_grid, pwc_fraction
-    else:
-        grid_wcs = griddata.griddata_acc.griddata_wcs
-        # UV mapping:
-        # We use the grid_wcs's to do the coordinate conversion
-        # Find the nearest grid points
-        pu_grid, pv_grid = numpy.round(
-            grid_wcs.sub([1, 2]).wcs_world2pix(u, v, 0)
-        ).astype("int")
 
-        return pu_grid, pv_grid
+    grid_wcs = griddata.griddata_acc.griddata_wcs
+    # UV mapping:
+    # We use the grid_wcs's to do the coordinate conversion
+    # Find the nearest grid points
+    pu_grid, pv_grid = numpy.round(
+        grid_wcs.sub([1, 2]).wcs_world2pix(u, v, 0)
+    ).astype("int")
+
+    return pu_grid, pv_grid
 
 
 def grid_visibility_to_griddata(vis, griddata, cf):

@@ -36,9 +36,8 @@ __all__ = [
 
 import logging
 
-import astropy.units as units
-import astropy.wcs as wcs
 import numpy
+from astropy import units, wcs
 from astropy.wcs.utils import pixel_to_skycoord
 from ska_sdp_datamodels import physical_constants
 from ska_sdp_datamodels.gridded_visibility.grid_vis_create import (
@@ -500,9 +499,6 @@ def advise_wide_field(
     :param facets: Number of facets on each axis
     :return: dict of advice
     """
-
-    isblock = isinstance(vis, Visibility)
-
     max_wavelength = physical_constants.C_M_S / numpy.min(vis.frequency.data)
     if verbose:
         log.info(
@@ -782,11 +778,6 @@ def advise_wide_field(
             "advise_wide_field: by default, using primary beam "
             "to advise on w sampling parameters"
         )
-
-    wstep = wstep_primary_beam
-    vis_slices = vis_slices_primary_beam
-    wprojection_planes = wprojection_planes_primary_beam
-    nwpixels = nwpixels_primary_beam
 
     result = locals()
 

@@ -94,8 +94,8 @@ def extract_direction_and_flux(sc, vis):
     if not isinstance(sc, collections.abc.Iterable):
         sc = [sc]
 
-    vfluxes = list()  # Flux for each component
-    direction_cosines = list()  # lmn vector for each component
+    vfluxes = []  # Flux for each component
+    direction_cosines = []  # lmn vector for each component
 
     for comp in sc:
         flux = comp.flux
@@ -159,9 +159,9 @@ def dft_kernel(
 
     if dft_compute_kernel == "gpu_cupy_raw":
         return dft_gpu_raw_kernel(direction_cosines, uvw_lambda, vfluxes)
-    elif dft_compute_kernel == "cpu_looped":
+    if dft_compute_kernel == "cpu_looped":
         return dft_cpu_looped(direction_cosines, uvw_lambda, vfluxes)
-    elif dft_compute_kernel == "proc_func":
+    if dft_compute_kernel == "proc_func":
         # The Processing Function Library DFT function can be found at :
         # https://gitlab.com/ska-telescope/sdp/ska-sdp-func/-/blob/main/src/ska_sdp_func/dft.py
 
@@ -197,8 +197,7 @@ def dft_kernel(
 
         return new_vis_data
 
-    else:
-        raise ValueError(f"dft_compute_kernel {dft_compute_kernel} not known")
+    raise ValueError(f"dft_compute_kernel {dft_compute_kernel} not known")
 
 
 cuda_kernel_source = r"""
@@ -371,8 +370,8 @@ def idft_visibility_skycomponent(
     if not isinstance(sc, collections.abc.Iterable):
         sc = [sc]
 
-    newsc = list()
-    weights_list = list()
+    newsc = []
+    weights_list = []
 
     for comp in sc:
         # assert isinstance(comp, SkyComponent), comp

@@ -103,7 +103,7 @@ def convert_stokes_to_polimage(
             ),
             phasecentre=cimarr.image_acc.phasecentre,
         )
-    elif polarisation_frame == PolarisationFrame("linearnp"):
+    if polarisation_frame == PolarisationFrame("linearnp"):
         cimarr = convert_stokes_to_linear(im["pixels"].data)
         return create_image(
             cimarr["pixels"].data.shape[3],
@@ -112,7 +112,7 @@ def convert_stokes_to_polimage(
             ),
             phasecentre=cimarr.image_acc.phasecentre,
         )
-    elif polarisation_frame == PolarisationFrame("circular"):
+    if polarisation_frame == PolarisationFrame("circular"):
         cimarr = convert_stokes_to_circular(im["pixels"].data)
         return create_image(
             cimarr["pixels"].data.shape[3],
@@ -121,7 +121,7 @@ def convert_stokes_to_polimage(
             ),
             phasecentre=cimarr.image_acc.phasecentre,
         )
-    elif polarisation_frame == PolarisationFrame("circularnp"):
+    if polarisation_frame == PolarisationFrame("circularnp"):
         cimarr = convert_stokes_to_circular(im["pixels"].data)
         return create_image(
             cimarr["pixels"].data.shape[3],
@@ -130,14 +130,14 @@ def convert_stokes_to_polimage(
             ),
             phasecentre=cimarr.image_acc.phasecentre,
         )
-    elif polarisation_frame == PolarisationFrame("stokesI"):
+    if polarisation_frame == PolarisationFrame("stokesI"):
         return create_image(
             im["pixels"].data.astype("complex"),
             im.image_acc.wcs,
             PolarisationFrame("stokesI"),
         )
-    else:
-        raise ValueError(f"Cannot convert stokes to {polarisation_frame.type}")
+
+    raise ValueError(f"Cannot convert stokes to {polarisation_frame.type}")
 
 
 def convert_polimage_to_stokes(im: Image, complex_image=False):
@@ -161,8 +161,8 @@ def convert_polimage_to_stokes(im: Image, complex_image=False):
     def _to_required(cimarr):
         if complex_image:
             return cimarr
-        else:
-            return numpy.real(cimarr)
+
+        return numpy.real(cimarr)
 
     if im.image_acc.polarisation_frame == PolarisationFrame("linear"):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
@@ -174,7 +174,7 @@ def convert_polimage_to_stokes(im: Image, complex_image=False):
             ),
             phasecentre=cimarr.image_acc.phasecentre,
         )
-    elif im.image_acc.polarisation_frame == PolarisationFrame("linearnp"):
+    if im.image_acc.polarisation_frame == PolarisationFrame("linearnp"):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
         cimarr = _to_required(cimarr)
         return create_image(
@@ -184,7 +184,7 @@ def convert_polimage_to_stokes(im: Image, complex_image=False):
             ),
             phasecentre=cimarr.image_acc.phasecentre,
         )
-    elif im.image_acc.polarisation_frame == PolarisationFrame("circular"):
+    if im.image_acc.polarisation_frame == PolarisationFrame("circular"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
         cimarr = _to_required(cimarr)
         return create_image(
@@ -194,7 +194,7 @@ def convert_polimage_to_stokes(im: Image, complex_image=False):
             ),
             phasecentre=cimarr.image_acc.phasecentre,
         )
-    elif im.image_acc.polarisation_frame == PolarisationFrame("circularnp"):
+    if im.image_acc.polarisation_frame == PolarisationFrame("circularnp"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
         cimarr = _to_required(cimarr)
         return create_image(
@@ -204,13 +204,13 @@ def convert_polimage_to_stokes(im: Image, complex_image=False):
             ),
             phasecentre=cimarr.image_acc.phasecentre,
         )
-    elif im.image_acc.polarisation_frame == PolarisationFrame("stokesI"):
+    if im.image_acc.polarisation_frame == PolarisationFrame("stokesI"):
         return create_image(
             im["pixels"].data.shape[3],
             cellsize=numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
             phasecentre=im.image_acc.phasecentre,
         )
-    else:
-        raise ValueError(
-            f"Cannot convert {im.image_acc.polarisation_frame.type} to stokes"
-        )
+
+    raise ValueError(
+        f"Cannot convert {im.image_acc.polarisation_frame.type} to stokes"
+    )

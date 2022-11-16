@@ -114,19 +114,18 @@ def find_separation_skycomponents(comps_test, comps_ref=None):
                 distances[j, i] = distances[i, j]
         return distances
 
-    else:
-        ncomps_ref = len(comps_ref)
-        ncomps_test = len(comps_test)
-        separations = numpy.zeros([ncomps_ref, ncomps_test])
-        for ref in range(ncomps_ref):
-            for test in range(ncomps_test):
-                separations[ref, test] = (
-                    comps_test[test]
-                    .direction.separation(comps_ref[ref].direction)
-                    .rad
-                )
+    ncomps_ref = len(comps_ref)
+    ncomps_test = len(comps_test)
+    separations = numpy.zeros([ncomps_ref, ncomps_test])
+    for ref in range(ncomps_ref):
+        for test in range(ncomps_test):
+            separations[ref, test] = (
+                comps_test[test]
+                .direction.separation(comps_ref[ref].direction)
+                .rad
+            )
 
-        return separations
+    return separations
 
 
 def find_skycomponent_matches_atomic(comps_test, comps_ref, tol=1e-7):
@@ -174,7 +173,7 @@ def find_skycomponent_matches(comps_test, comps_ref, tol=1e-7):
         dec=[c.direction.dec for c in comps_ref],
     )
     idx, dist2d, _ = match_coordinates_sky(catalog_test, catalog_ref)
-    matches = list()
+    matches = []
     for test, _ in enumerate(comps_test):
         best = idx[test]
         best_sep = dist2d[test].rad
@@ -195,7 +194,7 @@ def select_components_by_separation(
     :param rmax: maximum range
     :return: selected SkyComponents
     """
-    selected = list()
+    selected = []
     for comp in comps:
         thissep = comp.direction.separation(home).rad
         if rmin <= thissep <= rmax:
@@ -444,8 +443,8 @@ def apply_beam_to_skycomponent(
     )
     if single:
         return newsc[0]
-    else:
-        return newsc
+
+    return newsc
 
 
 def apply_voltage_pattern_to_skycomponent(
@@ -560,8 +559,8 @@ def apply_voltage_pattern_to_skycomponent(
     )
     if single:
         return newsc[0]
-    else:
-        return newsc
+
+    return newsc
 
 
 def filter_skycomponents_by_flux(sc, flux_min=-numpy.inf, flux_max=numpy.inf):
@@ -572,7 +571,7 @@ def filter_skycomponents_by_flux(sc, flux_min=-numpy.inf, flux_max=numpy.inf):
     :param flux_max: Maximum I flux
     :return: Filtered list of SkyComponents
     """
-    newcomps = list()
+    newcomps = []
     for comp in sc:
         if (numpy.max(comp.flux[:, 0]) > flux_min) and (
             numpy.max(comp.flux[:, 0]) < flux_max
@@ -846,7 +845,7 @@ def partition_skycomponent_neighbours(comps, targets):
 
     from itertools import compress
 
-    comps_lists = list()
+    comps_lists = []
     for comp_id in numpy.unique(idx):
         selected_comps = list(compress(comps, idx == comp_id))
         comps_lists.append(selected_comps)
