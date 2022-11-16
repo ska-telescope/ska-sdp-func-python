@@ -1,8 +1,7 @@
-# pylint: disable=invalid-name, too-many-arguments
-# pylint: disable=import-error, no-name-in-module
 """
-Functions for predicting visibility from a model image, and invert a visibility to
-make an (image, sumweights) tuple. These redirect to specific versions.
+Functions for predicting visibility from a model image,
+and invert a visibility to make an (image, sumweights) tuple.
+These redirect to specific versions.
 """
 
 __all__ = [
@@ -80,7 +79,8 @@ def invert_visibility(
     :param context: Type: 2d or awprojection, ng
                     or wg (nifty-gridder or WAGG GPU-based gridder/degridder),
                     default: ng
-    :param gcfcf: Tuple of (grid correction function, convolution function) or partial function
+    :param gcfcf: Tuple of (grid correction function, convolution function)
+                  or partial function
     :return: (resulting image, sum of weights)
     """
 

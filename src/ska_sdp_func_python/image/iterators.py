@@ -1,6 +1,6 @@
-# pylint: disable=inconsistent-return-statements
 """
-Functions that define and manipulate images. Images are just data and a World Coordinate System.
+Functions that define and manipulate images.
+Images are just data and a World Coordinate System.
 """
 
 __all__ = ["image_channel_iter", "image_raster_iter"]
@@ -17,27 +17,31 @@ from ska_sdp_func_python.util.array_functions import tukey_filter
 log = logging.getLogger("func-python-logger")
 
 
+# pylint: disable=inconsistent-return-statements
 def image_raster_iter(
     im: Image, facets=1, overlap=0, taper="flat", make_flat=False
 ):
     """Create an image_raster_iter generator,
     returning a list of subimages, optionally with overlaps
 
-     The WCS is adjusted appropriately for each raster element. Hence this is a coordinate-aware
-     way to iterate through an image.
+     The WCS is adjusted appropriately for each raster element.
+     Hence this is a coordinate-aware way to iterate through an image.
 
-     The argument make_flat means that the subimages contain constant values. This is useful for
-     dealing with overlaps in gather operations.
+     The argument make_flat means that the subimages contain
+     constant values. This is useful for dealing with overlaps
+     in gather operations.
 
-     Provided we don't break reference semantics, memory should be conserved. However make_flat
-     creates a new set of images and thus reference semantics dont hold.
+     Provided we don't break reference semantics, memory
+     should be conserved. However make_flat creates a new set
+     of images and thus reference semantics dont hold.
 
      To update the image in place::
 
          for r in image_raster_iter(im, facets=2):
              r["pixels"].data[...] = numpy.sqrt(r["pixels"].data[...])
 
-     Note that some combinations of image size, facets, and overlap are invalid. In these cases,
+     Note that some combinations of image size, facets,
+     and overlap are invalid. In these cases,
      an exception (ValueError) is raised.
 
      In the case where make_flat is true, the subimages returned
@@ -174,14 +178,15 @@ def image_raster_iter(
 
 
 def image_channel_iter(im: Image, subimages=1) -> collections.abc.Iterable:
-    """Create a image_channel_iter generator, returning images
+    """
+    Create a image_channel_iter generator, returning images
 
-     The WCS is adjusted appropriately for each raster element. Hence this is a coordinate-aware
-     way to iterate through an image.
+    The WCS is adjusted appropriately for each raster element.
+    Hence this is a coordinate-aware way to iterate through an image.
 
-     Provided we don't break reference semantics, memory should be conserved
+    Provided we don't break reference semantics, memory should be conserved
 
-     To update the image in place::
+    To update the image in place::
 
          for r in image_channel_iter(im, subimages=nchan):
              r.data[...] = numpy.sqrt(r.data[...])
@@ -205,9 +210,10 @@ def image_channel_iter(im: Image, subimages=1) -> collections.abc.Iterable:
     ), f"More subimages {subimages} than channels {nchan}"
     step = nchan // subimages
     channels = numpy.array(range(0, nchan, step), dtype="int")
-    assert (
-        len(channels) == subimages
-    ), f"subimages {subimages} does not match length of channels {len(channels)}"
+    assert len(channels) == subimages, (
+        f"subimages {subimages} does not match length "
+        f"of channels {len(channels)}"
+    )
 
     for i, channel in enumerate(channels):
         if i + 1 < len(channels):

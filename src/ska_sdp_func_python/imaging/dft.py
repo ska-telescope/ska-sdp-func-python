@@ -1,8 +1,10 @@
 """
-Functions that aid fourier transform processing. These are built on top of the core
-functions in processing_components.fourier_transforms.
+Functions that aid fourier transform processing.
+These are built on top of the core functions in
+ska_sdp_func_python.fourier_transforms.
 
-The measurement equation for a sufficently narrow field of view interferometer is:
+The measurement equation for a sufficently narrow
+field of view interferometer is:
 
 .. math::
 
@@ -13,10 +15,12 @@ The measurement equation for a wide field of view interferometer is:
 
 .. math::
 
-    V(u,v,w) =\\int \\frac{I(l,m)}{\\sqrt{1-l^2-m^2}} e^{-2 \\pi j (ul+vm + w(\\sqrt{1-l^2-m^2}-1))} dl dm
+    V(u,v,w) =\\int \\frac{I(l,m)}{\\sqrt{1-l^2-m^2}}
+        e^{-2 \\pi j (ul+vm + w(\\sqrt{1-l^2-m^2}-1))} dl dm
 
-This and related modules contain various approachs for dealing with the wide-field problem where the
-extra phase term in the Fourier transform cannot be ignored.
+This and related modules contain various approachs for dealing
+with the wide-field problem where the extra phase term in the
+Fourier transform cannot be ignored.
 """
 
 __all__ = [
@@ -79,11 +83,13 @@ def dft_skycomponent_visibility(
 def extract_direction_and_flux(sc, vis):
     """
     Extract SkyComponent direction and flux to be consumed by DFT.
-    Flux polarisation and frequency are scaled to that of input Visibility data.
+    Flux polarisation and frequency are scaled to that
+    of input Visibility data.
 
     :param sc: SkyComponent or list of SkyComponents
     :param vis: Visibility
-    :returns: tuple of two numpy arrays: component direction cosines and component fluxes
+    :returns: tuple of two numpy arrays: component
+              direction cosines and component fluxes
     """
     if not isinstance(sc, collections.abc.Iterable):
         sc = [sc]
@@ -117,8 +123,8 @@ def extract_direction_and_flux(sc, vis):
                     )
                     vflux[:, pol] = fint(vis.frequency.data)
             else:
-                # Just take the value since we cannot interpolate. Might want to put some
-                # test here
+                # Just take the value since we cannot interpolate.
+                # Might want to put some test here
                 vflux = flux
 
         vfluxes.append(vflux)
@@ -272,7 +278,7 @@ __global__ void dft_kernel(
 }
 
 }
-"""
+"""  # noqa: E501
 
 
 def dft_cpu_looped(direction_cosines, uvw_lambda, vfluxes):

@@ -1,7 +1,3 @@
-# pylint: disable=invalid-name, too-many-locals, unused-variable
-# pylint: disable=too-many-statements
-# pylint: disable=import-error, no-name-in-module, import-outside-toplevel
-# flake8: noqa: E203
 """
 Functions that implement prediction of and imaging from visibilities
 using the GPU-based gridder (WAGG version),
@@ -11,8 +7,6 @@ Currently the python wrapper of the GPU gridder is available in a branch,
 https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda/-/tree/sim-874-python-wrapper
 
 This performs all necessary w term corrections, to high precision.
-
-
 """
 
 __all__ = ["predict_wg", "invert_wg"]
@@ -38,9 +32,11 @@ log = logging.getLogger("func-python-logger")
 def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     """Predict using convolutional degridding.
 
-     Nifty-gridder WAGG GPU version. https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
+     Nifty-gridder WAGG GPU version.
+     https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
 
-     In the imaging and pipeline workflows, this may be invoked using context='wg'.
+     In the imaging and pipeline workflows, this may
+     be invoked using context='wg'.
 
     :param bvis: Visibility to be predicted
     :param model: model image
@@ -86,14 +82,17 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     # Check if the number of frequency channels matches in bvis and a model
     if m_npol != vnpol:
         log.error(
-            "The number of frequency channels in bvis and a model does not match, exiting..."
+            "The number of frequency channels in bvis "
+            "and a model does not match, exiting..."
         )
         raise ValueError(
-            "WG: The number of frequency channels in bvis and a model does not match"
+            "WG: The number of frequency channels in "
+            "bvis and a model does not match"
         )
 
     flipped_uvw = copy.deepcopy(uvw)
-    # We need to flip the u and w axes. The flip in w is equivalent to the conjugation of the
+    # We need to flip the u and w axes. The flip in w is
+    # equivalent to the conjugation of the
     # convolution function grid_visibility to griddata
     flipped_uvw[:, 0] *= -1.0
     flipped_uvw[:, 2] *= -1.0
@@ -146,7 +145,8 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     vis = vis.reshape([nrows, nbaselines, vnchan, vnpol])
     newbvis["vis"].data = vis
 
-    # Now we can shift the visibility from the image frame to the original visibility frame
+    # Now we can shift the visibility from the image frame
+    # to the original visibility frame
     return shift_vis_to_image(newbvis, model, tangent=True, inverse=True)
 
 
@@ -157,20 +157,23 @@ def invert_wg(
     normalise: bool = True,
     **kwargs
 ) -> (Image, numpy.ndarray):
-    """Invert using GPU-based WAGG nifty-gridder module
+    """
+    Invert using GPU-based WAGG nifty-gridder module
 
-     Nifty-gridder WAGG GPU version. https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
+    Nifty-gridder WAGG GPU version.
+    https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
 
-     Use the image im as a template. Do PSF in a separate call.
+    Use the image im as a template. Do PSF in a separate call.
 
-     In the imaging and pipeline workflows, this may be invoked using context='wg'.
+    In the imaging and pipeline workflows, this may be
+    invoked using context='wg'.
 
     :param dopsf: Make the PSF instead of the dirty image
     :param bvis: Visibility to be inverted
     :param model: image template (not changed)
     :param normalise: normalise by the sum of weights (True)
-    :return: (resulting image, sum of the weights for each frequency and polarization)
-
+    :return: (resulting image, sum of the weights for
+              each frequency and polarization)
     """
     try:
         import wagg as wg
@@ -189,7 +192,6 @@ def invert_wg(
     nthreads = kwargs.get("threads", 4)
     epsilon = kwargs.get("epsilon", 1e-12)
     do_wstacking = kwargs.get("do_wstacking", True)
-    verbosity = kwargs.get("verbosity", 0)
 
     bvis_shifted = bvis.copy(deep=True)
     bvis_shifted = shift_vis_to_image(

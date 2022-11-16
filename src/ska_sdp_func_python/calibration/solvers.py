@@ -1,14 +1,8 @@
-# pylint: disable=invalid-name, too-many-arguments, too-many-locals
-# pylint: disable=too-many-branches, too-many-statements, redefined-builtin
-# pylint: disable=unused-variable, unused-argument, missing-function-docstring
-# pylint: disable=logging-fstring-interpolation
-# pylint: disable=import-error, no-name-in-module
+"""
+Functions to solve for antenna/station gain
 
-""" Functions to solve for antenna/station gain
-
-This uses an iterative substitution algorithm due to Larry D'Addario c 1980'ish. Used
-in the original VLA Dec-10 Antsol.
-
+This uses an iterative substitution algorithm due to
+Larry D'Addario c 1980'ish. Used in the original VLA Dec-10 Antsol.
 
 For example::
 
@@ -58,7 +52,8 @@ def solve_gaintable(
     :param niter: Number of iterations (default 30)
     :param tol: Iteration stops when the fractional change
                  in the gain solution is below this tolerance
-    :param crosspol: Do solutions including cross polarisations i.e. XY, YX or RL, LR
+    :param crosspol: Do solutions including cross polarisations
+                     i.e. XY, YX or RL, LR
     :param normalise_gains: Normalise the gains?
     :param jones_type: Type of calibration matrix T or G or B
     :param timeslice: Time interval between solutions (s)
@@ -262,7 +257,7 @@ def solve_antenna_gains_itsubs_scalar(
     x[i_upper] = numpy.conjugate(x[i_lower])
     xwt[i_upper] = xwt[i_lower]
 
-    for iter in range(niter):
+    for _ in range(niter):
         gainLast = gain
         gain, gwt = gain_substitution_scalar(gain, x, xwt)
         if phase_only:
@@ -427,7 +422,7 @@ def solve_antenna_gains_itsubs_matrix(
     gain[..., 0, 1] = 0.0
     gain[..., 1, 0] = 0.0
 
-    for iter in range(niter):
+    for _ in range(niter):
         gainLast = gain
         gain, gwt = gain_substitution_matrix(gain, x, xwt)
         if phase_only:

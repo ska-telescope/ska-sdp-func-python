@@ -1,5 +1,7 @@
 # pylint: disable=too-many-lines
-""" Image deconvolution functions
+
+"""
+Image deconvolution functions
 
 The standard deconvolution algorithms are provided:
 
@@ -78,45 +80,51 @@ def deconvolve_list(
     prefix="",
     **kwargs,
 ) -> (List[Image], List[Image]):
-    """Clean using a variety of algorithms
+    """
+    Clean using a variety of algorithms
 
-     The algorithms available are:
+    The algorithms available are:
 
-     hogbom: Hogbom CLEAN See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
+    hogbom: Hogbom CLEAN See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
 
-     hogbom-complex: Complex Hogbom CLEAN of stokesIQUV image
+    hogbom-complex: Complex Hogbom CLEAN of stokesIQUV image
 
-     msclean: MultiScale CLEAN See: Cornwell, T.J., Multiscale CLEAN
-     (IEEE Journal of Selected Topics in Sig Proc,
-     2008 vol. 2 pp. 793-801)
+    msclean: MultiScale CLEAN See: Cornwell, T.J., Multiscale CLEAN
+    (IEEE Journal of Selected Topics in Sig Proc,
+    2008 vol. 2 pp. 793-801)
 
-     mfsmsclean, msmfsclean, mmclean: MultiScale Multi-Frequency
-      See: U. Rau and T. J. Cornwell,
-     “A multi-scale multi-frequency deconvolution algorithm for synthesis imaging
-     in radio interferometry,” A&A 532, A71 (2011).
+    mfsmsclean, msmfsclean, mmclean: MultiScale Multi-Frequency
+    See: U. Rau and T. J. Cornwell,
+    “A multi-scale multi-frequency deconvolution algorithm
+    for synthesis imaging in radio interferometry,”
+    A&A 532, A71 (2011).
 
-     For example::
+    For example::
 
          comp, residual = deconvolve_list(dirty_list, psf_list, niter=1000,
                                 gain=0.7, algorithm='msclean',
                                 scales=[0, 3, 10, 30], threshold=0.01)
 
-     For the MFS clean, the psf must have number of channels >= 2 * nmoment
+    For the MFS clean, the psf must have number of channels >= 2 * nmoment
 
     :param dirty_list: list of dirty image
     :param psf_list: list of point spread function
-    :param sensitivity_list: List of Sensitivity image (i.e. inverse noise level)
+    :param sensitivity_list: List of Sensitivity image
+                (i.e. inverse noise level)
     :param prefix: Informational message for logging
     :param window_shape: Window description
-    :param mask: Window in the form of an image, overrides window_shape
-    :param algorithm: Cleaning algorithm: 'msclean'|'hogbom'|'hogbom-complex'|'mfsmsclean'
+    :param mask: Window in the form of an image,
+                 overrides window_shape
+    :param algorithm: Cleaning algorithm:
+                'msclean'|'hogbom'|'hogbom-complex'|'mfsmsclean'
     :param gain: loop gain (float) 0.7
     :param threshold: Clean threshold (0.0)
     :param fractional_threshold: Fractional threshold (0.01)
     :param scales: Scales (in pixels) for multiscale ([0, 3, 10, 30])
     :param nmoment: Number of frequency moments (default 3)
     :param findpeak: Method of finding peak in mfsclean:
-                    'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
+                    'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL',
+                    Default is RASCIL.
     :return: component image_list, residual image_list
 
      See also
@@ -182,17 +190,18 @@ def radler_deconvolve_list(
     **kwargs,
 ) -> (List[Image]):
 
-    """Clean using the Radler module, using various algorithms.
+    """
+    Clean using the Radler module, using various algorithms.
 
-     The algorithms available are
-     (see: https://radler.readthedocs.io/en/latest/tree/cpp/algorithms.html):
+    The algorithms available are
+    (see: https://radler.readthedocs.io/en/latest/tree/cpp/algorithms.html):
 
      msclean
      iuwt
      more_sane
      generic_clean
 
-     For example::
+    For example::
 
          comp = radler_deconvolve_list(dirty_list, psf_list, niter=1000,
                         gain=0.7, algorithm='msclean',
@@ -201,7 +210,8 @@ def radler_deconvolve_list(
     :param dirty_list: list of dirty image
     :param psf_list: list of point spread function
     :param prefix: Informational message for logging
-    :param algorithm: Cleaning algorithm: 'msclean'|'iuwt'|'more_sane'|'generic_clean'
+    :param algorithm: Cleaning algorithm:
+                'msclean'|'iuwt'|'more_sane'|'generic_clean'
     :param gain: loop gain (float) 0.7
     :param threshold: Clean threshold (0.0)
     :param scales: Scales (in pixels) for multiscale ([0, 3, 10, 30])
@@ -286,7 +296,8 @@ def check_psf_peak(psf_list):
         numpy.testing.assert_approx_equal(
             pmax,
             1.0,
-            err_msg=f"check_psf_peak: PSF {ipsf} does not have unit peak {pmax}",
+            err_msg=f"check_psf_peak: PSF {ipsf} "
+            f"does not have unit peak {pmax}",
             significant=6,
         )
 
@@ -331,8 +342,8 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
                 ..., (edge + 1) : (ny - edge), (edge + 1) : (nx - edge)
             ] = 1.0
             log.info(
-                "deconvolve_cube %s: Window omits %d-pixel edge of each sky plane"
-                % (prefix, edge)
+                "deconvolve_cube %s: Window omits "
+                "%d-pixel edge of each sky plane" % (prefix, edge)
             )
         else:
             raise ValueError(
@@ -343,8 +354,8 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
         if isinstance(mask, Image):
             if window_array is not None:
                 log.warning(
-                    "deconvolve_cube %s: Overriding window_shape with mask image"
-                    % (prefix)
+                    "deconvolve_cube %s: Overriding "
+                    "window_shape with mask image" % (prefix)
                 )
                 window_array = mask["pixels"].data
         if window_array is not None:
@@ -367,7 +378,8 @@ def bound_psf_list(dirty_list, prefix, psf_list, psf_support=None):
     :param prefix: Informational prefix to log messages
     :param psf_list: Point Spread Function
     :param psf_support: The half width of a box centered on the psf centre
-    :return: psf: bounded point spread function (i.e. with smaller size in x and y)
+    :return: psf: bounded point spread function
+                  (i.e. with smaller size in x and y)
     """
     psfs = []
     for channel, dirty in enumerate(dirty_list):
@@ -405,7 +417,9 @@ def complex_hogbom_kernel_list(
     window_list: List[Image],
     **kwargs,
 ):
-    """Complex Hogbom CLEAN of stokesIQUV image, operating of lists of single frequency images
+    """
+    Complex Hogbom CLEAN of stokesIQUV image,
+    operating of lists of single frequency images
 
     :param dirty_list: Image dirty image
     :param psf_list: Image Point Spread Function
@@ -417,7 +431,8 @@ def complex_hogbom_kernel_list(
     """
 
     log.info(
-        "complex_hogbom_kernel_list: Starting Hogbom-complex clean of each channel separately"
+        "complex_hogbom_kernel_list: Starting Hogbom-complex "
+        "clean of each channel separately"
     )
 
     fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
@@ -435,8 +450,8 @@ def complex_hogbom_kernel_list(
             if pol in (0, 3):
                 if psf["pixels"].data[0, pol, :, :].max():
                     log.info(
-                        "complex_hogbom_kernel_list: Processing pol %d, channel %d"
-                        % (pol, channel)
+                        "complex_hogbom_kernel_list: "
+                        "Processing pol %d, channel %d" % (pol, channel)
                     )
                     if window is None:
                         (
@@ -466,14 +481,14 @@ def complex_hogbom_kernel_list(
                         )
                 else:
                     log.info(
-                        "complex_hogbom_kernel_list: Skipping pol %d, channel %d"
-                        % (pol, channel)
+                        "complex_hogbom_kernel_list: "
+                        "Skipping pol %d, channel %d" % (pol, channel)
                     )
             if pol == 1:
                 if psf["pixels"].data[0, 1:2, :, :].max():
                     log.info(
-                        "complex_hogbom_kernel_list: Processing pol 1 and 2, channel %d"
-                        % (channel)
+                        "complex_hogbom_kernel_list: "
+                        "Processing pol 1 and 2, channel %d" % (channel)
                     )
                     if window is None:
                         (
@@ -511,8 +526,8 @@ def complex_hogbom_kernel_list(
                         )
                 else:
                     log.info(
-                        "complex_hogbom_kernel_list: Skipping pol 1 and 2, channel %d"
-                        % (channel)
+                        "complex_hogbom_kernel_list: "
+                        "Skipping pol 1 and 2, channel %d" % (channel)
                     )
                 if pol == 2:
                     continue
@@ -568,12 +583,14 @@ def hogbom_kernel_list(
     window_list: List[Image],
     **kwargs,
 ):
-    """Hogbom Clean, operating of lists of single frequency images
+    """
+    Hogbom Clean, operating of lists of single frequency images
 
-     See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
+    See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
 
     :param dirty_list: List of dirty images
-    :param prefix: Informational string to be used in log messages e.g. "cycle 1, subimage 42"
+    :param prefix: Informational string to be used in log messages
+                e.g. "cycle 1, subimage 42"
     :param psf_list: List of Point Spread Function
     :param window_list: List of window images
     :param gain: loop gain (float) 0.1
@@ -582,14 +599,14 @@ def hogbom_kernel_list(
     :param scales: Scales (in pixels) for multiscale ([0, 3, 10, 30])
     :param nmoment: Number of frequency moments (default 3)
     :param findpeak: Method of finding peak in mfsclean:
-                   'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
+                'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
 
     :return: component image_list, residual image_list
     """
 
     log.info(
-        "hogbom_kernel_list %s: Starting Hogbom clean of each polarisation and channel separately"
-        % prefix
+        "hogbom_kernel_list %s: Starting Hogbom clean of "
+        "each polarisation and channel separately" % prefix
     )
 
     fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
@@ -664,16 +681,18 @@ def mmclean_kernel_list(
     sensitivity_list: List[Image] = None,
     **kwargs,
 ):
-    """mfsmsclean, msmfsclean, mmclean: MultiScale Multi-Frequency CLEAN
+    """
+    mfsmsclean, msmfsclean, mmclean: MultiScale Multi-Frequency CLEAN
 
-     See: U. Rau and T. J. Cornwell,
-     “A multi-scale multi-frequency deconvolution algorithm
-     for synthesis imaging in radio interferometry,” A&A 532, A71 (2011).
+    See: U. Rau and T. J. Cornwell,
+    “A multi-scale multi-frequency deconvolution algorithm
+    for synthesis imaging in radio interferometry,” A&A 532, A71 (2011).
 
-     For the MFS clean, the psf must have number of channels >= 2 * nmoment
+    For the MFS clean, the psf must have number of channels >= 2 * nmoment
 
     :param dirty_list: List of dirty images
-    :param prefix: Informational string to be used in log messages e.g. "cycle 1, subimage 42"
+    :param prefix: Informational string to be used in
+            log messages e.g. "cycle 1, subimage 42"
     :param psf_list: List of Point Spread Function
     :param window_list: List of window images
     :param sensitivity_list: List of sensitivity images
@@ -696,8 +715,8 @@ def mmclean_kernel_list(
 
     log.info(
         "mmclean_kernel_list %s: "
-        "Starting Multi-scale multi-frequency clean of each polarisation separately"
-        % prefix
+        "Starting Multi-scale multi-frequency clean "
+        "of each polarisation separately" % prefix
     )
     nmoment = kwargs.get("nmoment", 3)
 
@@ -827,8 +846,8 @@ def mmclean_kernel_list(
         dirty_taylor.image_acc.wcs,
     )
     log.info(
-        "mmclean_kernel_list %s: calculating spectral image lists from frequency moment images"
-        % prefix
+        "mmclean_kernel_list %s: calculating spectral "
+        "image lists from frequency moment images" % prefix
     )
     comp_list = calculate_image_list_from_frequency_taylor_terms(
         dirty_list, comp_taylor
@@ -847,16 +866,19 @@ def msclean_kernel_list(
     sensitivity_list=None,
     **kwargs,
 ):
-    """MultiScale CLEAN, operating of lists of single frequency images
+    """
+    MultiScale CLEAN, operating of lists of single frequency images
 
-     See: Cornwell, T.J., Multiscale CLEAN (IEEE Journal of Selected Topics in Sig Proc,
-     2008 vol. 2 pp. 793-801)
+    See: Cornwell, T.J., Multiscale CLEAN (IEEE Journal of
+    Selected Topics in Sig Proc, 2008 vol. 2 pp. 793-801)
 
-     The clean search is performed on the product of the sensitivity image (if supplied) and
-     the residual image. This gives a way to bias against high noise.
+    The clean search is performed on the product of the
+    sensitivity image (if supplied) and the residual image.
+    This gives a way to bias against high noise.
 
     :param dirty_list: List of dirty images
-    :param prefix: Informational string to be used in log messages e.g. "cycle 1, subimage 42"
+    :param prefix: Informational string to be used in
+                log messages e.g. "cycle 1, subimage 42"
     :param psf_list: List of Point Spread Function
     :param window_list: List of window images
     :param sensitivity_list: List of sensitivity images
@@ -872,8 +894,8 @@ def msclean_kernel_list(
     """
     log.info(
         "msclean_kernel_list %s: "
-        "Starting Multi-scale clean of each polarisation and channel separately"
-        % prefix
+        "Starting Multi-scale clean of each "
+        "polarisation and channel separately" % prefix
     )
 
     fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
@@ -993,13 +1015,13 @@ def restore_list(
             if psf is not None:
                 clean_beam = fit_psf(psf)
                 log.info(
-                    "restore_list: Using fitted clean beam (deg, deg, deg) = {}".format(
-                        clean_beam
-                    )
+                    "restore_list: Using fitted clean beam "
+                    "(deg, deg, deg) = {}".format(clean_beam)
                 )
             else:
                 raise ValueError(
-                    "restore_list: Either the psf or the clean_beam must be specified"
+                    "restore_list: Either the psf or the "
+                    "clean_beam must be specified"
                 )
         else:
             log.info(
@@ -1012,7 +1034,8 @@ def restore_list(
                 )
             )
             log.info(
-                "restore_list: Using clean beam  (arsec, arcsec, deg) = {}".format(
+                "restore_list: Using clean beam  "
+                "(arsec, arcsec, deg) = {}".format(
                     (
                         3600.0 * clean_beam["bmaj"],
                         3600.0 * clean_beam["bmin"],
@@ -1087,14 +1110,16 @@ def deconvolve_cube(
     :param prefix: Informational message for logging
     :param window_shape: Window image (Bool) - clean where True
     :param mask: Window in the form of an image, overrides window_shape
-    :param algorithm: Cleaning algorithm: 'msclean'|'hogbom'|'hogbom-complex'|'mfsmsclean'
+    :param algorithm: Cleaning algorithm:
+                'msclean'|'hogbom'|'hogbom-complex'|'mfsmsclean'
     :param gain: loop gain (float) 0.7
     :param threshold: Clean threshold (0.0)
     :param fractional_threshold: Fractional threshold (0.01)
     :param scales: Scales (in pixels) for multiscale ([0, 3, 10, 30])
     :param nmoment: Number of frequency moments (default 3)
     :param findpeak: Method of finding peak in mfsclean:
-                    'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL', Default is RASCIL.
+                    'Algorithm1'|'ASKAPSoft'|'CASA'|'RASCIL',
+                    Default is RASCIL.
     :return: component image, residual image
 
      See also
@@ -1158,7 +1183,6 @@ def fit_psf(psf: Image):
                 fit.y_stddev.value,
                 fit.theta.value,
             )
-            # log.debug('fit_psf: fitted (pixels, pixels, rad) = {}'.format(beam_pixels))
     except minpack.error:
         log.warning("fit_psf: minpack error, using 1 pixel stddev")
         beam_pixels = (1.0, 1.0, 0.0)

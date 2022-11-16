@@ -62,8 +62,9 @@ def phaserotate_visibility(
 ) -> Visibility:
     """Phase rotate from the current phase centre to a new phase centre
 
-    If tangent is False the uvw are recomputed and the visibility phasecentre is updated.
-    Otherwise only the visibility phases are adjusted
+    If tangent is False the uvw are recomputed and the
+    visibility phasecentre is updated. Otherwise only the
+    visibility phases are adjusted
 
     :param vis: Visibility to be rotated
     :param newphasecentre: SkyCoord of new phasecentre
@@ -86,12 +87,15 @@ def phaserotate_visibility(
         newvis["vis"].data *= phasor
     else:
         newvis["vis"].data *= numpy.conj(phasor)
-    # To rotate UVW, rotate into the global XYZ coordinate system and back. We have the option of
-    # staying on the tangent plane or not. If we stay on the tangent then the raster will
-    # join smoothly at the edges. If we change the tangent then we will have to reproject to get
-    # the results on the same image, in which case overlaps or gaps are difficult to deal with.
+    # To rotate UVW, rotate into the global XYZ coordinate system and back.
+    # We have the option of staying on the tangent plane or not.
+    # If we stay on the tangent then the raster will join smoothly at the
+    # edges. If we change the tangent then we will have to reproject to get
+    # the results on the same image, in which case overlaps or gaps are
+    # difficult to deal with.
     if not tangent:
-        # The rotation can be done on the uvw (metres) values but we also have to update
+        # The rotation can be done on the uvw (metres)
+        # values but we also have to update
         # The wavelength dependent values
         nrows, nbl, _ = vis.uvw.shape
         if inverse:

@@ -1,10 +1,5 @@
-# pylint: disable=unnecessary-dunder-call, protected-access
-# pylint: disable=invalid-name, unused-variable, too-many-locals
-# pylint: disable=unsupported-assignment-operation, unsubscriptable-object
-# pylint: disable=import-error
-# flake8: noqa: E203
-""" Visibility operations
-
+"""
+Visibility operations
 """
 
 __all__ = [
@@ -59,7 +54,13 @@ def concatenate_visibility(vis_list, dim="time"):
     try:
         concatenated_vis.__setattr__(
             "_imaging_weight",
-            xarray.concat([vis._imaging_weight for vis in vis_list], dim=dim),
+            xarray.concat(
+                [
+                    vis._imaging_weight  # pylint: disable=protected-access
+                    for vis in vis_list
+                ],
+                dim=dim,
+            ),
         )
     except TypeError:
         # if vis._imaging_weight is None, concat throws a TypeError
@@ -142,9 +143,10 @@ def divide_visibility(vis: Visibility, modelvis: Visibility):
     """Divide visibility by model forming visibility for equivalent point source
 
      This is a useful intermediate product for calibration.
-     Variation of the visibility in time and frequency due to the model structure
-     is removed and the data can be averaged to a limit determined
-     by the instrumental stability. The weight is adjusted to compensate for the division.
+     Variation of the visibility in time and frequency due
+     to the model structure is removed and the data can be
+     averaged to a limit determined by the instrumental stability.
+     The weight is adjusted to compensate for the division.
 
      Zero divisions are avoided and the corresponding weight set to zero.
 
@@ -292,16 +294,17 @@ def average_visibility_by_channel(
             ..., group[0] : group[1], :
         ]
 
-        newvis["flags"][..., 0, :] = numpy.sum(vf, axis=-2)
-        newvis["flags"][newvis["flags"] < nchan] = 0
-        newvis["flags"][newvis["flags"] > 1] = 1
+        newvis["flags"].data[..., 0, :] = numpy.sum(vf, axis=-2)
+        newvis["flags"].data[newvis["flags"].data < nchan] = 0
+        newvis["flags"].data[newvis["flags"].data > 1] = 1
 
-        newvis["vis"][..., 0, :] = numpy.sum(vfvw, axis=-2)
-        newvis["weight"][..., 0, :] = numpy.sum(vfw, axis=-2)
+        newvis["vis"].data[..., 0, :] = numpy.sum(vfvw, axis=-2)
+        newvis["weight"].data[..., 0, :] = numpy.sum(vfw, axis=-2)
         newvis.imaging_weight[..., 0, :] = numpy.sum(vfiw, axis=-2)
         mask = newvis.visibility_acc.flagged_weight > 0.0
-        newvis["vis"][mask] = (
-            newvis["vis"][mask] / newvis.visibility_acc.flagged_weight[mask]
+        newvis["vis"].data[mask] = (
+            newvis["vis"].data[mask]
+            / newvis.visibility_acc.flagged_weight[mask]
         )
 
         newvis_list.append(newvis)

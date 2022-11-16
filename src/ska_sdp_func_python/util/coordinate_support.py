@@ -1,9 +1,8 @@
-# pylint: disable=invalid-name, too-many-locals, unused-argument
-# pylint: disable=unbalanced-tuple-unpacking
-# pylint: disable=import-error
-"""Coordinate support
+"""
+Coordinate support
 
-We follow the casa definition of coordinate systems http://casa.nrao.edu/Memos/CoordConvention.pdf:
+We follow the casa definition of coordinate systems
+http://casa.nrao.edu/Memos/CoordConvention.pdf:
 
 UVW is a right-handed coordinate system, with W pointing towards the
 source, and a baseline convention of:math:`ant2 - ant1` where
@@ -130,7 +129,8 @@ def ecef_to_lla(x, y, z):
 
 def enu_to_eci(enu, lat):
     """
-    Converts a baseline in [east, north, elevation] to earth-centered inertial coordinates
+    Converts a baseline in [east, north, elevation]
+    to earth-centered inertial coordinates
     for that baseline [x, y, z].
 
     :param enu: Array of [east, north, elevation]
@@ -151,8 +151,8 @@ def enu_to_eci(enu, lat):
 
 def eci_to_enu(eci, lat):
     """
-    Converts a baseline in earth-centered inertial coordinates [x, y, z] to [east, north,
-    elevation] for that baseline.
+    Converts a baseline in earth-centered inertial coordinates
+    [x, y, z] to [east, north, elevation] for that baseline.
 
     :param eci: Array of [x, y, z]
     :param lat: Latitude
@@ -201,7 +201,6 @@ def enu_to_ecef(location, enu):
 
 
 def ecef_to_enu(location, xyz):
-
     """
     Convert ECEF coordinates to ENU coordinates relative to reference location.
 
@@ -316,16 +315,16 @@ def eci_to_uvw(xyz, ha, dec):
 
 def uvw_to_eci(uvw, ha, dec):
     """
-     Rotate:math:`(x,y,z)` positions relative to a sky position at
-    :math:`(ha, dec)` to earth coordinates. Can be used for both
-     antenna positions as well as for baselines.
+    Rotate `(x,y,z)` positions relative to a sky position at
+    `(ha, dec)` to earth coordinates. Can be used for both
+    antenna positions as well as for baselines.
 
-     Hour angle and declination can be given as single values or arrays
-     of the same length. Angles can be given as radians or astropy
-     quantities with a valid conversion.
-    TODO: This function doesn't look right. It is returning the same uvw as input,
-          and not using ha and dec at all.
-          We need to revisit this.
+    Hour angle and declination can be given as single values or arrays
+    of the same length. Angles can be given as radians or astropy
+    quantities with a valid conversion.
+    TODO: This function doesn't look right. It is returning
+        the same uvw as input, and not using ha and dec at all.
+        We need to revisit this.
 
     :param uvw::math:`(u,v,w)` co-ordinates of antennas in array
     :param ha: hour angle of phase tracking centre (:math:`ha = ra - lst`)
@@ -433,8 +432,9 @@ def xyz_to_baselines(ants_xyz, ha_range, dec):
      for a range of hour angles (i.e. non-snapshot observation)
      to create a uvw sampling distribution
 
-    :param ants_xyz::math:`(x,y,z)` co-ordinates of antennas in array
-    :param ha_range: list of hour angle values for astronomical source as function of time
+    :param ants_xyz: `(x,y,z)` co-ordinates of antennas in array
+    :param ha_range: list of hour angle values for astronomical source
+                     as function of time
     :param dec: declination of astronomical source [constant, not:math:`f(t)`]
 
     :return: baselines in (u,v,w)
@@ -514,7 +514,8 @@ def simulate_point(dist_uvw, l, m):  # noqa: E741
      FT relationship becomes an exponential, evaluated at
      (uvw.lmn)
 
-    :param dist_uvw::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
+    :param dist_uvw: `(u,v,w)` distribution of projected baselines
+                     (in wavelengths)
     :param l: horizontal direction cosine relative to phase tracking centre
     :param m: orthogonal directon cosine relative to phase tracking centre
 
@@ -542,7 +543,8 @@ def simulate_point_antenna(dist_uvw, l, m):  # noqa: E741
      FT relationship becomes an exponential, evaluated at
      (uvw.lmn)
 
-    :param dist_uvw::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
+    :param dist_uvw: `(u,v,w)` distribution of projected baselines
+                     (in wavelengths)
     :param l: horizontal direction cosine relative to phase tracking centre
     :param m: orthogonal directon cosine relative to phase tracking centre
 
@@ -561,7 +563,7 @@ def visibility_shift(uvw, vis, dl, dm):
      based on simple FFT laws. It will require kernels to be suitably
      shifted as well to work correctly.
 
-    :param uvw: :math:`(u,v,w)` distribution of projected baselines (in wavelengths)
+    :param uvw: `(u,v,w)` distribution of projected baselines (in wavelengths)
     :param vis: Input visibilities
     :param dl: Horizontal shift distance as directional cosine
     :param dm: Vertical shift distance as directional cosine
@@ -583,7 +585,7 @@ def uvw_transform(uvw, transform_matrix):
      approach to interferometric mosaicing." Astronomy and Astrophysics
      Supplement Series 120 (1996): 375-384.
 
-    :param uvw::math:`(u,v,w)` distribution of projected baselines (in wavelengths)
+    :param uvw: `(u,v,w)` distribution of projected baselines (in wavelengths)
     :param transform_matrix: 2x2 matrix for image transformation
     :return: New baseline coordinates
     """
@@ -595,7 +597,9 @@ def uvw_transform(uvw, transform_matrix):
 
 
 def parallactic_angle(ha, dec, lat):
-    """Calculate parallactic angle of source at ha, dec observed from site at latitude dec
+    """
+    Calculate parallactic angle of source at ha, dec
+    observed from site at latitude dec
 
      H = t - α
      sin(a) = sin(δ) sin(φ) + cos(δ) cos(φ) cos(H)

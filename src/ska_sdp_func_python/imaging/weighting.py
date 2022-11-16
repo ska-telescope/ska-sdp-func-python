@@ -1,13 +1,11 @@
-# pylint: disable=invalid-name, unused-argument, unused-variable
-# pylint: disable=import-error, no-name-in-module
 """
 Functions that aid weighting the visibility data prior to imaging.
 
 There are two classes of functions:
-    - Changing the weight dependent on noise level or sample density or a combination
+    - Changing the weight dependent on noise level or sample
+      density or a combination
     - Tapering the weihght spatially to avoid effects of sharp edges or
     to emphasize a given scale size in the image
-
 """
 
 __all__ = [
@@ -19,11 +17,11 @@ __all__ = [
 import logging
 
 import numpy
+from ska_sdp_datamodels import physical_constants
 from ska_sdp_datamodels.gridded_visibility.grid_vis_create import (
     create_griddata_from_image,
 )
 from ska_sdp_datamodels.image.image_model import Image
-from ska_sdp_datamodels.physical_constants import C_M_S
 
 from ska_sdp_func_python.grid_data.gridding import (
     grid_visibility_weight_to_griddata,
@@ -35,10 +33,11 @@ log = logging.getLogger("func-python-logger")
 
 
 def weight_visibility(vis, model, weighting="uniform", robustness=0.0):
-    """Weight the visibility data
+    """
+    Weight the visibility data
 
-     This is done collectively so the weights are summed over all vis_lists and then
-     corrected
+    This is done collectively so the weights are summed
+    over all vis_lists and then corrected
 
     :param vis_list: List of Visibilities
     :param model_imagelist: Model required to determine weighting parameters
@@ -62,16 +61,16 @@ def weight_visibility(vis, model, weighting="uniform", robustness=0.0):
 
 
 def taper_visibility_gaussian(vis, beam=None):
-    """Taper the visibility weights
+    """
+    Taper the visibility weights
 
-     These are cumulative. If You can reset the imaging_weights
-     using:py:mod:`processing_components.imaging.weighting.weight_visibility`
+    These are cumulative. If You can reset the imaging_weights
+    using:py:mod:`ska_sdp_func_python.imaging.weighting.weight_visibility`
 
     :param vis: visibility with imaging_weight's to be tapered
     :param beam: desired resolution (Full width half maximum, radians)
     :return: visibility with imaging_weight column modified
     """
-    # assert isinstance(vis, Visibility), vis
 
     if beam is None:
         raise ValueError("Beam size not specified for Gaussian taper")
@@ -81,7 +80,7 @@ def taper_visibility_gaussian(vis, beam=None):
     scale_factor = numpy.pi**2 * beam**2 / (4.0 * numpy.log(2.0))
 
     for chan, freq in enumerate(vis.frequency.data):
-        wave = C_M_S / freq
+        wave = physical_constants.C_M_S / freq
         uvdistsq = (
             vis.visibility_acc.u.data**2 + vis.visibility_acc.v.data**2
         ) / wave**2
@@ -95,28 +94,27 @@ def taper_visibility_gaussian(vis, beam=None):
 
 
 def taper_visibility_tukey(vis, tukey=0.1):
-    """Taper the visibility weights
+    """
+    Taper the visibility weights
 
-     This algorithm is present in WSClean.
+    This algorithm is present in WSClean.
 
-     See https://sourceforge.net/p/wsclean/wiki/Tapering
+    See https://sourceforge.net/p/wsclean/wiki/Tapering
 
-     tukey, a circular taper that smooths the outer edge set by -maxuv-l
-     inner-tukey, a circular taper that smooths the inner edge set by -minuv-l
-     edge-tukey, a square-shaped taper that smooths the edge set by the uv grid and -taper-edge.
+    tukey, a circular taper that smooths the outer edge set by -maxuv-l
+    inner-tukey, a circular taper that smooths the inner edge set by -minuv-l
+    edge-tukey, a square-shaped taper that smooths the edge set
+    by the uv grid and -taper-edge.
 
-     These are cumulative. If You can reset the imaging_weights
-     using:py:mod:`ska_sdp_func_python.imaging.weighting.weight_visibility`
+    These are cumulative. If You can reset the imaging_weights
+    using:py:mod:`ska_sdp_func_python.imaging.weighting.weight_visibility`
 
     :param vis: visibility with imaging_weight's to be tapered
     :return: visibility with imaging_weight column modified
     """
-
-    # assert isinstance(vis, Visibility), vis
-
     oshape = vis.imaging_weight.data[..., 0, 0].shape
     for chan, freq in enumerate(vis.frequency.data):
-        wave = C_M_S / freq
+        wave = physical_constants.C_M_S / freq
         uvdist = numpy.sqrt(
             vis.visibility_acc.u.data**2 + vis.visibility_acc.v.data**2
         )

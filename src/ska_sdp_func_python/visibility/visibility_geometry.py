@@ -1,7 +1,5 @@
-# pylint: disable=missing-function-docstring
-# pylint: disable=import-error
-""" Functions for calculating geometry of a Visibility
-
+"""
+Functions for calculating geometry of a Visibility
 """
 
 __all__ = [

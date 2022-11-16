@@ -1,5 +1,5 @@
-""" Image functions using taylor terms in frequency
-
+"""
+Image functions using taylor terms in frequency
 """
 
 __all__ = [
@@ -22,20 +22,20 @@ log = logging.getLogger("func-python-logger")
 def calculate_image_frequency_moments(
     im: Image, reference_frequency=None, nmoment=1
 ) -> Image:
-    """Calculate frequency weighted moments of an image cube
+    """
+    Calculate frequency weighted moments of an image cube
 
-     The frequency moments are calculated using:
+    The frequency moments are calculated using:
 
-     .. math::
+        w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
 
-         w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
+    Note that the spectral axis is replaced by a MOMENT axis.
 
+    For example, to find the moments and then reconstruct
+    from just the moments::
 
-     Note that the spectral axis is replaced by a MOMENT axis.
-
-     For example, to find the moments and then reconstruct from just the moments::
-
-         moment_cube = calculate_image_frequency_moments(model_multichannel, nmoment=5)
+        moment_cube =
+            calculate_image_frequency_moments(model_multichannel, nmoment=5)
 
     :param im: Image cube
     :param reference_frequency: Reference frequency (default None uses average)
@@ -131,8 +131,8 @@ def calculate_image_from_frequency_taylor_terms(
     if reference_frequency is None:
         reference_frequency = im.frequency.data[nchan // 2]
     log.debug(
-        "calculate_image_from_frequency_moments: Reference frequency = %.3f (MHz)"
-        % (1e-6 * reference_frequency)
+        "calculate_image_from_frequency_moments: "
+        "Reference frequency = %.3f (MHz)" % (1e-6 * reference_frequency)
     )
 
     newim_data = numpy.zeros_like(im["pixels"].data[...])
@@ -158,23 +158,23 @@ def calculate_image_from_frequency_taylor_terms(
 def calculate_image_list_frequency_moments(
     im_list: List[Image], reference_frequency=None, nmoment=1
 ) -> Image:
-    """Calculate frequency weighted moments of an image list
+    """
+    Calculate frequency weighted moments of an image list
 
-     The frequency moments are calculated using:
+    The frequency moments are calculated using:
 
-     .. math::
-
-         w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
+        w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
 
 
-     Note that the spectral axis is replaced by a MOMENT axis.
+    Note that the spectral axis is replaced by a MOMENT axis.
 
-     For example, to find the moments and then reconstruct from just the moments::
+    For example, to find the moments and then reconstruct
+    from just the moments::
 
-         moment_cube =
-            calculate_image_frequency_moments(model_multichannel, nmoment=5)
-         reconstructed_cube =
-            calculate_image_from_frequency_moments(model_multichannel, moment_cube)
+      moment_cube =
+        calculate_image_frequency_moments(model_multichannel, nmoment=5)
+      reconstructed_cube =
+        calculate_image_from_frequency_moments(model_multichannel, moment_cube)
 
     :param im_list: List of images
     :param reference_frequency: Reference frequency (default None uses average)
@@ -243,7 +243,8 @@ def calculate_image_list_from_frequency_taylor_terms(
          w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
 
     :param im: Image cube to be reconstructed
-    :param moment_image: Moment cube (constructed using calculate_image_frequency_moments)
+    :param moment_image: Moment cube (constructed using
+                         calculate_image_frequency_moments)
     :param reference_frequency: Reference frequency (default None uses average)
     :return: list of reconstructed images
     """
@@ -256,8 +257,8 @@ def calculate_image_list_from_frequency_taylor_terms(
     if reference_frequency is None:
         reference_frequency = frequency[nchan // 2]
     log.debug(
-        "calculate_image_from_frequency_moments: Reference frequency = %.3f (MHz)"
-        % (1e-6 * reference_frequency)
+        "calculate_image_from_frequency_moments: "
+        "Reference frequency = %.3f (MHz)" % (1e-6 * reference_frequency)
     )
 
     newims = []
@@ -302,7 +303,8 @@ def calculate_frequency_taylor_terms_from_image_list(
     single_chan, npol, ny, nx = im_list[0]["pixels"].shape
     if single_chan > 1:
         raise ValueError(
-            "calculate_frequency_taylor_terms_from_image_list: each image must be single channel"
+            "calculate_frequency_taylor_terms_from_image_list: "
+            "each image must be single channel"
         )
 
     frequency = numpy.array([d.frequency.data[0] for d in im_list])
@@ -310,8 +312,8 @@ def calculate_frequency_taylor_terms_from_image_list(
     if reference_frequency is None:
         reference_frequency = frequency[len(frequency) // 2]
     log.debug(
-        "calculate_image_from_frequency_moments: Reference frequency = %.3f (MHz)"
-        % (1e-6 * reference_frequency)
+        "calculate_image_from_frequency_moments: "
+        "Reference frequency = %.3f (MHz)" % (1e-6 * reference_frequency)
     )
 
     wcs = im_list[nchan // 2].image_acc.wcs.deepcopy()

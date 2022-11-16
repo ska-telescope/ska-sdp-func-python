@@ -1,8 +1,10 @@
 """
-Functions that aid fourier transform processing. These are built on top of the core
-functions in processing_components.fourier_transforms.
+Functions that aid fourier transform processing.
+These are built on top of the core functions in
+ska_sdp_func_python.fourier_transforms.
 
-The measurement equation for a sufficently narrow field of view interferometer is:
+The measurement equation for a sufficiently narrow
+field of view interferometer is:
 
 .. math::
 
@@ -13,10 +15,12 @@ The measurement equation for a wide field of view interferometer is:
 
 .. math::
 
-    V(u,v,w) =\\int \\frac{I(l,m)}{\\sqrt{1-l^2-m^2}} e^{-2 \\pi j (ul+vm + w(\\sqrt{1-l^2-m^2}-1))} dl dm
+    V(u,v,w) =\\int \\frac{I(l,m)}{\\sqrt{1-l^2-m^2}}
+        e^{-2 \\pi j (ul+vm + w(\\sqrt{1-l^2-m^2}-1))} dl dm
 
-This and related modules contain various approachs for dealing with the wide-field problem where the
-extra phase term in the Fourier transform cannot be ignored.
+This and related modules contain various approachs for dealing with
+the wide-field problem where the extra phase term in the Fourier
+transform cannot be ignored.
 """
 
 __all__ = [
@@ -65,21 +69,20 @@ log = logging.getLogger("func-python-logger")
 def shift_vis_to_image(
     vis: Visibility, im: Image, tangent: bool = True, inverse: bool = False
 ) -> Visibility:
-    """Shift visibility in place to the phase centre of the Image
+    """
+    Shift visibility in place to the phase centre of the Image
 
     :param vis: Visibility
     :param im: Image model used to determine phase centre
     :param tangent: Is the shift purely on the tangent plane True|False
     :param inverse: Do the inverse operation True|False
     :return: visibility with phase shift applied and phasecentre updated
-
     """
-    # assert isinstance(vis, Visibility), "vis is not a Visibility: %r" % vis
-
     nchan, npol, ny, nx = im["pixels"].data.shape
 
-    # Convert the FFT definition of the phase center to world coordinates (1 relative)
-    # This is the only place where the relationship between the image and visibility
+    # Convert the FFT definition of the phase center to world
+    # coordinates (1 relative). This is the only place
+    # where the relationship between the image and visibility
     # frames is defined.
 
     image_phasecentre = pixel_to_skycoord(
@@ -88,12 +91,14 @@ def shift_vis_to_image(
     if vis.phasecentre.separation(image_phasecentre).rad > 1e-15:
         if inverse:
             log.debug(
-                "shift_vis_from_image: shifting phasecentre from image phase centre %s to visibility phasecentre "
+                "shift_vis_from_image: shifting phasecentre "
+                "from image phase centre %s to visibility phasecentre "
                 "%s" % (image_phasecentre, vis.phasecentre)
             )
         else:
             log.debug(
-                "shift_vis_from_image: shifting phasecentre from vis phasecentre %s to image phasecentre %s"
+                "shift_vis_from_image: shifting phasecentre "
+                "from vis phasecentre %s to image phasecentre %s"
                 % (vis.phasecentre, image_phasecentre)
             )
         vis = phaserotate_visibility(
@@ -105,18 +110,21 @@ def shift_vis_to_image(
 
 
 def normalise_sumwt(im: Image, sumwt, min_weight=0.1, flat_sky=False) -> Image:
-    """normalise out the sum of weights
+    """
+    Normalise out the sum of weights
 
-    The gridding weights are accumulated as a function of channel and polarisation. This function
-    corrects for this sum of weights. The sum of weights can be a 2D array or an image the same
-    shape as the image (as for primary beam correction)
+    The gridding weights are accumulated as a function of
+    channel and polarisation. This function corrects for this
+    sum of weights. The sum of weights can be a 2D array or
+    an image the same shape as the image (as for primary beam correction)
 
-    The parameter flat_sky controls whether the sensitivity (sumwt) is divided out pixel by pixel
-    or instead the maximum value is divided out.
+    The parameter flat_sky controls whether the sensitivity (sumwt)
+    is divided out pixel by pixel or instead the maximum value is divided out.
 
     :param im: Image, im["pixels"].data has shape [nchan, npol, ny, nx]
     :param sumwt: Sum of weights [nchan, npol] or [nchan, npol, ny, nx]
-    :param minwt: Minimum (fractional) weight to be used in dividing by the sumwt images
+    :param minwt: Minimum (fractional) weight to be used in
+                  dividing by the sumwt images
     :param flat_sky: Make the sky flat? Or the noise flat?
     """
     nchan, npol, _, _ = im["pixels"].data.shape
@@ -165,15 +173,18 @@ def normalise_sumwt(im: Image, sumwt, min_weight=0.1, flat_sky=False) -> Image:
 def predict_awprojection(
     vis: Visibility, model: Image, gcfcf=None
 ) -> Visibility:
-    """Predict using convolutional degridding and an AW kernel
+    """
+    Predict using convolutional degridding and an AW kernel
 
-    Note that the gridding correction function (gcf) and convolution function (cf) can be passed
-    as a partial function. So the caller must supply a partial function to
+    Note that the gridding correction function (gcf) and
+    convolution function (cf) can be passed as a partial function.
+    So the caller must supply a partial function to
     calculate the gcf, cf tuple for an image model.
 
     :param vis: visibility to be predicted
     :param model: model image
-    :param gcfcf: (Grid correction function i.e. in image space, Convolution function i.e. in uv space)
+    :param gcfcf: (Grid correction function i.e. in image space,
+                  Convolution function i.e. in uv space)
     :return: resulting visibility (in place works)
     """
 
@@ -200,7 +211,8 @@ def predict_awprojection(
     griddata = fft_image_to_griddata(polmodel, griddata, gcf)
     vis = degrid_visibility_from_griddata(vis, griddata=griddata, cf=cf)
 
-    # Now we can shift the visibility from the image frame to the original visibility frame
+    # Now we can shift the visibility from the image frame
+    # to the original visibility frame
     svis = shift_vis_to_image(vis, model, tangent=True, inverse=True)
 
     return svis
@@ -213,19 +225,22 @@ def invert_awprojection(
     normalise: bool = True,
     gcfcf=None,
 ) -> (Image, numpy.ndarray):
-    """Invert using convolutional degridding and an AW kernel
+    """
+    Invert using convolutional degridding and an AW kernel
 
     Use the image im as a template. Do PSF in a separate call.
 
-    Note that the gridding correction function (gcf) and convolution function (cf) can be passed
-    as a partial function. So the caller must supply a partial function to
+    Note that the gridding correction function (gcf) and
+    convolution function (cf) can be passed as a partial function.
+    So the caller must supply a partial function to
     calculate the gcf, cf tuple for an image model.
 
     :param vis: visibility to be inverted
     :param im: image template (not changed)
     :param dopsf: Make the psf instead of the dirty image
     :param normalise: normalise by the sum of weights (True)
-    :param gcfcf: (Grid correction function i.e. in image space, Convolution function i.e. in uv space)
+    :param gcfcf: (Grid correction function i.e. in image space,
+            Convolution function i.e. in uv space)
     :return: resulting image
 
     """
@@ -300,10 +315,13 @@ def fill_vis_for_psf(svis):
 
 
 def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
-    """Make an empty image from params and Visibility
+    """
+    Make an empty image from params and Visibility
 
-    This makes an empty, template image consistent with the visibility, allowing optional overriding of select
-    parameters. This is a convenience function and does not transform the visibilities.
+    This makes an empty, template image consistent with
+    the visibility, allowing optional overriding of select
+    parameters. This is a convenience function and does
+    not transform the visibilities.
 
     :param vis: Visibility
 
@@ -315,10 +333,10 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     :param equinox: Equinox for WCS (2000.0)
     :param nchan: Number of image channels (Default is 1 -> MFS)
     :return: image
-
     """
     log.debug(
-        "create_image_from_visibility: Parsing parameters to get definition of WCS"
+        "create_image_from_visibility: "
+        "Parsing parameters to get definition of WCS"
     )
 
     image_centre = kwargs.get("imagecentre", vis.phasecentre)
@@ -338,7 +356,8 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
 
     if (inchan == vnchan) and vnchan > 1:
         log.debug(
-            "create_image_from_visibility: Defining %d channel Image at %s, starting frequency %s, and bandwidth %s"
+            "create_image_from_visibility: Defining %d channel "
+            "Image at %s, starting frequency %s, and bandwidth %s"
             % (inchan, image_centre, reffrequency, channel_bandwidth)
         )
     elif (inchan == 1) and vnchan > 1:
@@ -346,7 +365,8 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
             numpy.abs(channel_bandwidth) > 0.0
         ), "Channel width must be non-zero for mfs mode"
         log.debug(
-            "create_image_from_visibility: Defining single channel MFS Image at %s, starting frequency %s, "
+            "create_image_from_visibility: Defining single "
+            "channel MFS Image at %s, starting frequency %s, "
             "and bandwidth %s"
             % (image_centre, reffrequency, channel_bandwidth)
         )
@@ -355,7 +375,8 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
             numpy.abs(channel_bandwidth) > 0.0
         ), "Channel width must be non-zero for mfs mode"
         log.debug(
-            "create_image_from_visibility: Defining multi-channel MFS Image at %s, starting frequency %s, "
+            "create_image_from_visibility: Defining multi-channel "
+            "MFS Image at %s, starting frequency %s, "
             "and bandwidth %s"
             % (image_centre, reffrequency, channel_bandwidth)
         )
@@ -364,15 +385,15 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
             numpy.abs(channel_bandwidth) > 0.0
         ), "Channel width must be non-zero for mfs mode"
         log.debug(
-            "create_image_from_visibility: Defining single channel Image at %s, starting frequency %s, "
+            "create_image_from_visibility: Defining single "
+            "channel Image at %s, starting frequency %s, "
             "and bandwidth %s"
             % (image_centre, reffrequency, channel_bandwidth)
         )
     else:
         raise ValueError(
-            "create_image_from_visibility: unknown spectral mode inchan = {}, vnchan = {} ".format(
-                inchan, vnchan
-            )
+            "create_image_from_visibility: unknown spectral "
+            "mode inchan = {}, vnchan = {} ".format(inchan, vnchan)
         )
 
     # Image sampling options
@@ -381,15 +402,16 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     log.debug("create_image_from_visibility: uvmax = %f wavelengths" % uvmax)
     criticalcellsize = 1.0 / (uvmax * 2.0)
     log.debug(
-        "create_image_from_visibility: Critical cellsize = %f radians, %f degrees"
+        "create_image_from_visibility: Critical cellsize "
+        "= %f radians, %f degrees"
         % (criticalcellsize, criticalcellsize * 180.0 / numpy.pi)
     )
 
     cellsize = kwargs.get("cellsize", 0.5 * criticalcellsize)
 
     log.debug(
-        "create_image_from_visibility: Cellsize          = %g radians, %g degrees"
-        % (cellsize, cellsize * 180.0 / numpy.pi)
+        "create_image_from_visibility: Cellsize "
+        "= %g radians, %g degrees" % (cellsize, cellsize * 180.0 / numpy.pi)
     )
 
     override_cellsize = kwargs.get("override_cellsize", True)
@@ -397,7 +419,8 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         cellsize == 0.0
     ):
         log.debug(
-            "create_image_from_visibility: Resetting cellsize %g radians to criticalcellsize %g radians"
+            "create_image_from_visibility: Resetting cellsize "
+            "%g radians to criticalcellsize %g radians"
             % (cellsize, criticalcellsize)
         )
         cellsize = criticalcellsize
@@ -405,8 +428,9 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     pol_frame = kwargs.get("polarisation_frame", PolarisationFrame("stokesI"))
     inpol = pol_frame.npol
 
-    # Now we can define the WCS, which is a convenient place to hold the info above
-    # Beware of python indexing order! wcs and the array have opposite ordering
+    # Now we can define the WCS, which is a convenient
+    # place to hold the info above. Beware of python indexing
+    # order! wcs and the array have opposite ordering
     shape = [inchan, inpol, npixel, npixel]
     log.debug("create_image_from_visibility: image shape is %s" % str(shape))
     w = wcs.WCS(naxis=4)
@@ -417,7 +441,8 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         1.0,
         channel_bandwidth.to(units.Hz).value,
     ]
-    # The numpy definition of the phase centre of an FFT is n // 2 (0 - rel) so that's what we use for
+    # The numpy definition of the phase centre of an
+    # FFT is n // 2 (0 - rel) so that's what we use for
     # the reference pixel. We have to use 0 rel everywhere.
     w.wcs.crpix = [npixel // 2 + 1, npixel // 2 + 1, 1.0, 1.0]
     w.wcs.ctype = ["RA---SIN", "DEC--SIN", "STOKES", "FREQ"]
@@ -444,7 +469,8 @@ def advise_wide_field(
     wprojection_planes=1,
     verbose=True,
 ):
-    """Advise on parameters for wide field imaging.
+    """
+    Advise on parameters for wide field imaging.
 
     Calculate sampling requirements on various parameters
 
@@ -455,9 +481,11 @@ def advise_wide_field(
 
     :param vis: Visibility
     :param delA: Allowed coherence loss (def: 0.02)
-    :param oversampling_synthesised_beam: Oversampling of the synthesized beam (def: 3.0)
-           If the value <=2, some visibilities in gridding would be discarded.
-    :param guard_band_image: Number of primary beam half-widths-to-half-maximum to image (def: 6)
+    :param oversampling_synthesised_beam:
+            Oversampling of the synthesized beam (def: 3.0)
+            If the value <=2, some visibilities in gridding would be discarded.
+    :param guard_band_image: Number of primary beam
+            half-widths-to-half-maximum to image (def: 6)
     :param facets: Number of facets on each axis
     :param wprojection_planes: Number of planes in wprojection
     :return: dict of advice
@@ -465,18 +493,18 @@ def advise_wide_field(
 
     isblock = isinstance(vis, Visibility)
 
-    max_wavelength = physical_constants.c_m_s / numpy.min(vis.frequency.data)
+    max_wavelength = physical_constants.C_M_S / numpy.min(vis.frequency.data)
     if verbose:
         log.info(
-            "advise_wide_field: (max_wavelength) Maximum wavelength %.3f (meters)"
-            % (max_wavelength)
+            "advise_wide_field: (max_wavelength) "
+            "Maximum wavelength %.3f (meters)" % (max_wavelength)
         )
 
-    min_wavelength = physical_constants.c_m_s / numpy.max(vis.frequency.data)
+    min_wavelength = physical_constants.C_M_S / numpy.max(vis.frequency.data)
     if verbose:
         log.info(
-            "advise_wide_field: (min_wavelength) Minimum wavelength %.3f (meters)"
-            % (min_wavelength)
+            "advise_wide_field: (min_wavelength) "
+            "Minimum wavelength %.3f (meters)" % (min_wavelength)
         )
 
     maximum_baseline = (
@@ -488,8 +516,8 @@ def advise_wide_field(
 
     if verbose:
         log.info(
-            "advise_wide_field: (maximum_baseline) Maximum baseline %.1f (wavelengths)"
-            % (maximum_baseline)
+            "advise_wide_field: (maximum_baseline) Maximum "
+            "baseline %.1f (wavelengths)" % (maximum_baseline)
         )
     assert maximum_baseline > 0.0, "Error in UVW coordinates: all uvw are zero"
 
@@ -557,7 +585,8 @@ def advise_wide_field(
         return best
 
     def pwr2345(n):
-        # If pyfftw has been installed, next_fast_len would return the len of best performance
+        # If pyfftw has been installed, next_fast_len
+        # would return the len of best performance
         try:
             import pyfftw
 
@@ -572,38 +601,40 @@ def advise_wide_field(
     npixels = int(round(image_fov / cellsize))
     if verbose:
         log.info(
-            "advice_wide_field: (npixels) Npixels per side = %d" % (npixels)
+            "advice_wide_field: (npixels) Npixels " "per side = %d" % (npixels)
         )
 
     npixels2 = pwr2(npixels)
     if verbose:
         log.info(
-            "advice_wide_field: (npixels2) Npixels (power of 2) per side = %d"
-            % (npixels2)
+            "advice_wide_field: (npixels2) Npixels "
+            "(power of 2) per side = %d" % (npixels2)
         )
 
     npixels23 = pwr23(npixels)
     if verbose:
         log.info(
-            "advice_wide_field: (npixels23) Npixels (power of 2, 3) per side = %d"
-            % (npixels23)
+            "advice_wide_field: (npixels23) Npixels "
+            "(power of 2, 3) per side = %d" % (npixels23)
         )
 
     npixels_min = pwr2345(npixels)
     if verbose:
         log.info(
-            "advice_wide_field: (npixels_min) Npixels (power of 2, 3, 4, 5) per side = %d"
-            % (npixels_min)
+            "advice_wide_field: (npixels_min) Npixels "
+            "(power of 2, 3, 4, 5) per side = %d" % (npixels_min)
         )
 
-    # Following equation is from Cornwell, Humphreys, and Voronkov (2012) (equation 24)
-    # We will assume that the constraint holds at one quarter the entire FOV i.e. that
+    # Following equation is from Cornwell, Humphreys, and
+    # Voronkov (2012) (equation 24) We will assume that the
+    # constraint holds at one quarter the entire FOV i.e. that
     # the full field of view includes the entire primary beam
 
     w_sampling_image = numpy.sqrt(2.0 * delA) / (numpy.pi * image_fov**2)
     if verbose:
         log.info(
-            "\nadvice_wide_field: (w_sampling_image) W sampling for full image = %.1f (wavelengths)"
+            "\nadvice_wide_field: (w_sampling_image) "
+            "W sampling for full image = %.1f (wavelengths)"
             % (w_sampling_image)
         )
 
@@ -611,7 +642,8 @@ def advise_wide_field(
         w_sampling_facet = numpy.sqrt(2.0 * delA) / (numpy.pi * facet_fov**2)
         if verbose:
             log.info(
-                "advice_wide_field: (w_sampling_facet) W sampling for facet = %.1f (wavelengths)"
+                "advice_wide_field: (w_sampling_facet) "
+                "W sampling for facet = %.1f (wavelengths)"
                 % (w_sampling_facet)
             )
     else:
@@ -622,23 +654,24 @@ def advise_wide_field(
     )
     if verbose:
         log.info(
-            "advice_wide_field: (w_sampling_primary_beam) W sampling for primary beam = %.1f (wavelengths)"
+            "advice_wide_field: (w_sampling_primary_beam) "
+            "W sampling for primary beam = %.1f (wavelengths)"
             % (w_sampling_primary_beam)
         )
 
     time_sampling_image = 86400.0 * (synthesized_beam / image_fov)
     if verbose:
         log.info(
-            "advice_wide_field: (time_sampling_image) Time sampling for full image = %.1f (s)"
-            % (time_sampling_image)
+            "advice_wide_field: (time_sampling_image) "
+            "Time sampling for full image = %.1f (s)" % (time_sampling_image)
         )
 
     if facets > 1:
         time_sampling_facet = 86400.0 * (synthesized_beam / facet_fov)
         if verbose:
             log.info(
-                "advice_wide_field: (time_sampling_facet) Time sampling for facet = %.1f (s)"
-                % (time_sampling_facet)
+                "advice_wide_field: (time_sampling_facet) "
+                "Time sampling for facet = %.1f (s)" % (time_sampling_facet)
             )
 
     time_sampling_primary_beam = 86400.0 * (
@@ -646,7 +679,8 @@ def advise_wide_field(
     )
     if verbose:
         log.info(
-            "advice_wide_field: (time_sampling_primary_beam) Time sampling for primary beam = %.1f (s)"
+            "advice_wide_field: (time_sampling_primary_beam) "
+            "Time sampling for primary beam = %.1f (s)"
             % (time_sampling_primary_beam)
         )
 
@@ -655,7 +689,8 @@ def advise_wide_field(
     freq_sampling_image = max_freq * (synthesized_beam / image_fov)
     if verbose:
         log.info(
-            "advice_wide_field: (freq_sampling_image) Frequency sampling for full image = %.1f (Hz)"
+            "advice_wide_field: (freq_sampling_image) "
+            "Frequency sampling for full image = %.1f (Hz)"
             % (freq_sampling_image)
         )
 
@@ -663,7 +698,8 @@ def advise_wide_field(
         freq_sampling_facet = max_freq * (synthesized_beam / facet_fov)
         if verbose:
             log.info(
-                "advice_wide_field: (freq_sampling_facet) Frequency sampling for facet = %.1f (Hz)"
+                "advice_wide_field: (freq_sampling_facet) "
+                "Frequency sampling for facet = %.1f (Hz)"
                 % (freq_sampling_facet)
             )
 
@@ -672,7 +708,8 @@ def advise_wide_field(
     )
     if verbose:
         log.info(
-            "advice_wide_field: (freq_sampling_primary_beam) Frequency sampling for primary beam = %.1f (Hz)"
+            "advice_wide_field: (freq_sampling_primary_beam) "
+            "Frequency sampling for primary beam = %.1f (Hz)"
             % (freq_sampling_primary_beam)
         )
         log.info("")
@@ -686,16 +723,18 @@ def advise_wide_field(
     nwpixels_primary_beam = nwpixels_primary_beam - nwpixels_primary_beam % 2
     if verbose:
         log.info(
-            "advice_wide_field: (vis_slices_primary_beam) Number of planes in w stack %d (primary beam)"
+            "advice_wide_field: (vis_slices_primary_beam) "
+            "Number of planes in w stack %d (primary beam)"
             % (vis_slices_primary_beam)
         )
         log.info(
-            "advice_wide_field: (wprojection_planes_primary_beam) Number of planes in w projection %d (primary beam)"
+            "advice_wide_field: (wprojection_planes_primary_beam) "
+            "Number of planes in w projection %d (primary beam)"
             % (wprojection_planes_primary_beam)
         )
         log.info(
-            "advice_wide_field: (nwpixels_primary_beam) W support = %d (pixels) (primary beam)"
-            % nwpixels_primary_beam
+            "advice_wide_field: (nwpixels_primary_beam) "
+            "W support = %d (pixels) (primary beam)" % nwpixels_primary_beam
         )
         log.info("")
 
@@ -706,20 +745,23 @@ def advise_wide_field(
     nwpixels_image = nwpixels_image - nwpixels_image % 2
     if verbose:
         log.info(
-            "advice_wide_field: (vis_slices_image) Number of planes in w stack %d (primary beam)"
+            "advice_wide_field: (vis_slices_image) "
+            "Number of planes in w stack %d (primary beam)"
             % (vis_slices_image)
         )
         log.info(
-            "advice_wide_field: (wprojection_planes_image) Number of planes in w projection %d (image)"
+            "advice_wide_field: (wprojection_planes_image) "
+            "Number of planes in w projection %d (image)"
             % (wprojection_planes_image)
         )
         log.info(
-            "advice_wide_field: (nwpixels_image) W support = %d (pixels) (image)"
-            % nwpixels_image
+            "advice_wide_field: (nwpixels_image) "
+            "W support = %d (pixels) (image)" % nwpixels_image
         )
         log.info("")
         log.info(
-            "advise_wide_field: by default, using primary beam to advise on w sampling parameters"
+            "advise_wide_field: by default, using primary beam "
+            "to advise on w sampling parameters"
         )
 
     wstep = wstep_primary_beam

@@ -1,6 +1,3 @@
-# pylint: disable=invalid-name, too-many-locals
-# pylint: disable=unused-variable, too-many-statements
-# pylint: disable=import-error, no-name-in-module
 """
 Functions that implement prediction of and imaging
 from visibilities using the nifty gridder (DUCC version).
@@ -9,9 +6,9 @@ https://gitlab.mpcdf.mpg.de/mtr/ducc.git
 
 This performs all necessary w term corrections, to high precision.
 
-Note that nifty gridder doesn't like some null data such as all w = 0 and do_wstacking=True.
+Note that nifty gridder doesn't like some null
+data such as all w = 0 and do_wstacking=True.
 Also true of the visibilities.
-
 """
 
 __all__ = ["predict_ng", "invert_ng"]
@@ -19,7 +16,7 @@ __all__ = ["predict_ng", "invert_ng"]
 import copy
 import logging
 
-import ducc0.wgridder as ng
+import ducc0.wgridder as ng  # pylint: disable=import-error
 import numpy
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_functions import (
@@ -36,11 +33,13 @@ log = logging.getLogger("func-python-logger")
 
 
 def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
-    """Predict using convolutional degridding.
+    """
+    Predict using convolutional degridding.
 
-     Nifty-gridder version. https://gitlab.mpcdf.mpg.de/ift/nifty_gridder
+    Nifty-gridder version. https://gitlab.mpcdf.mpg.de/ift/nifty_gridder
 
-     In the imaging and pipeline workflows, this may be invoked using context='ng'.
+    In the imaging and pipeline workflows,
+    this may be invoked using context='ng'.
 
     :param bvis: Visibility to be predicted
     :param model: model image
@@ -76,7 +75,8 @@ def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     assert m_npol == vnpol
 
     fuvw = copy.deepcopy(uvw)
-    # We need to flip the u and w axes. The flip in w is equivalent to the conjugation of the
+    # We need to flip the u and w axes. The flip in w
+    # is equivalent to the conjugation of the
     # convolution function grid_visibility to griddata
     fuvw[:, 0] *= -1.0
     fuvw[:, 2] *= -1.0
@@ -135,7 +135,8 @@ def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     vis = vis.reshape([nrows, nbaselines, vnchan, vnpol])
     newbvis["vis"].data = vis
 
-    # Now we can shift the visibility from the image frame to the original visibility frame
+    # Now we can shift the visibility from the image
+    # frame to the original visibility frame
     return shift_vis_to_image(newbvis, model, tangent=True, inverse=True)
 
 
@@ -159,7 +160,8 @@ def invert_ng(
     :param bvis: Visibility to be inverted
     :param im: image template (not changed)
     :param normalise: normalise by the sum of weights (True)
-    :return: (resulting image, sum of the weights for each frequency and polarization)
+    :return: (resulting image, sum of the weights for
+                each frequency and polarization)
 
     """
 
@@ -220,7 +222,8 @@ def invert_ng(
         model.image_acc.wcs.sub([4]).wcs_world2pix(freq, 0)[0]
     ).astype("int")
 
-    # Nifty gridder likes to receive contiguous arrays so we transpose at the beginning
+    # Nifty gridder likes to receive contiguous arrays
+    # so we transpose at the beginning
 
     mfs = nchan == 1 and vnchan > 1
     mst = ms.T

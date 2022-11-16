@@ -1,7 +1,5 @@
-# pylint: disable=invalid-name
-# pylint: disable=import-error
-""" FFT support functions
-
+"""
+FFT support functions
 """
 
 __all__ = ["ifft", "fft", "pad_mid", "extract_mid", "extract_oversampled"]
@@ -204,7 +202,8 @@ def extract_oversampled(a, xf, yf, kernel_oversampling, kernelwidth):
 
      We do not want to make assumptions about the source grid's symmetry
      here, which means that the grid's side length must be at least
-     kernel_oversampling*(npixel+2) to contain enough information in all circumstances
+     kernel_oversampling*(npixel+2) to contain enough information
+     in all circumstances
 
     :param xf: Offset in x
     :param yf: Offset in y
