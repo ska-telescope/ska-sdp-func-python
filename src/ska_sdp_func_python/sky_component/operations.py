@@ -27,6 +27,7 @@ import collections
 import copy
 import logging
 import warnings
+from itertools import compress
 from typing import List, Union
 
 import astropy.units as u
@@ -48,8 +49,6 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-
-# Fix imports below
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
 from ska_sdp_func_python.calibration.jones import apply_jones
@@ -219,8 +218,6 @@ def select_neighbouring_components(comps, target_comps):
         [c.direction.dec.rad for c in comps] * u.rad,
     )
 
-    from astropy.coordinates import match_coordinates_sky
-
     idx, d2d, _ = match_coordinates_sky(all_catalog, target_catalog)
     return idx, d2d
 
@@ -247,8 +244,6 @@ def remove_neighbouring_components(comps, distance):
                             ok[i] = False
                         break
 
-    from itertools import compress
-
     idx = list(compress(list(range(ncomps)), ok))
     comps_sel = list(compress(comps, ok))
     return idx, comps_sel
@@ -266,8 +261,6 @@ def find_skycomponents(
     :param npixels: Number of connected pixels required
     :return: List of SkyComponents
     """
-
-    # assert isinstance(im, Image)
     log.debug(
         "find_skycomponents: Finding components in Image by segmentation"
     )
@@ -312,10 +305,7 @@ def find_skycomponents(
 
     def comp_prop(comp, prop_name):
         return [
-            [
-                comp_catalog[chan][pol][comp].__getattribute__(prop_name)
-                for pol in [0]
-            ]
+            [getattr(comp_catalog[chan][pol][comp], prop_name) for pol in [0]]
             for chan in range(im.image_acc.nchan)
         ]
 
@@ -344,6 +334,7 @@ def find_skycomponents(
         xs = numpy.sum(aflux * xs) / flux_sum
         ys = numpy.sum(aflux * ys) / flux_sum
 
+        # pylint: disable=no-member
         point_flux = im["pixels"].data[
             :,
             :,
@@ -787,7 +778,7 @@ def voronoi_decomposition(im, comps):
         [u.rad * c.direction.dec.rad for c in comps],
     )
     x, y = skycoord_to_pixel(directions, im.image_acc.wcs, 1, "wcs")
-    points = [(x[i], y[i]) for i, _ in enumerate(x)]
+    points = [(x_elem, y[i]) for i, x_elem in enumerate(x)]
     vor = Voronoi(points)
 
     _, _, ny, nx = im["pixels"].data.shape
@@ -843,8 +834,6 @@ def partition_skycomponent_neighbours(comps, targets):
     """
     idx, _ = select_neighbouring_components(comps, targets)
 
-    from itertools import compress
-
     comps_lists = []
     for comp_id in numpy.unique(idx):
         selected_comps = list(compress(comps, idx == comp_id))
@@ -892,7 +881,7 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
         ix = round(fit.x_mean.value)
 
         # We could fit each frequency separately. For the moment, we just scale
-        if iy < image_shape[0] and iy >= 0 and ix < image_shape[1] and ix >= 0:
+        if 0 <= iy < image_shape[0] and 0 <= ix < image_shape[1]:
             newsc.flux = im["pixels"].data[:, :, iy, ix]
 
         try:

@@ -141,7 +141,7 @@ def spatial_mapping(griddata, u, v, w, cf=None):
             pwc_grid = numpy.round(pwc_pixel).astype("int")
             if numpy.min(pwc_grid) < 0:
                 print(w[0:10])
-                print(cf.convolutionfunction_acc.cf_wcs.sub([5]).__repr__())
+                print(repr(cf.convolutionfunction_acc.cf_wcs.sub([5])))
             assert (
                 numpy.min(pwc_grid) >= 0
             ), f"W axis underflows: {numpy.min(pwc_grid)}"

@@ -16,7 +16,7 @@ def test_dft_stokesiquv_visibility(compute_kernel, vis, comp):
     """
     if compute_kernel == "gpu_cupy_raw":
         try:
-            # pylint: disable=unused-import
+            # pylint: disable=unused-import,import-outside-toplevel
             import cupy  # noqa: F401
         except ModuleNotFoundError:
             return

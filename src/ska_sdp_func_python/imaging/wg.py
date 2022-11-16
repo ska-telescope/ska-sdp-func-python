@@ -44,7 +44,7 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     """
 
     try:
-        import wagg as wg
+        import wagg as wg  # pylint: disable=import-outside-toplevel
     except ImportError:
         log.warning("WAGG is not installed. Cannot run predict_wg")
         return None
@@ -176,7 +176,7 @@ def invert_wg(
               each frequency and polarization)
     """
     try:
-        import wagg as wg
+        import wagg as wg  # pylint: disable=import-outside-toplevel
     except ImportError:
         log.warning("WAGG is not installed. Cannot run invert_wg")
         return None

@@ -52,7 +52,8 @@ def concatenate_visibility(vis_list, dim="time"):
     )
 
     try:
-        concatenated_vis.__setattr__(
+        setattr(
+            concatenated_vis,
             "_imaging_weight",
             xarray.concat(
                 [
@@ -64,7 +65,7 @@ def concatenate_visibility(vis_list, dim="time"):
         )
     except TypeError:
         # if vis._imaging_weight is None, concat throws a TypeError
-        concatenated_vis.__setattr__("_imaging_weight", None)
+        setattr(concatenated_vis, "_imaging_weight", None)
 
     return concatenated_vis
 

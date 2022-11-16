@@ -45,6 +45,7 @@ from typing import List
 import numpy
 from astropy.convolution import Gaussian2DKernel, convolve_fft
 from astropy.modeling import fitting, models
+from scipy.optimize import minpack
 from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
@@ -220,7 +221,7 @@ def radler_deconvolve_list(
     :return: component image_list
 
     """
-    import radler as rd  # pylint: disable=import-error
+    import radler as rd  # pylint: disable=import-error,import-outside-toplevel
 
     algorithm = kwargs.get("algorithm", "msclean")
     n_iterations = kwargs.get("niter", 500)
@@ -1175,8 +1176,6 @@ def fit_psf(psf: Image):
     z = psf["pixels"].data[0, 0, sl, sl]
 
     # isotropic at the moment!
-    from scipy.optimize import minpack
-
     try:
         p_init = models.Gaussian2D(
             amplitude=numpy.max(z), x_mean=numpy.mean(x), y_mean=numpy.mean(y)

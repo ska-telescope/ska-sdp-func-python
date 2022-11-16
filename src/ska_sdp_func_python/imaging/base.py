@@ -598,7 +598,7 @@ def advise_wide_field(
         # If pyfftw has been installed, next_fast_len
         # would return the len of best performance
         try:
-            import pyfftw
+            import pyfftw  # pylint: disable=import-outside-toplevel
 
             best = pyfftw.next_fast_len(n)
         except ImportError:

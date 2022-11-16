@@ -311,9 +311,8 @@ def dft_gpu_raw_kernel(direction_cosines, uvw_lambda, vfluxes):
     :param uvw_lambda: UVW in lambda [ntimes, nbaselines, nchan, 3]
     :return: Vis [ntimes, nbaselines, nchan, npol]
     """
-    # We try to import cupy, raise an exception if not installed
     try:
-        import cupy
+        import cupy  # pylint: disable=import-outside-toplevel
     except ModuleNotFoundError:
         "cupy is not installed - cannot run CUDA"
         raise ModuleNotFoundError("cupy is not installed - cannot run CUDA")
