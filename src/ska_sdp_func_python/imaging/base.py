@@ -77,7 +77,8 @@ def shift_vis_to_image(
     :param inverse: Do the inverse operation True|False
     :return: visibility with phase shift applied and phasecentre updated
     """
-    _, _, ny, nx = im["pixels"].data.shape
+    ny = im["pixels"].data.shape[2]
+    nx = im["pixels"].data.shape[3]
 
     # Convert the FFT definition of the phase center to world
     # coordinates (1 relative). This is the only place

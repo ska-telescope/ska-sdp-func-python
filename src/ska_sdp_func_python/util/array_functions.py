@@ -146,7 +146,8 @@ def insert_array(
                 insert_function_Sinc or insert_function_pswf
     :return: Image after insertion
     """
-    nchan, npol, _, _ = im.shape
+    nchan = im.shape[0]
+    npol = im.shape[1]
     intx = int(numpy.round(x))
     inty = int(numpy.round(y))
     fracx = x - intx

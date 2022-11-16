@@ -87,7 +87,9 @@ def spatial_mapping(griddata, u, v, w, cf=None):
             == griddata.griddata_acc.polarisation_frame
         )
 
-        _, _, nw, ndv, ndu, _, _ = cf.convolutionfunction_acc.shape
+        nw = cf.convolutionfunction_acc.shape[2]
+        ndv = cf.convolutionfunction_acc.shape[3]
+        ndu = cf.convolutionfunction_acc.shape[4]
 
         grid_wcs = griddata.griddata_acc.griddata_wcs
         cf_wcs = cf.convolutionfunction_acc.cf_wcs
@@ -276,7 +278,8 @@ def grid_visibility_weight_to_griddata(vis, griddata: GridData):
         == griddata.griddata_acc.polarisation_frame
     )
 
-    nchan, npol, _, _ = griddata.griddata_acc.shape
+    nchan = griddata.griddata_acc.shape[0]
+    npol = griddata.griddata_acc.shape[1]
     sumwt = numpy.zeros([nchan, npol])
 
     vis_to_im = numpy.round(

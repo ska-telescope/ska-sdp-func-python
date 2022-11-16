@@ -78,9 +78,9 @@ def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):
         str(psf.shape),
     )
     starttime = time.time()
-    aiter = 0
+    a_iter = 0
     for i in range(niter):
-        aiter = i + 1
+        a_iter = i + 1
         # pylint: disable=unbalanced-tuple-unpacking
         if window is not None:
             mx, my = numpy.unravel_index(
@@ -125,8 +125,8 @@ def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):
         dtime,
         str(dirty.shape),
         str(psf.shape),
-        aiter,
-        1000.0 * dtime / aiter,
+        a_iter,
+        1000.0 * dtime / a_iter,
     )
 
     return comps, res
@@ -397,9 +397,9 @@ def msclean(
         str(scales),
     )
     starttime = time.time()
-    aiter = 0
+    a_iter = 0
     for i in range(niter):
-        aiter = i + 1
+        a_iter = i + 1
         # Find peak over all smoothed images
         mx, my, mscale = find_max_abs_stack(
             res_scalestack, sensitivity, windowstack, coupling_matrix
@@ -461,8 +461,8 @@ def msclean(
         str(dirty.shape),
         str(psf.shape),
         str(scales),
-        aiter,
-        1000.0 * dtime / aiter,
+        a_iter,
+        1000.0 * dtime / a_iter,
     )
 
     return comps, pmax * res_scalestack[0, :, :]
@@ -814,7 +814,7 @@ def msmfsclean(
     scale_counts = numpy.zeros(nscales, dtype="int")
     scale_flux = numpy.zeros(nscales)
 
-    aiter = 0
+    a_iter = 0
     log.info(
         "mmclean %s: Timing for setup: %.3f (s) "
         "for dirty shape %s, PSF shape %s , scales %s, %d moments",
@@ -827,7 +827,7 @@ def msmfsclean(
     )
     starttime = time.time()
     for i in range(niter):
-        aiter = i + 1
+        a_iter = i + 1
 
         # Find the optimum scale and location.
         mscale, mx, my, mval = find_global_optimum(
@@ -889,8 +889,8 @@ def msmfsclean(
         str(psf.shape),
         str(scales),
         nmoment,
-        aiter,
-        1000.0 * dtime / aiter,
+        a_iter,
+        1000.0 * dtime / a_iter,
     )
 
     return m_model, pmax * smresidual[0, :, :, :]

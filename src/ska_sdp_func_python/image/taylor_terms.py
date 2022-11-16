@@ -248,7 +248,7 @@ def calculate_image_list_from_frequency_taylor_terms(
     :return: list of reconstructed images
     """
     nchan = len(im_list)
-    nmoment, _, _, _ = moment_image["pixels"].data.shape
+    nmoment = moment_image["pixels"].data.shape[0]
 
     frequency = numpy.array([d.frequency.data[0] for d in im_list])
 

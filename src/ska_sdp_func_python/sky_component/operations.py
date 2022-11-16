@@ -380,7 +380,8 @@ def apply_beam_to_skycomponent(
     if single:
         sc = [sc]
 
-    _, _, ny, nx = beam["pixels"].data.shape
+    ny = beam["pixels"].data.shape[2]
+    nx = beam["pixels"].data.shape[3]
 
     log.debug("apply_beam_to_skycomponent: Processing %d components", len(sc))
 
@@ -693,7 +694,8 @@ def restore_skycomponent(
     :return: Image
     """
 
-    nchan, npol, _, _ = im["pixels"].data.shape
+    nchan = im["pixels"].data.shape[0]
+    npol = im["pixels"].data.shape[1]
 
     if not isinstance(sc, collections.abc.Iterable):
         sc = [sc]
@@ -781,7 +783,8 @@ def voronoi_decomposition(im, comps):
     points = [(x_elem, y[i]) for i, x_elem in enumerate(x)]
     vor = Voronoi(points)
 
-    _, _, ny, nx = im["pixels"].data.shape
+    ny = im["pixels"].data.shape[2]
+    nx = im["pixels"].data.shape[3]
     vertex_image = numpy.zeros([ny, nx]).astype("int")
     for j in range(ny):
         for i in range(nx):

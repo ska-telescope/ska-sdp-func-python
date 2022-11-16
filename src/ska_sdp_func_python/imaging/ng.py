@@ -69,9 +69,9 @@ def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     vist = numpy.zeros([vnpol, vnchan, nbaselines * nrows], dtype="complex")
 
     # Get the image properties
-    m_nchan, m_npol, _, _ = model["pixels"].data.shape
-    # Check if the number of frequency channels matches in bvis and a model
-    #        assert (m_nchan == v_nchan)
+    m_nchan = model["pixels"].data.shape[0]
+    m_npol = model["pixels"].data.shape[1]
+
     assert m_npol == vnpol
 
     fuvw = copy.deepcopy(uvw)
@@ -200,10 +200,6 @@ def invert_ng(
     wgt = sbvis.visibility_acc.flagged_imaging_weight.astype("f8")
     wgt = wgt.reshape([nrows * nbaselines, vnchan, vnpol])
 
-    # if epsilon > 5.0e-6:
-    #     ms = ms.astype("c8")
-    #     wgt = wgt.astype("f4")
-
     # Find out the image size/resolution
     npixdirty = im["pixels"].data.shape[-1]
     pixsize = numpy.abs(numpy.radians(im.image_acc.wcs.wcs.cdelt[0]))
@@ -213,7 +209,8 @@ def invert_ng(
     fuvw[:, 0] *= -1.0
     fuvw[:, 2] *= -1.0
 
-    nchan, npol, _, _ = im["pixels"].data.shape
+    nchan = im["pixels"].data.shape[0]
+    npol = im["pixels"].data.shape[1]
     im["pixels"].data[...] = 0.0
     sumwt = numpy.zeros([nchan, npol])
 

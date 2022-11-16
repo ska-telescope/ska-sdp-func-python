@@ -64,8 +64,8 @@ def apply_gaintable(
             gain = gt["gain"].data[row]
             cgain = numpy.conjugate(gt["gain"].data[row])
 
-            # The shape of the mueller matrix is
-            nant, nchan, _, _ = gain.shape
+            nant = gain.shape[0]
+            nchan = gain.shape[1]
             baselines = vis.baselines.data
 
             # Try to ignore visibility flags in application of gains.

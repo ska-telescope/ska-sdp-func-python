@@ -73,7 +73,8 @@ def image_raster_iter(
     if im is None:
         return im
 
-    _, _, ny, nx = im["pixels"].data.shape
+    ny = im["pixels"].data.shape[2]
+    nx = im["pixels"].data.shape[3]
     assert facets <= ny, "Cannot have more raster elements than pixels"
     assert facets <= nx, "Cannot have more raster elements than pixels"
 
