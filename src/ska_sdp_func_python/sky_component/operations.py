@@ -3,24 +3,24 @@ Function to manage sky components.
 """
 
 __all__ = [
+    "apply_beam_to_skycomponent",
+    "apply_voltage_pattern_to_skycomponent",
     "filter_skycomponents_by_flux",
     "find_nearest_skycomponent",
     "find_nearest_skycomponent_index",
     "find_separation_skycomponents",
+    "find_skycomponents",
     "find_skycomponent_matches",
     "find_skycomponent_matches_atomic",
-    "find_skycomponents",
     "fit_skycomponent",
     "fit_skycomponent_spectral_index",
     "insert_skycomponent",
-    "voronoi_decomposition",
     "image_voronoi_iter",
     "partition_skycomponent_neighbours",
+    "remove_neighbouring_components",
     "select_components_by_separation",
     "select_neighbouring_components",
-    "remove_neighbouring_components",
-    "apply_beam_to_skycomponent",
-    "apply_voltage_pattern_to_skycomponent",
+    "voronoi_decomposition",
 ]
 
 import collections

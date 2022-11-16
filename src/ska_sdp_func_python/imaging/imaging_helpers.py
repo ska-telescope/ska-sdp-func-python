@@ -2,6 +2,13 @@
 Functions to aid operations on imaging results
 """
 
+__all__ = [
+    "remove_sumwt",
+    "sum_invert_results",
+    "sum_predict_results",
+    "threshold_list",
+]
+
 import logging
 
 import numpy

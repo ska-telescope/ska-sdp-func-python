@@ -1,5 +1,5 @@
 """
-Base simple visibility operations, placed here to avoid circular dependencies
+Base simple visibility operations, placed here to avoid circular dependencies.
 """
 
 __all__ = [

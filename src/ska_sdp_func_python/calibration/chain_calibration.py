@@ -79,7 +79,7 @@ log = logging.getLogger("func-python-logger")
 
 
 def create_calibration_controls():
-    """Create a dictionary containing default chanin calibration controls
+    """Create a dictionary containing default chain calibration controls
 
      The fields are
 
