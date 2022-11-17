@@ -101,37 +101,35 @@ def convert_stokes_to_polimage(
             wcs=im.image_acc.wcs,
             polarisation_frame=polarisation_frame,
         )
-    elif polarisation_frame == PolarisationFrame("linearnp"):
+    if polarisation_frame == PolarisationFrame("linearnp"):
         cimarr = convert_stokes_to_linear(im["pixels"].data)
         return Image.constructor(
             data=cimarr,
             wcs=im.image_acc.wcs,
             polarisation_frame=polarisation_frame,
         )
-    elif polarisation_frame == PolarisationFrame("circular"):
+    if polarisation_frame == PolarisationFrame("circular"):
         cimarr = convert_stokes_to_circular(im["pixels"].data)
         return Image.constructor(
             data=cimarr,
             wcs=im.image_acc.wcs,
             polarisation_frame=polarisation_frame,
         )
-    elif polarisation_frame == PolarisationFrame("circularnp"):
+    if polarisation_frame == PolarisationFrame("circularnp"):
         cimarr = convert_stokes_to_circular(im["pixels"].data)
         return Image.constructor(
             data=cimarr,
             wcs=im.image_acc.wcs,
             polarisation_frame=polarisation_frame,
         )
-    elif polarisation_frame == PolarisationFrame("stokesI"):
+    if polarisation_frame == PolarisationFrame("stokesI"):
         return Image.constructor(
             data=im["pixels"].data.astype("complex"),
             wcs=im.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesI"),
         )
-    else:
-        raise ValueError(
-            "Cannot convert stokes to %s" % (polarisation_frame.type)
-        )
+
+    raise ValueError(f"Cannot convert stokes to {polarisation_frame.type}")
 
 
 def convert_polimage_to_stokes(im: Image, complex_image=False):
@@ -155,8 +153,8 @@ def convert_polimage_to_stokes(im: Image, complex_image=False):
     def _to_required(data):
         if complex_image:
             return data
-        else:
-            return numpy.real(data)
+
+        return numpy.real(data)
 
     if im.image_acc.polarisation_frame == PolarisationFrame("linear"):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
@@ -165,35 +163,34 @@ def convert_polimage_to_stokes(im: Image, complex_image=False):
             wcs=im.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesIQUV"),
         )
-    elif im.image_acc.polarisation_frame == PolarisationFrame("linearnp"):
+    if im.image_acc.polarisation_frame == PolarisationFrame("linearnp"):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
         return Image.constructor(
             data=_to_required(cimarr),
             wcs=im.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesIQ"),
         )
-    elif im.image_acc.polarisation_frame == PolarisationFrame("circular"):
+    if im.image_acc.polarisation_frame == PolarisationFrame("circular"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
         return Image.constructor(
             data=_to_required(cimarr),
             wcs=im.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesIQUV"),
         )
-    elif im.image_acc.polarisation_frame == PolarisationFrame("circularnp"):
+    if im.image_acc.polarisation_frame == PolarisationFrame("circularnp"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
         return Image.constructor(
             data=_to_required(cimarr),
             wcs=im.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesIV"),
         )
-    elif im.image_acc.polarisation_frame == PolarisationFrame("stokesI"):
+    if im.image_acc.polarisation_frame == PolarisationFrame("stokesI"):
         return Image.constructor(
             data=_to_required(im["pixels"].data),
             wcs=im.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesI"),
         )
-    else:
-        raise ValueError(
-            "Cannot convert %s to stokes"
-            % (im.image_acc.polarisation_frame.type)
-        )
+
+    raise ValueError(
+        f"Cannot convert {im.image_acc.polarisation_frame.type} to stokes"
+    )

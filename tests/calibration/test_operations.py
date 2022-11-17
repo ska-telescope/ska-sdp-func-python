@@ -1,6 +1,5 @@
-# pylint: disable=duplicate-code
-""" Unit tests for calibration operations
-
+"""
+Unit tests for calibration operations
 """
 import logging
 

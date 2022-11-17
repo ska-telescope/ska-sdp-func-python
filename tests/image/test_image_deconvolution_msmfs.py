@@ -1,7 +1,5 @@
-# pylint: disable=duplicate-code
-"""Unit tests for image deconvolution vis MSMFS
-
-
+"""
+Unit tests for image deconvolution vis MSMFS
 """
 import logging
 
@@ -14,7 +12,6 @@ from ska_sdp_datamodels.configuration import (
     decimate_configuration,
 )
 from ska_sdp_datamodels.image.image_create import create_image
-from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
@@ -38,6 +35,8 @@ from ska_sdp_func_python.imaging.weighting import (
     weight_visibility,
 )
 
+# FIXME!
+# pylint: disable=missing-function-docstring
 pytest.skip(allow_module_level=True, reason="FixMe")
 # fix the below imports
 # from ska_sdp_func_python import create_pb
@@ -94,20 +93,12 @@ def deconvolution_msmfs_fixture():
     )
     vis = weight_visibility(vis, model)
     vis = taper_visibility_gaussian(vis, 0.002)
-    dirty, sumwt = invert_visibility(vis, model, context="2d")
-    psf, sumwt = invert_visibility(vis, model, context="2d", dopsf=True)
+    dirty, _ = invert_visibility(vis, model, context="2d")
+    psf, _ = invert_visibility(vis, model, context="2d", dopsf=True)
     dirty = image_scatter_channels(dirty)
     psf = image_scatter_channels(psf)
     window = numpy.ones(shape=model["pixels"].shape, dtype=bool)
     window[..., 65:192, 65:192] = True
-    innerquarter = Image.constructor(
-        window,
-        polarisation_frame=PolarisationFrame("stokesI"),
-        wcs=model.image_acc.wcs,
-    )
-    innerquarter = image_scatter_channels(innerquarter)
-    # sensitivity = create_pb(model, "LOW")
-    # sensitivity = image_scatter_channels(sensitivity)
     params = {
         "dirty": dirty,
         "niter": niter,
@@ -132,9 +123,6 @@ def test_deconvolve_mmclean_no_taylor(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     check_images(
-        "mmclean_no_taylor",
-        comp,
-        residual,
         cmodel,
         12.806085871833158,
         -0.14297206892008504,
@@ -158,9 +146,6 @@ def test_deconvolve_mmclean_no_taylor_edge(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     check_images(
-        "mmclean_no_taylor_edge",
-        comp,
-        residual,
         cmodel,
         12.806085871833158,
         -0.1429720689200851,
@@ -183,9 +168,6 @@ def test_deconvolve_mmclean_no_taylor_noscales(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     check_images(
-        "mmclean_notaylor_noscales",
-        comp,
-        residual,
         cmodel,
         12.874215203967717,
         -0.14419436344642067,
@@ -208,9 +190,6 @@ def test_deconvolve_mmclean_linear(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     check_images(
-        "mmclean_linear",
-        comp,
-        residual,
         cmodel,
         15.207396524333546,
         -0.14224980487729696,
@@ -234,9 +213,6 @@ def test_deconvolve_mmclean_linear_sensitivity(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     check_images(
-        "mmclean_linear_sensitivity",
-        comp,
-        residual,
         cmodel,
         15.207396524333546,
         -0.14224980487729716,
@@ -259,9 +235,6 @@ def test_deconvolve_mmclean_linear_noscales(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     check_images(
-        "mmclean_linear_noscales",
-        comp,
-        residual,
         cmodel,
         15.554039669750269,
         -0.14697685168807129,
@@ -284,9 +257,6 @@ def test_deconvolve_mmclean_quadratic(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     check_images(
-        "mmclean_quadratic",
-        comp,
-        residual,
         cmodel,
         15.302992891627193,
         -0.15373682171426403,
@@ -309,9 +279,6 @@ def test_deconvolve_mmclean_quadratic_noscales(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     check_images(
-        "mmclean_quadratic_noscales",
-        comp,
-        residual,
         cmodel,
         15.69172353540307,
         -0.1654330930047646,
@@ -319,10 +286,6 @@ def test_deconvolve_mmclean_quadratic_noscales(result_deconv_msmfs):
 
 
 def check_images(
-    result_deconv_msmfs,
-    tag,
-    comp,
-    residual,
     cmodel,
     flux_max=0.0,
     flux_min=0.0,
@@ -359,9 +322,6 @@ def test_deconvolve_mmclean_quadratic_psf_support(result_deconv_msmfs):
     )
     cmodel = restore_list(comp, result_deconv_msmfs["psf"], residual)
     check_images(
-        "mmclean_quadratic_psf",
-        comp,
-        residual,
         cmodel,
         15.322874439605584,
         -0.23892365313457908,

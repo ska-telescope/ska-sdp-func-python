@@ -1,5 +1,5 @@
-""" Unit tests for Jones matrix application
-
+"""
+Unit tests for Jones matrix application
 """
 
 import logging

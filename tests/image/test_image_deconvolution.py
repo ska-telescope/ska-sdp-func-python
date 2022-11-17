@@ -1,8 +1,6 @@
-# pylint: disable=duplicate-code
 # flake8: noqa: E203
-""" Unit tests for image deconvolution
-
-
+"""
+Unit tests for image deconvolution
 """
 import logging
 
@@ -98,6 +96,7 @@ def deconvolution_fixture():
 
 
 def overlap_test(a1, a2, s1, s2):
+    """Check overlaps"""
     a1[s1[0] : s1[1], s1[2] : s1[3]] = 1
     a2[s2[0] : s2[1], s2[2] : s2[3]] = 1
     return numpy.sum(a1) == numpy.sum(a2)
@@ -191,7 +190,7 @@ def test_fit_psf(input_param):
 
 def test_deconvolve_hogbom(input_params):
     """Unit tests for the deconvolve_cube function using hogbom"""
-    comp, residual = deconvolve_cube(
+    _, residual = deconvolve_cube(
         input_params["dirty"],
         input_params["psf"],
         niter=10000,
@@ -204,7 +203,7 @@ def test_deconvolve_hogbom(input_params):
 
 def test_deconvolve_msclean(input_params):
     """Unit tests for the deconvolve_cube function using msclean"""
-    comp, residual = deconvolve_cube(
+    _, residual = deconvolve_cube(
         input_params["dirty"],
         input_params["psf"],
         niter=1000,
@@ -218,7 +217,7 @@ def test_deconvolve_msclean(input_params):
 
 def test_deconvolve_msclean_1scale(input_params):
     """Unit tests for the deconvolve_cube function using msclean and scale 1"""
-    comp, residual = deconvolve_cube(
+    _, residual = deconvolve_cube(
         input_params["dirty"],
         input_params["psf"],
         niter=10000,
@@ -232,7 +231,7 @@ def test_deconvolve_msclean_1scale(input_params):
 
 def test_deconvolve_hogbom_no_edge(input_params):
     """Unit tests for the deconvolve_cube function using hogbom and no_edge"""
-    comp, residual = deconvolve_cube(
+    _, residual = deconvolve_cube(
         input_params["dirty"],
         input_params["psf"],
         window_shape="no_edge",
@@ -246,7 +245,7 @@ def test_deconvolve_hogbom_no_edge(input_params):
 
 def test_deconvolve_hogbom_inner_quarter(input_params):
     """Unit tests for the deconvolve_cube function using hogbom and quarter"""
-    comp, residual = deconvolve_cube(
+    _, residual = deconvolve_cube(
         input_params["dirty"],
         input_params["psf"],
         window_shape="quarter",
@@ -260,7 +259,7 @@ def test_deconvolve_hogbom_inner_quarter(input_params):
 
 def test_deconvolve_msclean_inner_quarter(input_params):
     """Unit tests for the deconvolve_cube function using msclean and quarter"""
-    comp, residual = deconvolve_cube(
+    _, residual = deconvolve_cube(
         input_params["dirty"],
         input_params["psf"],
         window_shape="quarter",
@@ -275,7 +274,7 @@ def test_deconvolve_msclean_inner_quarter(input_params):
 
 def test_deconvolve_hogbom_subpsf(input_params):
     """Unit tests for the deconvolve_cube function"""
-    comp, residual = deconvolve_cube(
+    _, residual = deconvolve_cube(
         input_params["dirty"],
         input_params["psf"],
         psf_support=200,
@@ -290,7 +289,7 @@ def test_deconvolve_hogbom_subpsf(input_params):
 
 def test_deconvolve_msclean_subpsf(input_params):
     """Unit tests for the deconvolve_cube function"""
-    comp, residual = deconvolve_cube(
+    _, residual = deconvolve_cube(
         input_params["dirty"],
         input_params["psf"],
         psf_support=200,

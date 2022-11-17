@@ -1,5 +1,5 @@
-""" Unit tests for image Taylor terms
-
+"""
+Unit tests for image Taylor terms
 """
 import logging
 

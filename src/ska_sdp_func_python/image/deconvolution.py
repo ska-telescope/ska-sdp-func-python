@@ -45,6 +45,7 @@ from typing import List
 import numpy
 from astropy.convolution import Gaussian2DKernel, convolve_fft
 from astropy.modeling import fitting, models
+from scipy.optimize import minpack
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
@@ -175,10 +176,10 @@ def deconvolve_list(
         )
     else:
         raise ValueError(
-            "deconvolve_cube %s: Unknown algorithm %s" % (prefix, algorithm)
+            f"deconvolve_cube {prefix}: Unknown algorithm {algorithm}"
         )
 
-    log.info("deconvolve_cube %s: Deconvolution finished" % (prefix))
+    log.info("deconvolve_cube %s: Deconvolution finished", prefix)
 
     return comp_image_list, residual_image_list
 
@@ -219,7 +220,7 @@ def radler_deconvolve_list(
     :return: component image_list
 
     """
-    import radler as rd  # pylint: disable=import-error
+    import radler as rd  # pylint: disable=import-error,import-outside-toplevel
 
     algorithm = kwargs.get("algorithm", "msclean")
     n_iterations = kwargs.get("niter", 500)
@@ -248,8 +249,7 @@ def radler_deconvolve_list(
         settings.algorithm_type = rd.AlgorithmType.generic_clean
     else:
         raise ValueError(
-            "imaging_deconvolve with radler: Unknown algorithm %s"
-            % (algorithm)
+            f"imaging_deconvolve with radler: Unknown algorithm {algorithm}"
         )
 
     comp_image_list = []
@@ -280,7 +280,6 @@ def radler_deconvolve_list(
             polarisation_frame=dirty.image_acc.polarisation_frame,
             clean_beam=dirty.attrs["clean_beam"],
         )
-
         x_im["pixels"].data = numpy.expand_dims(restored_radler, axis=(0, 1))
         comp_image_list.append(x_im)
 
@@ -320,20 +319,20 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
     :return: Numpy array
     """
     if window_shape is None:
-        log.info("deconvolve_cube %s: Cleaning entire image" % prefix)
+        log.info("deconvolve_cube %s: Cleaning entire image", prefix)
         return None
 
     windows = []
-    for channel, dirty in enumerate(dirty_list):
+    for _, dirty in enumerate(dirty_list):
         if window_shape == "quarter":
-            log.info("deconvolve_cube %s: window is inner quarter" % prefix)
+            log.info("deconvolve_cube %s: window is inner quarter", prefix)
             qx = dirty["pixels"].shape[3] // 4
             qy = dirty["pixels"].shape[2] // 4
             window_array = numpy.zeros_like(dirty["pixels"].data)
             window_array[..., (qy + 1) : 3 * qy, (qx + 1) : 3 * qx] = 1.0
             log.info(
-                "deconvolve_cube %s: Cleaning inner quarter of each sky plane"
-                % prefix
+                "deconvolve_cube %s: Cleaning inner quarter of each sky plane",
+                prefix,
             )
         elif window_shape == "no_edge":
             edge = kwargs.get("window_edge", 16)
@@ -345,19 +344,20 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
             ] = 1.0
             log.info(
                 "deconvolve_cube %s: Window omits "
-                "%d-pixel edge of each sky plane" % (prefix, edge)
+                "%d-pixel edge of each sky plane",
+                prefix,
+                edge,
             )
         else:
-            raise ValueError(
-                "Window shape %s is not recognized" % window_shape
-            )
+            raise ValueError(f"Window shape {window_shape} is not recognized")
 
         mask = kwargs.get("mask", None)
         if isinstance(mask, Image):
             if window_array is not None:
                 log.warning(
                     "deconvolve_cube %s: Overriding "
-                    "window_shape with mask image" % (prefix)
+                    "window_shape with mask image",
+                    prefix,
                 )
                 window_array = mask["pixels"].data
         if window_array is not None:
@@ -400,12 +400,14 @@ def bound_psf_list(dirty_list, prefix, psf_list, psf_support=None):
                 y=slice((centre[1] - psf_support), (centre[1] + psf_support)),
             )
             log.debug(
-                "deconvolve_cube %s: PSF support = +/- %d pixels"
-                % (prefix, psf_support)
+                "deconvolve_cube %s: PSF support = +/- %d pixels",
+                prefix,
+                psf_support,
             )
             log.debug(
-                "deconvolve_cube %s: PSF shape %s"
-                % (prefix, str(psf["pixels"].data.shape))
+                "deconvolve_cube %s: PSF shape %s",
+                prefix,
+                str(psf["pixels"].data.shape),
             )
         else:
             log.info("Using entire psf for dconvolution")
@@ -437,7 +439,7 @@ def complex_hogbom_kernel_list(
         "clean of each channel separately"
     )
 
-    fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
+    fracthresh, gain, niter, thresh, _ = common_arguments(**kwargs)
 
     comp_images = []
     residual_images = []
@@ -453,7 +455,9 @@ def complex_hogbom_kernel_list(
                 if psf["pixels"].data[0, pol, :, :].max():
                     log.info(
                         "complex_hogbom_kernel_list: "
-                        "Processing pol %d, channel %d" % (pol, channel)
+                        "Processing pol %d, channel %d",
+                        pol,
+                        channel,
                     )
                     if window is None:
                         (
@@ -484,13 +488,16 @@ def complex_hogbom_kernel_list(
                 else:
                     log.info(
                         "complex_hogbom_kernel_list: "
-                        "Skipping pol %d, channel %d" % (pol, channel)
+                        "Skipping pol %d, channel %d",
+                        pol,
+                        channel,
                     )
             if pol == 1:
                 if psf["pixels"].data[0, 1:2, :, :].max():
                     log.info(
                         "complex_hogbom_kernel_list: "
-                        "Processing pol 1 and 2, channel %d" % (channel)
+                        "Processing pol 1 and 2, channel %d",
+                        channel,
                     )
                     if window is None:
                         (
@@ -529,7 +536,8 @@ def complex_hogbom_kernel_list(
                 else:
                     log.info(
                         "complex_hogbom_kernel_list: "
-                        "Skipping pol 1 and 2, channel %d" % (channel)
+                        "Skipping pol 1 and 2, channel %d",
+                        channel,
                     )
                 if pol == 2:
                     continue
@@ -608,10 +616,11 @@ def hogbom_kernel_list(
 
     log.info(
         "hogbom_kernel_list %s: Starting Hogbom clean of "
-        "each polarisation and channel separately" % prefix
+        "each polarisation and channel separately",
+        prefix,
     )
 
-    fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
+    fracthresh, gain, niter, thresh, _ = common_arguments(**kwargs)
 
     comp_images = []
     residual_images = []
@@ -623,8 +632,10 @@ def hogbom_kernel_list(
         for pol in range(dirty["pixels"].data.shape[1]):
             if psf["pixels"].data[0, pol, :, :].max():
                 log.info(
-                    "hogbom_kernel_list %s: Processing pol %d, channel %d"
-                    % (prefix, pol, channel)
+                    "hogbom_kernel_list %s: Processing pol %d, channel %d",
+                    prefix,
+                    pol,
+                    channel,
                 )
                 if window_list is None or window_list[channel] is None:
                     (
@@ -656,8 +667,10 @@ def hogbom_kernel_list(
                     )
             else:
                 log.info(
-                    "hogbom_kernel_list %s: Skipping pol %d, channel %d"
-                    % (prefix, pol, channel)
+                    "hogbom_kernel_list %s: Skipping pol %d, channel %d",
+                    prefix,
+                    pol,
+                    channel,
                 )
         comp_image = Image.constructor(
             comp_array,
@@ -718,7 +731,8 @@ def mmclean_kernel_list(
     log.info(
         "mmclean_kernel_list %s: "
         "Starting Multi-scale multi-frequency clean "
-        "of each polarisation separately" % prefix
+        "of each polarisation separately",
+        prefix,
     )
     nmoment = kwargs.get("nmoment", 3)
 
@@ -730,8 +744,8 @@ def mmclean_kernel_list(
     nchan = len(dirty_list)
     if not nchan > 2 * (nmoment - 1):
         raise ValueError(
-            "Requires nchan %d > 2 * (nmoment %d - 1)"
-            % (nchan, 2 * (nmoment - 1))
+            f"Requires `nchan > 2 * (nmoment - 1)` "
+            f"({nchan} > {2 * (nmoment - 1)})"
         )
     dirty_taylor = calculate_image_list_frequency_moments(
         dirty_list, nmoment=nmoment
@@ -767,12 +781,14 @@ def mmclean_kernel_list(
     dirty_taylor["pixels"].data /= psf_peak
     psf_taylor["pixels"].data /= psf_peak
     log.info(
-        "mmclean_kernel_list %s: Shape of Dirty moments image %s"
-        % (prefix, str(dirty_taylor["pixels"].shape))
+        "mmclean_kernel_list %s: Shape of Dirty moments image %s",
+        prefix,
+        str(dirty_taylor["pixels"].shape),
     )
     log.info(
-        "mmclean_kernel_list %s: Shape of PSF moments image %s"
-        % (prefix, str(psf_taylor["pixels"].shape))
+        "mmclean_kernel_list %s: Shape of PSF moments image %s",
+        prefix,
+        str(psf_taylor["pixels"].shape),
     )
 
     fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
@@ -791,9 +807,7 @@ def mmclean_kernel_list(
             sens = None
         # Always use the moment 0, Stokes I PSF
         if psf_taylor["pixels"].data[0, 0, :, :].max():
-            log.info(
-                "mmclean_kernel_list %s: Processing pol %d" % (prefix, pol)
-            )
+            log.info("mmclean_kernel_list %s: Processing pol %d", prefix, pol)
             if window_taylor is None:
                 (
                     comp_array[:, pol, :, :],
@@ -813,11 +827,9 @@ def mmclean_kernel_list(
                 )
             else:
                 log.info(
-                    "deconvolve_cube %s: Clean window has %d valid pixels"
-                    % (
-                        prefix,
-                        int(numpy.sum(window_taylor["pixels"].data[0, pol])),
-                    )
+                    "deconvolve_cube %s: Clean window has %d valid pixels",
+                    prefix,
+                    int(numpy.sum(window_taylor["pixels"].data[0, pol])),
                 )
                 (
                     comp_array[:, pol, :, :],
@@ -836,7 +848,7 @@ def mmclean_kernel_list(
                     prefix,
                 )
         else:
-            log.info("deconvolve_cube %s: Skipping pol %d" % (prefix, pol))
+            log.info("deconvolve_cube %s: Skipping pol %d", prefix, pol)
     comp_taylor = Image.constructor(
         comp_array,
         dirty_taylor.image_acc.polarisation_frame,
@@ -849,7 +861,8 @@ def mmclean_kernel_list(
     )
     log.info(
         "mmclean_kernel_list %s: calculating spectral "
-        "image lists from frequency moment images" % prefix
+        "image lists from frequency moment images",
+        prefix,
     )
     comp_list = calculate_image_list_from_frequency_taylor_terms(
         dirty_list, comp_taylor
@@ -897,7 +910,8 @@ def msclean_kernel_list(
     log.info(
         "msclean_kernel_list %s: "
         "Starting Multi-scale clean of each "
-        "polarisation and channel separately" % prefix
+        "polarisation and channel separately",
+        prefix,
     )
 
     fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
@@ -921,8 +935,10 @@ def msclean_kernel_list(
                 sens = None
             if psf["pixels"].data[0, pol, :, :].max():
                 log.info(
-                    "msclean_kernel_list %s: Processing pol %d, channel %d"
-                    % (prefix, pol, channel)
+                    "msclean_kernel_list %s: Processing pol %d, channel %d",
+                    prefix,
+                    pol,
+                    channel,
                 )
                 if window_list is None or window_list[channel] is None:
                     (
@@ -958,8 +974,10 @@ def msclean_kernel_list(
                     )
             else:
                 log.info(
-                    "msclean_kernel_list %s: Skipping pol %d, channel %d"
-                    % (prefix, pol, channel)
+                    "msclean_kernel_list %s: Skipping pol %d, channel %d",
+                    prefix,
+                    pol,
+                    channel,
                 )
         comp_image = Image.constructor(
             comp_array,
@@ -1018,7 +1036,8 @@ def restore_list(
                 clean_beam = fit_psf(psf)
                 log.info(
                     "restore_list: Using fitted clean beam "
-                    "(deg, deg, deg) = {}".format(clean_beam)
+                    "(deg, deg, deg) = %s",
+                    clean_beam,
                 )
             else:
                 raise ValueError(
@@ -1027,23 +1046,20 @@ def restore_list(
                 )
         else:
             log.info(
-                "restore_list: Using clean beam  (deg, deg, deg) = {}".format(
-                    (
-                        clean_beam["bmaj"],
-                        clean_beam["bmin"],
-                        clean_beam["bpa"],
-                    )
-                )
+                "restore_list: Using clean beam (deg, deg, deg) = %s",
+                (
+                    clean_beam["bmaj"],
+                    clean_beam["bmin"],
+                    clean_beam["bpa"],
+                ),
             )
             log.info(
-                "restore_list: Using clean beam  "
-                "(arsec, arcsec, deg) = {}".format(
-                    (
-                        3600.0 * clean_beam["bmaj"],
-                        3600.0 * clean_beam["bmin"],
-                        clean_beam["bpa"],
-                    )
-                )
+                "restore_list: Using clean beam (arsec, arcsec, deg) = %s",
+                (
+                    3600.0 * clean_beam["bmaj"],
+                    3600.0 * clean_beam["bmin"],
+                    clean_beam["bpa"],
+                ),
             )
 
         beam_pixels = convert_clean_beam_to_pixels(model, clean_beam)
@@ -1162,8 +1178,6 @@ def fit_psf(psf: Image):
     z = psf["pixels"].data[0, 0, sl, sl]
 
     # isotropic at the moment!
-    from scipy.optimize import minpack
-
     try:
         p_init = models.Gaussian2D(
             amplitude=numpy.max(z), x_mean=numpy.mean(x), y_mean=numpy.mean(y)

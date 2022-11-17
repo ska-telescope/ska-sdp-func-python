@@ -14,6 +14,8 @@ __all__ = [
 
 import numpy
 
+from ska_sdp_func_python.fourier_transforms.fft_coordinates import grdsf
+
 
 def average_chunks(arr, wts, chunksize):
     """Average the array arr with weights by chunks
@@ -126,9 +128,6 @@ def insert_function_pswf(x, a=5):
     :param a: width
     :return: 1d vector
     """
-
-    from ska_sdp_func_python.fourier_transforms.fft_coordinates import grdsf
-
     return grdsf(abs(x) / a)[1]
 
 
@@ -147,7 +146,8 @@ def insert_array(
                 insert_function_Sinc or insert_function_pswf
     :return: Image after insertion
     """
-    nchan, npol, ny, nx = im.shape
+    nchan = im.shape[0]
+    npol = im.shape[1]
     intx = int(numpy.round(x))
     inty = int(numpy.round(y))
     fracx = x - intx

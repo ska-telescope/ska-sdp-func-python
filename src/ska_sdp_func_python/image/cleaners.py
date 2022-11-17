@@ -49,15 +49,18 @@ def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):
     assert niter > 0
 
     log.info(
-        "hogbom %s Max abs in dirty image = %.6f Jy/beam"
-        % (prefix, numpy.max(numpy.abs(dirty)))
+        "hogbom %s Max abs in dirty image = %.6f Jy/beam",
+        prefix,
+        numpy.max(numpy.abs(dirty)),
     )
     absolutethresh = max(thresh, fracthresh * numpy.fabs(dirty).max())
-    log.info("hogbom %s Start of minor cycle" % prefix)
+    log.info("hogbom %s Start of minor cycle", prefix)
     log.info(
         "hogbom %s This minor cycle will stop at "
-        "%d iterations or peak < %.6f (Jy/beam)"
-        % (prefix, niter, absolutethresh)
+        "%d iterations or peak < %.6f (Jy/beam)",
+        prefix,
+        niter,
+        absolutethresh,
     )
 
     comps = numpy.zeros(dirty.shape)
@@ -68,13 +71,17 @@ def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):
     )
     log.info(
         "hogbom %s: Timing for setup: %.3f (s) for "
-        "dirty shape %s, PSF shape %s"
-        % (prefix, time.time() - starttime, str(dirty.shape), str(psf.shape))
+        "dirty shape %s, PSF shape %s",
+        prefix,
+        time.time() - starttime,
+        str(dirty.shape),
+        str(psf.shape),
     )
     starttime = time.time()
-    aiter = 0
+    a_iter = 0
     for i in range(niter):
-        aiter = i + 1
+        a_iter = i + 1
+        # pylint: disable=unbalanced-tuple-unpacking
         if window is not None:
             mx, my = numpy.unravel_index(
                 (numpy.fabs(res * window)).argmax(), dirty.shape
@@ -88,32 +95,38 @@ def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):
         a1o, a2o = overlapIndices(dirty, psf, mx, my)
         if niter < 10 or i % (niter // 10) == 0:
             log.info(
-                "hogbom %s Minor cycle %d, peak %s at [%s, %s]"
-                % (prefix, i, res[mx, my], mx, my)
+                "hogbom %s Minor cycle %d, peak %s at [%s, %s]",
+                prefix,
+                i,
+                res[mx, my],
+                mx,
+                my,
             )
         res[a1o[0] : a1o[1], a1o[2] : a1o[3]] -= (
             psf[a2o[0] : a2o[1], a2o[2] : a2o[3]] * mval
         )
         if numpy.abs(res[mx, my]) < 0.9 * absolutethresh:
             log.info(
-                "hogbom %s Stopped at iteration %d, peak %s at [%s, %s]"
-                % (prefix, i, res[mx, my], mx, my)
+                "hogbom %s Stopped at iteration %d, peak %s at [%s, %s]",
+                prefix,
+                i,
+                res[mx, my],
+                mx,
+                my,
             )
             break
-    log.info("hogbom %s End of minor cycle" % prefix)
+    log.info("hogbom %s End of minor cycle", prefix)
 
     dtime = time.time() - starttime
     log.info(
         "%s Timing for clean: %.3f (s) for dirty %s, PSF %s , "
-        "%d iterations, time per clean %.3f (ms)"
-        % (
-            prefix,
-            dtime,
-            str(dirty.shape),
-            str(psf.shape),
-            aiter,
-            1000.0 * dtime / aiter,
-        )
+        "%d iterations, time per clean %.3f (ms)",
+        prefix,
+        dtime,
+        str(dirty.shape),
+        str(psf.shape),
+        a_iter,
+        1000.0 * dtime / a_iter,
     )
 
     return comps, res
@@ -157,16 +170,17 @@ def hogbom_complex(
     dirty_complex = dirty_q + 1j * dirty_u
 
     log.info(
-        "hogbom_mod: Max abs in dirty image = %.6f"
-        % numpy.max(numpy.abs(dirty_complex))
+        "hogbom_mod: Max abs in dirty image = %.6f",
+        numpy.max(numpy.abs(dirty_complex)),
     )
     absolutethresh = max(
         thresh, fracthresh * numpy.absolute(dirty_complex).max()
     )
     log.info("hogbom_mod: Start of minor cycle")
     log.info(
-        "hogbom_mod: This minor cycle will stop at %d iterations or peak < %s"
-        % (niter, absolutethresh)
+        "hogbom_mod: This minor cycle will stop at %d iterations or peak < %s",
+        niter,
+        absolutethresh,
     )
 
     comps = numpy.zeros(dirty_complex.shape, dtype="complex128")
@@ -177,9 +191,10 @@ def hogbom_complex(
     pmax = psf_q.max()
     assert pmax > 0.0
     log.info(
-        "hogbom: Max abs in dirty Image = %.6f" % numpy.absolute(res).max()
+        "hogbom: Max abs in dirty Image = %.6f", numpy.absolute(res).max()
     )
     for i in range(niter):
+        # pylint: disable=unbalanced-tuple-unpacking
         if window is not None:
             mx, my = numpy.unravel_index(
                 (numpy.absolute(res * window)).argmax(), dirty_complex.shape
@@ -193,16 +208,22 @@ def hogbom_complex(
         a1o, a2o = overlapIndices(dirty_complex, psf_q, mx, my)
         if niter < 10 or i % (niter // 10) == 0:
             log.info(
-                "hogbom: Minor cycle %d, peak %s at [%s, %s]"
-                % (i, res[mx, my], mx, my)
+                "hogbom: Minor cycle %d, peak %s at [%s, %s]",
+                i,
+                res[mx, my],
+                mx,
+                my,
             )
         res[a1o[0] : a1o[1], a1o[2] : a1o[3]] -= (
             psf_q[a2o[0] : a2o[1], a2o[2] : a2o[3]] * mval
         )
         if numpy.abs(res[mx, my]) < absolutethresh:
             log.info(
-                "hogbom: Stopped at iteration %d, peak %s at [%s, %s]"
-                % (i, res[mx, my], mx, my)
+                "hogbom: Stopped at iteration %d, peak %s at [%s, %s]",
+                i,
+                res[mx, my],
+                mx,
+                my,
             )
             break
     log.info("hogbom: End of minor cycle")
@@ -304,12 +325,11 @@ def msclean(
 
     # Rescale to unit peak PSF. We undo this at the end of iteration
     psfpeak = argmax(numpy.fabs(psf))
-    log.info("msclean %s: Peak of PSF = %s at %s" % (prefix, pmax, psfpeak))
+    log.info("msclean %s: Peak of PSF = %s at %s", prefix, pmax, psfpeak)
     dmax = dirty.max()
     dpeak = argmax(dirty)
     log.info(
-        "msclean %s: Peak of Dirty = %.6f Jy/beam at %s "
-        % (prefix, dmax, dpeak)
+        "msclean %s: Peak of Dirty = %.6f Jy/beam at %s ", prefix, dmax, dpeak
     )
     lpsf = psf / pmax
     ldirty = dirty / pmax
@@ -338,7 +358,7 @@ def msclean(
             coupling_matrix[iscale, iscale1] = numpy.max(
                 psf_scalescalestack[iscale, iscale1, :, :]
             )
-    log.info("msclean %s: Coupling matrix =\n %s" % (prefix, coupling_matrix))
+    log.info("msclean %s: Coupling matrix =\n %s", prefix, coupling_matrix)
 
     # The window is scale dependent - we form it by smoothing and thresholding
     # the input window. This prevents components being placed too close to the
@@ -355,30 +375,31 @@ def msclean(
 
     maxabs = numpy.max(numpy.abs(res_scalestack[0, :, :]))
     log.info(
-        "msclean %s: Max abs in dirty Image = %.6f Jy/beam" % (prefix, maxabs)
+        "msclean %s: Max abs in dirty Image = %.6f Jy/beam", prefix, maxabs
     )
     absolutethresh = max(thresh, fracthresh * maxabs)
-    log.info("msclean %s: Start of minor cycle" % prefix)
+    log.info("msclean %s: Start of minor cycle", prefix)
     log.info(
         "msclean %s: This minor cycle will stop at %d "
-        "iterations or peak < %.6f (Jy/beam)" % (prefix, niter, absolutethresh)
+        "iterations or peak < %.6f (Jy/beam)",
+        prefix,
+        niter,
+        absolutethresh,
     )
 
     log.info(
         "msclean %s: Timing for setup: %.3f (s) for dirty "
-        "shape %s, PSF shape %s , scales %s"
-        % (
-            prefix,
-            time.time() - starttime,
-            str(dirty.shape),
-            str(psf.shape),
-            str(scales),
-        )
+        "shape %s, PSF shape %s , scales %s",
+        prefix,
+        time.time() - starttime,
+        str(dirty.shape),
+        str(psf.shape),
+        str(scales),
     )
     starttime = time.time()
-    aiter = 0
+    a_iter = 0
     for i in range(niter):
-        aiter = i + 1
+        a_iter = i + 1
         # Find peak over all smoothed images
         mx, my, mscale = find_max_abs_stack(
             res_scalestack, sensitivity, windowstack, coupling_matrix
@@ -387,16 +408,24 @@ def msclean(
         mval = res_scalestack[mscale, mx, my] / coupling_matrix[mscale, mscale]
         if niter < 10 or i % (niter // 10) == 0:
             log.info(
-                "msclean %s: Minor cycle %d, peak %s at [%d, %d, %d]"
-                % (prefix, i, res_scalestack[:, mx, my], mx, my, mscale)
+                "msclean %s: Minor cycle %d, peak %s at [%d, %d, %d]",
+                prefix,
+                i,
+                res_scalestack[:, mx, my],
+                mx,
+                my,
+                mscale,
             )
         maxabs = numpy.max(numpy.abs((res_scalestack[mscale, mx, my])))
 
         if maxabs < 0.9 * absolutethresh:
             log.info(
                 "msclean %s: At iteration %d, "
-                "absolute value of peak %.6f is below stopping threshold %.6f"
-                % (prefix, i, maxabs, absolutethresh)
+                "absolute value of peak %.6f is below stopping threshold %.6f",
+                prefix,
+                i,
+                maxabs,
+                absolutethresh,
             )
             break
 
@@ -420,22 +449,20 @@ def msclean(
         else:
             break
 
-    log.info("msclean %s: End of minor cycle" % prefix)
+    log.info("msclean %s: End of minor cycle", prefix)
 
     dtime = time.time() - starttime
     log.info(
         "msclean %s: Timing for clean: %.3f (s) for "
         "dirty shape %s, PSF shape %s , scales %s, %d iterations, "
-        "time per clean %.3f (ms)"
-        % (
-            prefix,
-            dtime,
-            str(dirty.shape),
-            str(psf.shape),
-            str(scales),
-            aiter,
-            1000.0 * dtime / aiter,
-        )
+        "time per clean %.3f (ms)",
+        prefix,
+        dtime,
+        str(dirty.shape),
+        str(psf.shape),
+        str(scales),
+        a_iter,
+        1000.0 * dtime / a_iter,
     )
 
     return comps, pmax * res_scalestack[0, :, :]
@@ -560,6 +587,7 @@ def find_max_abs_stack(stack, sensitivity, windowstack, couplingmatrix):
         else:
             resid = stack[iscale, :, :] / couplingmatrix[iscale, iscale]
 
+        # pylint: disable=unbalanced-tuple-unpacking
         if sensitivity is not None:
             resid *= sensitivity
             mx, my = numpy.unravel_index(
@@ -713,18 +741,20 @@ def msmfsclean(
 
     psfpeak = argmax(numpy.fabs(psf[0]))
     log.info(
-        "mmclean %s: Peak of PSF moment0 = %s at %s" % (prefix, pmax, psfpeak)
+        "mmclean %s: Peak of PSF moment0 = %s at %s", prefix, pmax, psfpeak
     )
     dmax = numpy.abs(dirty[0]).max()
     dpeak = argmax(numpy.abs(dirty[0]))
     log.info(
-        "mmclean %s: Peak of Dirty moment0 = %.6f Jy/beam at %s "
-        % (prefix, dmax, dpeak)
+        "mmclean %s: Peak of Dirty moment0 = %.6f Jy/beam at %s ",
+        prefix,
+        dmax,
+        dpeak,
     )
     lpsf = psf / pmax
     ldirty = dirty / pmax
 
-    nmoment, ny, nx = dirty.shape
+    nmoment = dirty.shape[0]
     if nmoment > 1:
         assert psf.shape[0] == 2 * nmoment
 
@@ -748,8 +778,10 @@ def msmfsclean(
 
     for scale in range(nscales):
         log.debug(
-            "mmclean %s: Moment-moment coupling matrix[scale %d] =\n %s"
-            % (prefix, scale, hsmmpsf[scale])
+            "mmclean %s: Moment-moment coupling matrix[scale %d] =\n %s",
+            prefix,
+            scale,
+            hsmmpsf[scale],
         )
 
     # The window is scale dependent - we form it by smoothing and thresholding
@@ -764,37 +796,38 @@ def msmfsclean(
 
     maxabs = numpy.max(numpy.abs((smresidual[0, 0, :, :])))
     log.info(
-        "mmclean %s: Max abs in dirty Image moment0 = %.6f Jy/beam"
-        % (prefix, maxabs)
+        "mmclean %s: Max abs in dirty Image moment0 = %.6f Jy/beam",
+        prefix,
+        maxabs,
     )
     absolutethresh = max(thresh, fracthresh * maxabs)
-    log.info("mmclean %s: Start of minor cycle" % prefix)
+    log.info("mmclean %s: Start of minor cycle", prefix)
     log.info(
         "mmclean %s: This minor cycle "
-        "will stop at %d iterations or peak < %.6f (Jy/beam)"
-        % (prefix, niter, absolutethresh)
+        "will stop at %d iterations or peak < %.6f (Jy/beam)",
+        prefix,
+        niter,
+        absolutethresh,
     )
 
     # Start iterations
     scale_counts = numpy.zeros(nscales, dtype="int")
     scale_flux = numpy.zeros(nscales)
 
-    aiter = 0
+    a_iter = 0
     log.info(
         "mmclean %s: Timing for setup: %.3f (s) "
-        "for dirty shape %s, PSF shape %s , scales %s, %d moments"
-        % (
-            prefix,
-            time.time() - starttime,
-            str(dirty.shape),
-            str(psf.shape),
-            str(scales),
-            nmoment,
-        )
+        "for dirty shape %s, PSF shape %s , scales %s, %d moments",
+        prefix,
+        time.time() - starttime,
+        str(dirty.shape),
+        str(psf.shape),
+        str(scales),
+        nmoment,
     )
     starttime = time.time()
     for i in range(niter):
-        aiter = i + 1
+        a_iter = i + 1
 
         # Find the optimum scale and location.
         mscale, mx, my, mval = find_global_optimum(
@@ -806,8 +839,13 @@ def msmfsclean(
         # Report on progress
         if niter < 10 or i % (niter // 10) == 0:
             log.info(
-                "mmclean %s: Minor cycle %d, peak %s at [%d, %d, %d]"
-                % (prefix, i, mval, mx, my, mscale)
+                "mmclean %s: Minor cycle %d, peak %s at [%d, %d, %d]",
+                prefix,
+                i,
+                mval,
+                mx,
+                my,
+                mscale,
             )
 
         # Are we ready to stop yet?
@@ -815,8 +853,11 @@ def msmfsclean(
         if peak < absolutethresh:
             log.info(
                 "mmclean %s: At iteration %d, absolute value of "
-                "peak moment0 %.6f is below stopping threshold %.6f"
-                % (prefix, i, peak, absolutethresh)
+                "peak moment0 %.6f is below stopping threshold %.6f",
+                prefix,
+                i,
+                peak,
+                absolutethresh,
             )
             break
 
@@ -832,26 +873,24 @@ def msmfsclean(
             smresidual, ssmmpsf, lhs, rhs, gain, mscale, mval
         )
 
-    log.info("mmclean %s: End of minor cycles" % prefix)
+    log.info("mmclean %s: End of minor cycles", prefix)
 
-    log.info("mmclean %s: Scale counts %s" % (prefix, scale_counts))
-    log.info("mmclean %s: Scale flux %s" % (prefix, scale_flux))
+    log.info("mmclean %s: Scale counts %s", prefix, scale_counts)
+    log.info("mmclean %s: Scale flux %s", prefix, scale_flux)
 
     dtime = time.time() - starttime
     log.info(
         "mmclean %s: Timing for clean: %.3f (s) for "
         "dirty shape %s, PSF shape %s , scales %s, %d moments, "
-        "%d iterations, time per clean %.3f (ms)"
-        % (
-            prefix,
-            dtime,
-            str(dirty.shape),
-            str(psf.shape),
-            str(scales),
-            nmoment,
-            aiter,
-            1000.0 * dtime / aiter,
-        )
+        "%d iterations, time per clean %.3f (ms)",
+        prefix,
+        dtime,
+        str(dirty.shape),
+        str(psf.shape),
+        str(scales),
+        nmoment,
+        a_iter,
+        1000.0 * dtime / a_iter,
     )
 
     return m_model, pmax * smresidual[0, :, :, :]
@@ -951,7 +990,6 @@ def update_scale_moment_residual(
     :return: Updated residuals
     """
     # Lines 30 - 32 of Algorithm 1.
-    nscales, nmoment, _, _ = smresidual.shape
     smresidual[:, :, lhs[0] : lhs[1], lhs[2] : lhs[3]] -= gain * numpy.einsum(
         "stqxy,q->stxy",
         ssmmpsf[mscale, :, :, :, rhs[0] : rhs[1], rhs[2] : rhs[3]],
@@ -1089,7 +1127,7 @@ def find_optimum_scale_zero_moment(smpsol, sensitivity, windowstack):
     :param smpsol: Decoupled residual images for each scale and moment
     :return: x, y, optimum scale for peak
     """
-    nscales, nmoment, nx, ny = smpsol.shape
+    nscales = smpsol.shape[0]
     sscale = 0
     sx = 0
     sy = 0
@@ -1109,6 +1147,7 @@ def find_optimum_scale_zero_moment(smpsol, sensitivity, windowstack):
         if this_max > optimum:
             optimum = this_max
             sscale = scale
+            # pylint: disable=unbalanced-tuple-unpacking
             sx, sy = argmax(numpy.abs(smpsol[scale, 0, ...]))
 
     return sx, sy, sscale

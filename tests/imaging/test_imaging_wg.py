@@ -1,6 +1,6 @@
 # pylint: skip-file
-""" Unit tests for imaging using nifty gridder
-
+"""
+Unit tests for imaging using nifty gridder
 """
 import logging
 import os

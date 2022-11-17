@@ -27,6 +27,7 @@ import collections
 import copy
 import logging
 import warnings
+from itertools import compress
 from typing import List, Union
 
 import astropy.units as u
@@ -39,7 +40,7 @@ from astropy.wcs.utils import pixel_to_skycoord, skycoord_to_pixel
 from photutils import segmentation
 from scipy import interpolate
 from scipy.optimize import minpack
-from scipy.spatial import Voronoi
+from scipy.spatial import Voronoi  # pylint: disable=no-name-in-module
 from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_functions import (
@@ -48,8 +49,6 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-
-# Fix imports below
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
 from ska_sdp_func_python.calibration.jones import apply_jones
@@ -77,7 +76,7 @@ def find_nearest_skycomponent_index(home, comps) -> int:
         ra=[c.direction.ra for c in comps],
         dec=[c.direction.dec for c in comps],
     )
-    idx, dist2d, dist3d = match_coordinates_sky(home, catalog)
+    idx, _, _ = match_coordinates_sky(home, catalog)
     return idx
 
 
@@ -114,19 +113,18 @@ def find_separation_skycomponents(comps_test, comps_ref=None):
                 distances[j, i] = distances[i, j]
         return distances
 
-    else:
-        ncomps_ref = len(comps_ref)
-        ncomps_test = len(comps_test)
-        separations = numpy.zeros([ncomps_ref, ncomps_test])
-        for ref in range(ncomps_ref):
-            for test in range(ncomps_test):
-                separations[ref, test] = (
-                    comps_test[test]
-                    .direction.separation(comps_ref[ref].direction)
-                    .rad
-                )
+    ncomps_ref = len(comps_ref)
+    ncomps_test = len(comps_test)
+    separations = numpy.zeros([ncomps_ref, ncomps_test])
+    for ref in range(ncomps_ref):
+        for test in range(ncomps_test):
+            separations[ref, test] = (
+                comps_test[test]
+                .direction.separation(comps_ref[ref].direction)
+                .rad
+            )
 
-        return separations
+    return separations
 
 
 def find_skycomponent_matches_atomic(comps_test, comps_ref, tol=1e-7):
@@ -144,7 +142,7 @@ def find_skycomponent_matches_atomic(comps_test, comps_ref, tol=1e-7):
     """
     separations = find_separation_skycomponents(comps_test, comps_ref)
     matches = []
-    for test, comp_test in enumerate(comps_test):
+    for test, _ in enumerate(comps_test):
         best = numpy.argmin(separations[:, test])
         best_sep = separations[best, test]
         if best_sep < tol:
@@ -173,9 +171,9 @@ def find_skycomponent_matches(comps_test, comps_ref, tol=1e-7):
         ra=[c.direction.ra for c in comps_ref],
         dec=[c.direction.dec for c in comps_ref],
     )
-    idx, dist2d, dist3d = match_coordinates_sky(catalog_test, catalog_ref)
-    matches = list()
-    for test, comp_test in enumerate(comps_test):
+    idx, dist2d, _ = match_coordinates_sky(catalog_test, catalog_ref)
+    matches = []
+    for test, _ in enumerate(comps_test):
         best = idx[test]
         best_sep = dist2d[test].rad
         if best_sep < tol:
@@ -195,7 +193,7 @@ def select_components_by_separation(
     :param rmax: maximum range
     :return: selected SkyComponents
     """
-    selected = list()
+    selected = []
     for comp in comps:
         thissep = comp.direction.separation(home).rad
         if rmin <= thissep <= rmax:
@@ -220,9 +218,7 @@ def select_neighbouring_components(comps, target_comps):
         [c.direction.dec.rad for c in comps] * u.rad,
     )
 
-    from astropy.coordinates import match_coordinates_sky
-
-    idx, d2d, d3d = match_coordinates_sky(all_catalog, target_catalog)
+    idx, d2d, _ = match_coordinates_sky(all_catalog, target_catalog)
     return idx, d2d
 
 
@@ -248,8 +244,6 @@ def remove_neighbouring_components(comps, distance):
                             ok[i] = False
                         break
 
-    from itertools import compress
-
     idx = list(compress(list(range(ncomps)), ok))
     comps_sel = list(compress(comps, ok))
     return idx, comps_sel
@@ -267,8 +261,6 @@ def find_skycomponents(
     :param npixels: Number of connected pixels required
     :return: List of SkyComponents
     """
-
-    # assert isinstance(im, Image)
     log.debug(
         "find_skycomponents: Finding components in Image by segmentation"
     )
@@ -297,7 +289,7 @@ def find_skycomponents(
     if segments is None:
         raise ValueError("find_skycomponents: Failed to find any components")
 
-    log.info("find_skycomponents: Identified %d segments" % segments.nlabels)
+    log.info("find_skycomponents: Identified %d segments", segments.nlabels)
 
     comp_catalog = [
         [
@@ -313,10 +305,7 @@ def find_skycomponents(
 
     def comp_prop(comp, prop_name):
         return [
-            [
-                comp_catalog[chan][pol][comp].__getattribute__(prop_name)
-                for pol in [0]
-            ]
+            [getattr(comp_catalog[chan][pol][comp], prop_name) for pol in [0]]
             for chan in range(im.image_acc.nchan)
         ]
 
@@ -345,6 +334,7 @@ def find_skycomponents(
         xs = numpy.sum(aflux * xs) / flux_sum
         ys = numpy.sum(aflux * ys) / flux_sum
 
+        # pylint: disable=no-member
         point_flux = im["pixels"].data[
             :,
             :,
@@ -357,7 +347,7 @@ def find_skycomponents(
             SkyComponent(
                 direction=SkyCoord(ra=ra, dec=dec),
                 frequency=im.frequency,
-                name="Segment %d" % segment,
+                name=f"Segment {segment}",
                 flux=point_flux,
                 shape="Point",
                 polarisation_frame=im.image_acc.polarisation_frame,
@@ -390,11 +380,10 @@ def apply_beam_to_skycomponent(
     if single:
         sc = [sc]
 
-    nchan, npol, ny, nx = beam["pixels"].data.shape
+    ny = beam["pixels"].data.shape[2]
+    nx = beam["pixels"].data.shape[3]
 
-    log.debug(
-        "apply_beam_to_skycomponent: Processing %d components" % (len(sc))
-    )
+    log.debug("apply_beam_to_skycomponent: Processing %d components", len(sc))
 
     ras = [comp.direction.ra.radian for comp in sc]
     decs = [comp.direction.dec.radian for comp in sc]
@@ -415,7 +404,7 @@ def apply_beam_to_skycomponent(
     total_flux = numpy.zeros_like(sc[0].flux)
     for icomp, comp in enumerate(sc):
 
-        assert comp.shape == "Point", "Cannot handle shape %s" % comp.shape
+        assert comp.shape == "Point", f"Cannot handle shape {comp.shape}"
 
         pixloc = (pixlocs[0][icomp], pixlocs[1][icomp])
         if not numpy.isnan(pixloc).any():
@@ -440,13 +429,14 @@ def apply_beam_to_skycomponent(
             )
 
     log.debug(
-        "apply_beam_to_skycomponent: %d components with total flux %s"
-        % (len(newsc), total_flux)
+        "apply_beam_to_skycomponent: %d components with total flux %s",
+        len(newsc),
+        total_flux,
     )
     if single:
         return newsc[0]
-    else:
-        return newsc
+
+    return newsc
 
 
 def apply_voltage_pattern_to_skycomponent(
@@ -484,7 +474,7 @@ def apply_voltage_pattern_to_skycomponent(
 
     nchan, npol, ny, nx = vp["pixels"].data.shape
 
-    log.debug("apply_vp_to_skycomponent: Processing %d components" % (len(sc)))
+    log.debug("apply_vp_to_skycomponent: Processing %d components", len(sc))
 
     ras = [comp.direction.ra.radian for comp in sc]
     decs = [comp.direction.dec.radian for comp in sc]
@@ -507,7 +497,7 @@ def apply_voltage_pattern_to_skycomponent(
 
     for icomp, comp in enumerate(sc):
 
-        assert comp.shape == "Point", "Cannot handle shape %s" % comp.shape
+        assert comp.shape == "Point", f"Cannot handle shape {comp.shape}"
 
         # Convert to linear (xx, xy, yx, yy) or circular (rr, rl, lr, ll)
         nchan, npol = comp.flux.shape
@@ -555,13 +545,14 @@ def apply_voltage_pattern_to_skycomponent(
                 )
 
     log.debug(
-        "apply_vp_to_skycomponent: %d components with total flux %s"
-        % (len(newsc), total_flux)
+        "apply_vp_to_skycomponent: %d components with total flux %s",
+        len(newsc),
+        total_flux,
     )
     if single:
         return newsc[0]
-    else:
-        return newsc
+
+    return newsc
 
 
 def filter_skycomponents_by_flux(sc, flux_min=-numpy.inf, flux_max=numpy.inf):
@@ -572,7 +563,7 @@ def filter_skycomponents_by_flux(sc, flux_min=-numpy.inf, flux_max=numpy.inf):
     :param flux_max: Maximum I flux
     :return: Filtered list of SkyComponents
     """
-    newcomps = list()
+    newcomps = []
     for comp in sc:
         if (numpy.max(comp.flux[:, 0]) > flux_min) and (
             numpy.max(comp.flux[:, 0]) < flux_max
@@ -605,7 +596,7 @@ def insert_skycomponent(
     if not isinstance(sc, collections.abc.Iterable):
         sc = [sc]
 
-    log.debug("insert_skycomponent: Using insert method %s" % insert_method)
+    log.debug("insert_skycomponent: Using insert method %s", insert_method)
 
     image_frequency = im.frequency.data
 
@@ -619,7 +610,7 @@ def insert_skycomponent(
     nbad = 0
     for icomp, comp in enumerate(sc):
 
-        assert comp.shape == "Point", "Cannot handle shape %s" % comp.shape
+        assert comp.shape == "Point", f"Cannot handle shape {comp.shape}"
 
         pixloc = (pixlocs[0][icomp], pixlocs[1][icomp])
         flux = numpy.zeros([nchan, npol])
@@ -681,8 +672,9 @@ def insert_skycomponent(
                 nbad += 1
     if nbad > 0:
         log.warning(
-            f"insert_skycomponent: {nbad} components "
-            f"of {len(sc)} do not fit on image"
+            "insert_skycomponent: %s components of %s do not fit on image",
+            nbad,
+            len(sc),
         )
 
     return im
@@ -692,7 +684,6 @@ def restore_skycomponent(
     im: Image,
     sc: Union[SkyComponent, List[SkyComponent]],
     clean_beam=None,
-    support=8,
 ) -> Image:
     """Restore a SkyComponent into an image
 
@@ -700,11 +691,11 @@ def restore_skycomponent(
     :param sc: SkyComponent or list of SkyComponents
     :param clean_beam: dict e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}.
                        Units are deg, deg, deg
-    :param support: Support of kernel (7)
     :return: Image
     """
 
-    nchan, npol, ny, nx = im["pixels"].data.shape
+    nchan = im["pixels"].data.shape[0]
+    npol = im["pixels"].data.shape[1]
 
     if not isinstance(sc, collections.abc.Iterable):
         sc = [sc]
@@ -723,7 +714,7 @@ def restore_skycomponent(
 
         if comp.shape != "Point":
             raise ValueError(
-                "restore_skycomponent: Cannot handle shape %s" % comp.shape
+                f"restore_skycomponent: Cannot handle shape {comp.shape}"
             )
 
         pixloc = (pixlocs[0][icomp], pixlocs[1][icomp])
@@ -789,10 +780,11 @@ def voronoi_decomposition(im, comps):
         [u.rad * c.direction.dec.rad for c in comps],
     )
     x, y = skycoord_to_pixel(directions, im.image_acc.wcs, 1, "wcs")
-    points = [(x[i], y[i]) for i, _ in enumerate(x)]
+    points = [(x_elem, y[i]) for i, x_elem in enumerate(x)]
     vor = Voronoi(points)
 
-    nchan, npol, ny, nx = im["pixels"].data.shape
+    ny = im["pixels"].data.shape[2]
+    nx = im["pixels"].data.shape[3]
     vertex_image = numpy.zeros([ny, nx]).astype("int")
     for j in range(ny):
         for i in range(nx):
@@ -822,7 +814,7 @@ def image_voronoi_iter(
             nchan=mask[0],
         )
     else:
-        vor, vertex_array = voronoi_decomposition(im, components)
+        _, vertex_array = voronoi_decomposition(im, components)
 
         nregions = numpy.max(vertex_array) + 1
         for region in range(nregions):
@@ -845,11 +837,9 @@ def partition_skycomponent_neighbours(comps, targets):
     :param targets: List of targets
     :return: Partitioned SkyComponents
     """
-    idx, d2d = select_neighbouring_components(comps, targets)
+    idx, _ = select_neighbouring_components(comps, targets)
 
-    from itertools import compress
-
-    comps_lists = list()
+    comps_lists = []
     for comp_id in numpy.unique(idx):
         selected_comps = list(compress(comps, idx == comp_id))
         comps_lists.append(selected_comps)
@@ -896,7 +886,7 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
         ix = round(fit.x_mean.value)
 
         # We could fit each frequency separately. For the moment, we just scale
-        if iy < image_shape[0] and iy >= 0 and ix < image_shape[1] and ix >= 0:
+        if 0 <= iy < image_shape[0] and 0 <= ix < image_shape[1]:
             newsc.flux = im["pixels"].data[:, :, iy, ix]
 
         try:
@@ -935,7 +925,7 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
             newsc.params = clean_gaussian
 
     except (minpack.error, ValueError) as err:
-        log.warning(f"fit_skycomponent: fit failed {err}")
+        log.warning("fit_skycomponent: fit failed  %s", err)
         return sc
 
     return newsc

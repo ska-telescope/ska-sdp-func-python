@@ -1,6 +1,5 @@
-# pylint: disable=duplicate-code
-""" Unit tests for image operations
-
+"""
+Unit tests for image operations
 """
 import logging
 
@@ -23,7 +22,7 @@ log = logging.getLogger("func-python-logger")
 
 @pytest.fixture(scope="module", name="operations_image")
 def operations_fixture():
-
+    """Fixture to generate inputs for tested functions"""
     npixels = 512
     cellsize = 0.000015
     phase_centre = SkyCoord(

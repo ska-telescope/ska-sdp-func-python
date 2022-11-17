@@ -94,8 +94,8 @@ def extract_direction_and_flux(sc, vis):
     if not isinstance(sc, collections.abc.Iterable):
         sc = [sc]
 
-    vfluxes = list()  # Flux for each component
-    direction_cosines = list()  # lmn vector for each component
+    vfluxes = []  # Flux for each component
+    direction_cosines = []  # lmn vector for each component
 
     for comp in sc:
         flux = comp.flux
@@ -129,7 +129,7 @@ def extract_direction_and_flux(sc, vis):
 
         vfluxes.append(vflux)
 
-        l, m, n = skycoord_to_lmn(comp.direction, vis.phasecentre)
+        l, m, _ = skycoord_to_lmn(comp.direction, vis.phasecentre)
         direction_cosine = numpy.array(
             [l, m, numpy.sqrt(1 - l**2 - m**2) - 1.0]
         )
@@ -159,9 +159,9 @@ def dft_kernel(
 
     if dft_compute_kernel == "gpu_cupy_raw":
         return dft_gpu_raw_kernel(direction_cosines, uvw_lambda, vfluxes)
-    elif dft_compute_kernel == "cpu_looped":
+    if dft_compute_kernel == "cpu_looped":
         return dft_cpu_looped(direction_cosines, uvw_lambda, vfluxes)
-    elif dft_compute_kernel == "proc_func":
+    if dft_compute_kernel == "proc_func":
         # The Processing Function Library DFT function can be found at :
         # https://gitlab.com/ska-telescope/sdp/ska-sdp-func/-/blob/main/src/ska_sdp_func/dft.py
 
@@ -197,8 +197,7 @@ def dft_kernel(
 
         return new_vis_data
 
-    else:
-        raise ValueError(f"dft_compute_kernel {dft_compute_kernel} not known")
+    raise ValueError(f"dft_compute_kernel {dft_compute_kernel} not known")
 
 
 cuda_kernel_source = r"""
@@ -312,12 +311,12 @@ def dft_gpu_raw_kernel(direction_cosines, uvw_lambda, vfluxes):
     :param uvw_lambda: UVW in lambda [ntimes, nbaselines, nchan, 3]
     :return: Vis [ntimes, nbaselines, nchan, npol]
     """
-    # We try to import cupy, raise an exception if not installed
     try:
-        import cupy
-    except ModuleNotFoundError:
-        "cupy is not installed - cannot run CUDA"
-        raise ModuleNotFoundError("cupy is not installed - cannot run CUDA")
+        import cupy  # pylint: disable=import-outside-toplevel
+    except ModuleNotFoundError as err:
+        raise ModuleNotFoundError(
+            "cupy is not installed - cannot run CUDA"
+        ) from err
 
     # Get the dimension sizes.
     (num_times, num_baselines, num_channels, _) = uvw_lambda.shape
@@ -371,8 +370,8 @@ def idft_visibility_skycomponent(
     if not isinstance(sc, collections.abc.Iterable):
         sc = [sc]
 
-    newsc = list()
-    weights_list = list()
+    newsc = []
+    weights_list = []
 
     for comp in sc:
         # assert isinstance(comp, SkyComponent), comp

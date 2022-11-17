@@ -49,7 +49,8 @@ def calculate_skycomponent_list_taylor_terms(
         ]
     log.debug(
         "calculate_image_from_frequency_moments: "
-        "Reference frequency = %.3f (MHz)" % (1e-6 * reference_frequency)
+        "Reference frequency = %.3f (MHz)",
+        1e-6 * reference_frequency,
     )
 
     channel_moment_coupling = numpy.zeros([nchan, nmoment])
@@ -102,7 +103,8 @@ def find_skycomponents_frequency_taylor_terms(
         reference_frequency = frequency[len(frequency) // 2]
     log.debug(
         "find_skycomponents_frequency_taylor_terms: "
-        "Reference frequency = %.3f (MHz)" % (1e-6 * reference_frequency)
+        "Reference frequency = %.3f (MHz)",
+        1e-6 * reference_frequency,
     )
 
     moment0_list = calculate_frequency_taylor_terms_from_image_list(
@@ -123,8 +125,9 @@ def find_skycomponents_frequency_taylor_terms(
     ncomps = len(moment0_skycomponents)
     if ncomps > 0:
         log.info(
-            f"find_skycomponents_frequency_taylor_terms: "
-            f"found {ncomps} skycomponents in moment 0"
+            "find_skycomponents_frequency_taylor_terms: "
+            "found %s skycomponents in moment 0",
+            ncomps,
         )
     else:
         return []
@@ -140,7 +143,7 @@ def find_skycomponents_frequency_taylor_terms(
             ]
         )
         found_component_list.append(found_component)
-        log.info(f"Component {isc}: {found_component}")
+        log.info("Component %s: %s", isc, found_component)
 
     interpolated_sc_list = interpolate_skycomponents_frequency(
         found_component_list,
@@ -169,8 +172,9 @@ def interpolate_skycomponents_frequency(
     if reference_frequency is None:
         reference_frequency = frequency[len(frequency) // 2]
     log.debug(
-        "interpolate_skycomponents_frequency: Reference frequency = %.3f (MHz)"
-        % (1e-6 * reference_frequency)
+        "interpolate_skycomponents_frequency: "
+        "Reference frequency = %.3f (MHz)",
+        1e-6 * reference_frequency,
     )
 
     # Now fit in frequency and keep the model

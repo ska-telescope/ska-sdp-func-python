@@ -1,5 +1,5 @@
-""" Functions for calibration.
-
+"""
+Functions for calibration.
 """
 
 __all__ = [
@@ -32,8 +32,8 @@ def apply_gaintable(
 
         V_corrected = {g_i * g_j^*}^-1 V_obs
 
-    If the visibility data are polarised e.g.
-    polarisation_frame("linear") then the inverse operator
+    If the visibility data are polarised
+    e.g. polarisation_frame("linear") then the inverse operator
     represents an actual inverse of the gains.
 
     :param vis: visibility to have gains applied
@@ -43,7 +43,7 @@ def apply_gaintable(
     :return: input vis with gains applied
 
     """
-    ntimes, nants, nchan, nrec, _ = gt.gain.shape
+    ntimes, nants, nchan, _, _ = gt.gain.shape
 
     if inverse:
         log.debug("apply_gaintable: Apply inverse gaintable")
@@ -67,8 +67,8 @@ def apply_gaintable(
             gain = gt["gain"].data[row]
             cgain = numpy.conjugate(gt["gain"].data[row])
 
-            # The shape of the mueller matrix is
-            nant, nchan, nrec, _ = gain.shape
+            nant = gain.shape[0]
+            nchan = gain.shape[1]
             baselines = vis.baselines.data
 
             # Try to ignore visibility flags in application of gains.
@@ -244,10 +244,10 @@ def apply_gaintable(
             else:
                 times = Time(vis.time / 86400.0, format="mjd", scale="utc")
                 log.warning(
-                    "No row in gaintable "
-                    "for visibility row, time range  {} to {}".format(
-                        times[0].isot, times[-1].isot
-                    )
+                    "No row in gaintable for visibility "
+                    "row, time range  %s to %s",
+                    times[0].isot,
+                    times[-1].isot,
                 )
 
             vis["vis"].data[vis_rows] = applied
@@ -265,8 +265,8 @@ def multiply_gaintables(
 
     :param gt: First GainTable
     :param dgt: Second GainTable
-    :param time_tolerance: Maximum tolerance of
-                time separation in the GainTable data
+    :param time_tolerance: Maximum tolerance of time s
+                eparation in the GainTable data
     :return: Multiplication product
     """
 
@@ -287,16 +287,12 @@ def multiply_gaintables(
             gt["weight"].data *= dgt["weight"].data
         else:
             raise ValueError(
-                "Gain tables have illegal structures {} {}".format(
-                    str(gt), str(dgt)
-                )
+                f"Gain tables have illegal structures {str(gt)} {str(dgt)}"
             )
 
     else:
         raise ValueError(
-            "Gain tables have different structures {} {}".format(
-                str(gt), str(dgt)
-            )
+            f"Gain tables have different structures {str(gt)} {str(dgt)}"
         )
 
     return gt

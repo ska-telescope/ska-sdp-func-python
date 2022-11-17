@@ -55,7 +55,7 @@ def skymodel_predict_calibrate(
     vis_slices = []
     if get_pb is not None:
         # TODO: Expand control of the grouping, coord and step
-        for time, vis_slice in v.groupby("time", squeeze=False):
+        for _, vis_slice in v.groupby("time", squeeze=False):
 
             pb = get_pb(vis_slice, skymodel.image)
 
@@ -108,40 +108,36 @@ def skymodel_predict_calibrate(
 
         return v
 
-    else:
+    # First do the DFT or the components
+    if len(skymodel.components) > 0:
+        if skymodel.mask is not None:
+            comps = skymodel.components.copy()
+            comps = apply_beam_to_skycomponent(comps, skymodel.mask)
+            v = dft_skycomponent_visibility(v, comps, **kwargs)
+        else:
+            v = dft_skycomponent_visibility(v, skymodel.components, **kwargs)
 
-        # First do the DFT or the components
-        if len(skymodel.components) > 0:
+    # Now do the FFT of the image, after multiplying
+    # by the mask and primary beam
+    if skymodel.image is not None:
+        if numpy.max(numpy.abs(skymodel.image["pixels"].data)) > 0.0:
+            imgv = v.copy(deep=True, zero=True)
             if skymodel.mask is not None:
-                comps = skymodel.components.copy()
-                comps = apply_beam_to_skycomponent(comps, skymodel.mask)
-                v = dft_skycomponent_visibility(v, comps, **kwargs)
-            else:
-                v = dft_skycomponent_visibility(
-                    v, skymodel.components, **kwargs
+                model = skymodel.image.copy(deep=True)
+                model["pixels"].data *= skymodel.mask["pixels"].data
+                imgv = predict_visibility(
+                    imgv, model, context=context, **kwargs
                 )
+            else:
+                imgv = predict_visibility(
+                    imgv, skymodel.image, context=context, **kwargs
+                )
+            v["vis"].data += imgv["vis"].data
 
-        # Now do the FFT of the image, after multiplying
-        # by the mask and primary beam
-        if skymodel.image is not None:
-            if numpy.max(numpy.abs(skymodel.image["pixels"].data)) > 0.0:
-                imgv = v.copy(deep=True, zero=True)
-                if skymodel.mask is not None:
-                    model = skymodel.image.copy(deep=True)
-                    model["pixels"].data *= skymodel.mask["pixels"].data
-                    imgv = predict_visibility(
-                        imgv, model, context=context, **kwargs
-                    )
-                else:
-                    imgv = predict_visibility(
-                        imgv, skymodel.image, context=context, **kwargs
-                    )
-                v["vis"].data += imgv["vis"].data
+    if docal and skymodel.gaintable is not None:
+        v = apply_gaintable(v, skymodel.gaintable, inverse=inverse)
 
-        if docal and skymodel.gaintable is not None:
-            v = apply_gaintable(v, skymodel.gaintable, inverse=inverse)
-
-        return v
+    return v
 
 
 def skymodel_calibrate_invert(
@@ -184,7 +180,7 @@ def skymodel_calibrate_invert(
 
     if get_pb is not None:
         # TODO: Expand control of the grouping, coord and step
-        for time, vis_slice in bvis_cal.groupby("time", squeeze=False):
+        for _, vis_slice in bvis_cal.groupby("time", squeeze=False):
 
             pb = get_pb(vis_slice, skymodel.image)
 
@@ -217,13 +213,12 @@ def skymodel_calibrate_invert(
             )
             sum_flats["pixels"].data = numpy.sqrt(sum_flats["pixels"].data)
 
-        return (sum_dirtys, sum_flats)
+        return sum_dirtys, sum_flats
 
-    else:
-        result = invert_visibility(
-            bvis_cal, skymodel.image, context=context, **kwargs
-        )
-        if skymodel.mask is not None:
-            result[0]["pixels"].data *= skymodel.mask["pixels"].data
+    result = invert_visibility(
+        bvis_cal, skymodel.image, context=context, **kwargs
+    )
+    if skymodel.mask is not None:
+        result[0]["pixels"].data *= skymodel.mask["pixels"].data
 
-        return result
+    return result
