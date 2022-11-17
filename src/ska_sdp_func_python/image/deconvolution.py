@@ -743,7 +743,8 @@ def mmclean_kernel_list(
     nchan = len(dirty_list)
     if not nchan > 2 * (nmoment - 1):
         raise ValueError(
-            f"Requires nchan {nchan} > 2 * (nmoment {2 * (nmoment - 1)} - 1)"
+            f"Requires `nchan > 2 * (nmoment - 1)` "
+            f"({nchan} > {2 * (nmoment - 1)})"
         )
     dirty_taylor = calculate_image_list_frequency_moments(
         dirty_list, nmoment=nmoment
