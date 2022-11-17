@@ -588,7 +588,7 @@ def parallactic_angle(ha, dec, lat):
     """
     Calculate parallactic angle of source at ha, dec
     observed from site at latitude dec.
-    :
+    With::S
         H = t - α
         sin(a) = sin(δ) sin(φ) + cos(δ) cos(φ) cos(H)
         sin(A) = - sin(H) cos(δ) / cos(a)
