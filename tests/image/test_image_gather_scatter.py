@@ -36,11 +36,19 @@ def phase_centre_fixture():
 
 
 def test_scatter_gather_facet(phase_centre):
-    """Unit test for the image_gather_facets function"""
+    """
+    Unit test for the image_gather_facets function
+    Original test uses an image that contains
+    H-alpha region information in M31.
+    Here we just create an empty image instead,
+    and uses a single channel with frequency=1e8 Hz,
+    and single StokesI polarisation.
+    """
     m31original = create_image(
-        npixel=10,
-        cellsize=0.00015,
-        phasecentre=phase_centre,
+        10,
+        0.00015,
+        phase_centre,
+        nchan=1,
     )
     m31original["pixels"].data = numpy.ones(
         shape=m31original["pixels"].data.shape, dtype=float
@@ -51,9 +59,10 @@ def test_scatter_gather_facet(phase_centre):
 
     nraster = 1
     m31model = create_image(
-        npixel=512,
-        cellsize=0.00015,
-        phasecentre=phase_centre,
+        512,
+        0.00015,
+        phase_centre,
+        nchan=1,
     )
     m31model["pixels"].data = numpy.ones(
         shape=m31model["pixels"].data.shape, dtype=float
@@ -72,12 +81,21 @@ def test_scatter_gather_facet(phase_centre):
             patch["pixels"].data.shape[2],
             (m31model["pixels"].data.shape[2] // nraster),
         )
+        # Check for frequency and polarisation
+        assert (
+            patch["pixels"].data.shape[0] == m31model["pixels"].data.shape[0]
+        )
+        assert (
+            patch["pixels"].data.shape[1] == m31model["pixels"].data.shape[1]
+        )
+
         patch["pixels"].data[...] = 1.0
 
     m31reconstructed = create_image(
-        npixel=512,
-        cellsize=0.00015,
-        phasecentre=phase_centre,
+        512,
+        0.00015,
+        phase_centre,
+        nchan=1,
     )
     m31reconstructed["pixels"].data = numpy.ones(
         shape=m31reconstructed["pixels"].data.shape, dtype=float
@@ -95,14 +113,22 @@ def test_scatter_gather_facet(phase_centre):
     assert numpy.max(numpy.abs(m31reconstructed["pixels"].data)), (
         "Raster is empty for %d" % nraster
     )
+    assert (
+        flat["pixels"].data.shape[0]
+        == m31reconstructed["pixels"].data.shape[0]
+    )
 
 
 def test_scatter_gather_facet_overlap(phase_centre):
-    """Unit test for the image_gather_facets function with overlap"""
+    """
+    Unit test for the image_gather_facets function with overlap
+    Image information same as previous test
+    """
     m31original = create_image(
-        npixel=512,
-        cellsize=0.00015,
-        phasecentre=phase_centre,
+        512,
+        0.00015,
+        phase_centre,
+        nchan=1,
     )
     m31original["pixels"].data = numpy.ones(
         shape=m31original["pixels"].data.shape, dtype=float
@@ -113,9 +139,10 @@ def test_scatter_gather_facet_overlap(phase_centre):
 
     for nraster, overlap in [(1, 0), (1, 8), (1, 16)]:
         m31model = create_image(
-            npixel=512,
-            cellsize=0.00015,
-            phasecentre=phase_centre,
+            512,
+            0.00015,
+            phase_centre,
+            nchan=1,
         )
         m31model["pixels"].data = numpy.ones(
             shape=m31model["pixels"].data.shape, dtype=float
@@ -136,11 +163,23 @@ def test_scatter_gather_facet_overlap(phase_centre):
                 patch["pixels"].data.shape[2],
                 (m31model["pixels"].data.shape[2] // nraster),
             )
+            # Check for frequency and polarisation
+            assert (
+                patch["pixels"].data.shape[0]
+                == m31model["pixels"].data.shape[0]
+            )
+            assert (
+                patch["pixels"].data.shape[1]
+                == m31model["pixels"].data.shape[1]
+            )
+
             patch["pixels"].data[...] = 1.0
+
         m31reconstructed = create_image(
-            npixel=512,
-            cellsize=0.00015,
-            phasecentre=phase_centre,
+            512,
+            0.00015,
+            phase_centre,
+            nchan=1,
         )
         m31reconstructed["pixels"].data = numpy.ones(
             shape=m31reconstructed["pixels"].data.shape, dtype=float
@@ -162,14 +201,19 @@ def test_scatter_gather_facet_overlap(phase_centre):
         assert numpy.max(numpy.abs(m31reconstructed["pixels"].data)), (
             "Raster is empty for %d" % nraster
         )
+        assert (
+            flat["pixels"].data.shape[0]
+            == m31reconstructed["pixels"].data.shape[0]
+        )
 
 
 def test_scatter_gather_facet_overlap_taper(phase_centre):
     """Unit test for the image_gather_facets function with overlap and taper"""
     m31original = create_image(
-        npixel=512,
-        cellsize=0.00015,
-        phasecentre=phase_centre,
+        512,
+        0.00015,
+        phase_centre,
+        nchan=1,
     )
     m31original["pixels"].data = numpy.ones(
         shape=m31original["pixels"].data.shape, dtype=float
@@ -189,9 +233,10 @@ def test_scatter_gather_facet_overlap_taper(phase_centre):
             (1, 16),
         ]:
             m31model = create_image(
-                npixel=512,
-                cellsize=0.00015,
-                phasecentre=phase_centre,
+                512,
+                0.00015,
+                phase_centre,
+                nchan=1,
             )
             m31model["pixels"].data = numpy.ones(
                 shape=m31model["pixels"].data.shape, dtype=float
@@ -218,10 +263,21 @@ def test_scatter_gather_facet_overlap_taper(phase_centre):
                         (m31model["pixels"].data.shape[2] // nraster),
                     )
                 )
+                # Check for frequency and polarisation
+                assert (
+                    patch["pixels"].data.shape[0]
+                    == m31model["pixels"].data.shape[0]
+                )
+                assert (
+                    patch["pixels"].data.shape[1]
+                    == m31model["pixels"].data.shape[1]
+                )
+
             m31reconstructed = create_image(
-                npixel=512,
-                cellsize=0.00015,
-                phasecentre=phase_centre,
+                512,
+                0.00015,
+                phase_centre,
+                nchan=1,
             )
             m31reconstructed = image_gather_facets(
                 image_list,
@@ -245,6 +301,10 @@ def test_scatter_gather_facet_overlap_taper(phase_centre):
             assert numpy.max(numpy.abs(m31reconstructed["pixels"].data)), (
                 "Raster is empty for %d" % nraster
             )
+            assert (
+                flat["pixels"].data.shape[0]
+                == m31reconstructed["pixels"].data.shape[0]
+            )
 
 
 def test_scatter_gather_channel(phase_centre):
@@ -252,9 +312,10 @@ def test_scatter_gather_channel(phase_centre):
     image_gather_channels functions"""
     for _ in [128, 16]:
         m31cube = create_image(
-            npixel=512,
-            cellsize=0.00015,
-            phasecentre=phase_centre,
+            512,
+            0.00015,
+            phase_centre,
+            nchan=1,
         )
         m31cube["pixels"].data = numpy.ones(
             shape=m31cube["pixels"].data.shape, dtype=float
@@ -274,9 +335,10 @@ def test_gather_channel(phase_centre):
     """Unit test for the image_gather_channels functions"""
     for nchan in [128, 16]:
         m31cube = create_image(
-            npixel=512,
-            cellsize=0.00015,
-            phasecentre=phase_centre,
+            512,
+            0.00015,
+            phase_centre,
+            nchan=1,
         )
         m31cube["pixels"].data = numpy.ones(
             shape=m31cube["pixels"].data.shape, dtype=float

@@ -74,6 +74,7 @@ def test_raster(input_params):
             npixel,
             0.00015,
             input_params["phasecentre"],
+            nchan=1,
         )
         m31original["pixels"].data = numpy.ones(
             shape=m31original["pixels"].data.shape, dtype=float
@@ -90,6 +91,7 @@ def test_raster(input_params):
                         npixel,
                         0.00015,
                         input_params["phasecentre"],
+                        nchan=1,
                     )
                     m31model["pixels"].data = numpy.ones(
                         shape=m31model["pixels"].data.shape, dtype=float

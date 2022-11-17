@@ -14,7 +14,6 @@ from typing import List
 
 import numpy
 import xarray
-from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 
 from ska_sdp_func_python.image.iterators import image_raster_iter
@@ -41,7 +40,7 @@ def image_scatter_facets(
     :return: list of subimages
 
      See also:
-        :py:func:`processing_components.image.iterators.image_raster_iter`
+        :py:func:`ska_sdp_func_python.image.iterators.image_raster_iter`
     """
     if im is None:
         return None
@@ -82,18 +81,18 @@ def image_gather_facets(
      See also
         :py:func:`ska_sdp_func_python.image.iterators.image_raster_iter`
     """
-    out = create_image(
-        im["pixels"].data.shape[3],
-        numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-        im.image_acc.phasecentre,
-        nchan=im["pixels"].data.shape[0],
+    out = Image.constructor(
+        data=numpy.zeros_like(im["pixels"].data),
+        wcs=im.image_acc.wcs,
+        polarisation_frame=im.image_acc.polarisation_frame,
+        clean_beam=im.attrs["clean_beam"],
     )
     if overlap > 0:
-        flat = create_image(
-            im["pixels"].data.shape[3],
-            numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-            im.image_acc.phasecentre,
-            nchan=im["pixels"].data.shape[0],
+        flat = Image.constructor(
+            data=numpy.zeros_like(im["pixels"].data),
+            wcs=im.image_acc.wcs,
+            polarisation_frame=im.image_acc.polarisation_frame,
+            clean_beam=im.attrs["clean_beam"],
         )
         flat["pixels"].data[...] = 1.0
         flats = list(
@@ -106,11 +105,11 @@ def image_gather_facets(
             )
         )
 
-        sum_flats = create_image(
-            im["pixels"].data.shape[3],
-            numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-            im.image_acc.phasecentre,
-            nchan=im["pixels"].data.shape[0],
+        sum_flats = Image.constructor(
+            data=numpy.zeros_like(im["pixels"].data),
+            wcs=im.image_acc.wcs,
+            polarisation_frame=im.image_acc.polarisation_frame,
+            clean_beam=im.attrs["clean_beam"],
         )
 
         if return_flat:
@@ -148,11 +147,11 @@ def image_gather_facets(
         return out
 
     # if no overlap
-    flat = create_image(
-        im["pixels"].data.shape[3],
-        numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-        im.image_acc.phasecentre,
-        nchan=im["pixels"].data.shape[0],
+    flat = Image.constructor(
+        data=numpy.zeros_like(im["pixels"].data),
+        wcs=im.image_acc.wcs,
+        polarisation_frame=im.image_acc.polarisation_frame,
+        clean_beam=im.attrs["clean_beam"],
     )
     flat["pixels"].data[...] = 1.0
 

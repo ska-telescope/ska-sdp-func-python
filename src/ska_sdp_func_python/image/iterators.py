@@ -152,6 +152,8 @@ def image_raster_iter(
                         subim["pixels"].data.shape[3],
                         numpy.deg2rad(numpy.abs(wcs.wcs.cdelt[1])),
                         im.image_acc.phasecentre,
+                        frequency=wcs.wcs.crval[3],
+                        channel_bandwidth=wcs.wcs.cdelt[3],
                         nchan=subim["pixels"].data.shape[0],
                     )
                     if taper == "linear":
