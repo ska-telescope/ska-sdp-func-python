@@ -21,6 +21,7 @@ from ska_sdp_func_python.sky_component.operations import (
     find_skycomponent_matches,
     find_skycomponent_matches_atomic,
     fit_skycomponent_spectral_index,
+    image_voronoi_iter,
     insert_skycomponent,
     partition_skycomponent_neighbours,
     remove_neighbouring_components,
@@ -192,9 +193,7 @@ def test_filter_skycomponents_by_flux(input_params):
 
 def test_insert_skycomponent(input_params):
     """Check a skycomponent is inserted to the image"""
-    image = create_image(
-        npixel=512, cellsize=0.0001, phasecentre=input_params["home"]
-    )
+    image = create_image(512, 0.0001, input_params["home"])
     component = input_params["skycomponents_list"][0]
 
     new_image = insert_skycomponent(image, component)
@@ -204,9 +203,7 @@ def test_insert_skycomponent(input_params):
 
 def test_restore_skycomponent(input_params):
     """Check a skycomponent is restored to the image"""
-    image = create_image(
-        npixel=512, cellsize=0.0001, phasecentre=input_params["home"]
-    )
+    image = create_image(512, 0.0001, input_params["home"])
     component = input_params["skycomponents_list"][0]
     clean_beam = {"bmaj": 0.1, "bmin": 0.05, "bpa": -60.0}
     new_image = restore_skycomponent(image, component, clean_beam=clean_beam)
@@ -222,14 +219,38 @@ def test_restore_skycomponent(input_params):
 )
 def test_voronoi_decomposition(input_params):
     """Check Vornoi decompostion"""
-    image = create_image(
-        npixel=512, cellsize=0.0001, phasecentre=input_params["home"]
-    )
+    image = create_image(512, 0.0001, input_params["home"])
     image_component = input_params["ref_skycomponents_list"][1]
     # Get an image that isn't empty (insert skycomonent)
     image = insert_skycomponent(image, image_component)
     components = input_params["ref_skycomponents_list"]
     v_structure, v_image = voronoi_decomposition(image, components)
+
+
+@pytest.mark.skip(
+    reason="Better understanding of Vornoi needed to make a useful unit test"
+)
+def test_image_voronoi_iter(input_params):
+    """
+    Unit test for image_voronoi_iter
+    """
+    bright_components = input_params["skycomponents_list"]
+    phase_centre = SkyCoord(
+        ra=+180.0 * u.deg, dec=-40.0 * u.deg, frame="icrs", equinox="J2000"
+    )
+    model = create_image(
+        512,
+        0.001,
+        phase_centre,
+        nchan=1,
+    )
+    model["pixels"].data[...] = 1.0
+
+    bright_components = filter_skycomponents_by_flux(
+        bright_components, flux_min=2.0
+    )
+    for im in image_voronoi_iter(model, bright_components):
+        assert numpy.sum(im["pixels"].data) > 1
 
 
 @pytest.mark.skip(

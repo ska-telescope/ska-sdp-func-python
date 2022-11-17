@@ -36,9 +36,10 @@ def iterators_fixture():
         equinox="J2000",
     )
     image = create_image(
-        npixel=512,
-        cellsize=0.00015,
-        phasecentre=phase_centre,
+        512,
+        0.00015,
+        phase_centre,
+        nchan=1,
     )
 
     image_sc = SkyComponent(
@@ -67,50 +68,61 @@ def test_raster(input_params):
     """
 
     for npixel in [256, 512, 1024]:
-        m31original = create_image(
-            npixel=npixel,
-            cellsize=0.00015,
-            phasecentre=input_params["phasecentre"],
+        original = create_image(
+            npixel,
+            0.00015,
+            input_params["phasecentre"],
+            nchan=1,
         )
-        m31original["pixels"].data = numpy.ones(
-            shape=m31original["pixels"].data.shape, dtype=float
+        original["pixels"].data = numpy.ones(
+            shape=original["pixels"].data.shape, dtype=float
         )
         assert numpy.max(
-            numpy.abs(m31original["pixels"].data)
+            numpy.abs(original["pixels"].data)
         ), "Original is empty"
 
         for nraster in [1]:
 
             for overlap in [0, 2, 4, 8, 16]:
                 try:
-                    m31model = create_image(
-                        npixel=npixel,
-                        cellsize=0.00015,
-                        phasecentre=input_params["phasecentre"],
+                    model = create_image(
+                        npixel,
+                        0.00015,
+                        input_params["phasecentre"],
+                        nchan=1,
                     )
-                    m31model["pixels"].data = numpy.ones(
-                        shape=m31model["pixels"].data.shape, dtype=float
+                    model["pixels"].data = numpy.ones(
+                        shape=model["pixels"].data.shape, dtype=float
                     )
                     for patch in image_raster_iter(
-                        m31model, facets=nraster, overlap=overlap
+                        model, facets=nraster, overlap=overlap
                     ):
                         assert patch["pixels"].data.shape[3] == (
-                            m31model["pixels"].data.shape[3] // nraster
+                            model["pixels"].data.shape[3] // nraster
                         )
                         assert patch["pixels"].data.shape[2] == (
-                            m31model["pixels"].data.shape[2] // nraster
+                            model["pixels"].data.shape[2] // nraster
+                        )
+                        # Check for frequency and polarisation
+                        assert (
+                            patch["pixels"].data.shape[0]
+                            == model["pixels"].data.shape[0]
+                        )
+                        assert (
+                            patch["pixels"].data.shape[1]
+                            == model["pixels"].data.shape[1]
                         )
                         patch["pixels"].data *= 2.0
 
-                    if numpy.max(numpy.abs(m31model["pixels"].data)) == 0.0:
+                    if numpy.max(numpy.abs(model["pixels"].data)) == 0.0:
                         log.warning(
                             "Raster is empty failed for %s, %s, %s",
                             npixel,
                             nraster,
                             overlap,
                         )
-                    diff = m31model.copy(deep=True)
-                    diff["pixels"].data -= 2.0 * m31original["pixels"].data
+                    diff = model.copy(deep=True)
+                    diff["pixels"].data -= 2.0 * original["pixels"].data
                     err = numpy.max(diff["pixels"].data)
                     if abs(err) > 0.0:
                         log.warning(
@@ -121,7 +133,7 @@ def test_raster(input_params):
                             err,
                         )
                     with tempfile.TemporaryDirectory() as testdir:
-                        m31model.image_acc.export_to_fits(
+                        model.image_acc.export_to_fits(
                             f"{testdir}/test_image_iterators_model_{npixel}_"
                             f"{nraster}_{overlap}.fits",
                         )
@@ -141,30 +153,28 @@ def test_raster(input_params):
 
 def test_raster_exception(input_params):
     """Check that raster captures the right exceptions"""
-    m31original = input_params["image"]
-    m31original["pixels"].data = numpy.ones(
-        shape=m31original["pixels"].data.shape, dtype=float
+    original = input_params["image"]
+    original["pixels"].data = numpy.ones(
+        shape=original["pixels"].data.shape, dtype=float
     )
-    assert numpy.max(
-        numpy.abs(m31original["pixels"].data)
-    ), "Original is empty"
+    assert numpy.max(numpy.abs(original["pixels"].data)), "Original is empty"
 
     for nraster, overlap in [(-1, -1), (-1, 0), (1e6, 127)]:
         with pytest.raises(AssertionError):
-            m31model = input_params["image"]
-            m31model["pixels"].data = numpy.ones(
-                shape=m31model["pixels"].data.shape, dtype=float
+            model = input_params["image"]
+            model["pixels"].data = numpy.ones(
+                shape=model["pixels"].data.shape, dtype=float
             )
             for patch in image_raster_iter(
-                m31model, facets=nraster, overlap=overlap
+                model, facets=nraster, overlap=overlap
             ):
                 patch["pixels"].data *= 2.0
 
     for nraster, overlap in [(2, 513)]:
         with pytest.raises(ValueError):
-            m31model = input_params["image"]
+            model = input_params["image"]
             for patch in image_raster_iter(
-                m31model, facets=nraster, overlap=overlap
+                model, facets=nraster, overlap=overlap
             ):
                 patch["pixels"].data *= 2.0
 
@@ -173,11 +183,11 @@ def test_raster_exception(input_params):
 def test_channelise():
     """Unit test for the image_channel_iter function"""
     # pylint: disable=E0602
-    m31cube = create_test_image(  # noqa: F821
+    cube = create_test_image(  # noqa: F821
         frequency=numpy.linspace(1e8, 1.1e8, 128),
         polarisation_frame=PolarisationFrame("stokesI"),
     )
 
     for subimages in [128, 16, 8, 2, 1]:
-        for slab in image_channel_iter(m31cube, subimages=subimages):
+        for slab in image_channel_iter(cube, subimages=subimages):
             assert slab["pixels"].data.shape[0] == 128 // subimages

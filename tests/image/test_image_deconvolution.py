@@ -66,9 +66,10 @@ def deconvolution_fixture():
 
     # Create model
     test_model = create_image(
-        npixel=512,
-        cellsize=0.001,
-        phasecentre=vis.phasecentre,
+        512,
+        0.001,
+        vis.phasecentre,
+        nchan=1,
     )
     test_model["pixels"].data = numpy.ones(
         shape=test_model["pixels"].data.shape, dtype=float

@@ -21,7 +21,10 @@ log = logging.getLogger("func-python-logger")
 
 
 def apply_gaintable(
-    vis: Visibility, gt: GainTable, inverse=False, **kwargs
+    vis: Visibility,
+    gt: GainTable,
+    inverse=False,
+    use_flags=False,
 ) -> Visibility:
     """Apply a gain table to a visibility
 
@@ -36,7 +39,7 @@ def apply_gaintable(
     :param vis: visibility to have gains applied
     :param gt: Gaintable to be applied
     :param inverse: Apply the inverse (default=False)
-    :param use_flags: Use flags? (in kwargs)
+    :param use_flags: Use flags?
     :return: input vis with gains applied
 
     """
@@ -69,8 +72,8 @@ def apply_gaintable(
             baselines = vis.baselines.data
 
             # Try to ignore visibility flags in application of gains.
-            # Should have no impact and will save time in applying the flags
-            use_flags = kwargs["use_flags"]
+            # Should have no impact
+            # and will save time in applying the flags
             flagged = (
                 use_flags and numpy.max(vis["flags"][vis_rows].data) > 0.0
             )

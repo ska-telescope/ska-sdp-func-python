@@ -62,7 +62,15 @@ def base_fixture():
         frame="icrs",
         equinox="J2000",
     )
-    im = create_image(npixels, cellsize, phase_centre)
+    im = create_image(
+        npixels,
+        cellsize,
+        phase_centre,
+        polarisation_frame=polarisation_frame,
+        frequency=frequency[0],
+        channel_bandwidth=channel_bandwidth[0],
+        nchan=len(frequency),
+    )
 
     params = {
         "visibility": vis,

@@ -5,7 +5,7 @@ Functions to aid operations on imaging results
 import logging
 
 import numpy
-from ska_sdp_datamodels.image.image_create import create_image
+from ska_sdp_datamodels.image import Image
 
 from ska_sdp_func_python.image.taylor_terms import (
     calculate_image_frequency_moments,
@@ -26,10 +26,10 @@ def sum_invert_results(image_list):
         sumwt = image_list[0][1]
         return im, sumwt
 
-    im = create_image(
-        image_list[0][0]["pixels"].data.shape[3],
-        numpy.deg2rad(numpy.abs(image_list[0][0].image_acc.wcs.wcs.cdelt[1])),
-        image_list[0][0].image_acc.phasecentre,
+    im = Image.constructor(
+        data=numpy.zeros_like(image_list[0][0]["pixels"].data),
+        polarisation_frame=image_list[0][0].image_acc.polarisation_frame,
+        wcs=image_list[0][0].image_acc.wcs,
     )
 
     sumwt = image_list[0][1]

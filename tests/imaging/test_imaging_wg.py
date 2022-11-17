@@ -57,7 +57,10 @@ def wg_fixture():
     )
 
     model = create_image(
-        npixel=npixel, cellsize=0.00015, phasecentre=phase_centre
+        npixel,
+        0.00015,
+        phase_centre,
+        nchan=1,
     )
 
     params = {

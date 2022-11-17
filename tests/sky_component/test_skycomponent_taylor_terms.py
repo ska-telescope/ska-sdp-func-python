@@ -78,9 +78,9 @@ def test_calculate_taylor_terms(input_params):
 def test_find_skycomponents_frequency_taylor_terms(input_params):
 
     im = create_image(
-        npixel=512,
-        cellsize=0.00015,
-        phasecentre=input_params["phasecentre"],
+        512,
+        0.00015,
+        input_params["phasecentre"],
         nchan=1,
     )
     im["pixels"].data = numpy.ones(shape=im["pixels"].data.shape)

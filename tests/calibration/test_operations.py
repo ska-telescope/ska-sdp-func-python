@@ -78,14 +78,16 @@ def input_vis_gt():
 
 def test_apply_gaintable(input_params):
     """
-    Unit test for the apply_gaintable function
+    Unit test for the apply_gaintable function, using flags
+    TODO: The property of use_flags is not properly tested,
+          need to revisit this test
     """
 
     vis = input_params["visibility2"]
     result = apply_gaintable(
         input_params["visibility1"],
         input_params["gaintable2"],
-        use_flags=numpy.ones((1, 1, 1, 1)),
+        use_flags=True,
     )
     assert (result["vis"].data == vis["vis"].data).all()
     assert (result["weight"].data == vis["weight"].data / 2).all()

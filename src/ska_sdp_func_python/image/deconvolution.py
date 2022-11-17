@@ -46,7 +46,6 @@ import numpy
 from astropy.convolution import Gaussian2DKernel, convolve_fft
 from astropy.modeling import fitting, models
 from scipy.optimize import minpack
-from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
@@ -272,12 +271,14 @@ def radler_deconvolve_list(
         reached_threshold = False
         reached_threshold = radler_object.perform(reached_threshold, 0)
 
-        x_im = create_image(
-            dirty["pixels"].data.shape[3],
-            cellsize=numpy.deg2rad(
-                numpy.abs(dirty.image_acc.wcs.wcs.cdelt[1])
-            ),
-            phasecentre=dirty.image_acc.phasecentre,
+        # create an empty image
+        # TODO: Need to test this after Radler test is developed
+
+        x_im = Image.constructor(
+            data=numpy.zeros_like(dirty["pixels"].data),
+            polarisation_frame=dirty.image_acc.polarisation_frame,
+            wcs=dirty.image_acc.wcs,
+            clean_beam=dirty.attrs["clean_beam"],
         )
         x_im["pixels"].data = numpy.expand_dims(restored_radler, axis=(0, 1))
         comp_image_list.append(x_im)
@@ -361,9 +362,9 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
                 window_array = mask["pixels"].data
         if window_array is not None:
             window_image = Image.constructor(
-                window_array,
-                dirty.image_acc.polarisation_frame,
-                dirty.image_acc.wcs,
+                data=window_array,
+                polarisation_frame=dirty.image_acc.polarisation_frame,
+                wcs=dirty.image_acc.wcs,
             )
         else:
             window_image = None
@@ -541,14 +542,14 @@ def complex_hogbom_kernel_list(
                 if pol == 2:
                     continue
         comp_image = Image.constructor(
-            comp_array,
-            PolarisationFrame("stokesIQUV"),
-            dirty.image_acc.wcs,
+            data=comp_array,
+            polarisation_frame=PolarisationFrame("stokesIQUV"),
+            wcs=dirty.image_acc.wcs,
         )
         residual_image = Image.constructor(
-            residual_array,
-            PolarisationFrame("stokesIQUV"),
-            dirty.image_acc.wcs,
+            data=residual_array,
+            polarisation_frame=PolarisationFrame("stokesIQUV"),
+            wcs=dirty.image_acc.wcs,
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)
@@ -672,14 +673,14 @@ def hogbom_kernel_list(
                     channel,
                 )
         comp_image = Image.constructor(
-            comp_array,
-            dirty.image_acc.polarisation_frame,
-            dirty.image_acc.wcs,
+            data=comp_array,
+            polarisation_frame=dirty.image_acc.polarisation_frame,
+            wcs=dirty.image_acc.wcs,
         )
         residual_image = Image.constructor(
-            residual_array,
-            dirty.image_acc.polarisation_frame,
-            dirty.image_acc.wcs,
+            data=residual_array,
+            polarisation_frame=dirty.image_acc.polarisation_frame,
+            wcs=dirty.image_acc.wcs,
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)
@@ -849,14 +850,14 @@ def mmclean_kernel_list(
         else:
             log.info("deconvolve_cube %s: Skipping pol %d", prefix, pol)
     comp_taylor = Image.constructor(
-        comp_array,
-        dirty_taylor.image_acc.polarisation_frame,
-        dirty_taylor.image_acc.wcs,
+        data=comp_array,
+        polarisation_frame=dirty_taylor.image_acc.polarisation_frame,
+        wcs=dirty_taylor.image_acc.wcs,
     )
     residual_taylor = Image.constructor(
-        residual_array,
-        dirty_taylor.image_acc.polarisation_frame,
-        dirty_taylor.image_acc.wcs,
+        data=residual_array,
+        polarisation_frame=dirty_taylor.image_acc.polarisation_frame,
+        wcs=dirty_taylor.image_acc.wcs,
     )
     log.info(
         "mmclean_kernel_list %s: calculating spectral "
@@ -979,14 +980,14 @@ def msclean_kernel_list(
                     channel,
                 )
         comp_image = Image.constructor(
-            comp_array,
-            dirty.image_acc.polarisation_frame,
-            dirty.image_acc.wcs,
+            data=comp_array,
+            polarisation_frame=dirty.image_acc.polarisation_frame,
+            wcs=dirty.image_acc.wcs,
         )
         residual_image = Image.constructor(
-            residual_array,
-            dirty.image_acc.polarisation_frame,
-            dirty.image_acc.wcs,
+            data=residual_array,
+            polarisation_frame=dirty.image_acc.polarisation_frame,
+            wcs=dirty.image_acc.wcs,
         )
         comp_images.append(comp_image)
         residual_images.append(residual_image)
