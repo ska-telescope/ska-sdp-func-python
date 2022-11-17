@@ -13,7 +13,6 @@ from ska_sdp_func_python.sky_model.skymodel_imaging import (
     skymodel_calibrate_invert,
     skymodel_predict_calibrate,
 )
-
 from ska_sdp_func_python.visibility.visibility_geometry import (
     calculate_visibility_parallactic_angles,
 )
@@ -41,9 +40,10 @@ def _get_primary_beam(vis, model):
     Create test primary beam
     FIXME: these functions are still in rascil-main
     """
-    pb = create_low_test_beam(model)
+    # pylint: disable=undefined-variable
+    pb = create_low_test_beam(model)  # noqa: F821
     pa = numpy.mean(calculate_visibility_parallactic_angles(vis))
-    pb = convert_azelvp_to_radec(pb, model, pa)
+    pb = convert_azelvp_to_radec(pb, model, pa)  # noqa: F821
     return pb
 
 
@@ -92,7 +92,7 @@ def test_calibrate_invert_no_pb(visibility, low_test_sky_model_from_gleam):
     )
     assert numpy.max(numpy.abs(skymodel_vis.vis)) > 0.0
 
-    dirty, sumwt = skymodel_calibrate_invert(
+    dirty, _ = skymodel_calibrate_invert(
         skymodel_vis,
         sky_model,
         normalise=True,
@@ -173,9 +173,13 @@ def test_predict_no_components(visibility, low_test_sky_model_from_gleam):
     sky_model = low_test_sky_model_from_gleam.copy()
     sky_model.components = []
 
-    assert numpy.max(numpy.abs(sky_model.image["pixels"].data)) > 0.0, "Image is empty"
+    assert (
+        numpy.max(numpy.abs(sky_model.image["pixels"].data)) > 0.0
+    ), "Image is empty"
 
-    skymodel_vis = skymodel_predict_calibrate(visibility, sky_model, context="ng")
+    skymodel_vis = skymodel_predict_calibrate(
+        visibility, sky_model, context="ng"
+    )
     qa = skymodel_vis.visibility_acc.qa_visibility()
     numpy.testing.assert_almost_equal(
         qa.data["maxabs"], 39.916746503252156, err_msg=str(qa)

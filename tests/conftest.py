@@ -31,7 +31,10 @@ def vis_fixture():
 
     low = create_named_configuration("LOW", rmax=300.0)
     phase_centre = SkyCoord(
-        ra=+30.0 * units.deg, dec=-60.0 * units.deg, frame="icrs", equinox="J2000"
+        ra=+30.0 * units.deg,
+        dec=-60.0 * units.deg,
+        frame="icrs",
+        equinox="J2000",
     )
     vis = create_visibility(
         low,
