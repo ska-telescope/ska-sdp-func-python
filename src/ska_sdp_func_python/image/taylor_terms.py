@@ -344,8 +344,8 @@ def calculate_frequency_taylor_terms_from_image_list(
             )
         decoupled_image = Image.constructor(
             data=decoupled_data,
-            wcs=wcs,
             polarisation_frame=polarisation_frame,
+            wcs=wcs,
         )
         decoupled_images.append(decoupled_image)
 

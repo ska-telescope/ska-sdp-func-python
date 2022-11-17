@@ -276,8 +276,8 @@ def radler_deconvolve_list(
 
         x_im = Image.constructor(
             data=numpy.zeros_like(dirty["pixels"].data),
-            wcs=dirty.image_acc.wcs,
             polarisation_frame=dirty.image_acc.polarisation_frame,
+            wcs=dirty.image_acc.wcs,
             clean_beam=dirty.attrs["clean_beam"],
         )
         x_im["pixels"].data = numpy.expand_dims(restored_radler, axis=(0, 1))

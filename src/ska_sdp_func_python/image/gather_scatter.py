@@ -83,15 +83,15 @@ def image_gather_facets(
     """
     out = Image.constructor(
         data=numpy.zeros_like(im["pixels"].data),
-        wcs=im.image_acc.wcs,
         polarisation_frame=im.image_acc.polarisation_frame,
+        wcs=im.image_acc.wcs,
         clean_beam=im.attrs["clean_beam"],
     )
     if overlap > 0:
         flat = Image.constructor(
             data=numpy.zeros_like(im["pixels"].data),
-            wcs=im.image_acc.wcs,
             polarisation_frame=im.image_acc.polarisation_frame,
+            wcs=im.image_acc.wcs,
             clean_beam=im.attrs["clean_beam"],
         )
         flat["pixels"].data[...] = 1.0
@@ -107,8 +107,8 @@ def image_gather_facets(
 
         sum_flats = Image.constructor(
             data=numpy.zeros_like(im["pixels"].data),
-            wcs=im.image_acc.wcs,
             polarisation_frame=im.image_acc.polarisation_frame,
+            wcs=im.image_acc.wcs,
             clean_beam=im.attrs["clean_beam"],
         )
 
@@ -149,8 +149,8 @@ def image_gather_facets(
     # if no overlap
     flat = Image.constructor(
         data=numpy.zeros_like(im["pixels"].data),
-        wcs=im.image_acc.wcs,
         polarisation_frame=im.image_acc.polarisation_frame,
+        wcs=im.image_acc.wcs,
         clean_beam=im.attrs["clean_beam"],
     )
     flat["pixels"].data[...] = 1.0

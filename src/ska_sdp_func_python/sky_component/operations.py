@@ -809,8 +809,8 @@ def image_voronoi_iter(
         # need to pass data here
         yield Image.constructor(
             data=mask,
-            wcs=im.image_acc.wcs,
             polarisation_frame=im.image_acc.polarisation_frame,
+            wcs=im.image_acc.wcs,
         )
     else:
         _, vertex_array = voronoi_decomposition(im, components)
@@ -823,8 +823,8 @@ def image_voronoi_iter(
             ] = 1.0
             yield Image.constructor(
                 data=mask,
-                wcs=im.image_acc.wcs,
                 polarisation_frame=im.image_acc.polarisation_frame,
+                wcs=im.image_acc.wcs,
             )
 
 

@@ -150,8 +150,8 @@ def image_raster_iter(
                 if overlap > 0 and make_flat:
                     flat = Image.constructor(
                         data=numpy.zeros_like(im["pixels"].data),
-                        wcs=im.image_acc.wcs,
                         polarisation_frame=im.image_acc.polarisation_frame,
+                        wcs=im.image_acc.wcs,
                         clean_beam=im.attrs["clean_beam"],
                     )
                     if taper == "linear":

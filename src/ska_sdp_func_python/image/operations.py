@@ -98,35 +98,35 @@ def convert_stokes_to_polimage(
         # Need to make sure image data is copied (cimarr in this case)
         return Image.constructor(
             data=cimarr,
-            wcs=im.image_acc.wcs,
             polarisation_frame=polarisation_frame,
+            wcs=im.image_acc.wcs,
         )
     if polarisation_frame == PolarisationFrame("linearnp"):
         cimarr = convert_stokes_to_linear(im["pixels"].data)
         return Image.constructor(
             data=cimarr,
-            wcs=im.image_acc.wcs,
             polarisation_frame=polarisation_frame,
+            wcs=im.image_acc.wcs,
         )
     if polarisation_frame == PolarisationFrame("circular"):
         cimarr = convert_stokes_to_circular(im["pixels"].data)
         return Image.constructor(
             data=cimarr,
-            wcs=im.image_acc.wcs,
             polarisation_frame=polarisation_frame,
+            wcs=im.image_acc.wcs,
         )
     if polarisation_frame == PolarisationFrame("circularnp"):
         cimarr = convert_stokes_to_circular(im["pixels"].data)
         return Image.constructor(
             data=cimarr,
-            wcs=im.image_acc.wcs,
             polarisation_frame=polarisation_frame,
+            wcs=im.image_acc.wcs,
         )
     if polarisation_frame == PolarisationFrame("stokesI"):
         return Image.constructor(
             data=im["pixels"].data.astype("complex"),
-            wcs=im.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesI"),
+            wcs=im.image_acc.wcs,
         )
 
     raise ValueError(f"Cannot convert stokes to {polarisation_frame.type}")
@@ -160,35 +160,35 @@ def convert_polimage_to_stokes(im: Image, complex_image=False):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
         return Image.constructor(
             data=_to_required(cimarr),
-            wcs=im.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesIQUV"),
+            wcs=im.image_acc.wcs,
         )
     if im.image_acc.polarisation_frame == PolarisationFrame("linearnp"):
         cimarr = convert_linear_to_stokes(im["pixels"].data)
         return Image.constructor(
             data=_to_required(cimarr),
-            wcs=im.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesIQ"),
+            wcs=im.image_acc.wcs,
         )
     if im.image_acc.polarisation_frame == PolarisationFrame("circular"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
         return Image.constructor(
             data=_to_required(cimarr),
-            wcs=im.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesIQUV"),
+            wcs=im.image_acc.wcs,
         )
     if im.image_acc.polarisation_frame == PolarisationFrame("circularnp"):
         cimarr = convert_circular_to_stokes(im["pixels"].data)
         return Image.constructor(
             data=_to_required(cimarr),
-            wcs=im.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesIV"),
+            wcs=im.image_acc.wcs,
         )
     if im.image_acc.polarisation_frame == PolarisationFrame("stokesI"):
         return Image.constructor(
             data=_to_required(im["pixels"].data),
-            wcs=im.image_acc.wcs,
             polarisation_frame=PolarisationFrame("stokesI"),
+            wcs=im.image_acc.wcs,
         )
 
     raise ValueError(
