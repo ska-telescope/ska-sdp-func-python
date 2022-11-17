@@ -1,12 +1,12 @@
 """
 Functions for predicting visibility from a model image,
-and invert a visibility to make an (image, sumweights) tuple.
+and invert a visibility to make an (Image, sumweights) tuple.
 These redirect to specific versions.
 """
 
 __all__ = [
-    "predict_visibility",
     "invert_visibility",
+    "predict_visibility",
 ]
 
 import logging
@@ -28,20 +28,20 @@ log = logging.getLogger("func-python-logger")
 def predict_visibility(
     vis: Visibility, model: Image, context="ng", gcfcf=None, **kwargs
 ) -> Visibility:
-    """Predict visibility from an image
+    """Predict Visibility from an Image.
 
-     For awprojection, the gridding details must be supplied via a tuple of
-     (gridding correction function, convolution function) or a partial
-     to calculate it.
+    For awprojection, the gridding details must be supplied via a tuple of
+    (gridding correction function, convolution function) or a partial
+    to calculate it.
 
-    :param vis: visibility to be predicted
-    :param model: model image
+    :param vis: Visibility to be predicted
+    :param model: model Image
     :param context: Type: 2d or awprojection, ng
                     or wg (nifty-gridder or WAGG GPU-based gridder/degridder),
                     default: ng
     :param gcfcf: Tuple of (grid correction function,
                 convolution function) or partial function
-    :return: resulting visibility (in place works)
+    :return: resulting Visibility (in place works)
     """
     if context == "awprojection":
         return predict_awprojection(vis, model, gcfcf=gcfcf)
@@ -64,24 +64,24 @@ def invert_visibility(
     gcfcf=None,
     **kwargs,
 ) -> (Image, numpy.ndarray):
-    """Invert visibility to make an (image, sum weights) tuple
+    """Invert Visibility to make an (Image, sum weights) tuple.
 
-     Use the image im as a template. Do PSF in a separate call.
+    Use the image im as a template. Do PSF in a separate call.
 
-     For awprojection, the gridding details must be supplied via a tuple of
-     (gridding correction function, convolution function) or a partial
-     to calculate it.
+    For awprojection, the gridding details must be supplied via a tuple of
+    (gridding correction function, convolution function) or a partial
+    to calculate it.
 
-    :param vis: visibility to be inverted
-    :param im: image template (not changed)
+    :param vis: Visibility to be inverted
+    :param im: Image template (not changed)
     :param dopsf: Make the psf instead of the dirty image (default: False)
-    :param normalise: normalise by the sum of weights (default: True)
+    :param normalise: Normalise by the sum of weights (default: True)
     :param context: Type: 2d or awprojection, ng
                     or wg (nifty-gridder or WAGG GPU-based gridder/degridder),
                     default: ng
     :param gcfcf: Tuple of (grid correction function, convolution function)
                   or partial function
-    :return: (resulting image, sum of weights)
+    :return: (resulting Image, sum of weights)
     """
 
     if context == "awprojection":

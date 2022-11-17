@@ -1,8 +1,14 @@
 """
-FFT support functions
+FFT support functions.
 """
 
-__all__ = ["ifft", "fft", "pad_mid", "extract_mid", "extract_oversampled"]
+__all__ = [
+    "extract_mid",
+    "extract_oversampled",
+    "fft",
+    "ifft",
+    "pad_mid",
+]
 
 import numpy
 
@@ -23,7 +29,7 @@ except ImportError:
 
 
 def fft(a):
-    """Fourier transformation from image to grid space
+    """Fourier transformation from image to grid space.
 
      .. note::
 
@@ -80,7 +86,7 @@ def fft(a):
 
 
 def ifft(a):
-    """Fourier transformation from grid to image space
+    """Fourier transformation from grid to image space.
 
      .. note::
 
@@ -169,7 +175,7 @@ def pad_mid(ff, npixel):
 
 def extract_mid(a, npixel):
     """
-     Extract a section from middle of a map
+     Extract a section from middle of a map.
 
      Suitable for zero frequencies at npixel/2. This is the reverse
      operation to pad.
@@ -178,8 +184,8 @@ def extract_mid(a, npixel):
 
          Only the two innermost axes are transformed
 
-    :param npixel: desired size of the section to extract
     :param a: grid from which to extract
+    :param npixel: desired size of the section to extract
     :return: Section of grid
     """
     ny, nx = a.shape[-2:]
@@ -194,7 +200,7 @@ def extract_mid(a, npixel):
 
 def extract_oversampled(a, xf, yf, kernel_oversampling, kernelwidth):
     """
-     Extract the (xf-th,yf-th) w-kernel from the oversampled parent
+     Extract the (xf-th,yf-th) w-kernel from the oversampled parent.
 
      Offsets are suitable for correcting of fractional coordinates,
      e.g. an offset of (xf,yf) results in the kernel for an (-xf,-yf)
@@ -202,12 +208,12 @@ def extract_oversampled(a, xf, yf, kernel_oversampling, kernelwidth):
 
      We do not want to make assumptions about the source grid's symmetry
      here, which means that the grid's side length must be at least
-     kernel_oversampling*(npixel+2) to contain enough information
-     in all circumstances
+     :math:`kernel_oversampling*(npixel+2)` to contain enough information
+     in all circumstances.
 
+    :param a: grid from which to extract
     :param xf: Offset in x
     :param yf: Offset in y
-    :param a: grid from which to extract
     :param kernel_oversampling: oversampling factor
     :param kernelwidth: size of section
     """

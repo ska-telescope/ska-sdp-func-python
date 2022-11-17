@@ -1,5 +1,5 @@
 """
-Geometry
+Useful geometry functions
 """
 
 __all__ = [
@@ -20,7 +20,7 @@ log = logging.getLogger("func-python-logger")
 
 
 def calculate_parallactic_angles(location, utc_time, direction):
-    """Return hour angles for location, utc_time, and direction
+    """Return hour angles for location, utc_time, and direction.
 
     :param utc_time: Time(Iterable)
     :param location: EarthLocation
@@ -37,12 +37,12 @@ def calculate_parallactic_angles(location, utc_time, direction):
 
 
 def calculate_hourangles(location, utc_time, direction):
-    """Return hour angles for location, utc_time, and direction
+    """Return hour angles for location, utc_time, and direction.
 
     :param utc_time: Time(Iterable)
     :param location: EarthLocation
     :param direction: SkyCoord source
-    :return: hour angels as an astropy Longitude object [h]
+    :return: Hour angles as an astropy Longitude object [h]
     """
 
     assert isinstance(location, EarthLocation)
@@ -55,7 +55,7 @@ def calculate_hourangles(location, utc_time, direction):
 
 def calculate_transit_time(location, utc_time, direction):
     """
-    Find the UTC time of the nearest transit
+    Find the UTC time of the nearest transit.
 
     :param location: EarthLocation
     :param utc_time: Time(Iterable)
@@ -69,7 +69,7 @@ def calculate_transit_time(location, utc_time, direction):
 
 
 def calculate_azel(location, utc_time, direction):
-    """Return az el for a location, utc_time, and direction
+    """Return az el for a location, utc_time, and direction.
 
     :param utc_time: Time(Iterable)
     :param location: EarthLocation
@@ -83,10 +83,10 @@ def calculate_azel(location, utc_time, direction):
 
 def utc_to_ms_epoch(ts):
     """Convert an timestamp to seconds (epoch values)
-         epoch suitable for using in a Measurement Set
+         epoch suitable for using in a Measurement Set.
 
     :param ts:  An astropy Time object.
-    :result: The epoch time ``t`` in seconds suitable
+    :return: The epoch time ``t`` in seconds suitable
              for fields in measurement sets.
     """
     # Use astropy Time

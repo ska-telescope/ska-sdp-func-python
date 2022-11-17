@@ -1,7 +1,10 @@
 """
-Functions to invert and predict from skymodels
+Functions to invert and predict Visibility from SkyModels.
 """
-__all__ = ["skymodel_calibrate_invert", "skymodel_predict_calibrate"]
+__all__ = [
+    "skymodel_calibrate_invert",
+    "skymodel_predict_calibrate",
+]
 
 import numpy
 
@@ -28,16 +31,16 @@ def skymodel_predict_calibrate(
     **kwargs
 ):
     """
-    Predict visibility for a skymodel, optionally applying calibration
+    Predict visibility for a SkyModel, optionally applying calibration.
 
-     A skymodel consists of an image and a list of components,
-     optionally with a gaintable.
+    A SkyModel consists of an Image and a list of components,
+    optionally with a GainTable.
 
-     The function get_pb should have the signature:
+    The function get_pb should have the signature:
 
          get_pb(Visibility, Image)
 
-     and should return the primary beam for the visibility.
+    and should return the primary beam for the visibility.
 
     :param bvis: Input visibility
     :param skymodel: Skymodel
@@ -47,8 +50,8 @@ def skymodel_predict_calibrate(
     :param inverse: True means correction of calibration,
                     False means application of calibration
     :param kwargs: Parameters for functions in components
-    :return: Visibility with dft of components, fft of image,
-             gaintable applied (optional)
+    :return: Visibility with dft of components, fft of Image,
+             GainTable applied (optional)
     """
     v = bvis.copy(deep=True, zero=True)
 
@@ -150,19 +153,19 @@ def skymodel_calibrate_invert(
     flat_sky=False,
     **kwargs
 ):
-    """Inverse Fourier sum of visibility to image and components
+    """Inverse Fourier sum of Visibility to Image and components.
 
-     If the get_pb function is defined, the sum of weights will be
-     an image
+    If the get_pb function is defined, the sum of weights will be
+    an Image.
 
     :param bvis: Visibility to be transformed
-    :param skymodel: Skymodel
+    :param skymodel: SkyModel
     :param context: Type of processing e.g. 2d, wstack, timeslice or facets
     :param docal: Apply calibration table in skymodel
     :param get_pb: Function to get the primary beam for a given image and vis
     :param normalise: Normalise the dirty image by sum of weights
     :param flat_sky: Make the flux values correct (instead of noise)
-    :return: Skymodel containing transforms
+    :return: SkyModel containing transforms
     """
 
     if skymodel.image is None:

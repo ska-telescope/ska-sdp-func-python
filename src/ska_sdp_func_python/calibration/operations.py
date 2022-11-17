@@ -1,11 +1,11 @@
 """
-Functions for calibration.
+Functions for calibration operations.
 """
 
 __all__ = [
     "apply_gaintable",
-    "multiply_gaintables",
     "concatenate_gaintables",
+    "multiply_gaintables",
 ]
 
 import copy
@@ -26,7 +26,7 @@ def apply_gaintable(
     inverse=False,
     use_flags=False,
 ) -> Visibility:
-    """Apply a gain table to a visibility
+    """Apply a GainTable to a Visibility.
 
     The corrected visibility is::
 
@@ -259,9 +259,9 @@ def apply_gaintable(
 def multiply_gaintables(
     gt: GainTable, dgt: GainTable, time_tolerance=1e-3
 ) -> GainTable:
-    """Multiply two GainTables
+    """Multiply two GainTables.
 
-    Returns gt * dgt
+    Returns gt * dgt.
 
     :param gt: First GainTable
     :param dgt: Second GainTable
@@ -299,7 +299,7 @@ def multiply_gaintables(
 
 
 def concatenate_gaintables(gt_list, dim="time"):
-    """Concatenate a list of GainTables
+    """Concatenate a list of GainTables.
 
     :param gt_list: List of GainTables
     :param dim: Dimension to concatenate

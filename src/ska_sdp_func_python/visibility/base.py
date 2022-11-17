@@ -25,7 +25,7 @@ log = logging.getLogger("func-python-logger")
 
 
 def calculate_visibility_phasor(direction, vis):
-    """Calculate the phasor for a component for a Visibility
+    """Calculate the phasor for a component for a Visibility.
 
     :param direction: Direction (SkyCoords)
     :param vis: Visibility
@@ -46,7 +46,7 @@ def calculate_visibility_phasor(direction, vis):
 
 
 def calculate_visibility_uvw_lambda(vis):
-    """Recalculate the uvw_lambda values
+    """Recalculate the uvw_lambda values.
 
     :param vis: Visibility
     :return: Visibility with updated uvw_lambda
@@ -60,17 +60,17 @@ def calculate_visibility_uvw_lambda(vis):
 def phaserotate_visibility(
     vis: Visibility, newphasecentre: SkyCoord, tangent=True, inverse=False
 ) -> Visibility:
-    """Phase rotate from the current phase centre to a new phase centre
+    """Phase rotate from the current phase centre to a new phase centre.
 
     If tangent is False the uvw are recomputed and the
-    visibility phasecentre is updated. Otherwise only the
-    visibility phases are adjusted
+    visibility phasecentre is updated. Otherwise, only the
+    visibility phases are adjusted.
 
     :param vis: Visibility to be rotated
     :param newphasecentre: SkyCoord of new phasecentre
     :param tangent: Stay on the same tangent plane? (True)
     :param inverse: Actually do the opposite
-    :return: Visibility or Visibility
+    :return: Visibility
     """
     _, _, n = skycoord_to_lmn(newphasecentre, vis.phasecentre)
 
