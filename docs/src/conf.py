@@ -52,6 +52,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_automodapi.automodapi",
     "sphinx_automodapi.smart_resolver",
+    "sphinx_rtd_theme"
 ]
 
 autodoc_mock_imports = ["astropy", "pytest", "numpy", "xarray", "astroplan"]

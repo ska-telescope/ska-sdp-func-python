@@ -134,16 +134,16 @@ transform cannot be ignored.
 The standard deconvolution algorithms are provided by
 :py:func:`ska_sdp_func_python.imaging.cleaners`.
 
-    hogbom: Hogbom CLEAN See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
+   * hogbom: Hogbom CLEAN See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
 
-    msclean: MultiScale CLEAN See: Cornwell, T.J., Multiscale CLEAN
-    (IEEE Journal of Selected Topics in Sig Proc,
-    2008 vol. 2 pp. 793-801)
+   * msclean: MultiScale CLEAN See: Cornwell, T.J., Multiscale CLEAN
+     (IEEE Journal of Selected Topics in Sig Proc,
+     2008 vol. 2 pp. 793-801)
 
-    mfsmsclean: MultiScale Multi-Frequency
-    See: U. Rau and T. J. Cornwell, “A multi-scale multi-frequency
-    deconvolution algorithm for synthesis imaging in radio interferometry,”
-    A&A 532, A71 (2011).
+   * mfsmsclean: MultiScale Multi-Frequency
+     See: U. Rau and T. J. Cornwell, “A multi-scale multi-frequency
+     deconvolution algorithm for synthesis imaging in radio interferometry,”
+     A&A 532, A71 (2011).
 
 For example to make dirty image and PSF, deconvolve, and then restore::
 
