@@ -74,9 +74,7 @@ def calculate_visibility_transit_time(bvis):
     :return: Transit time
     """
     location, utc_time, direction = get_direction_time_location(bvis)
-    return calculate_transit_time(
-        location, utc_time[0], direction
-    )
+    return calculate_transit_time(location, utc_time[0], direction)
 
 
 def calculate_visibility_azel(bvis):
