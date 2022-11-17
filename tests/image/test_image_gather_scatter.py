@@ -42,82 +42,75 @@ def test_scatter_gather_facet(phase_centre):
     and uses a single channel with frequency=1e8 Hz,
     and single StokesI polarisation.
     """
-    m31original = create_image(
+    original = create_image(
         10,
         0.00015,
         phase_centre,
         nchan=1,
     )
-    m31original["pixels"].data = numpy.ones(
-        shape=m31original["pixels"].data.shape, dtype=float
+    original["pixels"].data = numpy.ones(
+        shape=original["pixels"].data.shape, dtype=float
     )
-    assert numpy.max(
-        numpy.abs(m31original["pixels"].data)
-    ), "Original is empty"
+    assert numpy.max(numpy.abs(original["pixels"].data)), "Original is empty"
 
     nraster = 1
-    m31model = create_image(
+    model = create_image(
         512,
         0.00015,
         phase_centre,
         nchan=1,
     )
-    m31model["pixels"].data = numpy.ones(
-        shape=m31model["pixels"].data.shape, dtype=float
+    model["pixels"].data = numpy.ones(
+        shape=model["pixels"].data.shape, dtype=float
     )
-    image_list = image_scatter_facets(m31model, facets=nraster)
+    image_list = image_scatter_facets(model, facets=nraster)
     for patch in image_list:
         assert patch["pixels"].data.shape[3] == (
-            m31model["pixels"].data.shape[3] // nraster
+            model["pixels"].data.shape[3] // nraster
         ), (
             f"Number of pixels in each patch: "
             f"{patch['pixels'].data.shape[3]} not as expected: "
-            f"{(m31model['pixels'].data.shape[3] // nraster)}"
+            f"{(model['pixels'].data.shape[3] // nraster)}"
         )
 
         assert patch["pixels"].data.shape[2] == (
-            m31model["pixels"].data.shape[2] // nraster
+            model["pixels"].data.shape[2] // nraster
         ), (
             f"Number of pixels in each patch: "
             f"{patch['pixels'].data.shape[2]} not as expected: "
-            f"{(m31model['pixels'].data.shape[2] // nraster)}"
+            f"{(model['pixels'].data.shape[2] // nraster)}"
         )
 
         # Check for frequency and polarisation
-        assert (
-            patch["pixels"].data.shape[0] == m31model["pixels"].data.shape[0]
-        )
-        assert (
-            patch["pixels"].data.shape[1] == m31model["pixels"].data.shape[1]
-        )
+        assert patch["pixels"].data.shape[0] == model["pixels"].data.shape[0]
+        assert patch["pixels"].data.shape[1] == model["pixels"].data.shape[1]
 
         patch["pixels"].data[...] = 1.0
 
-    m31reconstructed = create_image(
+    reconstructed = create_image(
         512,
         0.00015,
         phase_centre,
         nchan=1,
     )
-    m31reconstructed["pixels"].data = numpy.ones(
-        shape=m31reconstructed["pixels"].data.shape, dtype=float
+    reconstructed["pixels"].data = numpy.ones(
+        shape=reconstructed["pixels"].data.shape, dtype=float
     )
-    m31reconstructed = image_gather_facets(
-        image_list, m31reconstructed, facets=nraster
+    reconstructed = image_gather_facets(
+        image_list, reconstructed, facets=nraster
     )
     flat = image_gather_facets(
-        image_list, m31reconstructed, facets=nraster, return_flat=True
+        image_list, reconstructed, facets=nraster, return_flat=True
     )
 
     assert numpy.max(
         numpy.abs(flat["pixels"].data)
     ), f"Flat is empty for {nraster}"
     assert numpy.max(
-        numpy.abs(m31reconstructed["pixels"].data)
+        numpy.abs(reconstructed["pixels"].data)
     ), f"Raster is empty for {nraster}"
     assert (
-        flat["pixels"].data.shape[0]
-        == m31reconstructed["pixels"].data.shape[0]
+        flat["pixels"].data.shape[0] == reconstructed["pixels"].data.shape[0]
     )
 
 
@@ -126,75 +119,71 @@ def test_scatter_gather_facet_overlap(phase_centre):
     Unit test for the image_gather_facets function with overlap
     Image information same as previous test
     """
-    m31original = create_image(
+    original = create_image(
         512,
         0.00015,
         phase_centre,
         nchan=1,
     )
-    m31original["pixels"].data = numpy.ones(
-        shape=m31original["pixels"].data.shape, dtype=float
+    original["pixels"].data = numpy.ones(
+        shape=original["pixels"].data.shape, dtype=float
     )
-    assert numpy.max(
-        numpy.abs(m31original["pixels"].data)
-    ), "Original is empty"
+    assert numpy.max(numpy.abs(original["pixels"].data)), "Original is empty"
 
     for nraster, overlap in [(1, 0), (1, 8), (1, 16)]:
-        m31model = create_image(
+        model = create_image(
             512,
             0.00015,
             phase_centre,
             nchan=1,
         )
-        m31model["pixels"].data = numpy.ones(
-            shape=m31model["pixels"].data.shape, dtype=float
+        model["pixels"].data = numpy.ones(
+            shape=model["pixels"].data.shape, dtype=float
         )
         image_list = image_scatter_facets(
-            m31model, facets=nraster, overlap=overlap
+            model, facets=nraster, overlap=overlap
         )
         for patch in image_list:
             assert patch["pixels"].data.shape[3] == (
-                m31model["pixels"].data.shape[3] // nraster
+                model["pixels"].data.shape[3] // nraster
             ), (
                 f"Number of pixels in each patch: "
                 f"{patch['pixels'].data.shape[3]} not as expected: "
-                f"{(m31model['pixels'].data.shape[3] // nraster)}"
+                f"{(model['pixels'].data.shape[3] // nraster)}"
             )
 
             assert patch["pixels"].data.shape[2] == (
-                m31model["pixels"].data.shape[2] // nraster
+                model["pixels"].data.shape[2] // nraster
             ), (
                 f"Number of pixels in each patch: "
                 f"{patch['pixels'].data.shape[2]} not as expected: "
-                f"{(m31model['pixels'].data.shape[2] // nraster)}"
+                f"{(model['pixels'].data.shape[2] // nraster)}"
             )
             # Check for frequency and polarisation
             assert (
-                patch["pixels"].data.shape[0]
-                == m31model["pixels"].data.shape[0]
+                patch["pixels"].data.shape[0] == model["pixels"].data.shape[0]
             )
             assert (
-                patch["pixels"].data.shape[1]
-                == m31model["pixels"].data.shape[1]
+                patch["pixels"].data.shape[1] == model["pixels"].data.shape[1]
             )
 
             patch["pixels"].data[...] = 1.0
 
-        m31reconstructed = create_image(
+        reconstructed = create_image(
             512,
             0.00015,
             phase_centre,
             nchan=1,
         )
-        m31reconstructed["pixels"].data = numpy.ones(
-            shape=m31reconstructed["pixels"].data.shape, dtype=float
+        reconstructed["pixels"].data = numpy.ones(
+            shape=reconstructed["pixels"].data.shape, dtype=float
         )
-        m31reconstructed = image_gather_facets(
-            image_list, m31reconstructed, facets=nraster, overlap=overlap
+        reconstructed = image_gather_facets(
+            image_list, reconstructed, facets=nraster, overlap=overlap
         )
         flat = image_gather_facets(
             image_list,
-            m31reconstructed,
+            reconstructed,
             facets=nraster,
             overlap=overlap,
             return_flat=True,
@@ -202,30 +191,28 @@ def test_scatter_gather_facet_overlap(phase_centre):
 
         assert (
             flat["pixels"].data.shape[0]
-            == m31reconstructed["pixels"].data.shape[0]
+            == reconstructed["pixels"].data.shape[0]
         )
         assert numpy.max(
             numpy.abs(flat["pixels"].data)
         ), f"Flat is empty for {nraster}"
         assert numpy.max(
-            numpy.abs(m31reconstructed["pixels"].data)
+            numpy.abs(reconstructed["pixels"].data)
         ), f"Raster is empty for {nraster}"
 
 
 def test_scatter_gather_facet_overlap_taper(phase_centre):
     """Unit test for the image_gather_facets function with overlap and taper"""
-    m31original = create_image(
+    original = create_image(
         512,
         0.00015,
         phase_centre,
         nchan=1,
     )
-    m31original["pixels"].data = numpy.ones(
-        shape=m31original["pixels"].data.shape, dtype=float
+    original["pixels"].data = numpy.ones(
+        shape=original["pixels"].data.shape, dtype=float
     )
-    assert numpy.max(
-        numpy.abs(m31original["pixels"].data)
-    ), "Original is empty"
+    assert numpy.max(numpy.abs(original["pixels"].data)), "Original is empty"
 
     for taper in ["linear", "tukey", None]:
         for nraster, overlap in [
@@ -237,59 +224,59 @@ def test_scatter_gather_facet_overlap_taper(phase_centre):
             (1, 8),
             (1, 16),
         ]:
-            m31model = create_image(
+            model = create_image(
                 512,
                 0.00015,
                 phase_centre,
                 nchan=1,
             )
-            m31model["pixels"].data = numpy.ones(
-                shape=m31model["pixels"].data.shape, dtype=float
+            model["pixels"].data = numpy.ones(
+                shape=model["pixels"].data.shape, dtype=float
             )
             image_list = image_scatter_facets(
-                m31model, facets=nraster, overlap=overlap, taper=taper
+                model, facets=nraster, overlap=overlap, taper=taper
             )
             for patch in image_list:
                 assert patch["pixels"].data.shape[3] == (
-                    m31model["pixels"].data.shape[3] // nraster
+                    model["pixels"].data.shape[3] // nraster
                 ), (
                     f"Number of pixels in each patch: "
                     f"{patch.data.shape[3]} not as expected: "
-                    f"{(m31model['pixels'].data.shape[3] // nraster)}"
+                    f"{(model['pixels'].data.shape[3] // nraster)}"
                 )
                 assert patch["pixels"].data.shape[2] == (
-                    m31model["pixels"].data.shape[2] // nraster
+                    model["pixels"].data.shape[2] // nraster
                 ), (
                     f"Number of pixels in each patch: "
                     f"{patch.data.shape[2]} not as expected: "
-                    f"{(m31model['pixels'].data.shape[2] // nraster)}"
+                    f"{(model['pixels'].data.shape[2] // nraster)}"
                 )
                 # Check for frequency and polarisation
                 assert (
                     patch["pixels"].data.shape[0]
-                    == m31model["pixels"].data.shape[0]
+                    == model["pixels"].data.shape[0]
                 )
                 assert (
                     patch["pixels"].data.shape[1]
-                    == m31model["pixels"].data.shape[1]
+                    == model["pixels"].data.shape[1]
                 )
 
-            m31reconstructed = create_image(
+            reconstructed = create_image(
                 512,
                 0.00015,
                 phase_centre,
                 nchan=1,
             )
-            m31reconstructed = image_gather_facets(
+            reconstructed = image_gather_facets(
                 image_list,
-                m31reconstructed,
+                reconstructed,
                 facets=nraster,
                 overlap=overlap,
                 taper=taper,
             )
             flat = image_gather_facets(
                 image_list,
-                m31reconstructed,
+                reconstructed,
                 facets=nraster,
                 overlap=overlap,
                 taper=taper,
@@ -300,11 +287,11 @@ def test_scatter_gather_facet_overlap_taper(phase_centre):
                 numpy.abs(flat["pixels"].data)
             ), f"Flat is empty for {nraster}"
             assert numpy.max(
-                numpy.abs(m31reconstructed["pixels"].data)
+                numpy.abs(reconstructed["pixels"].data)
             ), f"Raster is empty for {nraster}"
             assert (
                 flat["pixels"].data.shape[0]
-                == m31reconstructed["pixels"].data.shape[0]
+                == reconstructed["pixels"].data.shape[0]
             )
 
 
@@ -312,19 +299,19 @@ def test_scatter_gather_channel(phase_centre):
     """Unit test for image_scatter_channels &
     image_gather_channels functions"""
     for _ in [128, 16]:
-        m31cube = create_image(
+        cube = create_image(
             512,
             0.00015,
             phase_centre,
             nchan=1,
         )
-        m31cube["pixels"].data = numpy.ones(
-            shape=m31cube["pixels"].data.shape, dtype=float
+        cube["pixels"].data = numpy.ones(
+            shape=cube["pixels"].data.shape, dtype=float
         )
         for subimages in [16, 8, 2, 1]:
-            image_list = image_scatter_channels(m31cube, subimages=subimages)
-            m31cuberec = image_gather_channels(image_list)
-            diff = m31cube["pixels"].data - m31cuberec["pixels"].data
+            image_list = image_scatter_channels(cube, subimages=subimages)
+            cuberec = image_gather_channels(image_list)
+            diff = cube["pixels"].data - cuberec["pixels"].data
             assert (
                 numpy.max(numpy.abs(diff)) == 0.0
             ), f"Scatter gather failed for {subimages}"
@@ -333,19 +320,19 @@ def test_scatter_gather_channel(phase_centre):
 def test_gather_channel(phase_centre):
     """Unit test for the image_gather_channels functions"""
     for nchan in [128, 16]:
-        m31cube = create_image(
+        cube = create_image(
             512,
             0.00015,
             phase_centre,
             nchan=1,
         )
-        m31cube["pixels"].data = numpy.ones(
-            shape=m31cube["pixels"].data.shape, dtype=float
+        cube["pixels"].data = numpy.ones(
+            shape=cube["pixels"].data.shape, dtype=float
         )
-        image_list = image_scatter_channels(m31cube, subimages=nchan)
-        m31cuberec = image_gather_channels(image_list)
-        assert m31cube["pixels"].shape == m31cuberec["pixels"].shape
-        diff = m31cube["pixels"].data - m31cuberec["pixels"].data
+        image_list = image_scatter_channels(cube, subimages=nchan)
+        cuberec = image_gather_channels(image_list)
+        assert cube["pixels"].shape == cuberec["pixels"].shape
+        diff = cube["pixels"].data - cuberec["pixels"].data
         assert (
             numpy.max(numpy.abs(diff)) == 0.0
         ), f"Scatter gather failed for {nchan}"

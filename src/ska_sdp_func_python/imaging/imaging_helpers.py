@@ -28,8 +28,8 @@ def sum_invert_results(image_list):
 
     im = Image.constructor(
         data=numpy.zeros_like(image_list[0][0]["pixels"].data),
-        wcs=image_list[0][0].image_acc.wcs,
         polarisation_frame=image_list[0][0].image_acc.polarisation_frame,
+        wcs=image_list[0][0].image_acc.wcs,
     )
 
     sumwt = image_list[0][1]
