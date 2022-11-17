@@ -9,7 +9,6 @@ import collections.abc
 import logging
 
 import numpy
-from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 
 from ska_sdp_func_python.util.array_functions import tukey_filter
@@ -148,13 +147,11 @@ def image_raster_iter(
                 )
 
                 if overlap > 0 and make_flat:
-                    flat = create_image(
-                        subim["pixels"].data.shape[3],
-                        numpy.deg2rad(numpy.abs(wcs.wcs.cdelt[1])),
-                        im.image_acc.phasecentre,
-                        frequency=wcs.wcs.crval[3],
-                        channel_bandwidth=wcs.wcs.cdelt[3],
-                        nchan=subim["pixels"].data.shape[0],
+                    flat = Image.constructor(
+                        data=numpy.zeros_like(im["pixels"].data),
+                        wcs=im.image_acc.wcs,
+                        polarisation_frame=im.image_acc.polarisation_frame,
+                        clean_beam=im.attrs["clean_beam"],
                     )
                     if taper == "linear":
                         flat["pixels"].data[..., :, :] = numpy.outer(

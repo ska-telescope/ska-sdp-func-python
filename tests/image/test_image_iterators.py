@@ -38,9 +38,9 @@ def iterators_fixture():
         equinox="J2000",
     )
     image = create_image(
-        npixel=512,
-        cellsize=0.00015,
-        phasecentre=phase_centre,
+        512,
+        0.00015,
+        phase_centre,
         nchan=1,
     )
 
@@ -118,6 +118,15 @@ def test_raster(input_params):
                                 patch["pixels"].data.shape[2],
                                 (m31model["pixels"].data.shape[2] // nraster),
                             )
+                        )
+                        # Check for frequency and polarisation
+                        assert (
+                            patch["pixels"].data.shape[0]
+                            == m31model["pixels"].data.shape[0]
+                        )
+                        assert (
+                            patch["pixels"].data.shape[1]
+                            == m31model["pixels"].data.shape[1]
                         )
                         patch["pixels"].data *= 2.0
 
