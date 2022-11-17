@@ -1,8 +1,11 @@
+.. _ska_sdp_func_api:
+
 Processing Components
 *********************
 
 .. toctree::
-  :maxdepth: 1
+   :maxdepth: 1
+   :caption: Functions
 
    calibration/index.rst
    fourier_transforms/index.rst
