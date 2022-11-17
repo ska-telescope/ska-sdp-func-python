@@ -79,7 +79,8 @@ def input_vis_gt():
 def test_apply_gaintable(input_params):
     """
     Unit test for the apply_gaintable function, using flags
-    TODO: work on this test
+    TODO: The property of use_flags is not properly tested,
+          need to revisit this test
     """
 
     vis = input_params["visibility2"]
@@ -87,22 +88,6 @@ def test_apply_gaintable(input_params):
         input_params["visibility1"],
         input_params["gaintable2"],
         use_flags=True,
-    )
-    assert (result["vis"].data == vis["vis"].data).all()
-    assert (result["weight"].data == vis["weight"].data / 2).all()
-
-
-def test_apply_gaintable_no_flag(input_params):
-    """
-    Unit test for the apply_gaintable function, without using flags
-    TODO: work on this test
-    """
-
-    vis = input_params["visibility2"]
-    result = apply_gaintable(
-        input_params["visibility1"],
-        input_params["gaintable2"],
-        use_flags=False,
     )
     assert (result["vis"].data == vis["vis"].data).all()
     assert (result["weight"].data == vis["weight"].data / 2).all()

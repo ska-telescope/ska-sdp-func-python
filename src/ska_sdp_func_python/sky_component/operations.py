@@ -41,7 +41,6 @@ from photutils import segmentation
 from scipy import interpolate
 from scipy.optimize import minpack
 from scipy.spatial import Voronoi  # pylint: disable=no-name-in-module
-from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_functions import (
     convert_pol_frame,
@@ -807,11 +806,11 @@ def image_voronoi_iter(
     """
     if len(components) == 1:
         mask = numpy.ones(im["pixels"].data.shape)
-        yield create_image(
-            mask[3],
-            numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-            im.image_acc.phasecentre,
-            nchan=mask[0],
+        # need to pass data here
+        yield Image.constructor(
+            data=mask,
+            wcs=im.image_acc.wcs,
+            polarisation_frame=im.image_acc.polarisation_frame,
         )
     else:
         _, vertex_array = voronoi_decomposition(im, components)
@@ -822,11 +821,10 @@ def image_voronoi_iter(
             mask[
                 (vertex_array == region)[numpy.newaxis, numpy.newaxis, ...]
             ] = 1.0
-            yield create_image(
-                mask[3],
-                numpy.deg2rad(numpy.abs(im.image_acc.wcs.wcs.cdelt[1])),
-                im.image_acc.phasecentre,
-                nchan=mask[0],
+            yield Image.constructor(
+                data=mask,
+                wcs=im.image_acc.wcs,
+                polarisation_frame=im.image_acc.polarisation_frame,
             )
 
 

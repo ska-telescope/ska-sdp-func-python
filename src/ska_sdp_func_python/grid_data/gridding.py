@@ -599,9 +599,9 @@ def fft_griddata_to_image(griddata, template, gcf=None):
         )
 
     return Image.constructor(
-        im_data,
-        griddata.griddata_acc.polarisation_frame,
-        template.image_acc.wcs,
+        data=im_data,
+        wcs=template.image_acc.wcs,
+        polarisation_frame=griddata.griddata_acc.polarisation_frame,
     )
 
 

@@ -21,6 +21,7 @@ from ska_sdp_func_python.sky_component.operations import (
     find_skycomponent_matches,
     find_skycomponent_matches_atomic,
     fit_skycomponent_spectral_index,
+    image_voronoi_iter,
     insert_skycomponent,
     partition_skycomponent_neighbours,
     remove_neighbouring_components,
@@ -224,6 +225,32 @@ def test_voronoi_decomposition(input_params):
     image = insert_skycomponent(image, image_component)
     components = input_params["ref_skycomponents_list"]
     v_structure, v_image = voronoi_decomposition(image, components)
+
+
+@pytest.mark.skip(
+    reason="Better understanding of Vornoi needed to make a useful unit test"
+)
+def test_image_voronoi_iter(input_params):
+    """
+    Unit test for image_voronoi_iter
+    """
+    bright_components = input_params["skycomponents_list"]
+    phase_centre = SkyCoord(
+        ra=+180.0 * u.deg, dec=-40.0 * u.deg, frame="icrs", equinox="J2000"
+    )
+    model = create_image(
+        512,
+        0.001,
+        phase_centre,
+        nchan=1,
+    )
+    model["pixels"].data[...] = 1.0
+
+    bright_components = filter_skycomponents_by_flux(
+        bright_components, flux_min=2.0
+    )
+    for im in image_voronoi_iter(model, bright_components):
+        assert numpy.sum(im["pixels"].data) > 1
 
 
 @pytest.mark.skip(

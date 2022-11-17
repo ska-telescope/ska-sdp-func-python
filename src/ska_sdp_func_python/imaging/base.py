@@ -37,7 +37,7 @@ __all__ = [
 import logging
 
 import numpy
-from astropy import units, wcs
+from astropy import units
 from astropy.wcs.utils import pixel_to_skycoord
 from ska_sdp_datamodels import physical_constants
 from ska_sdp_datamodels.gridded_visibility.grid_vis_create import (
@@ -325,6 +325,7 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
 
     :param vis: Visibility
 
+    Optional kwargs:
     :param phasecentre: Phasecentre (Skycoord)
     :param channel_bandwidth: Channel width (Hz)
     :param cellsize: Cellsize (radians)
@@ -438,37 +439,20 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
         cellsize = criticalcellsize
 
     pol_frame = kwargs.get("polarisation_frame", PolarisationFrame("stokesI"))
-    inpol = pol_frame.npol
 
-    # Now we can define the WCS, which is a convenient
-    # place to hold the info above. Beware of python indexing
-    # order! wcs and the array have opposite ordering
-    shape = [inchan, inpol, npixel, npixel]
+    im = create_image(
+        npixel,
+        cellsize,
+        phase_centre,
+        polarisation_frame=pol_frame,
+        frequency=reffrequency.to(units.Hz).value,
+        channel_bandwidth=channel_bandwidth.to(units.Hz).value,
+        nchan=inchan,
+    )
+
+    shape = im["pixels"].data.shape
     log.debug("create_image_from_visibility: image shape is %s", str(shape))
-    w = wcs.WCS(naxis=4)
-    # The negation in the longitude is needed by definition of RA, DEC
-    w.wcs.cdelt = [
-        -cellsize * 180.0 / numpy.pi,
-        cellsize * 180.0 / numpy.pi,
-        1.0,
-        channel_bandwidth.to(units.Hz).value,
-    ]
-    # The numpy definition of the phase centre of an
-    # FFT is n // 2 (0 - rel) so that's what we use for
-    # the reference pixel. We have to use 0 rel everywhere.
-    w.wcs.crpix = [npixel // 2 + 1, npixel // 2 + 1, 1.0, 1.0]
-    w.wcs.ctype = ["RA---SIN", "DEC--SIN", "STOKES", "FREQ"]
-    w.wcs.crval = [
-        phase_centre.ra.deg,
-        phase_centre.dec.deg,
-        1.0,
-        reffrequency.to(units.Hz).value,
-    ]
-    w.naxis = 4
 
-    w.wcs.radesys = kwargs.get("frame", "ICRS")
-    w.wcs.equinox = kwargs.get("equinox", 2000.0)
-    im = create_image(npixel, cellsize, phase_centre, nchan=inchan)
     return im
 
 

@@ -89,9 +89,9 @@ def calculate_image_frequency_moments(
     moment_wcs.wcs.cunit[3] = ""
 
     return Image.constructor(
-        moment_data,
-        im.image_acc.polarisation_frame,
-        moment_wcs,
+        data=moment_data,
+        polarisation_frame=im.image_acc.polarisation_frame,
+        wcs=moment_wcs,
     )
 
 
@@ -147,7 +147,7 @@ def calculate_image_from_frequency_taylor_terms(
             )
 
     newim = Image.constructor(
-        newim_data,
+        data=newim_data,
         polarisation_frame=im.image_acc.polarisation_frame,
         wcs=im.image_acc.wcs,
     )
@@ -226,9 +226,9 @@ def calculate_image_list_frequency_moments(
     moment_wcs.wcs.cunit[3] = ""
 
     return Image.constructor(
-        moment_data,
-        im_list[0].image_acc.polarisation_frame,
-        moment_wcs,
+        data=moment_data,
+        polarisation_frame=im_list[0].image_acc.polarisation_frame,
+        wcs=moment_wcs,
     )
 
 
@@ -273,7 +273,7 @@ def calculate_image_list_from_frequency_taylor_terms(
             )
 
         newim = Image.constructor(
-            newim_data,
+            data=newim_data,
             polarisation_frame=im_list[chan].image_acc.polarisation_frame,
             wcs=im_list[chan].image_acc.wcs,
         )
