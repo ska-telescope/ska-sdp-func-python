@@ -71,7 +71,7 @@ def image_gather_facets(
     The flat may be optionally returned instead of the result.
 
     :param image_list: List of subimages
-    :param im: Output image
+    :param im: Output Image
     :param facets: Number of image partitions on each axis (2)
     :param overlap: Overlap between neighbours in pixels
     :param taper: Taper at edges None or 'linear' or 'Tukey'
@@ -167,7 +167,7 @@ def image_gather_facets(
 
 
 def image_scatter_channels(im: Image, subimages=None) -> List[Image]:
-    """Scatter an image into a list of subimages using the channels.
+    """Scatter an Image into a list of subimages using the channels.
 
     :param im: Image
     :param subimages: Number of channels
