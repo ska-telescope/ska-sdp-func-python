@@ -139,7 +139,8 @@ def hogbom_complex(
     """
     Clean the point spread function from a dirty Q+iU image.
 
-    This uses the complex Hogbom CLEAN for polarised data (2016MNRAS.462.3483P).
+    This uses the complex Hogbom CLEAN for polarised data
+    (2016MNRAS.462.3483P).
 
     The starting-point for the code was the standard Hogbom
     clean algorithm available in RASCIL.

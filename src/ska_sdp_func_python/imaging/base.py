@@ -107,7 +107,8 @@ def normalise_sumwt(im: Image, sumwt, min_weight=0.1, flat_sky=False) -> Image:
     :param sumwt: Sum of weights [nchan, npol] or [nchan, npol, ny, nx]
     :param min_weight: Minimum (fractional) weight to be used in
                        dividing by the sumwt images
-    :param flat_sky: Make the flux values correct (instead of noise) (default is False)
+    :param flat_sky: Make the flux values correct instead of noise
+     (default is False)
     :return: Image with sum of weights normalised out
     """
     nchan, npol, _, _ = im["pixels"].data.shape
