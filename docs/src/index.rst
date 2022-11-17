@@ -43,7 +43,14 @@ Refer to their page for instructions.
 
 
 .. toctree::
-  :maxdepth: 2
+   :maxdepth: 1
+   :caption: Sections
+
+   Fourier_processing
+   functions
+   usage
+   api
+
 
 
 
