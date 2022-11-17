@@ -8,9 +8,7 @@ sphinx-argparse
 # Additional packages needed to be installed
 # so that the docs can render the API correctly
 # without the need of mocking every single import
-astroplan
-astropy
 mock
 photutils
+scipy
 ska_sdp_datamodels
-xarray
