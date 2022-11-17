@@ -35,7 +35,7 @@ def sum_invert_results(image_list):
     sumwt = image_list[0][1]
     sumwt *= 0.0
 
-    for i, arg in enumerate(image_list):
+    for _, arg in enumerate(image_list):
         if arg is not None:
             im["pixels"].data += (
                 arg[1][..., numpy.newaxis, numpy.newaxis]
@@ -105,24 +105,29 @@ def threshold_list(
             )
             peak = max(peak, this_peak)
             log.info(
-                f"threshold_list: using moment 0, sub_image {i}, "
-                f"peak = {this_peak}"
+                "threshold_list: using moment 0, sub_image %s, peak = %s",
+                i,
+                this_peak,
             )
         else:
             ref_chan = result["pixels"].data.shape[0] // 2
             this_peak = numpy.max(numpy.abs(result["pixels"].data[ref_chan]))
             peak = max(peak, this_peak)
             log.info(
-                f"threshold_list: using refchan {ref_chan}, "
-                f"sub_image {i}, peak = {this_peak}"
+                "threshold_list: using refchan %s, sub_image %s, peak = %s",
+                ref_chan,
+                i,
+                this_peak,
             )
 
     actual = max(peak * fractional_threshold, threshold)
 
     if use_moment0:
         log.info(
-            f"threshold_list {prefix}: Global peak in moment 0 = {peak}, "
-            "sub-image clean threshold will be {actual}"
+            "threshold_list %s: Global peak in moment 0 = %s, "
+            "sub-image clean threshold will be {actual}",
+            prefix,
+            peak,
         )
     else:
         log.info(

@@ -1,8 +1,7 @@
 # pylint: skip-file
 # flake8: noqa
-""" Unit tests for calibration solution
-
-
+"""
+Unit tests for calibration solution
 """
 import logging
 import unittest

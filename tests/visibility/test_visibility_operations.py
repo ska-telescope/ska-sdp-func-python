@@ -1,8 +1,5 @@
-# pylint: disable=duplicate-code, invalid-name,
-# pylint: disable=unsupported-assignment-operation
-""" Unit tests for visibility operations
-
-
+"""
+Unit tests for visibility operations
 """
 import astropy.units as u
 import numpy
@@ -113,7 +110,7 @@ def test_divide_visibility(operations_params):
         weight=1.0,
         polarisation_frame=PolarisationFrame("stokesI"),
     )
-    othervis["vis"][..., :] = [1.0 + 0.0j]
+    othervis["vis"].data[..., :] = [1.0 + 0.0j]
     ratiovis = divide_visibility(vis, othervis)
     assert ratiovis.visibility_acc.nvis == vis.visibility_acc.nvis
     assert numpy.max(numpy.abs(ratiovis.vis)) == 2.0, numpy.max(
@@ -132,7 +129,7 @@ def test_divide_visibility_pol(operations_params):
         weight=1.0,
         polarisation_frame=PolarisationFrame("linear"),
     )
-    vis["vis"][..., :] = [2.0 + 0.0j, 0.0j, 0.0j, 2.0 + 0.0j]
+    vis["vis"].data[..., :] = [2.0 + 0.0j, 0.0j, 0.0j, 2.0 + 0.0j]
     othervis = create_visibility(
         operations_params["lowcore"],
         operations_params["times"],
@@ -142,7 +139,7 @@ def test_divide_visibility_pol(operations_params):
         weight=1.0,
         polarisation_frame=PolarisationFrame("linear"),
     )
-    othervis["vis"][..., :] = [1.0 + 0.0j, 0.0j, 0.0j, 1.0 + 0.0j]
+    othervis["vis"].data[..., :] = [1.0 + 0.0j, 0.0j, 0.0j, 1.0 + 0.0j]
     ratiovis = divide_visibility(vis, othervis)
     assert ratiovis.visibility_acc.nvis == vis.visibility_acc.nvis
     assert numpy.max(numpy.abs(ratiovis.vis)) == 2.0, numpy.max(
@@ -161,7 +158,7 @@ def test_divide_visibility_singular(operations_params):
         weight=1.0,
         polarisation_frame=PolarisationFrame("linear"),
     )
-    vis["vis"][..., :] = [
+    vis["vis"].data[..., :] = [
         2.0 + 0.0j,
         2.0 + 0.0j,
         2.0 + 0.0j,
@@ -176,7 +173,7 @@ def test_divide_visibility_singular(operations_params):
         weight=1.0,
         polarisation_frame=PolarisationFrame("linear"),
     )
-    othervis["vis"][..., :] = [
+    othervis["vis"].data[..., :] = [
         1.0 + 0.0j,
         1.0 + 0.0j,
         1.0 + 0.0j,

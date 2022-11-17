@@ -44,7 +44,7 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     """
 
     try:
-        import wagg as wg
+        import wagg as wg  # pylint: disable=import-outside-toplevel
     except ImportError:
         log.warning("WAGG is not installed. Cannot run predict_wg")
         return None
@@ -78,15 +78,16 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     )
 
     # Get the image properties
-    m_nchan, m_npol, ny, nx = model["pixels"].data.shape
-    # Check if the number of frequency channels matches in bvis and a model
+    m_nchan = model["pixels"].data.shape[0]
+    m_npol = model["pixels"].data.shape[1]
+
     if m_npol != vnpol:
         log.error(
-            "The number of frequency channels in bvis "
+            "The number of polarisations in bvis "
             "and a model does not match, exiting..."
         )
         raise ValueError(
-            "WG: The number of frequency channels in "
+            "WG: The number of polarisations in "
             "bvis and a model does not match"
         )
 
@@ -176,7 +177,7 @@ def invert_wg(
               each frequency and polarization)
     """
     try:
-        import wagg as wg
+        import wagg as wg  # pylint: disable=import-outside-toplevel
     except ImportError:
         log.warning("WAGG is not installed. Cannot run invert_wg")
         return None
@@ -226,7 +227,8 @@ def invert_wg(
     flipped_uvw[:, 0] *= -1.0
     flipped_uvw[:, 2] *= -1.0
 
-    nchan, npol, ny, nx = im["pixels"].data.shape
+    nchan = im["pixels"].data.shape[0]
+    npol = im["pixels"].data.shape[1]
     im["pixels"].data[...] = 0.0
     sum_weight = numpy.zeros([nchan, npol])
 

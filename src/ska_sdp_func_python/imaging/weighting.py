@@ -52,7 +52,7 @@ def weight_visibility(vis, model, weighting="uniform", robustness=0.0):
     griddata = create_griddata_from_image(
         model, polarisation_frame=vis.visibility_acc.polarisation_frame
     )
-    griddata, sumwt = grid_visibility_weight_to_griddata(vis, griddata)
+    griddata, _ = grid_visibility_weight_to_griddata(vis, griddata)
     vis = griddata_visibility_reweight(
         vis, griddata, weighting=weighting, robustness=robustness
     )

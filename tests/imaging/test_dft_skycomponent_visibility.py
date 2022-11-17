@@ -1,6 +1,5 @@
-""" Unit tests for visibility operations
-
-
+"""
+Unit tests for visibility operations
 """
 
 import unittest
@@ -25,7 +24,12 @@ from ska_sdp_func_python.imaging.dft import (
 )
 from ska_sdp_func_python.visibility.base import phaserotate_visibility
 
+# TODO: convert to pytest
 
+
+# TODO: These pylint ignores will be gone once tests are in pytest
+# pylint: disable=attribute-defined-outside-init,missing-class-docstring
+# pylint: disable=too-many-instance-attributes
 class TestVisibilityDFTOperations(unittest.TestCase):
     def setUp(self):
         self.lowcore = create_named_configuration("LOWBD2", rmax=300.0)
@@ -55,6 +59,9 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         )
 
     def test_phase_rotation_stokesi(self):
+        """
+        Test phase-rotating visibility: stokesI
+        """
         # Define the component and give it some spectral behaviour
         f = numpy.array([100.0])
         self.flux = numpy.array([f, 0.8 * f, 0.6 * f])
@@ -111,6 +118,9 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         assert_allclose(rotatedvis.uvw, vismodel2.uvw, rtol=3e-6)
 
     def test_phase_rotation_stokesiquv(self):
+        """
+        Test phase-rotating visibility: stokesIQUV
+        """
         self.vis = create_visibility(
             self.lowcore,
             self.times,
@@ -144,6 +154,9 @@ class TestVisibilityDFTOperations(unittest.TestCase):
         assert_allclose(rotatedvis.uvw, vismodel2.uvw, rtol=3e-6)
 
     def test_dft_idft_stokesiquv_visibility(self):
+        """
+        Test iDFT, stokesIQUV
+        """
         for vpol in [
             PolarisationFrame("linear"),
             PolarisationFrame("circular"),
@@ -158,9 +171,7 @@ class TestVisibilityDFTOperations(unittest.TestCase):
                 polarisation_frame=vpol,
             )
             self.vismodel = dft_skycomponent_visibility(self.vis, self.comp)
-            rcomp, weights = idft_visibility_skycomponent(
-                self.vismodel, self.comp
-            )
+            rcomp, _ = idft_visibility_skycomponent(self.vismodel, self.comp)
             assert_allclose(
                 self.comp.flux, numpy.real(rcomp[0].flux), rtol=1e-10
             )

@@ -67,17 +67,14 @@ def calculate_visibility_parallactic_angles(bvis):
     return calculate_parallactic_angles(location, utc_time, direction)
 
 
-def calculate_visibility_transit_time(bvis, fraction_day=1e-10):
+def calculate_visibility_transit_time(bvis):
     """Find the UTC time of the nearest transit
 
     :param bvis: Visibility
-    :param fraction_day: Fraction of the day
     :return: Transit time
     """
     location, utc_time, direction = get_direction_time_location(bvis)
-    return calculate_transit_time(
-        location, utc_time[0], direction, fraction_day=fraction_day
-    )
+    return calculate_transit_time(location, utc_time[0], direction)
 
 
 def calculate_visibility_azel(bvis):

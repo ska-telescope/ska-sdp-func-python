@@ -1,6 +1,5 @@
-""" Unit processing_components for image deconvolution via MSClean
-
-
+"""
+Unit processing_components for image deconvolution via MSClean
 """
 import logging
 
@@ -21,6 +20,7 @@ log.setLevel(logging.WARNING)
 
 @pytest.fixture(scope="module", name="msclean_params")
 def msclean_fixture():
+    """Fixture to generate input params for tests"""
     npixel = 256
     scales = [0.0, 8.0 / numpy.sqrt(2.0), 8.0]
     stackshape = [len(scales), npixel, npixel]
@@ -34,6 +34,7 @@ def msclean_fixture():
 
 
 def test_convolve(msclean_params):
+    """Test convolving image with scale stack."""
     img = numpy.zeros([msclean_params["npixel"], msclean_params["npixel"]])
     img[75, 31] = 1.0
     result = convolve_scalestack(msclean_params["scalestack"], img)
@@ -62,6 +63,7 @@ def test_convolve(msclean_params):
 
 
 def test_convolve_convolve(msclean_params):
+    """Test twice convolving image with scale stack"""
     img = numpy.zeros([msclean_params["npixel"], msclean_params["npixel"]])
     img[75, 31] = 1.0
     result = convolve_convolve_scalestack(msclean_params["scalestack"], img)

@@ -210,7 +210,9 @@ def solve_gaintable(
                 gt["residual"].data[row, ...] = 0.0
 
         else:
-            log.warning(f"Gaintable {gt.time}, vis time mismatch {vis.time}")
+            log.warning(
+                "Gaintable %s, vis time mismatch %s", gt.time, vis.time
+            )
 
     return gt
 
@@ -322,7 +324,7 @@ def gain_substitution_scalar(gain, x, xwt):
 
 
 def solve_antenna_gains_itsubs_nocrossdata(
-    gain, gwt, x, xwt, niter=200, tol=1e-6, phase_only=True, refant=0
+    gain, gwt, x, xwt, niter=200, tol=1e-6, phase_only=True
 ):
     """Solve for the antenna gains using full matrix expressions,
          but no cross hands
@@ -344,7 +346,6 @@ def solve_antenna_gains_itsubs_nocrossdata(
     :param niter: Number of iterations
     :param tol: tolerance on solution change
     :param phase_only: Do solution for only the phase? (default True)
-    :param refant: Reference antenna for phase (default=0.0)
     :return: gain [nants, nchan, nrec, nrec], weight [nants, nchan, nrec, nrec]
     """
 
@@ -374,12 +375,11 @@ def solve_antenna_gains_itsubs_nocrossdata(
         niter=niter,
         tol=tol,
         phase_only=phase_only,
-        refant=refant,
     )
 
 
 def solve_antenna_gains_itsubs_matrix(
-    gain, gwt, x, xwt, niter=200, tol=1e-6, phase_only=True, refant=0
+    gain, gwt, x, xwt, niter=200, tol=1e-6, phase_only=True
 ):
     """Solve for the antenna gains using full matrix expressions
 
@@ -400,7 +400,6 @@ def solve_antenna_gains_itsubs_matrix(
     :param niter: Number of iterations
     :param tol: tolerance on solution change
     :param phase_only: Do solution for only the phase? (default True)
-    :param refant: Reference antenna for phase (default=0.0)
     :return: gain [nants, nchan, nrec, nrec], weight [nants, nchan, nrec, nrec]
     """
 
@@ -529,9 +528,6 @@ def solution_residual_matrix(gain, x, xwt):
     :param xwt: Equivalent point source weight [nants, nants, nchan]
     :return: residual[nchan, nrec, nrec]
     """
-
-    nants, _, nchan, nrec, _ = x.shape
-
     n_gain = numpy.einsum("i...,j...->ij...", numpy.conjugate(gain), gain)
     n_error = numpy.conjugate(x - n_gain)
     nn_residual = (n_error * xwt * numpy.conjugate(n_error)).real

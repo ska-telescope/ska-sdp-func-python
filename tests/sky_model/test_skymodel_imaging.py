@@ -1,5 +1,6 @@
 # pylint: skip-file
-""" Regression test for skymodel predict and invert functions
+"""
+Regression test for skymodel predict and invert functions
 """
 import logging
 import os

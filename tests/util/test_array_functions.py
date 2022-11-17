@@ -1,6 +1,5 @@
-""" Unit processing_components for Array functions
-
-
+"""
+Unit processing_components for Array functions
 """
 import logging
 

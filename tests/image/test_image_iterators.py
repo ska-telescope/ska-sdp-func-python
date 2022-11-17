@@ -1,7 +1,5 @@
-# pylint: disable=duplicate-code
-"""Unit tests for image iteration
-
-
+"""
+Unit tests for image iteration
 """
 import logging
 import tempfile
@@ -98,38 +96,29 @@ def test_raster(input_params):
                     ):
                         assert patch["pixels"].data.shape[3] == (
                             m31model["pixels"].data.shape[3] // nraster
-                        ), (
-                            "Number of pixels in each patch: %d not as "
-                            "expected: %d"
-                            % (
-                                patch["pixels"].data.shape[3],
-                                (m31model["pixels"].data.shape[3] // nraster),
-                            )
                         )
                         assert patch["pixels"].data.shape[2] == (
                             m31model["pixels"].data.shape[2] // nraster
-                        ), (
-                            "Number of pixels in each patch: %d not as "
-                            "expected: %d"
-                            % (
-                                patch["pixels"].data.shape[2],
-                                (m31model["pixels"].data.shape[2] // nraster),
-                            )
                         )
                         patch["pixels"].data *= 2.0
 
                     if numpy.max(numpy.abs(m31model["pixels"].data)) == 0.0:
                         log.warning(
-                            f"Raster is empty failed for {npixel}, {nraster},"
-                            f"{overlap}"
+                            "Raster is empty failed for %s, %s, %s",
+                            npixel,
+                            nraster,
+                            overlap,
                         )
                     diff = m31model.copy(deep=True)
                     diff["pixels"].data -= 2.0 * m31original["pixels"].data
                     err = numpy.max(diff["pixels"].data)
                     if abs(err) > 0.0:
                         log.warning(
-                            f"Raster set failed for {npixel}, {nraster}, "
-                            f"{overlap}: error {err}"
+                            "Raster set failed for %s, %s, %s: error %s",
+                            npixel,
+                            nraster,
+                            overlap,
+                            err,
                         )
                     with tempfile.TemporaryDirectory() as testdir:
                         m31model.image_acc.export_to_fits(
@@ -142,8 +131,11 @@ def test_raster(input_params):
                         )
                 except ValueError as err:
                     log.error(
-                        f"Iterator failed for {npixel}, {nraster}, {overlap},:"
-                        f" {err}"
+                        "Iterator failed for %s, %s, %s,: %s",
+                        npixel,
+                        nraster,
+                        overlap,
+                        err,
                     )
 
 
