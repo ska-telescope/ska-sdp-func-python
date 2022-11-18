@@ -9,7 +9,6 @@ import collections.abc
 import logging
 
 import numpy
-from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.image.image_model import Image
 
 from ska_sdp_func_python.util.array_functions import tukey_filter
@@ -143,16 +142,17 @@ def image_raster_iter(
                 wcs.wcs.crpix[1] -= y
                 # yield image from slice (reference!)
                 subim = Image.constructor(
-                    im["pixels"].data[..., y : y + dy, x : x + dx],
-                    im.image_acc.polarisation_frame,
-                    wcs,
+                    data=im["pixels"].data[..., y : y + dy, x : x + dx],
+                    polarisation_frame=im.image_acc.polarisation_frame,
+                    wcs=wcs,
                 )
 
                 if overlap > 0 and make_flat:
-                    flat = create_image(
-                        subim["pixels"].data.shape[3],
-                        cellsize=numpy.deg2rad(numpy.abs(wcs.wcs.cdelt[1])),
-                        phasecentre=im.image_acc.phasecentre,
+                    flat = Image.constructor(
+                        data=numpy.zeros_like(im["pixels"].data),
+                        polarisation_frame=im.image_acc.polarisation_frame,
+                        wcs=im.image_acc.wcs,
+                        clean_beam=im.attrs["clean_beam"],
                     )
                     if taper == "linear":
                         flat["pixels"].data[..., :, :] = numpy.outer(
@@ -231,7 +231,7 @@ def image_channel_iter(im: Image, subimages=1) -> collections.abc.Iterable:
 
         # Yield image from slice (reference!)
         yield Image.constructor(
-            im["pixels"].data[channel:channel_max, ...],
-            im.image_acc.polarisation_frame,
-            wcs,
+            data=im["pixels"].data[channel:channel_max, ...],
+            polarisation_frame=im.image_acc.polarisation_frame,
+            wcs=wcs,
         )

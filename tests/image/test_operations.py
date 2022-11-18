@@ -8,10 +8,13 @@ import pytest
 from astropy import units
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.image.image_create import create_image
+from ska_sdp_datamodels.science_data_model import PolarisationFrame
 
 from ska_sdp_func_python.image.operations import (
     convert_clean_beam_to_degrees,
     convert_clean_beam_to_pixels,
+    convert_polimage_to_stokes,
+    convert_stokes_to_polimage,
 )
 
 log = logging.getLogger("func-python-logger")
@@ -29,7 +32,7 @@ def operations_fixture():
         equinox="J2000",
     )
 
-    im = create_image(npixels, cellsize, phase_centre)
+    im = create_image(npixels, cellsize, phase_centre, nchan=1)
     return im
 
 
@@ -69,3 +72,46 @@ def test_convert_clean_beam_to_pixels(operations_image):
     assert beam_pixels[0] == pytest.approx(expected_results[0])
     assert beam_pixels[1] == pytest.approx(expected_results[1])
     assert beam_pixels[2] == pytest.approx(expected_results[2])
+
+
+def test_stokes_conversion(operations_image):
+    """
+    Unit test for convert_stokes_to_polimage
+    and convert_polimage_to_stokes
+    """
+    assert operations_image.image_acc.polarisation_frame == PolarisationFrame(
+        "stokesI"
+    )
+    # create a new stokesIQUV image
+    stokes = create_image(
+        512,
+        0.00015,
+        operations_image.image_acc.phasecentre,
+        polarisation_frame=PolarisationFrame("stokesIQUV"),
+        nchan=1,
+    )
+    assert stokes.image_acc.polarisation_frame == PolarisationFrame(
+        "stokesIQUV"
+    )
+
+    for pol_name in ["circular", "linear"]:
+        polarisation_frame = PolarisationFrame(pol_name)
+        polimage = convert_stokes_to_polimage(
+            stokes, polarisation_frame=polarisation_frame
+        )
+        assert polimage.image_acc.polarisation_frame == polarisation_frame
+        # We don't know what it has been converted to,
+        # So only assert not equal
+        numpy.any(
+            numpy.not_equal(
+                stokes["pixels"].data, polimage["pixels"].data.real
+            )
+        )
+
+        # Convert back
+        rstokes = convert_polimage_to_stokes(polimage)
+        assert polimage["pixels"].data.dtype == "complex"
+        assert rstokes["pixels"].data.dtype == "float"
+        numpy.testing.assert_array_almost_equal(
+            stokes["pixels"].data, rstokes["pixels"].data.real, 12
+        )
