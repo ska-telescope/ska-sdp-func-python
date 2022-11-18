@@ -457,8 +457,7 @@ def apply_voltage_pattern_to_skycomponent(
 
     :param sc: SkyComponent or list of SkyComponents
     :param vp: voltage pattern as complex image
-    :param inverse: input and output polarisation frame
-    (default False)
+    :param inverse: input and output polarisation frame (default False)
     :param phasecentre: Phasecentre (Skycoord)
     :return: List of SkyComponents
     """

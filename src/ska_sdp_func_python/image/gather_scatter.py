@@ -78,7 +78,7 @@ def image_gather_facets(
     :param return_flat: Return the flat
     :return: list of subimages
 
-     See also
+    See also
         :py:func:`ska_sdp_func_python.image.iterators.image_raster_iter`
     """
     out = Image.constructor(
@@ -173,7 +173,7 @@ def image_scatter_channels(im: Image, subimages=None) -> List[Image]:
     :param subimages: Number of channels
     :return: list of subimages
 
-     See also
+    See also
         :py:func:`ska_sdp_func_python.image.iterators.image_channel_iter`
     """
     if im is None:

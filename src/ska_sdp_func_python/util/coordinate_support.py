@@ -316,9 +316,6 @@ def uvw_to_eci(uvw, ha, dec):
     Hour angle and declination can be given as single values or arrays
     of the same length. Angles can be given as radians or astropy
     quantities with a valid conversion.
-    TODO: This function doesn't look right. It is returning
-        the same uvw as input, and not using ha and dec at all.
-        We need to revisit this.
 
     :param uvw: :math:`(u,v,w)` co-ordinates of antennas in array
     :param ha: Hour angle of phase tracking centre (:math:`ha = ra - lst`)
@@ -326,6 +323,9 @@ def uvw_to_eci(uvw, ha, dec):
 
     :return: ECI coordinates
     """
+    # TODO: This function doesn't look right. It is returning
+    #  the same uvw as input, and not using ha and dec at all.
+    #  We need to revisit this
     # pylint: disable=unbalanced-tuple-unpacking
     u, v, w = numpy.hsplit(uvw, 3)
 
@@ -588,7 +588,7 @@ def parallactic_angle(ha, dec, lat):
     """
     Calculate parallactic angle of source at ha, dec
     observed from site at latitude dec.
-    .. math::
+    :
         H = t - α
         sin(a) = sin(δ) sin(φ) + cos(δ) cos(φ) cos(H)
         sin(A) = - sin(H) cos(δ) / cos(a)
