@@ -169,7 +169,7 @@ def predict_awprojection(
     :param model: model Image
     :param gcfcf: Grid correction function i.e. in image space,
                   Convolution function i.e. in uv space
-    :return: resulting Visibility (in place works)
+    :return: Resulting Visibility (in place works)
     """
 
     if model is None:
@@ -223,7 +223,7 @@ def invert_awprojection(
     :param normalise: Normalise by the sum of weights (True)
     :param gcfcf: Grid correction function i.e. in image space,
             Convolution function i.e. in uv space
-    :return: resulting Image
+    :return: Resulting Image
 
     """
 
@@ -314,7 +314,7 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     :param frame: Coordinate frame for WCS (ICRS)
     :param equinox: Equinox for WCS (2000.0)
     :param nchan: Number of image channels (Default is 1 -> MFS)
-    :return: image
+    :return: Image
     """
     log.debug(
         "create_image_from_visibility: "
@@ -463,7 +463,7 @@ def advise_wide_field(
     :param guard_band_image: Number of primary beam
             half-widths-to-half-maximum to image (def: 6)
     :param facets: Number of facets on each axis
-    :return: dict of advice
+    :return: Dict of advice
     """
     max_wavelength = physical_constants.C_M_S / numpy.min(vis.frequency.data)
     if verbose:

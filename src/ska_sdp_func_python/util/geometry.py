@@ -82,8 +82,9 @@ def calculate_azel(location, utc_time, direction):
 
 
 def utc_to_ms_epoch(ts):
-    """Convert an timestamp to seconds (epoch values)
-         epoch suitable for using in a Measurement Set.
+    """
+    Convert an timestamp to seconds (epoch values)
+    epoch suitable for using in a Measurement Set.
 
     :param ts:  An astropy Time object.
     :return: The epoch time ``t`` in seconds suitable

@@ -5,7 +5,7 @@
 
 Functions
 =========
-
+The following functions are the processing functions developed for use with RASCIL.
 
 Visibility weighting and tapering
 ---------------------------------

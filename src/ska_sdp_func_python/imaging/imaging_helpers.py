@@ -71,7 +71,7 @@ def sum_predict_results(results):
     """Sum a set of predict results of the same shape.
 
     :param results: List of visibilities to be summed
-    :return: summed Visibility
+    :return: Summed Visibility
     """
     # pylint: disable=unsubscriptable-object
     sum_results = None

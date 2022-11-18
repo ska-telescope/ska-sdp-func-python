@@ -57,8 +57,8 @@ def image_raster_iter(
 
     :param im: Image
     :param facets: Number of image partitions on each axis (2)
-    :param overlap: overlap in pixels
-    :param taper: method of tapering at the edges:
+    :param overlap: Overlap in pixels
+    :param taper: Method of tapering at the edges:
                     'flat' or 'linear' or 'quadratic' or 'tukey'
     :param make_flat: Make the flat images
     :returns: Generator of images
@@ -189,7 +189,7 @@ def image_channel_iter(im: Image, subimages=1) -> collections.abc.Iterable:
     Create a image_channel_iter generator, returning images.
 
     The WCS is adjusted appropriately for each raster element.
-    Hence this is a coordinate-aware way to iterate through an image.
+    Hence, this is a coordinate-aware way to iterate through an image.
 
     Provided we don't break reference semantics, memory should be conserved.
 

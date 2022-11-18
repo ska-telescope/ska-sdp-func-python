@@ -45,8 +45,8 @@ def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     this may be invoked using context='ng'.
 
     :param bvis: Visibility to be predicted
-    :param model: model Image
-    :return: resulting Visibility (in place works)
+    :param model: Model Image
+    :return: Resulting Visibility (in place works)
     """
 
     if model is None:

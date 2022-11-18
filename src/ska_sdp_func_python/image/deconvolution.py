@@ -1087,13 +1087,13 @@ def deconvolve_cube(
      “A multi-scale multi-frequency deconvolution algorithm
      for synthesis imaging in radio interferometry,” A&A 532, A71 (2011).
 
-     For example::
+    For example::
 
-         comp, residual = deconvolve_cube(dirty, psf, niter=1000,
-                            gain=0.7, algorithm='msclean',
-                            scales=[0, 3, 10, 30], threshold=0.01)
+        comp, residual = deconvolve_cube(dirty, psf, niter=1000,
+                           gain=0.7, algorithm='msclean',
+                           scales=[0, 3, 10, 30], threshold=0.01)
 
-     For the MFS clean, the psf must have number of channels >= 2 * nmoment.
+    For the MFS clean, the psf must have number of channels >= 2 * nmoment.
 
     :param dirty: Image dirty image
     :param psf: Image Point Spread Function
@@ -1192,7 +1192,7 @@ def restore_cube(
 
     :param model: Model image (i.e. deconvolved)
     :param psf: Input PSF
-    :param residual: Residual image
+    :param residual: Residual Image
     :param clean_beam: Clean beam e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}.
                         Units are deg, deg, deg
     :return: restored image

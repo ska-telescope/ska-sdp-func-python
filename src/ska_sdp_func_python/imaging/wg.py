@@ -42,8 +42,8 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     be invoked using context='wg'.
 
     :param bvis: Visibility to be predicted
-    :param model: model Image
-    :return: resulting Visibility (in place works)
+    :param model: Model Image
+    :return: Resulting Visibility (in place works)
     """
 
     try:

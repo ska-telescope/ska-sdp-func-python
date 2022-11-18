@@ -67,7 +67,7 @@ def extract_direction_and_flux(sc, vis):
 
     :param sc: SkyComponent or list of SkyComponents
     :param vis: Visibility
-    :returns: tuple of two numpy arrays: component
+    :returns: Tuple of two numpy arrays: component
               direction cosines and component fluxes
     """
     if not isinstance(sc, collections.abc.Iterable):

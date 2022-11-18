@@ -1,12 +1,12 @@
 """
-Functions for calculating geometry of a Visibility
+Functions for calculating the geometry of a Visibility.
 """
 
 __all__ = [
-    "calculate_visibility_transit_time",
+    "calculate_visibility_azel",
     "calculate_visibility_hourangles",
     "calculate_visibility_parallactic_angles",
-    "calculate_visibility_azel",
+    "calculate_visibility_transit_time",
 ]
 
 from astropy.coordinates import EarthLocation, SkyCoord
@@ -26,7 +26,7 @@ def get_direction_time_location(bvis):
     Get the direction, time and location from Visibility data.
 
     :param bvis: Visibility
-    return: location, UTC time, direction (SkyCoord)
+    return: Location, UTC time, direction (SkyCoord)
     """
     location = bvis.configuration.location
     if location is None:
@@ -46,7 +46,7 @@ def get_direction_time_location(bvis):
 
 
 def calculate_visibility_hourangles(bvis):
-    """Return hour angles for location, utc_time, and direction
+    """Return hour angles for location, utc_time, and direction.
 
     :param bvis: Visibility
     :return: Hour angles
@@ -57,7 +57,7 @@ def calculate_visibility_hourangles(bvis):
 
 
 def calculate_visibility_parallactic_angles(bvis):
-    """Return parallactic angles for location, utc_time, and direction
+    """Return parallactic angles for location, utc_time, and direction.
 
     :param bvis: Visibility
     :return: Angle
@@ -68,17 +68,19 @@ def calculate_visibility_parallactic_angles(bvis):
 
 
 def calculate_visibility_transit_time(bvis):
-    """Find the UTC time of the nearest transit
+    """Find the UTC time of the nearest transit.
 
     :param bvis: Visibility
     :return: Transit time
     """
     location, utc_time, direction = get_direction_time_location(bvis)
-    return calculate_transit_time(location, utc_time[0], direction)
+    return calculate_transit_time(
+        location, utc_time[0], direction
+    )
 
 
 def calculate_visibility_azel(bvis):
-    """Return az el for a location, utc_time, and direction
+    """Return az el for a location, utc_time, and direction.
 
     :param bvis: Visibility
     :return: Az, El coordinates

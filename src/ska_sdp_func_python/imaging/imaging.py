@@ -41,7 +41,7 @@ def predict_visibility(
                     default: ng
     :param gcfcf: Tuple of (grid correction function,
                 convolution function) or partial function
-    :return: resulting Visibility (in place works)
+    :return: Resulting Visibility (in place works)
     """
     if context == "awprojection":
         return predict_awprojection(vis, model, gcfcf=gcfcf)
@@ -66,7 +66,7 @@ def invert_visibility(
 ) -> (Image, numpy.ndarray):
     """Invert Visibility to make an (Image, sum weights) tuple.
 
-    Use the image im as a template. Do PSF in a separate call.
+    Use the Image im as a template. Do PSF in a separate call.
 
     For awprojection, the gridding details must be supplied via a tuple of
     (gridding correction function, convolution function) or a partial

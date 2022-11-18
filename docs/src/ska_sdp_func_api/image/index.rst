@@ -2,9 +2,9 @@
 
 .. py:currentmodule:: ska_sdp_func_python.image
 
-******
-Images
-******
+*****
+Image
+*****
 
 .. toctree::
   :maxdepth: 3

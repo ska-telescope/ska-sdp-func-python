@@ -26,8 +26,11 @@ def calculate_image_frequency_moments(
     Calculate frequency weighted moments of an image cube.
 
     The frequency moments are calculated using:
-    .. math::
-        w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
+
+     .. math::
+
+         w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
+
 
     Note that the spectral axis is replaced by a MOMENT axis.
 
@@ -40,7 +43,7 @@ def calculate_image_frequency_moments(
     :param im: Image cube
     :param reference_frequency: Reference frequency (default None uses average)
     :param nmoment: Number of moments to calculate
-    :return: Moments image cube
+    :return: Moments Image cube
     """
     assert isinstance(im, Image), im
     assert im.image_acc.is_canonical()
@@ -104,14 +107,14 @@ def calculate_image_from_frequency_taylor_terms(
 
          w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
 
-    Note that a new image is created.
+    Note that a new Image is created.
 
     The Taylor term representation can be generated using MSMFS in deconvolve.
 
     :param im: Image cube to be reconstructed
     :param taylor_terms_image: Taylor terms cube
     :param reference_frequency: Reference frequency (default None uses average)
-    :return: reconstructed image
+    :return: Reconstructed Image
     """
     # assert isinstance(im, Image)
     nchan, npol, ny, nx = im["pixels"].data.shape
@@ -161,8 +164,10 @@ def calculate_image_list_frequency_moments(
     Calculate frequency weighted moments of an image list.
 
     The frequency moments are calculated using:
-    .. math::
-        w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
+
+     .. math::
+
+         w_k = \\left(\\left(\\nu - \\nu_{ref}\\right) /  \\nu_{ref}\\right)^k
 
 
     Note that the spectral axis is replaced by a MOMENT axis.
@@ -178,7 +183,7 @@ def calculate_image_list_frequency_moments(
     :param im_list: List of images
     :param reference_frequency: Reference frequency (default None uses average)
     :param nmoment: Number of moments to calculate
-    :return: Moments image
+    :return: Moments Image
     """
 
     if nmoment <= 0:
@@ -295,7 +300,7 @@ def calculate_frequency_taylor_terms_from_image_list(
     :param im_list: Image list to be reconstructed
     :param nmoment: Number of moments to calculate
     :param reference_frequency: Reference frequency (default None uses average)
-    :return: list of reconstructed images
+    :return: List of reconstructed images
     """
     # assert isinstance(im, Image)
     nchan = len(im_list)

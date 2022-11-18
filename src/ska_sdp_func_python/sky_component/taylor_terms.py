@@ -194,7 +194,7 @@ def transpose_skycomponents_to_channels(
     sc_list: List[SkyComponent],
 ) -> List[List[SkyComponent]]:
     """
-    Tranpose a SkyComponent list from [source,chan] to [chan,source].
+    Transpose a SkyComponent list from [source,chan] to [chan,source].
 
     :param sc_list: List of SkyComponents
     :return: List[List[SkyComponent]]

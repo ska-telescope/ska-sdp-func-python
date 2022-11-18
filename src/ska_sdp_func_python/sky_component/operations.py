@@ -67,7 +67,7 @@ def find_nearest_skycomponent_index(home, comps) -> int:
 
     :param home: Home direction
     :param comps: List of SkyComponents
-    :return: index of best in comps
+    :return: Index of best in comps
     """
     if len(comps) == 0:
         raise ValueError("find_nearest_skycomponent_index: Catalog is empty")
@@ -369,9 +369,10 @@ def apply_beam_to_skycomponent(
     primary beam from the skycomponents.
     if inverse==False, do a multiplication of beam and skycomponent fluxes.
 
-    :param phasecentre: Phase Centre of beam (astropy.SkyCoord)
-    :param beam: Primary beam (Image)
     :param sc: SkyComponent or list of SkyComponents
+    :param beam: Primary beam (Image)
+    :param phasecentre: Phase Centre of beam (astropy.SkyCoord)
+    :param inverse: do multiplication or subtraction of fluxes (default false)
     :return: List of SkyComponents
     """
     single = not isinstance(sc, collections.abc.Iterable)
@@ -847,7 +848,7 @@ def partition_skycomponent_neighbours(comps, targets):
 
 
 def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
-    """Fit a two dimensional Gaussian skycomponent using astropy.modeling.
+    """Fit a two-dimensional Gaussian skycomponent using astropy.modeling.
 
     :params im: Input Image
     :params sc: Single SkyComponent

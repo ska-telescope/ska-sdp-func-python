@@ -31,9 +31,9 @@ except ImportError:
 def fft(a):
     """Fourier transformation from image to grid space.
 
-     .. note::
+    .. note::
 
-         If there are four axes then the last outer axes are not transformed
+        If there are four axes then the last outer axes are not transformed.
 
     :param a: image in `lm` coordinate space
     :return: `uv` grid
@@ -88,9 +88,9 @@ def fft(a):
 def ifft(a):
     """Fourier transformation from grid to image space.
 
-     .. note::
+    .. note::
 
-         If there are four axes then the last outer axes are not transformed
+        If there are four axes then the last outer axes are not transformed.
 
     :param a: `uv` grid to transform
     :return: an image in `lm` coordinate space
@@ -150,9 +150,9 @@ def pad_mid(ff, npixel):
 
      .. note::
 
-         Only the two innermost axes are transformed
+         Only the two innermost axes are transformed.
 
-         This function does not handle odd-sized dimensions properly
+         This function does not handle odd-sized dimensions properly.
 
     :param ff: The input far field. Should be smaller than npixelxnpixel.
     :param npixel:  The desired far field size
@@ -182,7 +182,7 @@ def extract_mid(a, npixel):
 
      .. note::
 
-         Only the two innermost axes are transformed
+         Only the two innermost axes are transformed.
 
     :param a: grid from which to extract
     :param npixel: desired size of the section to extract

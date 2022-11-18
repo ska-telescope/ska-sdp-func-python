@@ -23,20 +23,21 @@ log = logging.getLogger("func-python-logger")
 
 
 def create_calibration_controls():
-    """Create a dictionary containing default chain calibration controls.
+    """
+    Create a dictionary containing default chain calibration controls.
 
-     The fields are
+    The fields are
 
-         T: Atmospheric phase
-         G: Electronic gains
-         P: Polarisation
-         B: Bandpass
-         I: Ionosphere
+        T: Atmospheric phase
+        G: Electronic gains
+        P: Polarisation
+        B: Bandpass
+        I: Ionosphere
 
-     Therefore, first get this default dictionary and then
-     adjust parameters as desired.
-     The calibrate function takes a context string e.g. TGB.
-     It then calibrates each of these Jones matrices in turn
+    Therefore, first get this default dictionary and then
+    adjust parameters as desired.
+    The calibrate function takes a context string e.g. TGB.
+    It then calibrates each of these Jones matrices in turn.
 
      Note that P and I calibration require off diagonal terms producing n
      on-commutation of the Jones matrices. This is not handled yet.
@@ -85,7 +86,7 @@ def apply_calibration_chain(
     :param gaintables: GainTables to perform calibration
     :param calibration_context: calibration contexts in order
                     of correction e.g. 'TGB'
-    :param controls: controls dictionary, modified as necessary
+    :param controls: Controls dictionary, modified as necessary
     :param iteration: Iteration number to be compared
                     to the 'first_selfcal' field.
     :return: Calibrated data_models, dict(gaintables)
@@ -131,14 +132,14 @@ def calibrate_chain(
     :param vis: Visibility containing the observed data_models
     :param model_vis: Visibility containing the visibility predicted by a model
     :param gaintables: Existing GainTables
-    :param calibration_context: calibration contexts in order
+    :param calibration_context: Calibration contexts in order
                 of correction e.g. 'TGB'
-    :param controls: controls dictionary, modified as necessary
+    :param controls: Controls dictionary, modified as necessary
     :param iteration: Iteration number to be compared to
                 the 'first_selfcal' field.
     :param tol: Iteration stops when the fractional change
                  in the gain solution is below this tolerance
-    :return: Calibrated data_models, dict(gaintables)
+    :return: Calibrated data_models, dict(GainTables)
     """
     if controls is None:
         controls = create_calibration_controls()
@@ -210,10 +211,11 @@ def solve_calibrate_chain(
     iteration=0,
     tol=1e-6,
 ):
-    """Calibrate using algorithm specified by calibration_context.
+    """
+    Calibrate using algorithm specified by calibration_context.
 
-     The context string can denote a sequence of calibrations
-     e.g. TGB with different timescales.
+    The context string can denote a sequence of calibrations
+    e.g. TGB with different timescales.
 
     :param vis: Visibility containing the observed data_models
     :param model_vis: Visibility containing the visibility predicted by a model

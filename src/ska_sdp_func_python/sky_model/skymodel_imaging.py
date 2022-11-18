@@ -40,7 +40,7 @@ def skymodel_predict_calibrate(
 
          get_pb(Visibility, Image)
 
-    and should return the primary beam for the visibility.
+    and should return the primary beam for the Visibility.
 
     :param bvis: Input visibility
     :param skymodel: Skymodel

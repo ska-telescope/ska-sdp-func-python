@@ -439,9 +439,9 @@ def skycoord_to_lmn(pos: SkyCoord, phasecentre: SkyCoord):
     relative to a phase centre.
 
     The l,m,n is a RHS coordinate system with
-    * its origin on the sky sphere
-    * m,n and the celestial north on the same plane
-    * l,m a tangential plane of the sky sphere.
+     * Its origin on the sky sphere
+     * m,n and the celestial north on the same plane
+     * l,m a tangential plane of the sky sphere.
 
     Note that this means that l increases east-wards.
 
@@ -466,14 +466,14 @@ def lmn_to_skycoord(lmn, phasecentre: SkyCoord):
     relative to a phase centre.
 
     The l,m,n is a RHS coordinate system with
-    * its origin on the sky sphere
-    * m,n and the celestial north on the same plane
-    * l,m a tangential plane of the sky sphere.
+     * Its origin on the sky sphere
+     * m,n and the celestial north on the same plane
+     * l,m a tangential plane of the sky sphere.
 
     Note that this means that l increases east-wards.
 
     :param lmn: lmn coordinates
-    :param phasecentre: phase centre in SkyCoord
+    :param phasecentre: Phase centre in SkyCoord
     :return: SkyCoord
     """
 
@@ -588,11 +588,14 @@ def parallactic_angle(ha, dec, lat):
     """
     Calculate parallactic angle of source at ha, dec
     observed from site at latitude dec.
-    With::S
-        H = t - α
-        sin(a) = sin(δ) sin(φ) + cos(δ) cos(φ) cos(H)
-        sin(A) = - sin(H) cos(δ) / cos(a)
-        cos(A) = { sin(δ) - sin(φ) sin(a) } / cos(φ) cos(a)
+    With:
+
+     .. math::
+
+         H = t - α
+         sin(a) = sin(δ) sin(φ) + cos(δ) cos(φ) cos(H)
+         sin(A) = - sin(H) cos(δ) / cos(a)
+         cos(A) = { sin(δ) - sin(φ) sin(a) } / cos(φ) cos(a)
 
     :param ha: Hour angle (radians)
     :param dec: Declination (radians)
@@ -612,11 +615,13 @@ def pa_z(ha, dec, lat):
     """
     Calculate parallactic angle and zenith angle of source
     at ha, dec observed from site at latitude dec.
-    .. math::
+
+     .. math::
+
          H = t - α
-         sin(a) = sin(δ) sin(φ) + cos(δ) cos(φ) cos(H)
-         sin(A) = - sin(H) cos(δ) / cos(a)
-         cos(A) = { sin(δ) - sin(φ) sin(a) } / cos(φ) cos(a)
+          sin(a) = sin(δ) sin(φ) + cos(δ) cos(φ) cos(H)
+          sin(A) = - sin(H) cos(δ) / cos(a)
+          cos(A) = { sin(δ) - sin(φ) sin(a) } / cos(φ) cos(a)
 
     :param ha: Hour angle (radians)
     :param dec: Declination (radians)
@@ -643,10 +648,11 @@ def hadec_to_azel(ha, dec, latitude):
     Convert HA Dec to Az El.
 
     TMS Appendix 4.1
-    .. math::
-         sinel = sinlat sindec + coslat cosdec cosha
-         cosel cosaz = coslat sindec - sinlat cosdec cosha
-         cosel sinaz = - cosdec sinha
+     .. math::
+
+          sinel = sinlat sindec + coslat cosdec cosha
+          cosel cosaz = coslat sindec - sinlat cosdec cosha
+          cosel sinaz = - cosdec sinha
 
     :param ha: Hour angle (radians)
     :param dec: Declination (radians)
@@ -672,10 +678,12 @@ def azel_to_hadec(az, el, latitude):
     Converting Az El to HA Dec.
 
     TMS Appendix 4.1
-    .. math::
-         sindec = sinlat sinel + coslat cosel cosaz
-         cosdec cosha = coslat sinel - sinlat cosel cosaz
-         cosdec sinha = -cosel sinaz
+
+     .. math::
+
+          sindec = sinlat sinel + coslat cosel cosaz
+          cosdec cosha = coslat sinel - sinlat cosel cosaz
+          cosdec sinha = -cosel sinaz
 
     :param az: Azimuth (radians)
     :param el: Elevation (radians)

@@ -10,7 +10,7 @@ Calibration
 -----------
 
 Calibration control is via a calibration_controls dictionary
-created by :py:func:`chain_calibration.create_calibration_controls`.
+created by :py:func:`ska_sdp_func_python.calibration.chain_calibration.create_calibration_controls`.
 This supports the following Jones matrices::
 
    . T - Atmospheric phase
@@ -115,17 +115,17 @@ These are built on top of the core functions in
 The measurement equation for a sufficiently narrow
 field of view interferometer is:
 
-.. math::
+ .. math::
 
-    V(u,v,w) =\\int I(l,m) e^{-2 \\pi j (ul+vm)} dl dm
+     V(u,v,w) =\\int I(l,m) e^{-2 \\pi j (ul+vm)} dl dm
 
 
 The measurement equation for a wide field of view interferometer is:
 
-.. math::
+ .. math::
 
-    V(u,v,w) =\\int \\frac{I(l,m)}{\\sqrt{1-l^2-m^2}}
-        e^{-2 \\pi j (ul+vm + w(\\sqrt{1-l^2-m^2}-1))} dl dm
+     V(u,v,w) =\\int \\frac{I(l,m)}{\\sqrt{1-l^2-m^2}}
+         e^{-2 \\pi j (ul+vm + w(\\sqrt{1-l^2-m^2}-1))} dl dm
 
 This and related modules contain various approaches for dealing with
 the wide-field problem where the extra phase term in the Fourier

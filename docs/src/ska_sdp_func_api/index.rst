@@ -1,6 +1,6 @@
 .. _ska_sdp_func_api:
 
-Processing Components
+Processing Functions
 *********************
 
 .. toctree::
