@@ -9,6 +9,5 @@ sphinx-argparse
 # so that the docs can render the API correctly
 # without the need of mocking every single import
 mock
-photutils
 scipy
 ska_sdp_datamodels
