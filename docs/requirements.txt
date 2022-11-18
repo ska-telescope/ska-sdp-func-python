@@ -10,6 +10,7 @@ sphinx-argparse
 # without the need of mocking every single import
 astroplan
 astropy
+mock
 photutils
 ska_sdp_datamodels
 xarray
