@@ -56,7 +56,7 @@ extensions = [
 ]
 
 autodoc_mock_imports = ["astropy", "pytest", "numpy", "xarray", "astroplan"]
-MOCK_MODULES = ['ducc0.wgridder', 'scipy.interpolate', 'scipy.optimize.minpack',
+MOCK_MODULES = ['ducc0.wgridder', 'scipy' 'scipy.interpolate', 'scipy.optimize.minpack',
                 'scipy.spatial.Voronoi', 'ska_sdp_func.visibility.dft_point_v00']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
