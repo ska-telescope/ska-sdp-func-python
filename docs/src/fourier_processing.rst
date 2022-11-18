@@ -1,4 +1,4 @@
-.. _Fourier_processing:
+.. _fourier_processing:
 
 Fourier processing
 ******************
@@ -16,7 +16,7 @@ Nifty Gridder is supported at the processing component level via:
 At the workflow level, such as imaging and pipeline workflows, use context='ng'.
 
 ska-sdp-func-python model
-------------
+-------------------------
 
 If only wterm needs to be corrected, the Nifty Gridder is the best option. However ska-sdp-func-python is another approach.
 There are many algorithms for imaging, using different approaches to correct for various effects:

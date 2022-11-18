@@ -95,20 +95,18 @@ smear out the sample points. The resulting grid points are then FFT'ed.
 The result can be corrected for the griddata convolution function by
 division in the image plane of the transform.
 
-This module contains functions for performing the
+The grid_data module :py:func:`ska_sdp_func_python.grid_data` contains functions for performing the
 griddata process and the inverse degridding process.
-
-The GridData data model is used to hold the specification
-of the desired result.
 
 GridData, ConvolutionFunction and Vis
 always have the same PolarisationFrame. Conversion to
-stokesIQUV is only done in the image plane.
+stokesIQUV is only done in the image plane. These data models can be found in
+`ska-sdp-datamodel <https://gitlab.com/ska-telescope/sdp/ska-sdp-datamodels.git>`
 
 Image
 -----
 
-These are functions that aid Fourier transform processing.
+Functions in the Image module :py:func:`ska_sdp_func_python.image` aid Fourier transform processing.
 These are built on top of the core functions in
 :py:func:`ska_sdp_func_python.fourier_transforms`.
 
@@ -160,10 +158,10 @@ For example to make dirty image and PSF, deconvolve, and then restore::
 All functions return an image holding clean components and residual image.
 
 Imaging
------------
+-------
 
-The imaging functions include 2D prediction and inversion operations.
-A very simple example, given a model Image to specify the
+The imaging functions in :py:func:`ska_sdp_func_python.imaging` include 2D prediction
+and inversion operations. A very simple example, given a model Image to specify the
 image size, sampling, and phasecentre::
 
     model = create_image_from_visibility(vis, npixel=1024, nchan=1)

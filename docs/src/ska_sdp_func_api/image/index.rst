@@ -2,7 +2,6 @@
 
 .. py:currentmodule:: ska_sdp_func_python.image
 
-*****
 Image
 *****
 

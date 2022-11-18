@@ -1,6 +1,7 @@
 """
 Functions to solve for and apply chains of antenna/station gain tables.
-"""  # noqa: E501
+See documentation for further information.
+"""
 
 __all__ = [
     "apply_calibration_chain",

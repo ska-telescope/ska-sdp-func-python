@@ -3,35 +3,22 @@
 .. toctree::
 
 SKA SDP Python Processing Functions
-###########################################################
-This is a `repository <https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python.git>`_
-for the Python Processing Functions used in the SKA SDP. The aim of this repository is to
-provide the Processing Functions involved in radio astronomy visibility processing.
-The processing functions are specifically meant to facilitate passing data between services
-and data models within the SDP.
-
-Eventually this should cover:
-
-- In-memory communication within the same process, both between Python software as
-  well as Python and C++ software (such as `ska-sdp-func <https://gitlab.com/ska-telescope/sdp/ska-sdp-func>`_)
-
-- In-memory communication between different processes, such as via shared memory
-  (e.g. as done using Apache Plasma in real-time processing)
-
-- Network communication between different processes for the purpose of distributed computing
-  (e.g. via Dask or Kafka)
-
-The code is written in Python. The structure is modeled after the
-standard processing functions used in `RASCIL <https://gitlab.com/ska-telescope/external/rascil-main.git>`_.
-The interfaces operate with familiar data structures such as image,
-visibility table, gain table, etc. The python source code is directly accessible from these documentation pages:
-see the source link in the top right corner.
+###################################
+This `repository <https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python.git>`_
+contains Processing Function wrappers implemented in Python. The original code was migrated
+from `RASCIL <https://gitlab.com/ska-telescope/external/rascil-main.git>`_. They provide reference
+implementations for lower-level processing function libraries, such as
+`ska-sdp-func <https://gitlab.com/ska-telescope/sdp/ska-sdp-func.git>`_
+and an interface between these and high-level data models
+(`ska-sdp-datamodel <https://gitlab.com/ska-telescope/sdp/ska-sdp-datamodels.git>`_).
 
 
 Installation Instructions
 =========================
 
-The package is installable via pip.
+The package is installable via pip::
+
+pip install ska-sdp-func-python --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
 
 If you would like to view the source code or install from git, use::
 
@@ -46,7 +33,7 @@ Refer to their page for instructions.
    :maxdepth: 1
    :caption: Sections
 
-   Fourier_processing
+   fourier_processing
    functions
    usage
    api

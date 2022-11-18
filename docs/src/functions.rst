@@ -21,8 +21,9 @@ Visibility predict and invert
 
 Deconvolution
 -------------
-
-* Deconvolution: :py:func:`ska_sdp_func_python.image.deconvolution.deconvolve_cube` wraps:
+* Deconvolution with `RADLER <https://gitlab.com/ska-telescope/sdp/ska-sdp-func-radler.git>`_:
+  :py:func:`ska_sdp_func_python.image.deconvolution.radler_deconvolve_list`
+* Deconvolution: :py:func:`ska_sdp_func_python.image.deconvolution.deconvolve_list` wraps:
 
  * Hogbom Clean: :py:func:`ska_sdp_func_python.image.cleaners.hogbom`
  * Hogbom Complex Clean: :py:func:`ska_sdp_func_python.image.cleaners.hogbom_complex`
@@ -40,12 +41,4 @@ Calibration
 * Concatenate a list of GainTables: :py:func:`ska_sdp_func_python.calibration.operations.concatenate_gaintables`
 * Multiply two GainTables: :py:func:`ska_sdp_func_python.calibration.operations.multiply_gaintable`
 * Solve for complex gains: :py:func:`ska_sdp_func_python.calibration.solvers.solve_gaintable`
-
-Coordinate transforms
----------------------
-
-* Station/baseline (XYZ <-> UVW): :py:mod:`ska_sdp_func_python.util.coordinate_support`
-* Source (spherical -> tangent plane): :py:mod:`ska_sdp_func_python.util.coordinate_support`
-
-
 
