@@ -223,7 +223,7 @@ def calibrate_chain(
                 gaintables[c] = solve_gaintable(
                     avis,
                     amvis,
-                    gt=gaintables[c],
+                    gain_table=gaintables[c],
                     phase_only=controls[c]["phase_only"],
                     crosspol=controls[c]["shape"] == "matrix",
                     timeslice=controls[c]["timeslice"],
@@ -309,7 +309,7 @@ def solve_calibrate_chain(
                 gaintables[c] = solve_gaintable(
                     avis,
                     amvis,
-                    gt=gaintables[c],
+                    gain_table=gaintables[c],
                     phase_only=controls[c]["phase_only"],
                     crosspol=controls[c]["shape"] == "matrix",
                     timeslice=controls[c]["timeslice"],

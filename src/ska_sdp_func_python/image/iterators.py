@@ -16,6 +16,49 @@ from ska_sdp_func_python.util.array_functions import tukey_filter
 log = logging.getLogger("func-python-logger")
 
 
+def _taper_linear(npixels, over):
+    taper1d = numpy.ones(npixels)
+    ramp = numpy.arange(0, over).astype(float) / float(over)
+
+    taper1d[:over] = ramp
+    taper1d[(npixels - over) : npixels] = 1.0 - ramp
+    return taper1d
+
+
+def _taper_quadratic(npixels, over):
+    taper1d = numpy.ones(npixels)
+    ramp = numpy.arange(0, over).astype(float) / float(over)
+
+    quadratic_ramp = numpy.ones(over)
+    quadratic_ramp[0 : over // 2] = 2.0 * ramp[0 : over // 2] ** 2
+    quadratic_ramp[over // 2 :] = 1 - 2.0 * ramp[over // 2 : 0 : -1] ** 2
+
+    taper1d[:over] = quadratic_ramp
+    taper1d[(npixels - over) : npixels] = 1.0 - quadratic_ramp
+    return taper1d
+
+
+def _taper_tukey(npixels, over):
+    xs = numpy.arange(npixels) / float(npixels)
+    r = 2 * over / npixels
+    taper1d = [tukey_filter(x, r) for x in xs]
+
+    return taper1d
+
+
+def _taper_flat(npixels):
+    return numpy.ones([npixels])
+
+
+def _validate_data(facets, nx, ny, overlap):
+    if facets > ny or facets > nx:
+        raise ValueError("Cannot have more raster elements than pixels")
+    if facets < 1:
+        raise ValueError("Facets cannot be zero or less")
+    if overlap < 0:
+        raise ValueError("Overlap must be zero or greater")
+
+
 # pylint: disable=inconsistent-return-statements
 def image_raster_iter(
     im: Image, facets=1, overlap=0, taper="flat", make_flat=False
@@ -66,24 +109,18 @@ def image_raster_iter(
         :py:func:`ska_sdp_func_python.util.array_functions.tukey_filter`
     """
 
-    assert isinstance(im, Image), im
-    assert im.image_acc.is_canonical()
-
-    if im is None:
-        return im
+    if not im.image_acc.is_canonical():
+        raise ValueError("Image is not canonical")
 
     ny = im["pixels"].data.shape[2]
     nx = im["pixels"].data.shape[3]
-    assert facets <= ny, "Cannot have more raster elements than pixels"
-    assert facets <= nx, "Cannot have more raster elements than pixels"
 
-    assert facets >= 1, "Facets cannot be zero or less"
-    assert overlap >= 0, "Overlap must be zero or greater"
+    _validate_data(facets, nx, ny, overlap)
 
     if facets == 1:
         yield im
-    else:
 
+    else:
         if overlap >= (nx // facets) or overlap >= (ny // facets):
             raise ValueError(
                 f"Overlap in facets is too large {nx}, {facets}, {overlap}"
@@ -97,46 +134,22 @@ def image_raster_iter(
         sx = dx - 2 * overlap
         sy = dy - 2 * overlap
 
-        def taper_linear(npixels, over):
-            taper1d = numpy.ones(npixels)
-            ramp = numpy.arange(0, over).astype(float) / float(over)
-
-            taper1d[:over] = ramp
-            taper1d[(npixels - over) : npixels] = 1.0 - ramp
-            return taper1d
-
-        def taper_quadratic(npixels, over):
-            taper1d = numpy.ones(npixels)
-            ramp = numpy.arange(0, over).astype(float) / float(over)
-
-            quadratic_ramp = numpy.ones(over)
-            quadratic_ramp[0 : over // 2] = 2.0 * ramp[0 : over // 2] ** 2
-            quadratic_ramp[over // 2 :] = (
-                1 - 2.0 * ramp[over // 2 : 0 : -1] ** 2
-            )
-
-            taper1d[:over] = quadratic_ramp
-            taper1d[(npixels - over) : npixels] = 1.0 - quadratic_ramp
-            return taper1d
-
-        def taper_tukey(npixels, over):
-
-            xs = numpy.arange(npixels) / float(npixels)
-            r = 2 * over / npixels
-            taper1d = [tukey_filter(x, r) for x in xs]
-
-            return taper1d
-
-        def taper_flat(npixels):
-            return numpy.ones([npixels])
+        taper_map = {
+            "linear": _taper_quadratic,
+            "quadratic": _taper_quadratic,
+            "tukey": _taper_tukey,
+        }
 
         i = 0
         for fy in range(facets):
             y = ny // 2 + sy * (fy - facets // 2) - overlap
+
             for fx in range(facets):
                 x = nx // 2 + sx * (fx - facets // 2) - overlap
+
                 if x < 0 or x + dx > nx:
                     raise ValueError(f"overlap too large: starting point {x}")
+
                 wcs = im.image_acc.wcs.deepcopy()
                 wcs.wcs.crpix[0] -= x
                 wcs.wcs.crpix[1] -= y
@@ -154,24 +167,16 @@ def image_raster_iter(
                         wcs=im.image_acc.wcs,
                         clean_beam=im.attrs["clean_beam"],
                     )
-                    if taper == "linear":
+                    try:
                         flat["pixels"].data[..., :, :] = numpy.outer(
-                            taper_linear(dy, overlap),
-                            taper_linear(dx, overlap),
+                            taper_map[taper](dy, overlap),
+                            taper_map[taper](dx, overlap),
                         )
-                    elif taper == "quadratic":
+                    except KeyError:
+                        # KeyError in taper_map
                         flat["pixels"].data[..., :, :] = numpy.outer(
-                            taper_quadratic(dy, overlap),
-                            taper_quadratic(dx, overlap),
-                        )
-                    elif taper == "tukey":
-                        flat["pixels"].data[..., :, :] = numpy.outer(
-                            taper_tukey(dy, overlap), taper_tukey(dx, overlap)
-                        )
-                    else:
-                        flat["pixels"].data[..., :, :] = numpy.outer(
-                            taper_flat(dy),
-                            taper_flat(
+                            _taper_flat(dy),
+                            _taper_flat(
                                 dx,
                             ),
                         )

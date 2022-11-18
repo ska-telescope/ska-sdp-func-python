@@ -31,7 +31,7 @@ log = logging.getLogger("func-python-logger")
 def solve_gaintable(
     vis: Visibility,
     modelvis: Visibility = None,
-    gt=None,
+    gain_table=None,
     phase_only=True,
     niter=200,
     tol=1e-6,
@@ -40,14 +40,15 @@ def solve_gaintable(
     jones_type="T",
     timeslice=None,
 ) -> GainTable:
-    """Solve a gain table by fitting an observed visibility
+    """
+    Solve a gain table by fitting an observed visibility
          to a model visibility
 
-     If modelvis is None, a point source model is assumed.
+    If modelvis is None, a point source model is assumed.
 
     :param vis: Visibility containing the observed data_models
     :param modelvis: Visibility containing the visibility predicted by a model
-    :param gt: Existing gaintable
+    :param gain_table: Existing gaintable
     :param phase_only: Solve only for the phases (default=True)
     :param niter: Number of iterations (default 30)
     :param tol: Iteration stops when the fractional change
@@ -60,164 +61,163 @@ def solve_gaintable(
     :return: GainTable containing solution
 
     """
-
     if modelvis is not None:
+        # pylint: disable=unneeded-not
+        if not numpy.max(numpy.abs(modelvis.vis)) > 0.0:
+            raise ValueError("solve_gaintable: Model visibility is zero")
 
-        assert (
-            numpy.max(numpy.abs(modelvis.vis)) > 0.0
-        ), "Model visibility is zero"
+    point_vis = (
+        divide_visibility(vis, modelvis) if modelvis is not None else vis
+    )
 
     if phase_only:
         log.debug("solve_gaintable: Solving for phase only")
     else:
         log.debug("solve_gaintable: Solving for complex gain")
 
-    if gt is None:
+    if gain_table is None:
         log.debug("solve_gaintable: creating new gaintable")
-        gt = create_gaintable_from_visibility(
+        gain_table = create_gaintable_from_visibility(
             vis, jones_type=jones_type, timeslice=timeslice
         )
     else:
         log.debug("solve_gaintable: starting from existing gaintable")
 
-    if modelvis is not None:
-        pointvis = divide_visibility(vis, modelvis)
-    else:
-        pointvis = vis
+    nants = gain_table.gaintable_acc.nants
+    nchan = gain_table.gaintable_acc.nchan
+    npol = point_vis.visibility_acc.npol
 
-    nants = gt.gaintable_acc.nants
-    nchan = gt.gaintable_acc.nchan
-    npol = pointvis.visibility_acc.npol
+    axes = (0, 2) if nchan == 1 else 0
 
-    if nchan == 1:
-        axes = (0, 2)
-    else:
-        axes = 0
-
-    for row, time in enumerate(gt.time):
+    for row, time in enumerate(gain_table.time):
         time_slice = {
             "time": slice(
-                time - gt.interval[row] / 2, time + gt.interval[row] / 2
+                time - gain_table.interval[row] / 2,
+                time + gain_table.interval[row] / 2,
             )
         }
-        pointvis_sel = pointvis.sel(time_slice)
-        if pointvis_sel.visibility_acc.ntimes > 0:
-            x_b = numpy.sum(
-                (pointvis_sel.vis.data * pointvis_sel.weight.data)
-                * (1 - pointvis_sel.flags.data),
-                axis=axes,
-            )
-            xwt_b = numpy.sum(
-                pointvis_sel.weight.data * (1 - pointvis_sel.flags.data),
-                axis=axes,
-            )
-            x = numpy.zeros([nants, nants, nchan, npol], dtype="complex")
-            xwt = numpy.zeros([nants, nants, nchan, npol])
-            for ibaseline, (a1, a2) in enumerate(pointvis.baselines.data):
-                x[a1, a2, ...] = x_b[ibaseline, ...]
-                xwt[a1, a2, ...] = xwt_b[ibaseline, ...]
-                x[a2, a1, ...] = numpy.conjugate(x_b[ibaseline, ...])
-                xwt[a2, a1, ...] = xwt_b[ibaseline, ...]
-
-            mask = numpy.abs(xwt) > 0.0
-            if numpy.sum(mask) > 0:
-                x_shape = x.shape
-                x[mask] = x[mask] / xwt[mask]
-                x[~mask] = 0.0
-                xwt[mask] = xwt[mask] / numpy.max(xwt[mask])
-                xwt[~mask] = 0.0
-                x = x.reshape(x_shape)
-
-                if vis.visibility_acc.npol == 1:
-                    (
-                        gt["gain"].data[row, ...],
-                        gt["weight"].data[row, ...],
-                        gt["residual"].data[row, ...],
-                    ) = solve_antenna_gains_itsubs_scalar(
-                        gt["gain"].data[row, ...],
-                        gt["weight"].data[row, ...],
-                        x,
-                        xwt,
-                        phase_only=phase_only,
-                        niter=niter,
-                        tol=tol,
-                    )
-                elif vis.visibility_acc.npol == 2:
-                    (
-                        gt["gain"].data[row, ...],
-                        gt["weight"].data[row, ...],
-                        gt["residual"].data[row, ...],
-                    ) = solve_antenna_gains_itsubs_nocrossdata(
-                        gt["gain"].data[row, ...],
-                        gt["weight"].data[row, ...],
-                        x,
-                        xwt,
-                        phase_only=phase_only,
-                        niter=niter,
-                        tol=tol,
-                    )
-                elif vis.visibility_acc.npol == 4:
-                    if crosspol:
-                        (
-                            gt["gain"].data[row, ...],
-                            gt["weight"].data[row, ...],
-                            gt["residual"].data[row, ...],
-                        ) = solve_antenna_gains_itsubs_matrix(
-                            gt["gain"].data[row, ...],
-                            gt["weight"].data[row, ...],
-                            x,
-                            xwt,
-                            phase_only=phase_only,
-                            niter=niter,
-                            tol=tol,
-                        )
-                    else:
-                        (
-                            gt["gain"].data[row, ...],
-                            gt["weight"].data[row, ...],
-                            gt["residual"].data[row, ...],
-                        ) = solve_antenna_gains_itsubs_nocrossdata(
-                            gt["gain"].data[row, ...],
-                            gt["weight"].data[row, ...],
-                            x,
-                            xwt,
-                            phase_only=phase_only,
-                            niter=niter,
-                            tol=tol,
-                        )
-
-                else:
-                    (
-                        gt["gain"].data[row, ...],
-                        gt["weight"].data[row, ...],
-                        gt["residual"].data[row, ...],
-                    ) = solve_antenna_gains_itsubs_scalar(
-                        gt["gain"].data[row, ...],
-                        gt["weight"].data[row, ...],
-                        x,
-                        xwt,
-                        phase_only=phase_only,
-                        niter=niter,
-                        tol=tol,
-                    )
-
-                if normalise_gains and not phase_only:
-                    gabs = numpy.average(numpy.abs(gt["gain"].data[row]))
-                    gt["gain"].data[row] /= gabs
-            else:
-                gt["gain"].data[row, ...] = 1.0 + 0.0j
-                gt["weight"].data[row, ...] = 0.0
-                gt["residual"].data[row, ...] = 0.0
-
-        else:
+        pointvis_sel = point_vis.sel(time_slice)
+        # pylint: disable=unneeded-not
+        if not pointvis_sel.visibility_acc.ntimes > 0:
             log.warning(
-                "Gaintable %s, vis time mismatch %s", gt.time, vis.time
+                "Gaintable %s, vis time mismatch %s", gain_table.time, vis.time
             )
+            continue
 
-    return gt
+        x_b = numpy.sum(
+            (pointvis_sel.vis.data * pointvis_sel.weight.data)
+            * (1 - pointvis_sel.flags.data),
+            axis=axes,
+        )
+        xwt_b = numpy.sum(
+            pointvis_sel.weight.data * (1 - pointvis_sel.flags.data),
+            axis=axes,
+        )
+        x = numpy.zeros([nants, nants, nchan, npol], dtype="complex")
+        xwt = numpy.zeros([nants, nants, nchan, npol])
+        for ibaseline, (a1, a2) in enumerate(point_vis.baselines.data):
+            x[a1, a2, ...] = x_b[ibaseline, ...]
+            xwt[a1, a2, ...] = xwt_b[ibaseline, ...]
+            x[a2, a1, ...] = numpy.conjugate(x_b[ibaseline, ...])
+            xwt[a2, a1, ...] = xwt_b[ibaseline, ...]
+
+        mask = numpy.abs(xwt) > 0.0
+        if numpy.sum(mask) > 0:
+            _solve_with_mask(
+                crosspol,
+                gain_table,
+                mask,
+                niter,
+                normalise_gains,
+                phase_only,
+                row,
+                tol,
+                vis,
+                x,
+                xwt,
+            )
+        else:
+            gain_table["gain"].data[row, ...] = 1.0 + 0.0j
+            gain_table["weight"].data[row, ...] = 0.0
+            gain_table["residual"].data[row, ...] = 0.0
+
+    return gain_table
 
 
-def solve_antenna_gains_itsubs_scalar(
+def _solve_with_mask(
+    crosspol,
+    gain_table,
+    mask,
+    niter,
+    normalise_gains,
+    phase_only,
+    row,
+    tol,
+    vis,
+    x,
+    xwt,
+):
+    """
+    Method extracted from solve_gaintable to decrease
+    complexity. Calculations when `numpy.sum(mask) > 0`
+    """
+    x_shape = x.shape
+    x[mask] = x[mask] / xwt[mask]
+    x[~mask] = 0.0
+    xwt[mask] = xwt[mask] / numpy.max(xwt[mask])
+    xwt[~mask] = 0.0
+    x = x.reshape(x_shape)
+    if vis.visibility_acc.npol == 2 or (
+        vis.visibility_acc.npol == 4 and not crosspol
+    ):
+        (
+            gain_table["gain"].data[row, ...],
+            gain_table["weight"].data[row, ...],
+            gain_table["residual"].data[row, ...],
+        ) = _solve_antenna_gains_itsubs_nocrossdata(
+            gain_table["gain"].data[row, ...],
+            gain_table["weight"].data[row, ...],
+            x,
+            xwt,
+            phase_only=phase_only,
+            niter=niter,
+            tol=tol,
+        )
+    elif vis.visibility_acc.npol == 4 and crosspol:
+        (
+            gain_table["gain"].data[row, ...],
+            gain_table["weight"].data[row, ...],
+            gain_table["residual"].data[row, ...],
+        ) = _solve_antenna_gains_itsubs_matrix(
+            gain_table["gain"].data[row, ...],
+            gain_table["weight"].data[row, ...],
+            x,
+            xwt,
+            phase_only=phase_only,
+            niter=niter,
+            tol=tol,
+        )
+
+    else:
+        (
+            gain_table["gain"].data[row, ...],
+            gain_table["weight"].data[row, ...],
+            gain_table["residual"].data[row, ...],
+        ) = _solve_antenna_gains_itsubs_scalar(
+            gain_table["gain"].data[row, ...],
+            gain_table["weight"].data[row, ...],
+            x,
+            xwt,
+            phase_only=phase_only,
+            niter=niter,
+            tol=tol,
+        )
+    if normalise_gains and not phase_only:
+        gabs = numpy.average(numpy.abs(gain_table["gain"].data[row]))
+        gain_table["gain"].data[row] /= gabs
+
+
+def _solve_antenna_gains_itsubs_scalar(
     gain,
     gwt,
     x,
@@ -261,7 +261,7 @@ def solve_antenna_gains_itsubs_scalar(
 
     for _ in range(niter):
         gainLast = gain
-        gain, gwt = gain_substitution_scalar(gain, x, xwt)
+        gain, gwt = _gain_substitution_scalar(gain, x, xwt)
         if phase_only:
             mask = numpy.abs(gain) > 0.0
             gain[mask] = gain[mask] / numpy.abs(gain[mask])
@@ -273,7 +273,7 @@ def solve_antenna_gains_itsubs_scalar(
             if phase_only:
                 mask = numpy.abs(gain) > 0.0
                 gain[mask] = gain[mask] / numpy.abs(gain[mask])
-            return gain, gwt, solution_residual_scalar(gain, x, xwt)
+            return gain, gwt, _solution_residual_scalar(gain, x, xwt)
 
     log.warning(
         "solve_antenna_gains_itsubs_scalar: "
@@ -284,10 +284,10 @@ def solve_antenna_gains_itsubs_scalar(
         mask = numpy.abs(gain) > 0.0
         gain[mask] = gain[mask] / numpy.abs(gain[mask])
 
-    return gain, gwt, solution_residual_scalar(gain, x, xwt)
+    return gain, gwt, _solution_residual_scalar(gain, x, xwt)
 
 
-def gain_substitution_scalar(gain, x, xwt):
+def _gain_substitution_scalar(gain, x, xwt):
     """
     Substitute gains across all baselines of gain
          for point source equivalent visibilities
@@ -323,7 +323,7 @@ def gain_substitution_scalar(gain, x, xwt):
     return newgain1, gwt1
 
 
-def solve_antenna_gains_itsubs_nocrossdata(
+def _solve_antenna_gains_itsubs_nocrossdata(
     gain, gwt, x, xwt, niter=200, tol=1e-6, phase_only=True
 ):
     """Solve for the antenna gains using full matrix expressions,
@@ -367,7 +367,7 @@ def solve_antenna_gains_itsubs_nocrossdata(
         xwt_fill[..., 1] = 0.0
         xwt_fill[..., 2] = 0.0
 
-    return solve_antenna_gains_itsubs_matrix(
+    return _solve_antenna_gains_itsubs_matrix(
         gain,
         gwt,
         x_fill,
@@ -378,7 +378,7 @@ def solve_antenna_gains_itsubs_nocrossdata(
     )
 
 
-def solve_antenna_gains_itsubs_matrix(
+def _solve_antenna_gains_itsubs_matrix(
     gain, gwt, x, xwt, niter=200, tol=1e-6, phase_only=True
 ):
     """Solve for the antenna gains using full matrix expressions
@@ -423,24 +423,24 @@ def solve_antenna_gains_itsubs_matrix(
 
     for _ in range(niter):
         gainLast = gain
-        gain, gwt = gain_substitution_matrix(gain, x, xwt)
+        gain, gwt = _gain_substitution_matrix(gain, x, xwt)
         if phase_only:
             mask = numpy.abs(gain) > 0.0
             gain[mask] = gain[mask] / numpy.abs(gain[mask])
         change = numpy.max(numpy.abs(gain - gainLast))
         gain = 0.5 * (gain + gainLast)
         if change < tol:
-            return gain, gwt, solution_residual_matrix(gain, x, xwt)
+            return gain, gwt, _solution_residual_matrix(gain, x, xwt)
 
     log.warning(
         "solve_antenna_gains_itsubs_scalar: "
         "gain solution failed, retaining gain solutions"
     )
 
-    return gain, gwt, solution_residual_matrix(gain, x, xwt)
+    return gain, gwt, _solution_residual_matrix(gain, x, xwt)
 
 
-def gain_substitution_matrix(gain, x, xwt):
+def _gain_substitution_matrix(gain, x, xwt):
     """
     Substitute gains across all baselines of gain
          for point source equivalent visibilities
@@ -481,7 +481,7 @@ def gain_substitution_matrix(gain, x, xwt):
     return newgain1, gwt1
 
 
-def solution_residual_scalar(gain, x, xwt):
+def _solution_residual_scalar(gain, x, xwt):
     """Calculate residual across all baselines of gain
          for point source equivalent visibilities
 
@@ -519,7 +519,7 @@ def solution_residual_scalar(gain, x, xwt):
     return residual
 
 
-def solution_residual_matrix(gain, x, xwt):
+def _solution_residual_matrix(gain, x, xwt):
     """Calculate residual across all baselines of gain
          for point source equivalent visibilities
 
