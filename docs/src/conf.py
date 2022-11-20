@@ -19,13 +19,20 @@
 #
 import os
 import sys
+import mock
 
 
 sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../../src"))
 
-MOCK_MODULES = ['ducc0', 'ducc0.wgridder', 'photutils', 'photutils.segmentation',
-                'ska_sdp_func', 'ska_sdp_func.visibility']
+MOCK_MODULES = [
+    "ducc0",
+    "ducc0.wgridder",
+    "photutils",
+    "photutils.segmentation",
+    "ska_sdp_func",
+    "ska_sdp_func.visibility",
+]
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
 
@@ -55,10 +62,10 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_automodapi.automodapi",
     "sphinx_automodapi.smart_resolver",
-    "sphinx_rtd_theme"
+    "sphinx_rtd_theme",
 ]
 
-autodoc_mock_imports = ["astropy", "astroplan", 'numpy', 'pytest', 'xarray']
+autodoc_mock_imports = ["astropy", "astroplan", "numpy", "pytest", "xarray"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

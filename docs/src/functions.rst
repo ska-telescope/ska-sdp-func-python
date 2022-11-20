@@ -2,7 +2,6 @@
 
 Functions
 =========
-The following functions are the processing functions developed for use with RASCIL.
 
 Visibility weighting and tapering
 ---------------------------------
@@ -21,15 +20,15 @@ Visibility predict and invert
 
 Deconvolution
 -------------
-* Deconvolution with `RADLER <https://gitlab.com/ska-telescope/sdp/ska-sdp-func-radler.git>`_:
-  :py:func:`ska_sdp_func_python.image.deconvolution.radler_deconvolve_list`
-* Deconvolution: :py:func:`ska_sdp_func_python.image.deconvolution.deconvolve_list` wraps:
+* Deconvolution: :py:func:`ska_sdp_func_python.image.deconvolution.deconvolve_cube` wraps:
 
  * Hogbom Clean: :py:func:`ska_sdp_func_python.image.cleaners.hogbom`
  * Hogbom Complex Clean: :py:func:`ska_sdp_func_python.image.cleaners.hogbom_complex`
  * Multi-scale Clean: :py:func:`ska_sdp_func_python.image.cleaners.msclean`
  * Multi-scale multi-frequency Clean: :py:func:`ska_sdp_func_python.image.cleaners.msmfsclean`
 
+* Deconvolution with `RADLER <https://gitlab.com/ska-telescope/sdp/ska-sdp-func-radler.git>`_:
+  :py:func:`ska_sdp_func_python.image.deconvolution.radler_deconvolve_list`
 * Restore: :py:func:`ska_sdp_func_python.image.deconvolution.restore_cube`
 
 Calibration

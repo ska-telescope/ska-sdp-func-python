@@ -383,7 +383,7 @@ def bound_psf_list(dirty_list, prefix, psf_list, psf_support=None):
                 str(psf["pixels"].data.shape),
             )
         else:
-            log.info("Using entire psf for dconvolution")
+            log.info("Using entire psf for deconvolution")
         psfs.append(psf)
     return psfs
 

@@ -18,7 +18,7 @@ Installation Instructions
 
 The package is installable via pip::
 
-pip install ska-sdp-func-python --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
+    pip install ska-sdp-func-python --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
 
 If you would like to view the source code or install from git, use::
 
