@@ -653,6 +653,8 @@ def advise_wide_field(
                 "Time sampling for facet = %.1f (s)",
                 time_sampling_facet,
             )
+    else:
+        time_sampling_facet = time_sampling_image
 
     time_sampling_primary_beam = 86400.0 * (
         synthesized_beam / primary_beam_fov
@@ -682,6 +684,8 @@ def advise_wide_field(
                 "Frequency sampling for facet = %.1f (Hz)",
                 freq_sampling_facet,
             )
+    else:
+        freq_sampling_facet = freq_sampling_image
 
     freq_sampling_primary_beam = max_freq * (
         synthesized_beam / primary_beam_fov
@@ -694,6 +698,7 @@ def advise_wide_field(
         )
         log.info("")
 
+    # Below are the primary beam parameters
     wstep_primary_beam = w_sampling_primary_beam
     vis_slices_primary_beam = max(1, int(2 * maximum_w / wstep_primary_beam))
     wprojection_planes_primary_beam = vis_slices_primary_beam
@@ -727,7 +732,7 @@ def advise_wide_field(
     if verbose:
         log.info(
             "advice_wide_field: (vis_slices_image) "
-            "Number of planes in w stack %d (primary beam)",
+            "Number of planes in w stack %d (image)",
             vis_slices_image,
         )
         log.info(
@@ -784,9 +789,6 @@ def advise_wide_field(
         "vis_slices_image",
         "wprojection_planes_image",
         "nwpixels_image",
-        "wstep",
-        "vis_slices",
-        "nwpixels",
     ]
 
     return {your_key: result[your_key] for your_key in keys}
