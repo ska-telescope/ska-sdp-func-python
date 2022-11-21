@@ -482,6 +482,7 @@ def advise_wide_field(
     :param guard_band_image: Number of primary beam
             half-widths-to-half-maximum to image (def: 6)
     :param facets: Number of facets on each axis
+    :param wprojection_planes:
     :return: dict of advice
     """
     max_wavelength = physical_constants.C_M_S / numpy.min(vis.frequency.data)
@@ -771,7 +772,6 @@ def advise_wide_field(
         "oversampling_synthesised_beam",
         "guard_band_image",
         "facets",
-        "wprojection_planes",
         "verbose",
         "max_wavelength",
         "min_wavelength",
