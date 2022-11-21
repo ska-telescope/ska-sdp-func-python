@@ -1,426 +1,422 @@
-# pylint: skip-file
-# flake8: noqa
 """
 Unit tests for calibration solution
 """
 import logging
-import unittest
 
-import astropy.units as u
-import numpy
 import pytest
-from astropy.coordinates import SkyCoord
-from numpy.random import default_rng
 from ska_sdp_datamodels.calibration.calibration_create import (
     create_gaintable_from_visibility,
 )
-from ska_sdp_datamodels.configuration import create_named_configuration
-from ska_sdp_datamodels.science_data_model.polarisation_model import (
-    PolarisationFrame,
-)
-from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
-from ska_sdp_datamodels.visibility import create_visibility
 
 from ska_sdp_func_python.calibration.operations import apply_gaintable
 from ska_sdp_func_python.calibration.solvers import solve_gaintable
-
-# from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
-
-pytest.skip(
-    allow_module_level=True,
-    reason="not able importing ska-sdp-func in dft_skycomponent_visibility",
-)
+from tests.testing_utils import simulate_gaintable, vis_with_component_data
 
 log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
 
 
-def simulate_gaintable(gt, phase_error, seed):
-    rng = default_rng(seed)
-    phases = rng.normal(0, phase_error, gt["gain"].data.shape)
-    gt["gain"].data = 1 * numpy.exp(0 + 1j * phases)
-    gt["gain"].data[..., 0, 1] = 0.0
-    gt["gain"].data[..., 1, 0] = 0.0
-    return gt
-
-
-class TestCalibrationSolvers(unittest.TestCase):
-    def setUp(self):
-        numpy.random.seed(180555)
-
-    def actualSetup(
-        self,
-        sky_pol_frame="stokesIQUV",
-        data_pol_frame="linear",
-        f=None,
-        vnchan=3,
-        ntimes=3,
-        rmax=300.0,
-    ):
-        self.lowcore = create_named_configuration("LOWBD2", rmax=rmax)
-        self.times = (numpy.pi / 43200.0) * numpy.linspace(
-            0.0, 30.0, 1 + ntimes
-        )
-        if vnchan > 1:
-            self.frequency = numpy.linspace(1.0e8, 1.1e8, vnchan)
-            self.channel_bandwidth = numpy.array(
-                vnchan * [self.frequency[1] - self.frequency[0]]
-            )
-        else:
-            self.frequency = 1e8 * numpy.ones([1])
-            self.channel_bandwidth = 1e7 * numpy.ones([1])
-
-        if f is None:
-            f = [100.0, 50.0, -10.0, 40.0]
-
-        if sky_pol_frame == "stokesI":
-            f = [100.0]
-
-        self.flux = numpy.outer(
-            numpy.array(
-                [numpy.power(freq / 1e8, -0.7) for freq in self.frequency]
-            ),
-            f,
-        )
-
-        # The phase centre is absolute and the component is specified relative
-        # This means that the component should end up at the position
-        # phasecentre+compredirection
-        self.phasecentre = SkyCoord(
-            ra=+180.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
-        )
-        self.compabsdirection = SkyCoord(
-            ra=+181.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
-        )
-        self.comp = SkyComponent(
-            direction=self.compabsdirection,
-            frequency=self.frequency,
-            flux=self.flux,
-            polarisation_frame=PolarisationFrame(sky_pol_frame),
-        )
-        self.vis = create_visibility(
-            self.lowcore,
-            self.times,
-            self.frequency,
-            phasecentre=self.phasecentre,
-            channel_bandwidth=self.channel_bandwidth,
-            weight=1.0,
-            polarisation_frame=PolarisationFrame(data_pol_frame),
-        )
-        self.vis = dft_skycomponent_visibility(self.vis, self.comp)
-
-    def test_solve_gaintable_stokesI_phaseonly(self):
-        self.core_solve(
-            "stokesI",
-            "stokesI",
-            phase_error=0.1,
-            phase_only=True,
-            leakage=0.0,
-            f=[100.0, 0.0, 0.0, 0.0],
-        )
-
-    def test_solve_gaintable_stokesI(self):
-        self.core_solve(
-            "stokesI",
-            "stokesI",
-            amplitude_error=0.1,
-            phase_error=0.1,
-            phase_only=False,
-            leakage=0.0,
-            f=[100.0, 0.0, 0.0, 0.0],
-        )
-
-    def test_solve_gaintable_stokesI_small_n_large_t(self):
-        # Select only 6 stations
-        self.core_solve(
-            "stokesI",
-            "stokesI",
-            amplitude_error=0.1,
-            phase_error=0.1,
-            phase_only=False,
-            leakage=0.0,
-            f=[100.0, 0.0, 0.0, 0.0],
-            ntimes=400,
-            rmax=83,
-        )
-
-    def test_solve_gaintable_stokesI_timeslice(self):
-        self.core_solve(
-            "stokesI",
-            "stokesI",
-            amplitude_error=0.1,
-            phase_error=0.1,
-            phase_only=False,
-            leakage=0.0,
-            f=[100.0, 0.0, 0.0, 0.0],
-            timeslice=120.0,
-        )
-
-    def test_solve_gaintable_stokesI_normalise(self):
-        self.core_solve(
-            "stokesI",
-            "stokesI",
-            amplitude_error=0.1,
-            phase_error=0.1,
-            phase_only=False,
-            leakage=0.0,
-            f=[100.0, 0.0, 0.0, 0.0],
-            normalise_gains=True,
-        )
-
-    def test_solve_gaintable_stokesI_bandpass(self):
-        self.core_solve(
-            "stokesI",
-            "stokesI",
-            amplitude_error=0.1,
-            phase_error=0.1,
-            phase_only=False,
-            leakage=0.0,
-            f=[100.0, 0.0, 0.0, 0.0],
-            vnchan=32,
-        )
-
-    def test_solve_gaintable_stokesIQUV_bandpass(self):
-        self.core_solve(
+@pytest.mark.parametrize(
+    "sky_pol_frame, data_pol_frame, flux_array, "
+    "phase_error, expected_gain_sum",
+    [
+        (
+            "stokesIQUV",
+            "circular",
+            [100.0, 0.0, 0.0, 50.0],
+            10.0,
+            (61.44194904161769, -0.028730599005608592),
+        ),
+        (
             "stokesIQUV",
             "linear",
-            amplitude_error=0.1,
-            phase_error=0.1,
-            phase_only=False,
-            leakage=0.0,
-            f=[100.0, 50.0, 0.0, 0.0],
-            vnchan=32,
-        )
+            [100.0, 50.0, 0.0, 0.0],
+            10.0,
+            (61.44194904161769, -0.028730599005608592),
+        ),
+        (
+            "stokesIV",
+            "circularnp",
+            [100.0, 50.0],
+            0.1,
+            (748.2141413044451, -2.679009413197875e-07),
+        ),
+        (
+            "stokesIQ",
+            "linearnp",
+            [100.0, 50.0],
+            0.1,
+            (748.2141413044451, -2.679009413197875e-07),
+        ),
+        (
+            "stokesIQUV",
+            "circular",
+            [100.0, 0.0, 0.0, 50.0],
+            0.1,
+            (748.2141413044451, -2.679009413197875e-07),
+        ),
+        (
+            "stokesIQUV",
+            "linear",
+            [100.0, 50.0, 0.0, 0.0],
+            0.1,
+            (748.2141413044451, -2.679009413197875e-07),
+        ),
+        (
+            "stokesI",
+            "stokesI",
+            [100.0, 0.0, 0.0, 0.0],
+            0.1,
+            (372.357810300829, 23.57909603997496),
+        ),
+    ],
+)
+def test_solve_gaintable_phase_only(
+    sky_pol_frame, data_pol_frame, flux_array, phase_error, expected_gain_sum
+):
+    """
+    Test solve_gaintable for phase solution only (with phase_errors),
+    for different polarisation frames.
+    """
+    jones_type = "T"
 
-    def core_solve(
-        self,
-        spf,
-        dpf,
-        phase_error=0.1,
+    vis = vis_with_component_data(sky_pol_frame, data_pol_frame, flux_array)
+
+    gain_table = create_gaintable_from_visibility(vis, jones_type=jones_type)
+    gain_table = simulate_gaintable(
+        gain_table,
+        phase_error=phase_error,
         amplitude_error=0.0,
-        leakage=0.01,
+        leakage=0.0,
+    )
+
+    original = vis.copy(deep=True)
+    vis = apply_gaintable(vis, gain_table)
+
+    result_gain_table = solve_gaintable(
+        vis,
+        original,
         phase_only=True,
         niter=200,
         crosspol=False,
-        residual_tol=1e-6,
-        f=None,
-        vnchan=1,
-        timeslice=None,
-        ntimes=3,
-        rmax=300,
+        tol=1e-6,
         normalise_gains=False,
-    ):
-        if vnchan > 1:
-            jones_type = "B"
-        else:
-            if amplitude_error > 0.0:
-                jones_type = "G"
-            else:
-                jones_type = "T"
+        jones_type=jones_type,
+    )
 
-        if f is None:
-            f = [100.0, 50.0, -10.0, 40.0]
-        self.actualSetup(
-            spf, dpf, f=f, vnchan=vnchan, ntimes=ntimes, rmax=rmax
-        )
-        gt = create_gaintable_from_visibility(
-            self.vis, timeslice=timeslice, jones_type=jones_type
-        )
-        log.info("Created gain table: %.3f GB" % (gt.gaintable_acc.size()))
-        gt = simulate_gaintable(
-            gt,
-            phase_error=phase_error,
-            amplitude_error=amplitude_error,
-            leakage=leakage,
-        )
-        original = self.vis.copy(deep=True)
-        vis = apply_gaintable(self.vis, gt)
-        gtsol = solve_gaintable(
-            self.vis,
-            original,
-            phase_only=phase_only,
-            niter=niter,
-            crosspol=crosspol,
-            tol=1e-6,
-            normalise_gains=normalise_gains,
-            jones_type=jones_type,
-        )
-        cal_vis = apply_gaintable(vis, gtsol, inverse=True)
-        assert numpy.max(numpy.abs(vis.vis - cal_vis.vis)) < residual_tol
+    assert result_gain_table["gain"].data.sum().real.round(10) == round(
+        expected_gain_sum[0], 10
+    )
+    assert result_gain_table["gain"].data.sum().imag.round(10) == round(
+        expected_gain_sum[1], 10
+    )
 
-    def test_solve_gaintable_stokesIQUV_phase_only_linear(self):
-        self.core_solve(
-            "stokesIQUV",
-            "linear",
-            phase_error=0.1,
-            phase_only=True,
-            leakage=0.0,
-            f=[100.0, 50.0, 0.0, 0.0],
-        )
 
-    def test_solve_gaintable_stokesIQUV_phase_only_circular(self):
-        self.core_solve(
-            "stokesIQUV",
-            "circular",
-            phase_error=0.1,
-            phase_only=True,
-            leakage=0.0,
-            f=[100.0, 0.0, 0.0, 50.0],
-        )
-
-    def test_solve_gaintable_stokesIQUV_phase_only_linearnp(self):
-        self.core_solve(
-            "stokesIQ",
-            "linearnp",
-            phase_error=0.1,
-            phase_only=True,
-            leakage=0.0,
-            f=[100.0, 50.0],
-        )
-
-    def test_solve_gaintable_stokesIQUV_phase_only_circularnp(self):
-        self.core_solve(
+@pytest.mark.parametrize(
+    "sky_pol_frame, data_pol_frame, flux_array, "
+    "amplitude_error, expected_gain_sum",
+    [
+        (
             "stokesIV",
             "circularnp",
-            phase_error=0.1,
-            phase_only=True,
-            leakage=0.0,
-            f=[100.0, 50.0],
-        )
-
-    def test_solve_gaintable_stokesIQUV_large_phase_only_linear(self):
-        self.core_solve(
+            [100.0, 50.0],
+            0.01,
+            (748.3974636434654, 0.0004744256818732251),
+        ),
+        (
+            "stokesIQUV",
+            "circular",
+            [100.0, 0.0, 0.0, 50.0],
+            0.01,
+            (748.3974636434654, 0.0004744256818732251),
+        ),
+        (
             "stokesIQUV",
             "linear",
-            phase_error=10.0,
-            phase_only=True,
-            leakage=0.0,
-            f=[100.0, 50.0, 0.0, 0.0],
-        )
+            [100.0, 50.0, 0.0, 0.0],
+            0.01,
+            (748.3974636434654, 0.0004744256818732251),
+        ),
+        (
+            "stokesI",
+            "stokesI",
+            [100.0, 0.0, 0.0, 0.0],
+            0.1,
+            (372.3091261026126, 23.89178596680593),
+        ),
+    ],
+)
+def test_solve_gaintable_phase_and_amplitude(
+    sky_pol_frame,
+    data_pol_frame,
+    flux_array,
+    amplitude_error,
+    expected_gain_sum,
+):
+    """
+    Test solve_gaintable with with phase and amplitude errors,
+    for different polarisation frames.
+    """
+    jones_type = "G"
 
-    def test_solve_gaintable_stokesIQUV_large_phase_only_circular(self):
-        self.core_solve(
+    vis = vis_with_component_data(sky_pol_frame, data_pol_frame, flux_array)
+
+    gt = create_gaintable_from_visibility(vis, jones_type=jones_type)
+    gt = simulate_gaintable(
+        gt,
+        phase_error=0.1,
+        amplitude_error=amplitude_error,
+        leakage=0.0,
+    )
+    original = vis.copy(deep=True)
+    vis = apply_gaintable(vis, gt)
+
+    result_gain_table = solve_gaintable(
+        vis,
+        original,
+        phase_only=False,
+        niter=200,
+        crosspol=False,
+        tol=1e-6,
+        normalise_gains=False,
+        jones_type=jones_type,
+    )
+
+    assert result_gain_table["gain"].data.sum().real.round(10) == round(
+        expected_gain_sum[0], 10
+    )
+    assert result_gain_table["gain"].data.sum().imag.round(10) == round(
+        expected_gain_sum[1], 10
+    )
+
+
+@pytest.mark.parametrize(
+    "sky_pol_frame, data_pol_frame, flux_array",
+    [
+        ("stokesIQ", "linearnp", [100.0, 50.0]),
+        ("stokesIQUV", "circular", [100.0, 10.0, -20.0, 50.0]),
+        ("stokesIQUV", "circular", [100.0, 0.0, 0.0, 50.0]),
+        ("stokesIQUV", "linear", [100.0, 50.0, 10.0, -20.0]),
+        ("stokesIQUV", "linear", [100.0, 50.0, 0.0, 0.0]),
+    ],
+)
+def test_solve_gaintable_crosspol(sky_pol_frame, data_pol_frame, flux_array):
+    """
+    Test solve_gaintable with crosspol=True, for different polarisation frames.
+    """
+    jones_type = "G"
+
+    vis = vis_with_component_data(sky_pol_frame, data_pol_frame, flux_array)
+
+    gt = create_gaintable_from_visibility(vis, jones_type=jones_type)
+    gt = simulate_gaintable(
+        gt,
+        phase_error=0.1,
+        amplitude_error=0.01,
+        leakage=0.0,
+    )
+    original = vis.copy(deep=True)
+    vis = apply_gaintable(vis, gt)
+
+    result_gain_table = solve_gaintable(
+        vis,
+        original,
+        phase_only=False,
+        niter=200,
+        crosspol=True,
+        tol=1e-6,
+        normalise_gains=False,
+        jones_type=jones_type,
+    )
+
+    assert result_gain_table["gain"].data.sum().real.round(10) == round(
+        748.3974636434654, 10
+    )
+    assert result_gain_table["gain"].data.sum().imag.round(10) == round(
+        0.0004744256818732251, 10
+    )
+
+
+def test_solve_gaintable_timeslice():
+    """
+    Test solve_gaintable with timeslice set.
+    """
+    jones_type = "G"
+
+    vis = vis_with_component_data("stokesI", "stokesI", [100.0, 0.0, 0.0, 0.0])
+
+    gt = create_gaintable_from_visibility(vis, jones_type=jones_type)
+    gt = simulate_gaintable(
+        gt,
+        phase_error=0.1,
+        amplitude_error=0.1,
+        leakage=0.0,
+    )
+    original = vis.copy(deep=True)
+    vis = apply_gaintable(vis, gt)
+
+    result_gain_table = solve_gaintable(
+        vis,
+        original,
+        phase_only=False,
+        niter=200,
+        crosspol=False,
+        tol=1e-6,
+        normalise_gains=False,
+        jones_type=jones_type,
+        timeslice=120.0,
+    )
+
+    assert result_gain_table["gain"].data.sum().real == 94.0
+    assert result_gain_table["gain"].data.sum().imag == 0.0j
+
+
+def test_solve_gaintable_normalise():
+    """
+    Test solve_gaintable with normalise_gains=True.
+    """
+    jones_type = "G"
+
+    vis = vis_with_component_data("stokesI", "stokesI", [100.0, 0.0, 0.0, 0.0])
+
+    gt = create_gaintable_from_visibility(vis, jones_type=jones_type)
+    gt = simulate_gaintable(
+        gt,
+        phase_error=0.1,
+        amplitude_error=0.1,
+        leakage=0.0,
+    )
+    original = vis.copy(deep=True)
+    vis = apply_gaintable(vis, gt)
+
+    result_gain_table = solve_gaintable(
+        vis,
+        original,
+        phase_only=False,
+        niter=200,
+        crosspol=False,
+        tol=1e-6,
+        normalise_gains=True,
+        jones_type=jones_type,
+    )
+
+    assert (
+        result_gain_table["gain"].data.sum().real.round(10) == 372.3325412643
+    )
+    assert result_gain_table["gain"].data.sum().imag.round(10) == 23.7294030164
+
+
+@pytest.mark.parametrize(
+    "sky_pol_frame, data_pol_frame, flux_array, "
+    "crosspol, nchan, expected_gain_sum",
+    [
+        (
+            "stokesI",
+            "stokesI",
+            [100.0, 0.0, 0.0, 0.0],
+            False,
+            32,
+            (11920.058493360062, 2.8005384554731485),
+        ),
+        (
             "stokesIQUV",
             "circular",
-            phase_error=10.0,
-            leakage=0.0,
-            phase_only=True,
-            f=[100.0, 0.0, 0.0, 50.0],
-        )
-
-    def test_solve_gaintable_stokesIQUV_both_linear(self):
-        self.core_solve(
+            [100.0, 0.0, 0.0, 50.0],
+            True,
+            4,
+            (5986.719933148706, 0.04801930767159601),
+        ),
+        (
             "stokesIQUV",
             "linear",
-            phase_error=0.1,
-            amplitude_error=0.01,
-            leakage=0.0,
-            phase_only=False,
-            f=[100.0, 50.0, 0.0, 0.0],
-        )
+            [100.0, 50.0, 0.0, 0.0],
+            False,
+            32,
+            (47888.57884046984, 0.026622457006181932),
+        ),
+    ],
+)
+def test_solve_gaintable_bandpass(
+    sky_pol_frame,
+    data_pol_frame,
+    flux_array,
+    crosspol,
+    nchan,
+    expected_gain_sum,
+):
+    """
+    Test solve_gaintable for bandpass solution of multiple channels,
+    for different polarisation frames.
+    """
+    jones_type = "B"
 
-    def test_solve_gaintable_stokesIQUV_both_circular(self):
-        self.core_solve(
-            "stokesIQUV",
-            "circular",
-            phase_error=0.1,
-            amplitude_error=0.01,
-            leakage=0.0,
-            phase_only=False,
-            f=[100.0, 0.0, 0.0, 50.0],
-        )
+    vis = vis_with_component_data(
+        sky_pol_frame, data_pol_frame, flux_array, nchan=nchan
+    )
 
-    def test_solve_gaintable_stokesIV_both_circularnp(self):
-        self.core_solve(
-            "stokesIV",
-            "circularnp",
-            phase_error=0.1,
-            amplitude_error=0.01,
-            leakage=0.0,
-            phase_only=False,
-            f=[100.0, 50.0],
-        )
+    gt = create_gaintable_from_visibility(vis, jones_type=jones_type)
+    gt = simulate_gaintable(
+        gt,
+        phase_error=0.1,
+        amplitude_error=0.1,
+        leakage=0.0,
+    )
+    original = vis.copy(deep=True)
+    vis = apply_gaintable(vis, gt)
 
-    def test_solve_gaintable_stokesIQUV_crosspol_both_linear(self):
-        self.core_solve(
-            "stokesIQUV",
-            "linear",
-            phase_error=0.1,
-            amplitude_error=0.01,
-            leakage=0.0,
-            residual_tol=1e-6,
-            crosspol=True,
-            phase_only=False,
-            f=[100.0, 50.0, 0.0, 0.0],
-        )
+    result_gain_table = solve_gaintable(
+        vis,
+        original,
+        phase_only=False,
+        niter=200,
+        crosspol=crosspol,
+        tol=1e-6,
+        normalise_gains=True,
+        jones_type=jones_type,
+    )
 
-    def test_solve_gaintable_stokesIQ_crosspol_both_linearnp(self):
-        self.core_solve(
-            "stokesIQ",
-            "linearnp",
-            phase_error=0.1,
-            amplitude_error=0.01,
-            leakage=0.0,
-            residual_tol=1e-6,
-            crosspol=True,
-            phase_only=False,
-            f=[100.0, 50.0],
-        )
-
-    def test_solve_gaintable_stokesIQUV_crosspol_both_linear_cross(self):
-        self.core_solve(
-            "stokesIQUV",
-            "linear",
-            phase_error=0.1,
-            amplitude_error=0.01,
-            leakage=0.1,
-            residual_tol=1e-6,
-            crosspol=True,
-            phase_only=False,
-            f=[100.0, 50.0, 10.0, -20.0],
-        )
-
-    def test_solve_gaintable_stokesIQUV_crosspol_both_circular(self):
-        self.core_solve(
-            "stokesIQUV",
-            "circular",
-            phase_error=0.1,
-            amplitude_error=0.01,
-            leakage=0.0,
-            residual_tol=1e-6,
-            crosspol=True,
-            phase_only=False,
-            f=[100.0, 0.0, 0.0, 50.0],
-        )
-
-    def test_solve_gaintable_stokesIQUV_crosspol_both_circular_cross(self):
-        self.core_solve(
-            "stokesIQUV",
-            "circular",
-            phase_error=0.1,
-            amplitude_error=0.01,
-            leakage=0.1,
-            residual_tol=1e-6,
-            crosspol=True,
-            phase_only=False,
-            f=[100.0, 10.0, -20.0, 50.0],
-        )
-
-    def test_solve_gaintable_stokesIQUV_crosspol_both_circular_channel(self):
-        self.core_solve(
-            "stokesIQUV",
-            "circular",
-            phase_error=0.1,
-            amplitude_error=0.01,
-            leakage=0.0,
-            residual_tol=1e-6,
-            crosspol=True,
-            vnchan=4,
-            phase_only=False,
-            f=[100.0, 0.0, 0.0, 50.0],
-        )
+    assert result_gain_table["gain"].data.sum().real.round(10) == round(
+        expected_gain_sum[0], 10
+    )
+    assert result_gain_table["gain"].data.sum().imag.round(10) == round(
+        expected_gain_sum[1], 10
+    )
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_solve_gaintable_few_antennas_many_times():
+    """
+    Test solve_gaintable for different array size and time samples.
+    (Small array, large number of time samples)
+    """
+    jones_type = "G"
+
+    vis = vis_with_component_data(
+        "stokesI", "stokesI", [100.0, 0.0, 0.0, 0.0], rmax=83, ntimes=400
+    )
+
+    gt = create_gaintable_from_visibility(vis, jones_type=jones_type)
+    gt = simulate_gaintable(
+        gt,
+        phase_error=0.1,
+        amplitude_error=0.1,
+        leakage=0.0,
+    )
+    original = vis.copy(deep=True)
+    vis = apply_gaintable(vis, gt)
+
+    result_gain_table = solve_gaintable(
+        vis,
+        original,
+        phase_only=False,
+        niter=200,
+        crosspol=False,
+        tol=1e-6,
+        normalise_gains=False,
+        jones_type=jones_type,
+    )
+
+    assert (
+        result_gain_table["gain"].data.sum().real.round(10) == 2393.9044551139
+    )
+    assert result_gain_table["gain"].data.sum().imag.round(10) == 24.2584023116

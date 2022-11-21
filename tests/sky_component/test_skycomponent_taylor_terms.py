@@ -1,4 +1,3 @@
-# pylint: skip-file
 """
 Unit tests for image Taylor terms
 """
@@ -29,7 +28,7 @@ log.setLevel(logging.WARNING)
 
 @pytest.fixture(scope="module", name="input_params")
 def taylor_terms_fixture():
-
+    """Input params for tested functions"""
     phase_centre = SkyCoord(
         ra=+180.0 * u.deg,
         dec=-60.0 * u.deg,
@@ -76,7 +75,7 @@ def test_calculate_taylor_terms(input_params):
     "testing those individually"
 )
 def test_find_skycomponents_frequency_taylor_terms(input_params):
-
+    """Test finding SkyComponents by fitting taylor terms"""
     im = create_image(
         512,
         0.00015,

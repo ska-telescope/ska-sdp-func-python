@@ -608,21 +608,21 @@ def insert_skycomponent(
         skycoords, im.image_acc.wcs, origin=0, mode="wcs"
     )
 
+    insert_method_map = {
+        "Lanczos": insert_function_L,
+        "Sinc": insert_function_sinc,
+        "PSWF": insert_function_pswf,
+    }
+
     nbad = 0
     for icomp, comp in enumerate(sc):
-
-        assert comp.shape == "Point", f"Cannot handle shape {comp.shape}"
+        if not comp.shape == "Point":
+            raise ValueError(f"Cannot handle shape {comp.shape}")
 
         pixloc = (pixlocs[0][icomp], pixlocs[1][icomp])
         flux = numpy.zeros([nchan, npol])
 
-        if (
-            len(comp.frequency.data) == len(image_frequency)
-            and numpy.max(numpy.abs(comp.frequency.data - image_frequency))
-            < 1e-7
-        ):
-            flux = comp.flux
-        elif comp.flux.shape[0] > 1:
+        if comp.flux.shape[0] > 1:
             for pol in range(npol):
                 fint = interpolate.interp1d(
                     comp.frequency.data, comp.flux[:, pol], kind="cubic"
@@ -631,7 +631,7 @@ def insert_skycomponent(
         else:
             flux = comp.flux
 
-        if insert_method == "Lanczos":
+        try:
             insert_array(
                 im["pixels"].data,
                 pixloc[0],
@@ -639,30 +639,10 @@ def insert_skycomponent(
                 flux,
                 bandwidth,
                 support,
-                insert_function=insert_function_L,
+                insert_function=insert_method_map[insert_method],
             )
-        elif insert_method == "Sinc":
-            insert_array(
-                im["pixels"].data,
-                pixloc[0],
-                pixloc[1],
-                flux,
-                bandwidth,
-                support,
-                insert_function=insert_function_sinc,
-            )
-        elif insert_method == "PSWF":
-            insert_array(
-                im["pixels"].data,
-                pixloc[0],
-                pixloc[1],
-                flux,
-                bandwidth,
-                support,
-                insert_function=insert_function_pswf,
-            )
-        else:
-            insert_method = "Nearest"
+        except KeyError:
+            # this is for insert_method = "Nearest"
             y, x = (
                 numpy.round(pixloc[1]).astype("int"),
                 numpy.round(pixloc[0]).astype("int"),
@@ -671,6 +651,7 @@ def insert_skycomponent(
                 im["pixels"].data[:, :, y, x] += flux[...]
             else:
                 nbad += 1
+
     if nbad > 0:
         log.warning(
             "insert_skycomponent: %s components of %s do not fit on image",

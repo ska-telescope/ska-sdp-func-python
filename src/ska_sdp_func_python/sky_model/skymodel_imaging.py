@@ -21,6 +21,48 @@ from ska_sdp_func_python.sky_component.operations import (
 from ska_sdp_func_python.visibility import concatenate_visibility
 
 
+def _dft_sky_component(vis_slice, skymodel, pb=None, **kwargs):
+    """Run DFT of sky components"""
+    if skymodel.mask is not None or pb is not None:
+        comps = skymodel.components.copy()
+
+        if skymodel.mask is not None:
+            comps = apply_beam_to_skycomponent(comps, skymodel.mask)
+        if pb is not None:
+            comps = apply_beam_to_skycomponent(comps, pb)
+
+        vis_slice = dft_skycomponent_visibility(vis_slice, comps, **kwargs)
+
+    else:
+        vis_slice = dft_skycomponent_visibility(
+            vis_slice, skymodel.components, **kwargs
+        )
+
+    return vis_slice
+
+
+def _fft_image(vis_slice, context, skymodel, pb=None, **kwargs):
+    """Run FFT of image with non-zero pixel data"""
+    imgv = vis_slice.copy(deep=True, zero=True)
+
+    if skymodel.mask is not None or pb is not None:
+        model = skymodel.image.copy(deep=True)
+
+        if skymodel.mask is not None:
+            model["pixels"].data *= skymodel.mask["pixels"].data
+        if pb is not None:
+            model["pixels"].data *= pb["pixels"].data
+
+        imgv = predict_visibility(imgv, model, context=context, **kwargs)
+
+    else:
+        imgv = predict_visibility(
+            imgv, skymodel.image, context=context, **kwargs
+        )
+
+    vis_slice["vis"].data += imgv["vis"].data
+
+
 def skymodel_predict_calibrate(
     bvis,
     skymodel,
@@ -64,43 +106,15 @@ def skymodel_predict_calibrate(
 
             # First do the DFT for the components
             if len(skymodel.components) > 0:
-                if skymodel.mask is not None or pb is not None:
-                    comps = skymodel.components.copy()
-                    if skymodel.mask is not None:
-                        comps = apply_beam_to_skycomponent(
-                            comps, skymodel.mask
-                        )
-                    if pb is not None:
-                        comps = apply_beam_to_skycomponent(comps, pb)
-                    vis_slice = dft_skycomponent_visibility(
-                        vis_slice, comps, **kwargs
-                    )
-                else:
-                    vis_slice = dft_skycomponent_visibility(
-                        vis_slice, skymodel.components, **kwargs
-                    )
+                vis_slice = _dft_sky_component(
+                    vis_slice, skymodel, pb=pb, **kwargs
+                )
 
             # Now do the FFT of the image, after multiplying
             # by the mask and primary beam
             if skymodel.image is not None:
                 if numpy.max(numpy.abs(skymodel.image["pixels"].data)) > 0.0:
-                    imgv = vis_slice.copy(deep=True, zero=True)
-                    if skymodel.mask is not None or pb is not None:
-                        model = skymodel.image.copy(deep=True)
-                        if skymodel.mask is not None:
-                            model["pixels"].data *= skymodel.mask[
-                                "pixels"
-                            ].data
-                        if pb is not None:
-                            model["pixels"].data *= pb["pixels"].data
-                        imgv = predict_visibility(
-                            imgv, model, context=context, **kwargs
-                        )
-                    else:
-                        imgv = predict_visibility(
-                            imgv, skymodel.image, context=context, **kwargs
-                        )
-                    vis_slice["vis"].data += imgv["vis"].data
+                    _fft_image(vis_slice, context, skymodel, pb=pb, **kwargs)
 
             vis_slices.append(vis_slice)
 
@@ -112,30 +126,12 @@ def skymodel_predict_calibrate(
         return v
 
     # First do the DFT or the components
-    if len(skymodel.components) > 0:
-        if skymodel.mask is not None:
-            comps = skymodel.components.copy()
-            comps = apply_beam_to_skycomponent(comps, skymodel.mask)
-            v = dft_skycomponent_visibility(v, comps, **kwargs)
-        else:
-            v = dft_skycomponent_visibility(v, skymodel.components, **kwargs)
+    v = _dft_sky_component(v, skymodel, pb=None, **kwargs)
 
-    # Now do the FFT of the image, after multiplying
-    # by the mask and primary beam
+    # Now do the FFT of the image, after multiplying by the mask
     if skymodel.image is not None:
         if numpy.max(numpy.abs(skymodel.image["pixels"].data)) > 0.0:
-            imgv = v.copy(deep=True, zero=True)
-            if skymodel.mask is not None:
-                model = skymodel.image.copy(deep=True)
-                model["pixels"].data *= skymodel.mask["pixels"].data
-                imgv = predict_visibility(
-                    imgv, model, context=context, **kwargs
-                )
-            else:
-                imgv = predict_visibility(
-                    imgv, skymodel.image, context=context, **kwargs
-                )
-            v["vis"].data += imgv["vis"].data
+            _fft_image(v, context, skymodel, pb=None, **kwargs)
 
     if docal and skymodel.gaintable is not None:
         v = apply_gaintable(v, skymodel.gaintable, inverse=inverse)
