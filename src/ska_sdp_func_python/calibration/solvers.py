@@ -1,15 +1,5 @@
 """
-Functions to solve for antenna/station gain
-
-This uses an iterative substitution algorithm due to
-Larry D'Addario c 1980'ish. Used in the original VLA Dec-10 Antsol.
-
-For example::
-
-    gtsol = solve_gaintable(vis, originalvis,
-            phase_only=True, niter=niter, crosspol=False, tol=1e-6)
-    vis = apply_gaintable(vis, gtsol, inverse=True)
-
+Functions to solve for antenna/station gain.
 """
 
 __all__ = ["solve_gaintable"]
@@ -42,7 +32,7 @@ def solve_gaintable(
 ) -> GainTable:
     """
     Solve a gain table by fitting an observed visibility
-         to a model visibility
+    to a model visibility.
 
     If modelvis is None, a point source model is assumed.
 
@@ -55,7 +45,7 @@ def solve_gaintable(
                  in the gain solution is below this tolerance
     :param crosspol: Do solutions including cross polarisations
                      i.e. XY, YX or RL, LR
-    :param normalise_gains: Normalise the gains?
+    :param normalise_gains: Normalises the gains (default True)
     :param jones_type: Type of calibration matrix T or G or B
     :param timeslice: Time interval between solutions (s)
     :return: GainTable containing solution
@@ -228,7 +218,7 @@ def _solve_antenna_gains_itsubs_scalar(
     refant=0,
     damping=0.5,
 ):
-    """Solve for the antenna gains
+    """Solve for the antenna gains.
 
      x(antenna2, antenna1) = gain(antenna1) conj(gain(antenna2))
 
@@ -290,7 +280,7 @@ def _solve_antenna_gains_itsubs_scalar(
 def _gain_substitution_scalar(gain, x, xwt):
     """
     Substitute gains across all baselines of gain
-         for point source equivalent visibilities
+         for point source equivalent visibilities.
     TODO: Check this function description
 
     :param gain: gains (numpy.array of shape [nant, nchan, nrec, nrec])
@@ -327,7 +317,7 @@ def _solve_antenna_gains_itsubs_nocrossdata(
     gain, gwt, x, xwt, niter=200, tol=1e-6, phase_only=True
 ):
     """Solve for the antenna gains using full matrix expressions,
-         but no cross hands
+         but no cross hands.
 
      x(antenna2, antenna1) = gain(antenna1) conj(gain(antenna2))
 
@@ -381,7 +371,7 @@ def _solve_antenna_gains_itsubs_nocrossdata(
 def _solve_antenna_gains_itsubs_matrix(
     gain, gwt, x, xwt, niter=200, tol=1e-6, phase_only=True
 ):
-    """Solve for the antenna gains using full matrix expressions
+    """Solve for the antenna gains using full matrix expressions.
 
      x(antenna2, antenna1) = gain(antenna1) conj(gain(antenna2))
 
@@ -443,7 +433,7 @@ def _solve_antenna_gains_itsubs_matrix(
 def _gain_substitution_matrix(gain, x, xwt):
     """
     Substitute gains across all baselines of gain
-         for point source equivalent visibilities
+         for point source equivalent visibilities.
     TODO: Check this function description
 
     :param gain: gains (numpy.array of shape [nant, nchan, nrec, nrec])
@@ -483,7 +473,7 @@ def _gain_substitution_matrix(gain, x, xwt):
 
 def _solution_residual_scalar(gain, x, xwt):
     """Calculate residual across all baselines of gain
-         for point source equivalent visibilities
+         for point source equivalent visibilities.
 
     :param gain: gains (numpy.array of shape [nant, nchan, nrec, nrec])
     :param x: Equivalent point source visibility [nants, nants, nchan, npol]
@@ -521,7 +511,7 @@ def _solution_residual_scalar(gain, x, xwt):
 
 def _solution_residual_matrix(gain, x, xwt):
     """Calculate residual across all baselines of gain
-         for point source equivalent visibilities
+         for point source equivalent visibilities.
 
     :param gain: gains (numpy.array of shape [nant, nchan, nrec, nrec])
     :param x: Equivalent point source visibility [nants, nants, nchan, npol]

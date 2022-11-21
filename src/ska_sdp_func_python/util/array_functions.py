@@ -18,13 +18,13 @@ from ska_sdp_func_python.fourier_transforms.fft_coordinates import grdsf
 
 
 def average_chunks(arr, wts, chunksize):
-    """Average the array arr with weights by chunks
+    """Average the array arr with weights by chunks.
 
-     Array len does not have to be multiple of chunksize
+    Array length does not have to be multiple of chunksize.
 
     :param arr: 1D array of values
     :param wts: 1D array of weights
-    :param chunksize: averaging size
+    :param chunksize: Averaging size
     :return: 1D array of averaged data_models, 1d array of weights
     """
     if chunksize <= 1:
@@ -44,9 +44,9 @@ def average_chunks(arr, wts, chunksize):
 
 
 def average_chunks2(arr, wts, chunksize):
-    """Average the two dimensional array arr with weights by chunks
+    """Average the two-dimensional array arr with weights by chunks.
 
-     Array len does not have to be multiple of chunksize.
+    Array length does not have to be multiple of chunksize.
 
     :param arr: 2D array of values
     :param wts: 2D array of weights
@@ -83,12 +83,12 @@ def average_chunks2(arr, wts, chunksize):
 
 
 def tukey_filter(x, r):
-    """Calculate the Tukey (tapered cosine) filter
+    """Calculate the Tukey (tapered cosine) filter.
 
-     See e.g. https://uk.mathworks.com/help/signal/ref/tukeywin.html
+    See e.g. https://uk.mathworks.com/help/signal/ref/tukeywin.html
 
     :param x: x coordinate (float)
-    :param r: transition point of filter (float)
+    :param r: Transition point of filter (float)
     :returns: Value of filter for x
     """
     if 0.0 <= x < r / 2.0:
@@ -100,7 +100,7 @@ def tukey_filter(x, r):
 
 
 def insert_function_sinc(x):
-    """Insertion with Sinc function
+    """Insertion with Sinc function.
 
     :param x: 1D vector
     :return: 1d vector
@@ -111,10 +111,10 @@ def insert_function_sinc(x):
 
 
 def insert_function_L(x, a=5):
-    """Insertion with Lanczos function
+    """Insertion with Lanczos function.
 
     :param x: 1D vector
-    :param a: width
+    :param a: Width
     :return: 1d vector
     """
     L = insert_function_sinc(x) * insert_function_sinc(x / a)
@@ -122,10 +122,10 @@ def insert_function_L(x, a=5):
 
 
 def insert_function_pswf(x, a=5):
-    """Insertion with PSWF
+    """Insertion with PSWF.
 
     :param x: 1D vector
-    :param a: width
+    :param a: Width
     :return: 1d vector
     """
     return grdsf(abs(x) / a)[1]
@@ -134,12 +134,12 @@ def insert_function_pswf(x, a=5):
 def insert_array(
     im, x, y, flux, bandwidth=1.0, support=7, insert_function=insert_function_L
 ):
-    """Insert point into image using specified function
+    """Insert point into Image using specified function.
 
     :param im: Image
     :param x: x in float pixels
     :param y: y in float pixels
-    :param flux: Flux[nchan, npol]
+    :param flux: Flux [nchan, npol]
     :param bandwidth: Support of data in uv plane
     :param support: Support of function in image space
     :param insert_function: insert_function_L or

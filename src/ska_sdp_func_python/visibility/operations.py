@@ -35,10 +35,11 @@ log = logging.getLogger("func-python-logger")
 
 
 def concatenate_visibility(vis_list, dim="time"):
-    """Concatenate a list of visibilities
+    """Concatenate a list of visibilities.
 
     :param vis_list: List of vis
-    :return: Concatendated visibility
+    :param dim: Name of the dimension to concatenate along
+    :return: Concatenated visibility
     """
     if not len(vis_list) > 0:
         raise ValueError("concatenate_visibility: vis_list is empty")
@@ -71,9 +72,9 @@ def concatenate_visibility(vis_list, dim="time"):
 
 
 def concatenate_visibility_frequency(bvis_list):
-    """Concatenate a list of Visibility's in frequency
+    """Concatenate a list of Visibility's in frequency.
 
-     The list should be in sequence of channels
+    The list should be in sequence of channels.
 
     :param bvis_list: List of Visibility
     :return: Visibility
@@ -82,7 +83,7 @@ def concatenate_visibility_frequency(bvis_list):
 
 
 def subtract_visibility(vis, model_vis, inplace=False):
-    """Subtract model_vis from vis, returning new visibility
+    """Subtract model_vis from vis, returning new visibility.
 
     :param vis: Visibility to be subtracted from
     :param model_vis: Visibility to subtract with
@@ -106,9 +107,9 @@ def subtract_visibility(vis, model_vis, inplace=False):
 def remove_continuum_visibility(
     vis: Visibility, degree=1, mask=None
 ) -> Visibility:
-    """Fit and remove continuum visibility
+    """Fit and remove continuum visibility.
 
-     Fit a polynomial in frequency of the specified degree where mask is True
+    Fit a polynomial in frequency of the specified degree where mask is True.
 
     :param vis: Visibility
     :param degree: Degree of polynomial
@@ -141,15 +142,15 @@ def remove_continuum_visibility(
 
 
 def divide_visibility(vis: Visibility, modelvis: Visibility):
-    """Divide visibility by model forming visibility for equivalent point source
+    """Divide visibility by model forming visibility for equivalent point source.
 
-     This is a useful intermediate product for calibration.
-     Variation of the visibility in time and frequency due
-     to the model structure is removed and the data can be
-     averaged to a limit determined by the instrumental stability.
-     The weight is adjusted to compensate for the division.
+    This is a useful intermediate product for calibration.
+    Variation of the visibility in time and frequency due
+    to the model structure is removed and the data can be
+    averaged to a limit determined by the instrumental stability.
+    The weight is adjusted to compensate for the division.
 
-     Zero divisions are avoided and the corresponding weight set to zero.
+    Zero divisions are avoided and the corresponding weight set to zero.
 
     :param vis: Visibility to be divided
     :param modelvis: Visibility to divide with
@@ -188,7 +189,7 @@ def divide_visibility(vis: Visibility, modelvis: Visibility):
 
 
 def integrate_visibility_by_channel(vis: Visibility) -> Visibility:
-    """Integrate visibility across all channels, returning new visibility
+    """Integrate visibility across all channels, returning new visibility.
 
     :param vis: Visibility
     :return: Visibility
@@ -236,7 +237,7 @@ def integrate_visibility_by_channel(vis: Visibility) -> Visibility:
 def average_visibility_by_channel(
     vis: Visibility, channel_average=None
 ) -> List[Visibility]:
-    """Average visibility by groups of channels, returning list of new visibility
+    """Average visibility by groups of channels, returning list of new visibility.
 
     :param vis: Visibility
     :param channel_average: Number of channels to average
@@ -307,7 +308,7 @@ def average_visibility_by_channel(
 def convert_visibility_to_stokes(vis):
     """Convert the polarisation frame data into Stokes parameters.
 
-    :param vis: visibility
+    :param vis: Visibility
     :return: Converted visibility data.
     """
     poldef = vis.visibility_acc.polarisation_frame
@@ -332,7 +333,7 @@ def convert_visibility_to_stokes(vis):
 
 def convert_visibility_to_stokesI(vis):
     """Convert the polarisation frame data into Stokes I
-        dropping other polarisations, return new Visibility
+    dropping other polarisations, return new Visibility.
 
     :param vis: visibility
     :return: Converted visibility data.
@@ -418,10 +419,10 @@ def convert_visibility_to_stokesI(vis):
 
 
 def convert_visibility_stokesI_to_polframe(vis, poldef=None):
-    """Convert the Stokes I into full polarisation, return new Visibility
+    """Convert the Stokes I into full polarisation, return new Visibility.
 
-    :param vis: visibility
-    :param poldef: desired polarisation frame
+    :param vis: Visibility
+    :param poldef: Desired polarisation frame
     :return: Converted visibility data.
     """
     if vis.visibility_acc.polarisation_frame == poldef:

@@ -11,7 +11,10 @@ data such as all w = 0 and do_wstacking=True.
 Also true of the visibilities.
 """
 
-__all__ = ["predict_ng", "invert_ng"]
+__all__ = [
+    "invert_ng",
+    "predict_ng",
+]
 
 import copy
 import logging
@@ -42,8 +45,8 @@ def predict_ng(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     this may be invoked using context='ng'.
 
     :param bvis: Visibility to be predicted
-    :param model: model image
-    :return: resulting Visibility (in place works)
+    :param model: Model Image
+    :return: Resulting Visibility (in place works)
     """
 
     if model is None:
@@ -147,20 +150,20 @@ def invert_ng(
     normalise: bool = True,
     **kwargs,
 ) -> (Image, numpy.ndarray):
-    """Invert using nifty-gridder module
+    """Invert using nifty-gridder module.
 
      https://gitlab.mpcdf.mpg.de/ift/nifty_gridder
 
-     Use the image im as a template. Do PSF in a separate call.
+    Use the Image im as a template. Do PSF in a separate call.
 
-     In the imaging and pipeline workflows,
-     this may be invoked using context='ng'. It is the default
+    In the imaging and pipeline workflows,
+    this may be invoked using context='ng'. It is the default.
 
     :param dopsf: Make the PSF instead of the dirty image
     :param bvis: Visibility to be inverted
-    :param im: image template (not changed)
-    :param normalise: normalise by the sum of weights (True)
-    :return: (resulting image, sum of the weights for
+    :param im: Image template (not changed)
+    :param normalise: Normalise by the sum of weights (True)
+    :return: (resulting Image, sum of the weights for
                 each frequency and polarization)
 
     """

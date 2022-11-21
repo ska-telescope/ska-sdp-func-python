@@ -1,41 +1,15 @@
 # pylint: disable=too-many-lines
 
 """
-Image deconvolution functions
-
-The standard deconvolution algorithms are provided:
-
-    hogbom: Hogbom CLEAN See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
-    msclean: MultiScale CLEAN See: Cornwell, T.J., Multiscale CLEAN
-    (IEEE Journal of Selected Topics in Sig Proc,
-    2008 vol. 2 pp. 793-801)
-
-    mfsmsclean: MultiScale Multi-Frequency
-    See: U. Rau and T. J. Cornwell, “A multi-scale multi-frequency
-    deconvolution algorithm for synthesis imaging in radio interferometry,”
-    A&A 532, A71 (2011).
-
-For example to make dirty image and PSF, deconvolve, and then restore::
-
-    model = create_image_from_visibility(vt, cellsize=0.001, npixel=256)
-    dirty, sumwt = invert_visibility(vt, model, context="2d")
-    psf, sumwt = invert_visibility(vt, model, context="2d", dopsf=True)
-
-    comp, residual = deconvolve_cube(dirty, psf, niter=1000, threshold=0.001,
-                        fracthresh=0.01, window_shape='quarter',
-                        gain=0.7, algorithm='msclean', scales=[0, 3, 10, 30])
-
-    restored = restore_cube(comp, psf, residual)
-
-All functions return an image holding clean components and residual image
+Image deconvolution functions.
 """
 
 __all__ = [
-    "deconvolve_list",
-    "restore_list",
     "deconvolve_cube",
-    "restore_cube",
+    "deconvolve_list",
     "fit_psf",
+    "restore_list",
+    "restore_cube",
 ]
 
 import logging
@@ -81,23 +55,22 @@ def deconvolve_list(
     **kwargs,
 ) -> (List[Image], List[Image]):
     """
-    Clean using a variety of algorithms
-
+    Clean using a variety of algorithms.
     The algorithms available are:
 
-    hogbom: Hogbom CLEAN See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
+     hogbom: Hogbom CLEAN See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
 
-    hogbom-complex: Complex Hogbom CLEAN of stokesIQUV image
+     hogbom-complex: Complex Hogbom CLEAN of stokesIQUV image
 
-    msclean: MultiScale CLEAN See: Cornwell, T.J., Multiscale CLEAN
-    (IEEE Journal of Selected Topics in Sig Proc,
-    2008 vol. 2 pp. 793-801)
+     msclean: MultiScale CLEAN See: Cornwell, T.J., Multiscale CLEAN
+     (IEEE Journal of Selected Topics in Sig Proc,
+     2008 vol. 2 pp. 793-801)
 
-    mfsmsclean, msmfsclean, mmclean: MultiScale Multi-Frequency
-    See: U. Rau and T. J. Cornwell,
-    “A multi-scale multi-frequency deconvolution algorithm
-    for synthesis imaging in radio interferometry,”
-    A&A 532, A71 (2011).
+     mfsmsclean, msmfsclean, mmclean: MultiScale Multi-Frequency
+     See: U. Rau and T. J. Cornwell,
+     “A multi-scale multi-frequency deconvolution algorithm
+     for synthesis imaging in radio interferometry,”
+     A&A 532, A71 (2011).
 
     For example::
 
@@ -105,7 +78,7 @@ def deconvolve_list(
                                 gain=0.7, algorithm='msclean',
                                 scales=[0, 3, 10, 30], threshold=0.01)
 
-    For the MFS clean, the psf must have number of channels >= 2 * nmoment
+    For the MFS clean, the psf must have number of channels >= 2 * nmoment.
 
     :param dirty_list: list of dirty image
     :param psf_list: list of point spread function
@@ -290,7 +263,7 @@ def radler_deconvolve_list(
 
 
 def check_psf_peak(psf_list):
-    """Check that all PSFs in a list have unit peak
+    """Check that all PSFs in a list have unit peak.
 
     :param psf_list: List of PSF images
     :return: True if peak exists
@@ -307,7 +280,7 @@ def check_psf_peak(psf_list):
 
 
 def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
-    """Find a clean window from a dirty image
+    """Find a clean window from a dirty image.
 
      The values for window_shape are:
          "quarter" - Inner quarter of image
@@ -377,7 +350,7 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
 
 
 def bound_psf_list(dirty_list, prefix, psf_list, psf_support=None):
-    """Calculate the PSF within a given support
+    """Calculate the PSF within a given support.
 
     :param dirty_list: Dirty image, used for default sizes
     :param prefix: Informational prefix to log messages
@@ -413,7 +386,7 @@ def bound_psf_list(dirty_list, prefix, psf_list, psf_support=None):
                 str(psf["pixels"].data.shape),
             )
         else:
-            log.info("Using entire psf for dconvolution")
+            log.info("Using entire psf for deconvolution")
         psfs.append(psf)
     return psfs
 
@@ -426,7 +399,7 @@ def complex_hogbom_kernel_list(
 ):
     """
     Complex Hogbom CLEAN of stokesIQUV image,
-    operating of lists of single frequency images
+    operating of lists of single frequency images.
 
     :param dirty_list: Image dirty image
     :param psf_list: Image Point Spread Function
@@ -539,7 +512,7 @@ def complex_hogbom_kernel_list(
 
 
 def common_arguments(**kwargs):
-    """Extract the common arguments from kwargs
+    """Extract the common arguments from kwargs.
 
     :param gain: loop gain (float) default: 0.7
     :param niter: Number of minor cycle iterations: 100
@@ -575,7 +548,7 @@ def hogbom_kernel_list(
     **kwargs,
 ):
     """
-    Hogbom Clean, operating of lists of single frequency images
+    Hogbom Clean, operating of lists of single frequency images.
 
     See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
 
@@ -678,7 +651,7 @@ def mmclean_kernel_list(
     **kwargs,
 ):
     """
-    mfsmsclean, msmfsclean, mmclean: MultiScale Multi-Frequency CLEAN
+    mfsmsclean, msmfsclean, mmclean: MultiScale Multi-Frequency CLEAN.
 
     See: U. Rau and T. J. Cornwell,
     “A multi-scale multi-frequency deconvolution algorithm
@@ -860,7 +833,7 @@ def msclean_kernel_list(
     **kwargs,
 ):
     """
-    MultiScale CLEAN, operating of lists of single frequency images
+    MultiScale CLEAN, operating of lists of single frequency images.
 
     See: Cornwell, T.J., Multiscale CLEAN (IEEE Journal of
     Selected Topics in Sig Proc, 2008 vol. 2 pp. 793-801)
@@ -979,10 +952,10 @@ def restore_list(
     residual_list: List[Image] = None,
     clean_beam=None,
 ):
-    """Restore the model image to the residuals
+    """Restore the model image to the residuals.
 
-     The clean beam can be specified as a dictionary with
-     fields "bmaj", "bmin" (both in arcsec) "bpa" in degrees.
+    The clean beam can be specified as a dictionary with
+    fields "bmaj", "bmin" (both in arcsec) and "bpa" in degrees.
 
     :param model_list: Model image list (i.e. deconvolved)
     :param psf_list: Input PSF list (nchan)
@@ -1075,9 +1048,9 @@ def restore_list(
 def deconvolve_cube(
     dirty: Image, psf: Image, sensitivity: Image = None, prefix="", **kwargs
 ) -> (Image, Image):
-    """Clean using a variety of algorithms
+    """Clean using a variety of algorithms.
 
-     The algorithms available are:
+    The algorithms available are:
 
      hogbom: Hogbom CLEAN See: Hogbom CLEAN A&A Suppl, 15, 417, (1974)
 
@@ -1092,13 +1065,13 @@ def deconvolve_cube(
      “A multi-scale multi-frequency deconvolution algorithm
      for synthesis imaging in radio interferometry,” A&A 532, A71 (2011).
 
-     For example::
+    For example::
 
-         comp, residual = deconvolve_cube(dirty, psf, niter=1000,
-                            gain=0.7, algorithm='msclean',
-                            scales=[0, 3, 10, 30], threshold=0.01)
+        comp, residual = deconvolve_cube(dirty, psf, niter=1000,
+                           gain=0.7, algorithm='msclean',
+                           scales=[0, 3, 10, 30], threshold=0.01)
 
-     For the MFS clean, the psf must have number of channels >= 2 * nmoment
+    For the MFS clean, the psf must have number of channels >= 2 * nmoment.
 
     :param dirty: Image dirty image
     :param psf: Image Point Spread Function
@@ -1145,7 +1118,7 @@ def deconvolve_cube(
 
 
 def fit_psf(psf: Image):
-    """Fit a two dimensional Gaussian to a PSF using astropy.modeling
+    """Fit a two-dimensional Gaussian to a PSF using astropy.modeling.
 
     :params psf: Input PSF
     :return: bmaj (arcsec), bmin (arcsec), bpa (deg)
@@ -1190,14 +1163,14 @@ def fit_psf(psf: Image):
 def restore_cube(
     model: Image, psf=None, residual=None, clean_beam=None
 ) -> Image:
-    """Restore the model image to the residuals
+    """Restore the model image to the residuals.
 
-     The clean beam can be specified as a dictionary with
-     fields "bmaj", "bmin" (both in arcsec) "bpa" in degrees.
+    The clean beam can be specified as a dictionary with
+    fields "bmaj", "bmin" (both in arcsec) and "bpa" in degrees.
 
     :param model: Model image (i.e. deconvolved)
     :param psf: Input PSF
-    :param residual: Residual image
+    :param residual: Residual Image
     :param clean_beam: Clean beam e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}.
                         Units are deg, deg, deg
     :return: restored image

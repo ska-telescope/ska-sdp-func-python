@@ -1,15 +1,18 @@
 """
 Functions that implement prediction of and imaging from visibilities
-using the GPU-based gridder (WAGG version),
+using the GPU-based gridder (WAGG version).
 https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
 
-Currently the python wrapper of the GPU gridder is available in a branch,
+Currently, the python wrapper of the GPU gridder is available in a branch.
 https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda/-/tree/sim-874-python-wrapper
 
 This performs all necessary w term corrections, to high precision.
 """
 
-__all__ = ["predict_wg", "invert_wg"]
+__all__ = [
+    "invert_wg",
+    "predict_wg",
+]
 
 import copy
 import logging
@@ -32,15 +35,15 @@ log = logging.getLogger("func-python-logger")
 def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     """Predict using convolutional degridding.
 
-     Nifty-gridder WAGG GPU version.
-     https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
+    Nifty-gridder WAGG GPU version.
+    https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
 
-     In the imaging and pipeline workflows, this may
-     be invoked using context='wg'.
+    In the imaging and pipeline workflows, this may
+    be invoked using context='wg'.
 
     :param bvis: Visibility to be predicted
-    :param model: model image
-    :return: resulting Visibility (in place works)
+    :param model: Model Image
+    :return: Resulting Visibility (in place works)
     """
 
     try:
@@ -159,21 +162,21 @@ def invert_wg(
     **kwargs
 ) -> (Image, numpy.ndarray):
     """
-    Invert using GPU-based WAGG nifty-gridder module
+    Invert using GPU-based WAGG nifty-gridder module.
 
     Nifty-gridder WAGG GPU version.
     https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
 
-    Use the image im as a template. Do PSF in a separate call.
+    Use the Image im as a template. Do PSF in a separate call.
 
     In the imaging and pipeline workflows, this may be
     invoked using context='wg'.
 
     :param dopsf: Make the PSF instead of the dirty image
     :param bvis: Visibility to be inverted
-    :param model: image template (not changed)
-    :param normalise: normalise by the sum of weights (True)
-    :return: (resulting image, sum of the weights for
+    :param model: Image template (not changed)
+    :param normalise: Normalise by the sum of weights (True)
+    :return: (resulting Image, sum of the weights for
               each frequency and polarization)
     """
     try:

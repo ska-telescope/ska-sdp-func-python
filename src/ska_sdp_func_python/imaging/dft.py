@@ -1,34 +1,13 @@
 """
-Functions that aid fourier transform processing.
-These are built on top of the core functions in
-ska_sdp_func_python.fourier_transforms.
-
-The measurement equation for a sufficently narrow
-field of view interferometer is:
-
-.. math::
-
-    V(u,v,w) =\\int I(l,m) e^{-2 \\pi j (ul+vm)} dl dm
-
-
-The measurement equation for a wide field of view interferometer is:
-
-.. math::
-
-    V(u,v,w) =\\int \\frac{I(l,m)}{\\sqrt{1-l^2-m^2}}
-        e^{-2 \\pi j (ul+vm + w(\\sqrt{1-l^2-m^2}-1))} dl dm
-
-This and related modules contain various approachs for dealing
-with the wide-field problem where the extra phase term in the
-Fourier transform cannot be ignored.
+Functions that aid Fourier transform processing.
 """
 
 __all__ = [
-    "dft_skycomponent_visibility",
-    "extract_direction_and_flux",
-    "dft_kernel",
     "dft_cpu_looped",
     "dft_gpu_raw_kernel",
+    "dft_kernel",
+    "dft_skycomponent_visibility",
+    "extract_direction_and_flux",
     "idft_visibility_skycomponent",
 ]
 
@@ -56,7 +35,7 @@ def dft_skycomponent_visibility(
     sc: Union[SkyComponent, List[SkyComponent]],
     dft_compute_kernel=None,
 ) -> Visibility:
-    """DFT to get the visibility from a SkyComponent, for Visibility
+    """DFT to get the visibility from a SkyComponent, for Visibility.
 
     :param vis: Visibility
     :param sc: SkyComponent or list of SkyComponents
@@ -86,7 +65,7 @@ def extract_direction_and_flux(sc, vis):
 
     :param sc: SkyComponent or list of SkyComponents
     :param vis: Visibility
-    :returns: tuple of two numpy arrays: component
+    :returns: Tuple of two numpy arrays: component
               direction cosines and component fluxes
     """
     if not isinstance(sc, collections.abc.Iterable):
@@ -143,13 +122,13 @@ def extract_direction_and_flux(sc, vis):
 def dft_kernel(
     direction_cosines, vfluxes, uvw_lambda, dft_compute_kernel=None
 ):
-    """CPU computational kernel for DFT, choice dependent on dft_compute_kernel
+    """CPU computational kernel for DFT, choice dependent on dft_compute_kernel.
 
     :param direction_cosines: Direction cosines [ncomp, 3]
     :param vfluxes: Fluxes [ncomp, nchan, npol]
     :param uvw_lambda: UVW in lambda [ntimes, nbaselines, nchan, 3]
     :param dft_compute_kernel: string: cpu_looped, gpu_cupy_raw or proc_func
-    :return: Vis [ntimes, nbaselines, nchan, npol]
+    :return: Vis array, dims: [ntimes, nbaselines, nchan, npol]
     """
 
     if dft_compute_kernel is None:
@@ -279,12 +258,12 @@ __global__ void dft_kernel(
 
 
 def dft_cpu_looped(direction_cosines, uvw_lambda, vfluxes):
-    """CPU computational kernel for DFT, using explicit loop over components
+    """CPU computational kernel for DFT, using explicit loop over components.
 
     :param direction_cosines: Direction cosines [ncomp, 3]
     :param vfluxes: Fluxes [ncomp, nchan, npol]
     :param uvw_lambda: UVW in lambda [ntimes, nbaselines, nchan, 3]
-    :return: Vis [ntimes, nbaselines, nchan, npol]
+    :return: Vis array, dims: [ntimes, nbaselines, nchan, npol]
     """
     ncomp, _ = direction_cosines.shape
     ntimes, nbaselines, nchan, _ = uvw_lambda.shape
@@ -302,12 +281,12 @@ def dft_cpu_looped(direction_cosines, uvw_lambda, vfluxes):
 
 
 def dft_gpu_raw_kernel(direction_cosines, uvw_lambda, vfluxes):
-    """CPU computational kernel for DFT, using CUDA raw code via cupy
+    """CPU computational kernel for DFT, using CUDA raw code via cupy.
 
     :param direction_cosines: Direction cosines [ncomp, 3]
     :param vfluxes: Fluxes [ncomp, nchan, npol]
     :param uvw_lambda: UVW in lambda [ntimes, nbaselines, nchan, 3]
-    :return: Vis [ntimes, nbaselines, nchan, npol]
+    :return: Vis array, dims: [ntimes, nbaselines, nchan, npol]
     """
     try:
         import cupy  # pylint: disable=import-outside-toplevel
@@ -356,7 +335,7 @@ def dft_gpu_raw_kernel(direction_cosines, uvw_lambda, vfluxes):
 def idft_visibility_skycomponent(
     vis: Visibility, sc: Union[SkyComponent, List[SkyComponent]]
 ) -> ([SkyComponent, List[SkyComponent]], List[numpy.ndarray]):
-    """Inverse DFT a SkyComponent from Visibility
+    """Inverse DFT a SkyComponent from Visibility.
 
     :param vis: Visibility
     :param sc: SkyComponent or list of SkyComponents

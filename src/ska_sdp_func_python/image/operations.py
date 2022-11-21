@@ -1,12 +1,12 @@
 """
-Image operations visible to the Execution Framework as Components
+Image operations visible to the Execution Framework as Components.
 """
 
 __all__ = [
-    "convert_polimage_to_stokes",
-    "convert_stokes_to_polimage",
     "convert_clean_beam_to_degrees",
     "convert_clean_beam_to_pixels",
+    "convert_polimage_to_stokes",
+    "convert_stokes_to_polimage",
 ]
 
 import logging
@@ -30,7 +30,7 @@ log = logging.getLogger("func-python-logger")
 
 
 def convert_clean_beam_to_degrees(im, beam_pixels):
-    """Convert clean beam in pixels to deg deg, deg
+    """Convert clean beam in pixels to deg, deg, deg.
 
     :param im: Image
     :param beam_pixels: Beam size in pixels
@@ -56,12 +56,12 @@ def convert_clean_beam_to_degrees(im, beam_pixels):
 
 
 def convert_clean_beam_to_pixels(model, clean_beam):
-    """Convert clean beam to pixels
+    """Convert clean beam to pixels.
 
     :param model: Model image containing beam information
     :param clean_beam: e.g. {"bmaj":0.1, "bmin":0.05, "bpa":-60.0}.
                 Units are deg, deg, deg
-    :return:
+    :return: Beam size in pixels
     """
     to_mm = numpy.sqrt(8.0 * numpy.log(2.0))
     # Cellsize in radians
@@ -78,7 +78,7 @@ def convert_clean_beam_to_pixels(model, clean_beam):
 def convert_stokes_to_polimage(
     im: Image, polarisation_frame: PolarisationFrame
 ):
-    """Convert a stokes image in IQUV to polarisation_frame
+    """Convert a stokes image in IQUV to polarisation_frame.
 
     For example::
         impol = convert_stokes_to_polimage(imIQUV, PolarisationFrame('linear'))
@@ -133,13 +133,13 @@ def convert_stokes_to_polimage(
 
 
 def convert_polimage_to_stokes(im: Image, complex_image=False):
-    """Convert a polarisation image to stokes IQUV (complex)
+    """Convert a polarisation image to stokes IQUV (complex).
 
     For example:
         imIQUV = convert_polimage_to_stokes(impol)
 
     :param im: Complex Image in linear or circular
-    :param complex_image: Return complex image?
+    :param complex_image: boolean for complex image, (default False)
     :returns: Complex or Real image
 
     See also
