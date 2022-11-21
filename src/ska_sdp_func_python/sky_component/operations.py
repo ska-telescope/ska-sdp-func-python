@@ -1,26 +1,26 @@
 """
-Function to manage sky components.
+Functions to manage sky components operations.
 """
 
 __all__ = [
+    "apply_beam_to_skycomponent",
+    "apply_voltage_pattern_to_skycomponent",
     "filter_skycomponents_by_flux",
     "find_nearest_skycomponent",
     "find_nearest_skycomponent_index",
     "find_separation_skycomponents",
+    "find_skycomponents",
     "find_skycomponent_matches",
     "find_skycomponent_matches_atomic",
-    "find_skycomponents",
     "fit_skycomponent",
     "fit_skycomponent_spectral_index",
-    "insert_skycomponent",
-    "voronoi_decomposition",
     "image_voronoi_iter",
+    "insert_skycomponent",
     "partition_skycomponent_neighbours",
+    "remove_neighbouring_components",
     "select_components_by_separation",
     "select_neighbouring_components",
-    "remove_neighbouring_components",
-    "apply_beam_to_skycomponent",
-    "apply_voltage_pattern_to_skycomponent",
+    "voronoi_decomposition",
 ]
 
 import collections
@@ -63,11 +63,11 @@ log = logging.getLogger("func-python-logger")
 
 
 def find_nearest_skycomponent_index(home, comps) -> int:
-    """Find nearest component in a list to a given direction (home)
+    """Find the nearest component in a list to a given direction (home).
 
     :param home: Home direction
     :param comps: List of SkyComponents
-    :return: index of best in comps
+    :return: Index of best in comps
     """
     if len(comps) == 0:
         raise ValueError("find_nearest_skycomponent_index: Catalog is empty")
@@ -80,11 +80,11 @@ def find_nearest_skycomponent_index(home, comps) -> int:
 
 
 def find_nearest_skycomponent(home: SkyCoord, comps) -> (SkyComponent, float):
-    """Find nearest component to a given direction
+    """Find the nearest component to a given direction.
 
     :param home: Home direction
     :param comps: List of SkyComponents
-    :return: Index of nearest component
+    :return: Index of the nearest SkyComponent
     """
     best_index = find_nearest_skycomponent_index(home, comps)
     best = comps[best_index]
@@ -92,7 +92,7 @@ def find_nearest_skycomponent(home: SkyCoord, comps) -> (SkyComponent, float):
 
 
 def find_separation_skycomponents(comps_test, comps_ref=None):
-    """Find the matrix of separations for two lists of components
+    """Find the matrix of separations for two lists of components.
 
     :param comps_test: List of SkyComponents to be tested
     :param comps_ref: List of SkyComponents to compare with,
@@ -127,12 +127,12 @@ def find_separation_skycomponents(comps_test, comps_ref=None):
 
 
 def find_skycomponent_matches_atomic(comps_test, comps_ref, tol=1e-7):
-    """Match a list of candidates to a reference set of SkyComponents
+    """Match a list of candidates to a reference set of SkyComponents.
 
     find_skycomponent_matches is faster since it
-    uses the astropy catalog matching
+    uses the astropy catalog matching.
 
-    many to one is allowed.
+    Many to one is allowed.
 
     :param comps_test: SkyComponents to test
     :param comps_ref: reference SkyComponents
@@ -153,9 +153,9 @@ def find_skycomponent_matches_atomic(comps_test, comps_ref, tol=1e-7):
 
 
 def find_skycomponent_matches(comps_test, comps_ref, tol=1e-7):
-    """Match a list of candidates to a reference set of SkyComponents
+    """Match a list of candidates to a reference set of SkyComponents.
 
-    many to one is allowed.
+    Many to one is allowed.
 
     :param comps_test: SkyComponents to test
     :param comps_ref: Reference SkyComponents
@@ -184,13 +184,13 @@ def find_skycomponent_matches(comps_test, comps_ref, tol=1e-7):
 def select_components_by_separation(
     home, comps, rmax=2 * numpy.pi, rmin=0.0
 ) -> [SkyComponent]:
-    """Select components with a range in separation
+    """Select components with a range in separation.
 
     :param home: Home direction
     :param comps: List of SkyComponents
-    :param rmin: minimum range
-    :param rmax: maximum range
-    :return: selected SkyComponents
+    :param rmin: Minimum range
+    :param rmax: Maximum range
+    :return: Selected SkyComponents
     """
     selected = []
     for comp in comps:
@@ -201,7 +201,7 @@ def select_components_by_separation(
 
 
 def select_neighbouring_components(comps, target_comps):
-    """Assign components to nearest in the target
+    """Assign components to nearest in the target.
 
     :param comps: List of SkyComponents
     :param target_comps: Target SkyComponents
@@ -223,7 +223,7 @@ def select_neighbouring_components(comps, target_comps):
 
 def remove_neighbouring_components(comps, distance):
     """Remove the faintest of a pair of components that
-    are within a specified distance
+    are within a specified distance.
 
     :param comps: List of SkyComponents
     :param distance: Minimum distance
@@ -252,7 +252,7 @@ def find_skycomponents(
     im: Image, fwhm=1.0, threshold=1.0, npixels=5
 ) -> List[SkyComponent]:
     """Find gaussian components in Image above a certain
-    threshold as SkyComponent
+    threshold as SkyComponent.
 
     :param im: Image to be searched
     :param fwhm: Full width half maximum of gaussian in pixels
@@ -363,15 +363,16 @@ def apply_beam_to_skycomponent(
     phasecentre=None,
     inverse=False,
 ) -> Union[SkyComponent, List[SkyComponent]]:
-    """Apply a primary beam to a SkyComponent
+    """Apply a primary beam to a SkyComponent.
 
     if inverse==True, do an inverse where we subtract the
-                      primary beam from the skycomponents
-    if inverse==False, do a multiplication of beam and skycomponent fluxes
+    primary beam from the skycomponents.
+    if inverse==False, do a multiplication of beam and skycomponent fluxes.
 
-    :param phasecentre: Phase Centre of beam (astropy.SkyCoord)
-    :param beam: primary beam (Image)
     :param sc: SkyComponent or list of SkyComponents
+    :param beam: Primary beam (Image)
+    :param phasecentre: Phase Centre of beam (astropy.SkyCoord)
+    :param inverse: do multiplication or subtraction of fluxes (default false)
     :return: List of SkyComponents
     """
     single = not isinstance(sc, collections.abc.Iterable)
@@ -444,20 +445,21 @@ def apply_voltage_pattern_to_skycomponent(
     inverse=False,
     phasecentre=None,
 ) -> Union[SkyComponent, List[SkyComponent]]:
-    """Apply a voltage pattern to a SkyComponent
+    """Apply a voltage pattern to a SkyComponent.
 
     For inverse==False, input polarisation_frame must be stokesIQUV, and
-    output polarisation_frame is same as voltage pattern
+    output polarisation_frame is same as voltage pattern.
 
     For inverse==True, input polarisation_frame must be same as voltage
-    pattern, and output polarisation_frame is "stokesIQUV"
+    pattern, and output polarisation_frame is "stokesIQUV".
 
     Requires a complex Image with the correct ordering of polarisation axes:
-    e.g. RR, LL, RL, LR or XX, YY, XY, YX
+    e.g. RR, LL, RL, LR or XX, YY, XY, YX.
 
-    :param inverse: Inverse application?
-    :param vp: voltage pattern as complex image
     :param sc: SkyComponent or list of SkyComponents
+    :param vp: voltage pattern as complex image
+    :param inverse: input and output polarisation frame (default False)
+    :param phasecentre: Phasecentre (Skycoord)
     :return: List of SkyComponents
     """
 
@@ -555,7 +557,7 @@ def apply_voltage_pattern_to_skycomponent(
 
 
 def filter_skycomponents_by_flux(sc, flux_min=-numpy.inf, flux_max=numpy.inf):
-    """Filter sky components by stokes I flux
+    """Filter sky components by stokes I flux.
 
     :param sc: List of SkyComponents
     :param flux_min: Minimum I flux
@@ -579,7 +581,7 @@ def insert_skycomponent(
     bandwidth=1.0,
     support=8,
 ) -> Image:
-    """Insert a SkyComponent into an image
+    """Insert a SkyComponent into an Image.
 
     :param im: Image
     :param sc: SkyComponent or list of SkyComponents
@@ -753,18 +755,18 @@ def restore_skycomponent(
 
 
 def voronoi_decomposition(im, comps):
-    """Construct a Voronoi decomposition of a set of components
+    """Construct a Voronoi decomposition of a set of components.
 
     The array return contains the index into the
-    scipy.spatial.qhull.Voronoi structure
+    scipy.spatial.qhull.Voronoi structure.
 
     :param im: Image
     :param comps: List of SkyComponents
-    :return: Voronoi structure, vertex image
+    :return: Voronoi structure, vertex Image
     """
 
     def voronoi_vertex(vy, vx, vertex_y, vertex_x):
-        """Return the nearest Voronoi vertex
+        """Return the nearest Voronoi vertex.
 
         :param vy: Voronoi y index
         :param vx: Voronoi x index
@@ -798,11 +800,11 @@ def image_voronoi_iter(
     im: Image, components: list
 ) -> collections.abc.Iterable:
     """Iterate through Voronoi decomposition, returning
-    a generator yielding fullsize images
+    a generator yielding fullsize images.
 
     :param im: Image
     :param components: Components to define Voronoi decomposition
-    :returns: generator of Images
+    :returns: Generator of Images
     """
     if len(components) == 1:
         mask = numpy.ones(im["pixels"].data.shape)
@@ -829,7 +831,7 @@ def image_voronoi_iter(
 
 
 def partition_skycomponent_neighbours(comps, targets):
-    """Partition sky components by nearest target source
+    """Partition sky components by nearest target source.
 
     :param comps: List of SkyComponents
     :param targets: List of targets
@@ -846,10 +848,10 @@ def partition_skycomponent_neighbours(comps, targets):
 
 
 def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
-    """Fit a two dimensional Gaussian skycomponent using astropy.modeling
+    """Fit a two-dimensional Gaussian skycomponent using astropy.modeling.
 
-    :params im: Input image
-    :params sc: single SkyComponent
+    :params im: Input Image
+    :params sc: Single SkyComponent
     :return: SkyComponent after fitting
     """
     pixloc = numpy.round(
@@ -931,7 +933,7 @@ def fit_skycomponent(im: Image, sc: SkyComponent, **kwargs):
 
 def fit_skycomponent_spectral_index(sc: SkyComponent):
     """
-    Fit the spectral index for a multi frequency skycomponent
+    Fit the spectral index for a multi frequency SkyComponent.
 
     :param sc: SkyComponent
     :return: Spectral index (float)

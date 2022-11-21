@@ -1,15 +1,18 @@
-Processing Components
+.. _ska_sdp_func_api:
+
+Processing Functions
 *********************
 
 .. toctree::
-  :maxdepth: 1
+   :maxdepth: 1
+   :caption: Functions
 
-   calibration/index
-   fourier_transforms/index
-   griddata/index
-   image/index
-   imaging/index
-   skycomponent/index
-   skymodel/index
-   util/index
-   visibility/index
+   calibration/index.rst
+   fourier_transforms/index.rst
+   grid_data/index.rst
+   image/index.rst
+   imaging/index.rst
+   sky_component/index.rst
+   sky_model/index.rst
+   util/index.rst
+   visibility/index.rst

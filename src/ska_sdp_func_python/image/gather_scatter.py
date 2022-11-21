@@ -4,8 +4,8 @@ Functions that perform gather/scatter operations on Images.
 
 __all__ = [
     "image_gather_channels",
-    "image_scatter_channels",
     "image_gather_facets",
+    "image_scatter_channels",
     "image_scatter_facets",
 ]
 
@@ -26,12 +26,12 @@ def image_scatter_facets(
 ) -> List[Image]:
     """
     Scatter an image into a list of subimages using the
-    image_raster_iterator
+    image_raster_iterator.
 
     If the overlap is greater than zero, we choose to keep
-    all images the same size so the other ring of facets are ignored.
+    all images the same size so the other ring of facets is ignored.
     So if facets=4 and overlap > 0 then the scatter returns
-    (facets-2)**2 = 4 images.
+    :math:`(facets-2)^2 = 4` images.
 
     :param im: Image
     :param facets: Number of image partitions on each axis (2)
@@ -60,25 +60,25 @@ def image_gather_facets(
 ):
     """
     Gather a list of subimages back into an image using the
-    image_raster_iterator
+    image_raster_iterator.
 
     If the overlap is greater than zero, we choose to keep
-    all images the same size so the other ring of facets are ignored.
+    all images the same size so the other ring of facets is ignored.
     So if facets=4 and overlap > 0 then the gather expects
-    (facets-2)**2 = 4 images.
+    :math:`(facets-2)^2 = 4` images.
 
     To normalise the overlap we make a set of flats, gather that and divide.
-    The flat may be optionally returned instead of the result
+    The flat may be optionally returned instead of the result.
 
     :param image_list: List of subimages
-    :param im: Output image
+    :param im: Output Image
     :param facets: Number of image partitions on each axis (2)
     :param overlap: Overlap between neighbours in pixels
     :param taper: Taper at edges None or 'linear' or 'Tukey'
     :param return_flat: Return the flat
     :return: list of subimages
 
-     See also
+    See also
         :py:func:`ska_sdp_func_python.image.iterators.image_raster_iter`
     """
     out = Image.constructor(
@@ -167,13 +167,13 @@ def image_gather_facets(
 
 
 def image_scatter_channels(im: Image, subimages=None) -> List[Image]:
-    """Scatter an image into a list of subimages using the channels
+    """Scatter an Image into a list of subimages using the channels.
 
     :param im: Image
     :param subimages: Number of channels
     :return: list of subimages
 
-     See also
+    See also
         :py:func:`ska_sdp_func_python.image.iterators.image_channel_iter`
     """
     if im is None:
@@ -186,7 +186,7 @@ def image_scatter_channels(im: Image, subimages=None) -> List[Image]:
 
 
 def image_gather_channels(image_list: List[Image]) -> Image:
-    """Gather a list of subimages back into an image
+    """Gather a list of subimages back into an image.
 
     :param image_list: List of subimages
     :return: list of subimages

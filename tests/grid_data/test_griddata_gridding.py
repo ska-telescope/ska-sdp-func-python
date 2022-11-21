@@ -95,7 +95,7 @@ def input_for_gridding_fixture():
 @pytest.mark.skip(reason="Convolution Function issues")
 def test_grid_visibility_to_griddata(input_params):
     """Unit tests for grid_visibility_to_griddata function:
-    check that griddata is updated
+    check that grid_data is updated
     """
     conv_func = input_params["convolution_function"]
     grid_data = input_params["grid_data"]
@@ -107,7 +107,7 @@ def test_grid_visibility_to_griddata(input_params):
 
 def test_grid_visibility_weight_to_griddata(input_params):
     """Unit tests for grid_visibility_to_griddata function:
-    check that griddata is updated
+    check that grid_data is updated
     """
     grid_data = input_params["grid_data"]
     vis = input_params["visibility"]
@@ -118,7 +118,7 @@ def test_grid_visibility_weight_to_griddata(input_params):
 
 def test_griddata_merge_weights(input_params):
     """Unit tests for griddata_merge_weights function:
-    check that griddata is updated and sumwt is 3
+    check that grid_data is updated and sumwt is 3
     """
     grid_data = input_params["grid_data"]
     gd_list = [(grid_data, 1), (grid_data, 1), (grid_data, 1)]

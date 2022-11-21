@@ -1,6 +1,13 @@
 """
-Functions to aid operations on imaging results
+Functions to aid operations on imaging results.
 """
+
+__all__ = [
+    "remove_sumwt",
+    "sum_invert_results",
+    "sum_predict_results",
+    "threshold_list",
+]
 
 import logging
 
@@ -16,10 +23,10 @@ log = logging.getLogger("func-python-logger")
 
 
 def sum_invert_results(image_list):
-    """Sum a set of invert results with appropriate weighting
+    """Sum a set of invert results with appropriate weighting.
 
     :param image_list: List of [image, sum weights] pairs
-    :return: image, sum of weights
+    :return: Image, sum of weights
     """
     if len(image_list) == 1:
         im = image_list[0][0].copy(deep=True)
@@ -49,7 +56,7 @@ def sum_invert_results(image_list):
 
 
 def remove_sumwt(results):
-    """Remove sumwt term in list of tuples (image, sumwt)
+    """Remove sumwt term in list of (image, sumwt) tuples.
 
     :param results: List of tuples (image, sumwt)
     :return: A list of just the dirty images
@@ -61,10 +68,10 @@ def remove_sumwt(results):
 
 
 def sum_predict_results(results):
-    """Sum a set of predict results of the same shape
+    """Sum a set of predict results of the same shape.
 
     :param results: List of visibilities to be summed
-    :return: summed visibility
+    :return: Summed Visibility
     """
     # pylint: disable=unsubscriptable-object
     sum_results = None
@@ -84,7 +91,7 @@ def sum_predict_results(results):
 def threshold_list(
     imagelist, threshold, fractional_threshold, use_moment0=True, prefix=""
 ):
-    """Find actual threshold for list of results, optionally using moment 0
+    """Find actual threshold for list of results, optionally using moment 0.
 
     :param prefix: Prefix in log messages
     :param imagelist: List of images

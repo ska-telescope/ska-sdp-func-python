@@ -2,7 +2,6 @@
 
 .. py:currentmodule:: ska_sdp_func_python.calibration
 
-***********
 Calibration
 ***********
 
@@ -21,13 +20,10 @@ late seventies.
 .. automodapi::    ska_sdp_func_python.calibration.chain_calibration
   :no-inheritance-diagram:
 
-.. automodapi::    ska_sdp_func_python.calibration.iterators
+.. automodapi::    ska_sdp_func_python.calibration.jones
   :no-inheritance-diagram:
 
 .. automodapi::    ska_sdp_func_python.calibration.operations
-  :no-inheritance-diagram:
-
-.. automodapi::    ska_sdp_func_python.calibration.pointing
   :no-inheritance-diagram:
 
 .. automodapi::    ska_sdp_func_python.calibration.solvers

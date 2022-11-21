@@ -1,11 +1,11 @@
 """
-Functions for calibration.
+Functions for calibration operations.
 """
 
 __all__ = [
     "apply_gaintable",
-    "multiply_gaintables",
     "concatenate_gaintables",
+    "multiply_gaintables",
 ]
 
 import copy
@@ -26,7 +26,8 @@ def apply_gaintable(
     inverse=False,
     use_flags=False,
 ) -> Visibility:
-    """Apply a gain table to a visibility
+    """
+    Apply a GainTable to a Visibility.
 
     The corrected visibility is::
 
@@ -36,11 +37,10 @@ def apply_gaintable(
     e.g. polarisation_frame("linear") then the inverse operator
     represents an actual inverse of the gains.
 
-    :param vis: visibility to have gains applied
-    :param gt: Gaintable to be applied
+    :param vis: Visibility to have gains applied
+    :param gt: GainTable to be applied
     :param inverse: Apply the inverse (default=False)
-    :param use_flags: Use flags?
-    :return: input vis with gains applied
+    :return: input Visibility with gains applied
 
     """
     ntimes, nants, nchan, _, _ = gt.gain.shape
@@ -259,14 +259,15 @@ def apply_gaintable(
 def multiply_gaintables(
     gt: GainTable, dgt: GainTable, time_tolerance=1e-3
 ) -> GainTable:
-    """Multiply two GainTables
+    """
+    Multiply two GainTables.
 
-    Returns gt * dgt
+    Returns gt * dgt.
 
     :param gt: First GainTable
     :param dgt: Second GainTable
-    :param time_tolerance: Maximum tolerance of time s
-                eparation in the GainTable data
+    :param time_tolerance: Maximum tolerance of time
+                separation in the GainTable data
     :return: Multiplication product
     """
 
@@ -299,7 +300,8 @@ def multiply_gaintables(
 
 
 def concatenate_gaintables(gt_list, dim="time"):
-    """Concatenate a list of GainTables
+    """
+    Concatenate a list of GainTables.
 
     :param gt_list: List of GainTables
     :param dim: Dimension to concatenate
