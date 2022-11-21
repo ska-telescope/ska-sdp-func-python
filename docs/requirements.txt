@@ -1,3 +1,5 @@
+--index-url https://artefact.skao.int/repository/pypi-internal/simple
+--extra-index-url https://pypi.org/simple
 graphviz
 m2r2
 sphinx
@@ -8,8 +10,6 @@ sphinx-argparse
 # Additional packages needed to be installed
 # so that the docs can render the API correctly
 # without the need of mocking every single import
---index-url https://artefact.skao.int/repository/pypi-internal/simple
---extra-index-url https://pypi.org/simple
 mock
 scipy
 ska_sdp_datamodels
