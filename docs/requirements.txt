@@ -1,3 +1,5 @@
+--index-url https://artefact.skao.int/repository/pypi-internal/simple
+--extra-index-url https://pypi.org/simple
 graphviz
 m2r2
 sphinx

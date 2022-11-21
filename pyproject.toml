@@ -5,8 +5,7 @@ description = "SKA SDP Python-Based Processing Functions"
 authors = ["SKA SDP Developers"]
 license = "Apache 2.0"
 repository = "https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python"
-# Uncomment once set up
-# documentation = "https://developer.skao.int/projects/ska-sdp-func-pyhton/en/latest/"
+documentation = "https://developer.skao.int/projects/ska-telescope-ska-sdp-func-python/en/latest/"
 
 [[tool.poetry.source]]
 name = "ska"

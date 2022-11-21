@@ -5,6 +5,11 @@ These functions were originally developed in [RASCIL](https://gitlab.com/ska-tel
 They were migrated during PI16 (autumn 2022) to provide an independent library 
 and easy access to the processing scripts.
 
+The [Documentation](https://developer.skao.int/projects/ska-sdp-func-python/en/latest/) includes usage 
+examples, API, and installation directions.
+
+The CI/CD occurs on [Gitlab](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python.git). 
+
 ## Standard CI machinery
 
 This repository is set up to use the
