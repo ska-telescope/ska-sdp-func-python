@@ -160,7 +160,7 @@ def test_raster_exception(input_params):
     assert numpy.max(numpy.abs(original["pixels"].data)), "Original is empty"
 
     for nraster, overlap in [(-1, -1), (-1, 0), (1e6, 127)]:
-        with pytest.raises(AssertionError):
+        with pytest.raises(ValueError):
             model = input_params["image"]
             model["pixels"].data = numpy.ones(
                 shape=model["pixels"].data.shape, dtype=float

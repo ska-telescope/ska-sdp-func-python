@@ -43,8 +43,6 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
 )
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility.vis_model import Visibility
-
-# fix imports below
 from ska_sdp_func.visibility import dft_point_v00
 
 from ska_sdp_func_python.util.coordinate_support import skycoord_to_lmn

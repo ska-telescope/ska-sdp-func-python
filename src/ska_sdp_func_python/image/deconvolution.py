@@ -142,7 +142,10 @@ def deconvolve_list(
 
     check_psf_peak(psf_list)
 
-    psf_list = bound_psf_list(dirty_list, prefix, psf_list, **kwargs)
+    psf_support = kwargs.get("psf_support", None)
+    psf_list = bound_psf_list(
+        dirty_list, prefix, psf_list, psf_support=psf_support
+    )
 
     check_psf_peak(psf_list)
 
@@ -459,32 +462,23 @@ def complex_hogbom_kernel_list(
                         pol,
                         channel,
                     )
-                    if window is None:
-                        (
-                            comp_array[channel, pol, :, :],
-                            residual_array[channel, pol, :, :],
-                        ) = hogbom(
-                            dirty["pixels"].data[0, pol, :, :],
-                            psf["pixels"].data[0, pol, :, :],
-                            None,
-                            gain,
-                            thresh,
-                            niter,
-                            fracthresh,
-                        )
-                    else:
-                        (
-                            comp_array[channel, pol, :, :],
-                            residual_array[channel, pol, :, :],
-                        ) = hogbom(
-                            dirty["pixels"].data[0, pol, :, :],
-                            psf["pixels"].data[0, pol, :, :],
-                            window["pixels"].data[0, pol, :, :],
-                            gain,
-                            thresh,
-                            niter,
-                            fracthresh,
-                        )
+                    window_data = (
+                        window["pixels"].data[0, pol, :, :]
+                        if window is not None
+                        else None
+                    )
+                    (
+                        comp_array[channel, pol, :, :],
+                        residual_array[channel, pol, :, :],
+                    ) = hogbom(
+                        dirty["pixels"].data[0, pol, :, :],
+                        psf["pixels"].data[0, pol, :, :],
+                        window_data,
+                        gain,
+                        thresh,
+                        niter,
+                        fracthresh,
+                    )
                 else:
                     log.info(
                         "complex_hogbom_kernel_list: "
@@ -499,40 +493,27 @@ def complex_hogbom_kernel_list(
                         "Processing pol 1 and 2, channel %d",
                         channel,
                     )
-                    if window is None:
-                        (
-                            comp_array[channel, 1, :, :],
-                            comp_array[channel, 2, :, :],
-                            residual_array[channel, 1, :, :],
-                            residual_array[channel, 2, :, :],
-                        ) = hogbom_complex(
-                            dirty["pixels"].data[0, 1, :, :],
-                            dirty["pixels"].data[0, 2, :, :],
-                            psf["pixels"].data[0, 1, :, :],
-                            psf["pixels"].data[0, 2, :, :],
-                            None,
-                            gain,
-                            thresh,
-                            niter,
-                            fracthresh,
-                        )
-                    else:
-                        (
-                            comp_array[channel, 1, :, :],
-                            comp_array[channel, 2, :, :],
-                            residual_array[channel, 1, :, :],
-                            residual_array[channel, 2, :, :],
-                        ) = hogbom_complex(
-                            dirty["pixels"].data[0, 1, :, :],
-                            dirty["pixels"].data[0, 2, :, :],
-                            psf["pixels"].data[0, 1, :, :],
-                            psf["pixels"].data[0, 2, :, :],
-                            window["pixels"].data[0, pol, :, :],
-                            gain,
-                            thresh,
-                            niter,
-                            fracthresh,
-                        )
+                    window_data = (
+                        window["pixels"].data[0, pol, :, :]
+                        if window is not None
+                        else None
+                    )
+                    (
+                        comp_array[channel, 1, :, :],
+                        comp_array[channel, 2, :, :],
+                        residual_array[channel, 1, :, :],
+                        residual_array[channel, 2, :, :],
+                    ) = hogbom_complex(
+                        dirty["pixels"].data[0, 1, :, :],
+                        dirty["pixels"].data[0, 2, :, :],
+                        psf["pixels"].data[0, 1, :, :],
+                        psf["pixels"].data[0, 2, :, :],
+                        window_data,
+                        gain,
+                        thresh,
+                        niter,
+                        fracthresh,
+                    )
                 else:
                     log.info(
                         "complex_hogbom_kernel_list: "
@@ -741,6 +722,11 @@ def mmclean_kernel_list(
             "Number of frequency moments must be greater than or equal to one"
         )
 
+    fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
+    gain = kwargs.get("gain", 0.7)
+    if not 0.0 < gain < 2.0:
+        raise ValueError("Loop gain must be between 0 and 2")
+
     nchan = len(dirty_list)
     if not nchan > 2 * (nmoment - 1):
         raise ValueError(
@@ -768,14 +754,10 @@ def mmclean_kernel_list(
     else:
         window_taylor = None
 
-    if nmoment > 1:
-        psf_taylor = calculate_image_list_frequency_moments(
-            psf_list, nmoment=2 * nmoment
-        )
-    else:
-        psf_taylor = calculate_image_list_frequency_moments(
-            psf_list, nmoment=1
-        )
+    nmoment_for_psf = 2 * nmoment if nmoment > 1 else 1
+    psf_taylor = calculate_image_list_frequency_moments(
+        psf_list, nmoment=nmoment_for_psf
+    )
 
     psf_peak = numpy.max(psf_taylor["pixels"].data)
     dirty_taylor["pixels"].data /= psf_peak
@@ -791,20 +773,16 @@ def mmclean_kernel_list(
         str(psf_taylor["pixels"].shape),
     )
 
-    fracthresh, gain, niter, thresh, scales = common_arguments(**kwargs)
-
-    gain = kwargs.get("gain", 0.7)
-
-    if not 0.0 < gain < 2.0:
-        raise ValueError("Loop gain must be between 0 and 2")
-
     comp_array = numpy.zeros(dirty_taylor["pixels"].data.shape)
     residual_array = numpy.zeros(dirty_taylor["pixels"].data.shape)
     for pol in range(dirty_taylor["pixels"].data.shape[1]):
-        if sensitivity_taylor is not None:
-            sens = sensitivity_taylor["pixels"].data[:, pol, :, :]
-        else:
-            sens = None
+
+        sens = (
+            sensitivity_taylor["pixels"].data[:, pol, :, :]
+            if sensitivity_taylor is not None
+            else None
+        )
+
         # Always use the moment 0, Stokes I PSF
         if psf_taylor["pixels"].data[0, 0, :, :].max():
             log.info("mmclean_kernel_list %s: Processing pol %d", prefix, pol)

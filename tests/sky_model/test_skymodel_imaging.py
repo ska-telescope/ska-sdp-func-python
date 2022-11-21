@@ -102,13 +102,13 @@ def test_calibrate_invert_no_pb(visibility, low_test_sky_model_from_gleam):
 
     numpy.testing.assert_allclose(
         qa.data["max"],
-        4.179714181498791,
+        4.185789848138097,
         atol=1e-7,
         err_msg=f"{qa}",
     )
     numpy.testing.assert_allclose(
         qa.data["min"],
-        -0.33300435260339034,
+        -0.33245808599881227,
         atol=1e-7,
         err_msg=f"{qa}",
     )
