@@ -21,7 +21,7 @@ from ska_sdp_func_python.sky_component.operations import (
 from ska_sdp_func_python.visibility import concatenate_visibility
 
 
-def _dft_sky_component(vis_slice, skymodel, pb=None, **kwargs):
+def _dft_sky_component(vis_slice, skymodel, pb=None, dft_compute_kernel=None):
     """Run DFT of sky components"""
     if skymodel.mask is not None or pb is not None:
         comps = skymodel.components.copy()
@@ -31,11 +31,15 @@ def _dft_sky_component(vis_slice, skymodel, pb=None, **kwargs):
         if pb is not None:
             comps = apply_beam_to_skycomponent(comps, pb)
 
-        vis_slice = dft_skycomponent_visibility(vis_slice, comps, **kwargs)
+        vis_slice = dft_skycomponent_visibility(
+            vis_slice, comps, dft_compute_kernel=dft_compute_kernel
+        )
 
     else:
         vis_slice = dft_skycomponent_visibility(
-            vis_slice, skymodel.components, **kwargs
+            vis_slice,
+            skymodel.components,
+            dft_compute_kernel=dft_compute_kernel,
         )
 
     return vis_slice
@@ -107,7 +111,10 @@ def skymodel_predict_calibrate(
             # First do the DFT for the components
             if len(skymodel.components) > 0:
                 vis_slice = _dft_sky_component(
-                    vis_slice, skymodel, pb=pb, **kwargs
+                    vis_slice,
+                    skymodel,
+                    pb=pb,
+                    dft_compute_kernel=kwargs.get("dft_compute_kernel", None),
                 )
 
             # Now do the FFT of the image, after multiplying
@@ -126,7 +133,12 @@ def skymodel_predict_calibrate(
         return v
 
     # First do the DFT or the components
-    v = _dft_sky_component(v, skymodel, pb=None, **kwargs)
+    v = _dft_sky_component(
+        v,
+        skymodel,
+        pb=None,
+        dft_compute_kernel=kwargs.get("dft_compute_kernel", None),
+    )
 
     # Now do the FFT of the image, after multiplying by the mask
     if skymodel.image is not None:

@@ -547,7 +547,6 @@ def advise_wide_field(
             "advise_wide_field: (cellsize) Cellsize %s",
             rad_deg_arcsec(cellsize),
         )
-        log.info("")
 
     def pwr2(n):
         ex = numpy.ceil(numpy.log(n) / numpy.log(2.0)).astype("int")
@@ -696,7 +695,6 @@ def advise_wide_field(
             "Frequency sampling for primary beam = %.1f (Hz)",
             freq_sampling_primary_beam,
         )
-        log.info("")
 
     # Below are the primary beam parameters
     wstep_primary_beam = w_sampling_primary_beam
@@ -722,7 +720,6 @@ def advise_wide_field(
             "W support = %d (pixels) (primary beam)",
             nwpixels_primary_beam,
         )
-        log.info("")
 
     wstep_image = w_sampling_image
     vis_slices_image = max(1, int(2 * maximum_w / wstep_image))
@@ -745,7 +742,6 @@ def advise_wide_field(
             "W support = %d (pixels) (image)",
             nwpixels_image,
         )
-        log.info("")
         log.info(
             "advise_wide_field: by default, using primary beam "
             "to advise on w sampling parameters"
