@@ -1,37 +1,18 @@
 """
-Functions that aid fourier transform processing.
-These are built on top of the core functions in
-ska_sdp_func_python.fourier_transforms.
-
-The measurement equation for a sufficiently narrow
-field of view interferometer is:
-
-.. math::
-
-    V(u,v,w) =\\int I(l,m) e^{-2 \\pi j (ul+vm)} dl dm
-
-
-The measurement equation for a wide field of view interferometer is:
-
-.. math::
-
-    V(u,v,w) =\\int \\frac{I(l,m)}{\\sqrt{1-l^2-m^2}}
-        e^{-2 \\pi j (ul+vm + w(\\sqrt{1-l^2-m^2}-1))} dl dm
-
-This and related modules contain various approachs for dealing with
-the wide-field problem where the extra phase term in the Fourier
-transform cannot be ignored.
+Base Imaging functions.
 """
 
 __all__ = [
-    "shift_vis_to_image",
+    "advise_wide_field",
+    "create_image_from_visibility",
+    "fill_vis_for_psf",
+    "invert_awprojection",
     "normalise_sumwt",
     "predict_awprojection",
-    "invert_awprojection",
-    "create_image_from_visibility",
-    "advise_wide_field",
+    "shift_vis_to_image",
     "visibility_recentre",
 ]
+
 
 import logging
 
