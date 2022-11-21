@@ -1,7 +1,7 @@
 # pylint: disable=too-many-lines
 
 """
-Image Deconvolution functions
+Image cleaner functions for cleaning point spread functions.
 """
 
 __all__ = [
@@ -21,12 +21,13 @@ log = logging.getLogger("func-python-logger")
 
 
 def hogbom(dirty, psf, window, gain, thresh, niter, fracthresh, prefix=""):
-    """Clean the point spread function from a dirty image
+    """Clean the point spread function from a dirty image.
 
-     See Hogbom CLEAN (1974A&AS...15..417H)
+    See Hogbom CLEAN (1974A&AS...15..417H).
 
-     This version operates on numpy arrays. deconvolve_cube
-     provides a version for Images.
+    This version operates on numpy arrays.
+    :py:func:'ska_sdp_func_python.image.deconvolution.deconvolve_cube'
+    provides a version for Images.
 
     :param dirty: The dirty Image, i.e., the Image to be deconvolved
     :param psf: The point spread-function
@@ -136,29 +137,30 @@ def hogbom_complex(
     dirty_q, dirty_u, psf_q, psf_u, window, gain, thresh, niter, fracthresh
 ):
     """
-    Clean the point spread function from a dirty Q+iU image
+    Clean the point spread function from a dirty Q+iU image.
 
-    This uses the complex Hogbom CLEAN for polarised data (2016MNRAS.462.3483P)
+    This uses the complex Hogbom CLEAN for polarised data
+    (2016MNRAS.462.3483P).
 
     The starting-point for the code was the standard Hogbom
     clean algorithm available in RASCIL.
 
     :param dirty_q: (numpy array): The dirty Q Image,
-                        i.e., the Q Image to be deconvolved.
+                        i.e., the Q Image to be deconvolved
     :param dirty_u: (numpy array): The dirty U Image,
-                        i.e., the U Image to be deconvolved.
-    :param psf_q: (numpy array): The point spread-function in Stokes Q.
-    :param psf_u: (numpy array): The point spread-function in Stokes U.
-    :param window: (float): Regions where clean components are allowed.
-                            If True, entire dirty Image is allowed.
+                        i.e., the U Image to be deconvolved
+    :param psf_q: (numpy array): The point spread-function in Stokes Q
+    :param psf_u: (numpy array): The point spread-function in Stokes U
+    :param window: (float): Regions where clean components are allowed
+                            If True, entire dirty Image is allowed
     :param gain: (float): The "loop gain", i.e., the fraction of
                         the brightest pixel that is removed in each iteration.
     :param thresh: (float): Cleaning stops when the maximum of the
-                    absolute deviation of the residual is less than this value.
+                    absolute deviation of the residual is less than this value
     :param niter: (int): Maximum number of components to make if
-                    the threshold `thresh` is not hit.
+                    the threshold `thresh` is not hit
     :param fracthresh: (float): The predefined fractional threshold
-                    at which to stop cleaning.
+                    at which to stop cleaning
 
     :return: (comps.real, comps.imag, res.real, res.imag)
     """
@@ -231,7 +233,7 @@ def hogbom_complex(
 
 
 def overlapIndices(res, psf, peakx, peaky):
-    """Find the indices where two arrays overlap
+    """Find the indices where two arrays overlap.
 
     :param res: Resolution of the 2D array in (nx, ny)
     :param psf: PSF function
@@ -266,7 +268,7 @@ def overlapIndices(res, psf, peakx, peaky):
 
 
 def argmax(a):
-    """Return unravelled index of the maximum
+    """Return unravelled index of the maximum.
 
     :param a: array to be searched
     :return: Index of maximum
@@ -287,10 +289,10 @@ def msclean(
     prefix="",
 ):
     """
-    Perform multiscale clean
+    Perform multiscale clean.
 
     Multiscale CLEAN (IEEE Journal of Selected Topics in Sig Proc,
-    2008 vol. 2 pp. 793-801)
+    2008 vol. 2 pp. 793-801).
 
     This version operates on numpy arrays.
 
@@ -303,9 +305,9 @@ def msclean(
                     that is removed in each iteration
     :param thresh: Cleaning stops when the maximum of the absolute deviation
                     of the residual is less than this value
-    :param fracthresh: Cleaning stops when the
-                (maximum of the absolute deviation of the residual)/peak
-                residual is less than this value
+    :param fracthresh: Cleaning stops when the maximum of the absolute
+                    deviation of the residual/peak residual is less than
+                    this value
     :param niter: Maximum number of components to make if the
                     threshold "thresh" is not hit
     :param scales: Scales (in pixels width) to be used
@@ -469,7 +471,7 @@ def msclean(
 
 
 def create_scalestack(scaleshape, scales, norm=True):
-    """Create a cube consisting of the scales
+    """Create a cube consisting of the scales.
 
     :param scaleshape: desired shape of stack
     :param scales: scales (in pixels)
@@ -507,7 +509,7 @@ def create_scalestack(scaleshape, scales, norm=True):
 
 
 def convolve_scalestack(scalestack, img):
-    """Convolve img by the specified scalestack, returning the resulting stack
+    """Convolve img by the specified scalestack, returning the resulting stack.
 
     :param scalestack: stack containing the scales
     :param img: Image to be convolved
@@ -530,7 +532,7 @@ def convolve_scalestack(scalestack, img):
 
 
 def convolve_convolve_scalestack(scalestack, img):
-    """Convolve img by the specified scalestack, returning the resulting stack
+    """Convolve img by the specified scalestack, returning the resulting stack.
 
     :param scalestack: stack containing the scales
     :param img: Image to be convolved
@@ -561,7 +563,7 @@ def convolve_convolve_scalestack(scalestack, img):
 
 
 def find_max_abs_stack(stack, sensitivity, windowstack, couplingmatrix):
-    """Find the location and value of the absolute maximum in this stack
+    """Find the location and value of the absolute maximum in this stack.
 
     :param stack: Scale stack to be searched (a 3D array)
     :param sensitivity: Inverse noise (an array)
@@ -609,7 +611,7 @@ def find_max_abs_stack(stack, sensitivity, windowstack, couplingmatrix):
 
 
 def spheroidal_function(vnu):
-    """Evaluates the PROLATE SPHEROIDAL WAVEFUNCTION
+    """Evaluates the Prolate Spheroidal Wavefunction.
 
     m=6, alpha = 1 from Schwab, Indirect Imaging (1984).
     This is one factor in the basis function.
@@ -695,7 +697,7 @@ def msmfsclean(
     prefix="",
 ):
     """
-    Perform image plane multiscale multi frequency clean
+    Perform image plane multiscale multi frequency clean.
 
     This algorithm is documented as Algorithm 1 in:
     U. Rau and T. J. Cornwell, “A multi-scale multi-frequency
@@ -976,7 +978,7 @@ def update_scale_moment_residual(
     smresidual, ssmmpsf, lhs, rhs, gain, mscale, mval
 ):
     """
-    Update residual by subtracting the effect of model update for each moment
+    Update residual by subtracting the effect of model update for each moment.
     TODO: Docstrings for this function need to be checked
 
     :param smresidual: scale convolutions of frequency moment residuals
@@ -1001,7 +1003,8 @@ def update_scale_moment_residual(
 
 def update_moment_model(m_model, scalestack, lhs, rhs, gain, mscale, mval):
     """
-    Update model with an appropriately scaled and centered blob for each moment
+    Update model with an appropriately scaled and centered blob for each
+    moment.
 
     :param m_model: Moment model
     :param scalestack: stack containing the scales
@@ -1029,12 +1032,12 @@ def update_moment_model(m_model, scalestack, lhs, rhs, gain, mscale, mval):
 
 
 def calculate_scale_moment_residual(residual, scalestack):
-    """Calculate scale-dependent moment residuals
+    """Calculate scale-dependent moment residuals.
 
      Part of the initialisation for Algorithm 1: lines 12 - 17
 
-    :param scalestack: stack containing the scales
     :param residual: residual [nmoment, nx, ny]
+    :param scalestack: stack containing the scales
     :return: scale-dependent moment residual [nscales, nmoment, nx, ny]
     """
     nmoment, nx, ny = residual.shape
@@ -1050,12 +1053,12 @@ def calculate_scale_moment_residual(residual, scalestack):
 
 
 def calculate_scale_scale_moment_moment_psf(psf, scalestack):
-    """Calculate scale-dependent moment psfs
+    """Calculate scale-dependent moment psfs.
 
-     Part of the initialisation for Algorithm 1
+     Part of the initialisation for Algorithm 1.
 
-    :param scalestack: stack containing the scales
     :param psf: psf
+    :param scalestack: stack containing the scales
     :return: scale-dependent moment psf
             [nscales, nscales, nmoment, nmoment, nx, ny]
     """
@@ -1078,7 +1081,7 @@ def calculate_scale_scale_moment_moment_psf(psf, scalestack):
 def calculate_scale_inverse_moment_moment_hessian(
     scale_scale_moment_moment_psf,
 ):
-    """Calculate inverse_scale dependent moment moment hessian
+    """Calculate inverse_scale dependent moment moment hessian.
 
      Part of the initialisation for Algorithm 1. Lines 7 - 9
 
@@ -1102,7 +1105,7 @@ def calculate_scale_inverse_moment_moment_hessian(
 
 
 def calculate_scale_moment_principal_solution(smresidual, ihsmmpsf):
-    """Calculate the principal solution in moment space for each scale
+    """Calculate the principal solution in moment space for each scale.
 
      Lines 20 - 26
 
@@ -1119,12 +1122,13 @@ def calculate_scale_moment_principal_solution(smresidual, ihsmmpsf):
 
 
 def find_optimum_scale_zero_moment(smpsol, sensitivity, windowstack):
-    """Find the optimum scale for moment zero
+    """Find the optimum scale for moment zero.
 
      Line 27 of Algorithm 1
 
-    :param windowstack: Window for the search (an array)
     :param smpsol: Decoupled residual images for each scale and moment
+    :param sensitivity: Inverse noise image
+    :param windowstack: Window for the search (an array)
     :return: x, y, optimum scale for peak
     """
     nscales = smpsol.shape[0]

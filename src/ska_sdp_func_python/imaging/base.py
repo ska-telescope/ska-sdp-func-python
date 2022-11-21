@@ -31,7 +31,6 @@ __all__ = [
     "create_image_from_visibility",
     "advise_wide_field",
     "visibility_recentre",
-    "fill_vis_for_psf",
 ]
 
 import logging
@@ -69,13 +68,13 @@ def shift_vis_to_image(
     vis: Visibility, im: Image, tangent: bool = True, inverse: bool = False
 ) -> Visibility:
     """
-    Shift visibility in place to the phase centre of the Image
+    Shift visibility in place to the phase centre of the Image.
 
     :param vis: Visibility
     :param im: Image model used to determine phase centre
     :param tangent: Is the shift purely on the tangent plane True|False
     :param inverse: Do the inverse operation True|False
-    :return: visibility with phase shift applied and phasecentre updated
+    :return: Visibility with phase shift applied and phasecentre updated
     """
     ny = im["pixels"].data.shape[2]
     nx = im["pixels"].data.shape[3]
@@ -114,21 +113,23 @@ def shift_vis_to_image(
 
 def normalise_sumwt(im: Image, sumwt, min_weight=0.1, flat_sky=False) -> Image:
     """
-    Normalise out the sum of weights
+    Normalise out the sum of weights.
 
     The gridding weights are accumulated as a function of
     channel and polarisation. This function corrects for this
     sum of weights. The sum of weights can be a 2D array or
-    an image the same shape as the image (as for primary beam correction)
+    an image the same shape as the image (as for primary beam correction).
 
     The parameter flat_sky controls whether the sensitivity (sumwt)
     is divided out pixel by pixel or instead the maximum value is divided out.
 
     :param im: Image, im["pixels"].data has shape [nchan, npol, ny, nx]
     :param sumwt: Sum of weights [nchan, npol] or [nchan, npol, ny, nx]
-    :param minwt: Minimum (fractional) weight to be used in
-                  dividing by the sumwt images
-    :param flat_sky: Make the sky flat? Or the noise flat?
+    :param min_weight: Minimum (fractional) weight to be used in
+                       dividing by the sumwt images
+    :param flat_sky: Make the flux values correct instead of noise
+     (default is False)
+    :return: Image with sum of weights normalised out
     """
     nchan, npol, _, _ = im["pixels"].data.shape
     assert sumwt is not None
@@ -177,18 +178,18 @@ def predict_awprojection(
     vis: Visibility, model: Image, gcfcf=None
 ) -> Visibility:
     """
-    Predict using convolutional degridding and an AW kernel
+    Predict using convolutional degridding and an AW kernel.
 
     Note that the gridding correction function (gcf) and
     convolution function (cf) can be passed as a partial function.
     So the caller must supply a partial function to
-    calculate the gcf, cf tuple for an image model.
+    calculate the gcf, cf tuple for an Image model.
 
-    :param vis: visibility to be predicted
-    :param model: model image
-    :param gcfcf: (Grid correction function i.e. in image space,
-                  Convolution function i.e. in uv space)
-    :return: resulting visibility (in place works)
+    :param vis: Visibility to be predicted
+    :param model: model Image
+    :param gcfcf: Grid correction function i.e. in image space,
+                  Convolution function i.e. in uv space
+    :return: Resulting Visibility (in place works)
     """
 
     if model is None:
@@ -227,22 +228,22 @@ def invert_awprojection(
     gcfcf=None,
 ) -> (Image, numpy.ndarray):
     """
-    Invert using convolutional degridding and an AW kernel
+    Invert using convolutional degridding and an AW kernel.
 
-    Use the image im as a template. Do PSF in a separate call.
+    Use the Image as a template. Do PSF in a separate call.
 
     Note that the gridding correction function (gcf) and
     convolution function (cf) can be passed as a partial function.
     So the caller must supply a partial function to
-    calculate the gcf, cf tuple for an image model.
+    calculate the gcf, cf tuple for an Image model.
 
-    :param vis: visibility to be inverted
-    :param im: image template (not changed)
+    :param vis: Visibility to be inverted
+    :param im: Image template (not changed)
     :param dopsf: Make the psf instead of the dirty image
-    :param normalise: normalise by the sum of weights (True)
-    :param gcfcf: (Grid correction function i.e. in image space,
-            Convolution function i.e. in uv space)
-    :return: resulting image
+    :param normalise: Normalise by the sum of weights (True)
+    :param gcfcf: Grid correction function i.e. in image space,
+            Convolution function i.e. in uv space
+    :return: Resulting Image
 
     """
 
@@ -278,7 +279,7 @@ def invert_awprojection(
 
 
 def fill_vis_for_psf(svis):
-    """Fill the visibility for calculation of PSF
+    """Fill the visibility for calculation of PSF.
 
     :param svis: Visibility to be filled
     :return: Visibility with unit vis
@@ -316,10 +317,10 @@ def fill_vis_for_psf(svis):
 
 def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     """
-    Make an empty image from params and Visibility
+    Make an empty Image from params and Visibility.
 
-    This makes an empty, template image consistent with
-    the visibility, allowing optional overriding of select
+    This makes an empty, template Image consistent with
+    the Visibility, allowing optional overriding of select
     parameters. This is a convenience function and does
     not transform the visibilities.
 
@@ -333,7 +334,7 @@ def create_image_from_visibility(vis: Visibility, **kwargs) -> Image:
     :param frame: Coordinate frame for WCS (ICRS)
     :param equinox: Equinox for WCS (2000.0)
     :param nchan: Number of image channels (Default is 1 -> MFS)
-    :return: image
+    :return: Image
     """
     log.debug(
         "create_image_from_visibility: "
@@ -467,7 +468,7 @@ def advise_wide_field(
     """
     Advise on parameters for wide field imaging.
 
-    Calculate sampling requirements on various parameters
+    Calculate sampling requirements on various parameters.
 
     For example::
 
@@ -482,8 +483,7 @@ def advise_wide_field(
     :param guard_band_image: Number of primary beam
             half-widths-to-half-maximum to image (def: 6)
     :param facets: Number of facets on each axis
-    :param wprojection_planes:
-    :return: dict of advice
+    :return: Dict of advice
     """
     max_wavelength = physical_constants.C_M_S / numpy.min(vis.frequency.data)
     if verbose:
@@ -813,7 +813,7 @@ def advise_wide_field(
 
 def rad_deg_arcsec(x):
     """
-    Stringify x in radian and degree forms
+    Stringify x in radian and degree forms.
 
     :param x: float number
     """

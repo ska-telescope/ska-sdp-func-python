@@ -14,9 +14,6 @@ Visibility
 .. automodapi::    ska_sdp_func_python.visibility.operations
   :no-inheritance-diagram:
 
-.. automodapi::    ska_sdp_func_python.visibility.visibility_fitting
-  :no-inheritance-diagram:
-
 .. automodapi::    ska_sdp_func_python.visibility.visibility_geometry
   :no-inheritance-diagram:
 

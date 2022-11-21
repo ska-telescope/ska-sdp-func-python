@@ -1,15 +1,12 @@
 """
-Support for coordinates in FFTs
-
-All grids and images are considered quadratic and centered around
-`npixel//2`, where `npixel` is the pixel width/height.
-This means that `npixel//2` is the zero frequency for FFT purposes,
-as is convention. Note that this means that for even `npixel` the
-grid is not symmetrical, which means that e.g. for convolution
-kernels odd image sizes are preferred.
+Support for coordinates in FFTs.
 """
 
-__all__ = ["w_beam", "grdsf", "coordinates"]
+__all__ = [
+    "coordinates",
+    "grdsf",
+    "w_beam",
+]
 
 import logging
 
@@ -21,11 +18,11 @@ log = logging.getLogger("func-python-logger")
 def coordinateBounds(npixel):
     r"""Returns lowest and highest coordinates of an image/grid given:
 
-    1. Step size is:math:`1/npixel`:
+    1. Step size is :math:`1/npixel`:
 
        \frac{high-low}{npixel-1} = \frac{1}{npixel}
 
-    2. The coordinate:math:`\lfloor npixel/2\rfloor` falls exactly on zero:
+    2. The coordinate :math:`\lfloor npixel/2\rfloor` falls exactly on zero:
 
        low + \left\lfloor\frac{npixel}{2}\right\rfloor * (high-low) = 0
 
@@ -42,7 +39,7 @@ def coordinateBounds(npixel):
 
 def coordinates(npixel: int):
     """
-    1D array which spans [-.5,.5[ with 0 at position npixel/2
+    1D array which spans [-.5, .5[ with 0 at position npixel/2.
 
     :param npixel: Number of pixels (integer)
     :return: 1D array containing coordinates
@@ -51,7 +48,7 @@ def coordinates(npixel: int):
 
 
 def coordinates2(npixel: int):
-    """Two dimensional grids of coordinates spanning -1 to 1 in each dimension
+    """Two-dimensional grids of coordinates spanning -1 to 1 in each dimension.
 
     1. a step size of 2/npixel and
     2. (0,0) at pixel (floor(n/2),floor(n/2))
@@ -63,7 +60,7 @@ def coordinates2(npixel: int):
 
 
 def coordinates2Offset(npixel: int, cx: int, cy: int, quadrant=False):
-    """Two dimensional grids of coordinates centred on an arbitrary point.
+    """Two-dimensional grids of coordinates centred on an arbitrary point.
 
     This is used for A and w beams.
 
@@ -88,14 +85,15 @@ def coordinates2Offset(npixel: int, cx: int, cy: int, quadrant=False):
 
 
 def grdsf(nu):
-    """Calculate PSWF using an old SDE routine re-written in Python
+    """Calculate PSWF using an old SDE routine re-written in Python.
 
     Find Spheroidal function with M = 6, alpha = 1 using the rational
     approximations discussed by Fred Schwab in 'Indirect Imaging'.
     This routine was checked against Fred's SPHFN routine, and agreed
     to about the 7th significant digit.
-    The griddata function is (1-NU**2)*GRDSF(NU) where NU is the distance
-    to the edge. The grid correction function is just 1/GRDSF(NU) where NU
+    The griddata function is
+    :math:`(1-NU^{2})*GRDSF(NU)` where NU is the distance to the edge.
+    The grid correction function is just :math:`1/GRDSF(NU)` where NU
     is now the distance to the edge of the image.
 
     :param nu: Distance to the edge
@@ -159,13 +157,13 @@ def grdsf(nu):
 
 
 def w_beam(npixel, field_of_view, w, cx=None, cy=None, remove_shift=False):
-    """W beam, the fresnel diffraction pattern arising from non-coplanar baselines
+    """W beam, the fresnel diffraction pattern arising from non-coplanar baselines.
 
     :param npixel: Size of the grid in pixels
     :param field_of_view: Field of view
     :param w: Baseline distance to the projection plane
-    :param cx: location of delay centre int(npixel//2)
-    :param cy: location of delay centre int(npixel//2)
+    :param cx: location of delay centre, int(npixel//2)
+    :param cy: location of delay centre, int(npixel//2)
     :param remove_shift: Remove overall phase shift at the centre of the image
     :return: npixel x npixel array with the far field
     """
