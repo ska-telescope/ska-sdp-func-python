@@ -713,7 +713,7 @@ def advise_wide_field(
             vis_slices_primary_beam,
         )
         log.info(
-            "advice_wide_field: (wprojection_plane_primary_beam) "
+            "advice_wide_field: (wprojection_planes_primary_beam) "
             "Number of planes in w projection %d (primary beam)",
             wprojection_planes_primary_beam,
         )
