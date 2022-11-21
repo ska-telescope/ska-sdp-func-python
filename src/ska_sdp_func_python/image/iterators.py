@@ -138,7 +138,7 @@ def image_raster_iter(
         sy = dy - 2 * overlap
 
         taper_map = {
-            "linear": _taper_quadratic,
+            "linear": _taper_linear,
             "quadratic": _taper_quadratic,
             "tukey": _taper_tukey,
         }
@@ -165,11 +165,12 @@ def image_raster_iter(
 
                 if overlap > 0 and make_flat:
                     flat = Image.constructor(
-                        data=numpy.zeros_like(im["pixels"].data),
-                        polarisation_frame=im.image_acc.polarisation_frame,
-                        wcs=im.image_acc.wcs,
-                        clean_beam=im.attrs["clean_beam"],
+                        data=numpy.zeros_like(subim["pixels"].data),
+                        polarisation_frame=subim.image_acc.polarisation_frame,
+                        wcs=subim.image_acc.wcs,
+                        clean_beam=subim.attrs["clean_beam"],
                     )
+
                     try:
                         flat["pixels"].data[..., :, :] = numpy.outer(
                             taper_map[taper](dy, overlap),

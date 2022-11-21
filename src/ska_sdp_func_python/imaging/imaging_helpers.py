@@ -37,9 +37,10 @@ def sum_invert_results(image_list):
         data=numpy.zeros_like(image_list[0][0]["pixels"].data),
         polarisation_frame=image_list[0][0].image_acc.polarisation_frame,
         wcs=image_list[0][0].image_acc.wcs,
+        clean_beam=image_list[0][0].attrs["clean_beam"],
     )
 
-    sumwt = image_list[0][1]
+    sumwt = image_list[0][1].copy()
     sumwt *= 0.0
 
     for _, arg in enumerate(image_list):
