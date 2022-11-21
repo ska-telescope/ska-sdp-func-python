@@ -18,6 +18,7 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 from ska_sdp_datamodels.visibility.vis_create import create_visibility
 
 from ska_sdp_func_python.imaging.base import (
+    advise_wide_field,
     create_image_from_visibility,
     fill_vis_for_psf,
     invert_awprojection,
@@ -171,3 +172,24 @@ def test_visibility_recentre():
     assert uvw_recentred[0] == 0.7
     assert uvw_recentred[1] == 0.5
     assert uvw_recentred[2] == 3
+
+
+def test_advise_wide_field(input_params):
+    """
+    Unit test for advise_wide_field
+    Use default parameters for advising
+    """
+    vis = input_params["visibility"]
+    advice = advise_wide_field(vis)
+
+    # All entries in the dictionary are provided
+    assert len(advice) == 35
+    for key in advice:
+        assert advice[key] is not None
+
+    # Some key entries are in expected value
+    assert advice["delA"] == 0.02
+    assert advice["oversampling_synthesised_beam"] == 3.0
+    assert advice["npixels2"] == 512
+    assert advice["wstep_primary_beam"] == advice["w_sampling_primary_beam"]
+    assert advice["wprojection_planes_image"] == advice["vis_slices_image"]
