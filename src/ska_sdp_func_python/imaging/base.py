@@ -13,6 +13,7 @@ __all__ = [
     "visibility_recentre",
 ]
 
+
 import logging
 
 import numpy
@@ -752,7 +753,6 @@ def advise_wide_field(
         "oversampling_synthesised_beam",
         "guard_band_image",
         "facets",
-        "wprojection_planes",
         "verbose",
         "max_wavelength",
         "min_wavelength",
