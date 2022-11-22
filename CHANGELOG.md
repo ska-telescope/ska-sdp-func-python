@@ -1,6 +1,6 @@
 # Changelog
 
-main
+0.1.0
 ----
 
 * Refactored various functions related to deconvolution and calibration to decrease complexity ([MR12](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/12))
