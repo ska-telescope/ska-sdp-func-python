@@ -40,12 +40,14 @@ def _get_primary_beam(vis, model):
     return pb
 
 
-def test_predict_calibrate_no_pb(visibility, low_test_sky_model_from_gleam):
+def test_predict_calibrate_no_pb(
+    visibility_deconv, low_test_sky_model_from_gleam
+):
     """Predict with no primary beam"""
     sky_model = low_test_sky_model_from_gleam.copy()
 
     skymodel_vis = skymodel_predict_calibrate(
-        visibility, sky_model, context="ng"
+        visibility_deconv, sky_model, context="ng"
     )
     qa = skymodel_vis.visibility_acc.qa_visibility()
     numpy.testing.assert_almost_equal(
@@ -56,12 +58,12 @@ def test_predict_calibrate_no_pb(visibility, low_test_sky_model_from_gleam):
 
 
 @pytest.mark.skip(reason="TODO: get primary_beam functions")
-def test_predict_with_pb(visibility, low_test_sky_model_from_gleam):
+def test_predict_with_pb(visibility_deconv, low_test_sky_model_from_gleam):
     """Test predict while applying a time-variable primary beam"""
     sky_model = low_test_sky_model_from_gleam.copy()
 
     skymodel_vis = skymodel_predict_calibrate(
-        visibility,
+        visibility_deconv,
         sky_model,
         context="ng",
         get_pb=_get_primary_beam,
@@ -74,12 +76,14 @@ def test_predict_with_pb(visibility, low_test_sky_model_from_gleam):
     )
 
 
-def test_calibrate_invert_no_pb(visibility, low_test_sky_model_from_gleam):
+def test_calibrate_invert_no_pb(
+    visibility_deconv, low_test_sky_model_from_gleam
+):
     """Test invert without primary beam"""
     sky_model = low_test_sky_model_from_gleam.copy()
 
     skymodel_vis = skymodel_predict_calibrate(
-        visibility,
+        visibility_deconv,
         sky_model,
         context="ng",
     )
@@ -108,11 +112,11 @@ def test_calibrate_invert_no_pb(visibility, low_test_sky_model_from_gleam):
 
 
 @pytest.mark.skip(reason="TODO: get primary_beam functions")
-def test_invert_with_pb(visibility, low_test_sky_model_from_gleam):
+def test_invert_with_pb(visibility_deconv, low_test_sky_model_from_gleam):
     """Test invert while applying a time-variable primary beam"""
     sky_model = low_test_sky_model_from_gleam.copy()
     skymodel_vis = skymodel_predict_calibrate(
-        visibility,
+        visibility_deconv,
         sky_model,
         context="ng",
         get_pb=_get_primary_beam,
@@ -161,7 +165,9 @@ def test_invert_with_pb(visibility, low_test_sky_model_from_gleam):
     )
 
 
-def test_predict_no_components(visibility, low_test_sky_model_from_gleam):
+def test_predict_no_components(
+    visibility_deconv, low_test_sky_model_from_gleam
+):
     """Test predict with no components"""
     sky_model = low_test_sky_model_from_gleam.copy()
     sky_model.components = []
@@ -171,7 +177,7 @@ def test_predict_no_components(visibility, low_test_sky_model_from_gleam):
     ), "Image is empty"
 
     skymodel_vis = skymodel_predict_calibrate(
-        visibility, sky_model, context="ng"
+        visibility_deconv, sky_model, context="ng"
     )
     qa = skymodel_vis.visibility_acc.qa_visibility()
     numpy.testing.assert_almost_equal(
@@ -179,13 +185,13 @@ def test_predict_no_components(visibility, low_test_sky_model_from_gleam):
     )
 
 
-def test_predict_no_image(visibility, low_test_sky_model_from_gleam):
+def test_predict_no_image(visibility_deconv, low_test_sky_model_from_gleam):
     """Test predict with no image"""
     sky_model = low_test_sky_model_from_gleam.copy()
     sky_model.image = None
 
     skymodel_vis = skymodel_predict_calibrate(
-        visibility, sky_model, context="ng"
+        visibility_deconv, sky_model, context="ng"
     )
     qa = skymodel_vis.visibility_acc.qa_visibility()
     numpy.testing.assert_almost_equal(

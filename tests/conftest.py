@@ -14,7 +14,7 @@ N_CHAN = 6
 
 
 @pytest.fixture(scope="package", name="phase_centre")
-def phase_center():
+def phase_centre_fixture():
     """Phase Centre fixture"""
     phase_centre = SkyCoord(
         ra=+180.0 * units.deg,
@@ -26,7 +26,7 @@ def phase_center():
 
 
 @pytest.fixture(scope="package", name="comp_direction")
-def com_direction():
+def comp_direction_fixture():
     """
     Component Absolute direction fixture
     """
@@ -91,10 +91,12 @@ def vis_fixture(phase_centre):
 
 # ----------------------- Deconv ------------------------
 # TODO: review
-# these are needed for deconvolution test only, for now;
-# move there if that's the only place that needs them
+# these are needed for deconvolution test; the visibility
+# is also needed for skymodel tests; revise and see if
+# these can be replaced with above vis; if not, move to
+# their directories into a lower level conftest.py
 @pytest.fixture(scope="package", name="phase_centre_30")
-def phase_center_fixture_2():
+def phase_centre_fixture_2():
     """
     Phase Centre fixture for deconvolution test
     """
