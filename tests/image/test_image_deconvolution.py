@@ -1,10 +1,8 @@
 """
 Unit tests for image deconvolution
 """
-import astropy.units as u
 import numpy
 import pytest
-from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
@@ -29,20 +27,20 @@ from ska_sdp_func_python.sky_component.operations import restore_skycomponent
 
 
 @pytest.fixture(scope="module", name="predicted_vis")
-def predicted_vis_fixture(visibility):
+def predicted_vis_fixture(visibility_deconv):
     """Pytest fixture for the deconvolution.py unit tests"""
     # pylint: disable=import-outside-toplevel
     from numpy.random import default_rng
 
     rng = default_rng(1805550721)
 
-    vis = visibility.copy(deep=True, zero=True)
+    vis = visibility_deconv.copy(deep=True, zero=True)
     test_model = create_image(
         256,
         0.001,
         vis.phasecentre,
-        frequency=visibility.frequency[0],
-        channel_bandwidth=visibility.channel_bandwidth[0],
+        frequency=visibility_deconv.frequency[0],
+        channel_bandwidth=visibility_deconv.channel_bandwidth[0],
         nchan=1,
     )
     test_model["pixels"].data[:, :, 31:209, 33:224] = rng.normal(
@@ -145,18 +143,13 @@ def test_restore_clean_beam(model, psf):
     )
 
 
-def test_restore_skycomponent(model):
+def test_restore_skycomponent(model, comp_direction_30):
     """Test restoration of single pixel and skycomponent"""
     model["pixels"].data[0, 0, 256, 256] = 0.5
 
     sc = SkyComponent(
         flux=numpy.ones((1, 1)),
-        direction=SkyCoord(
-            ra=+30.0 * u.deg,
-            dec=-61.0 * u.deg,
-            frame="icrs",
-            equinox="J2000",
-        ),
+        direction=comp_direction_30,
         shape="Point",
         frequency=numpy.array([1e8]),
         polarisation_frame=PolarisationFrame("stokesI"),

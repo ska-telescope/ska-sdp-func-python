@@ -13,9 +13,7 @@ from ska_sdp_func_python.fourier_transforms.fft_coordinates import (
 )
 
 
-@pytest.mark.parametrize("N", [
-    4, 5, 6, 7, 8, 9, 1000, 1001, 1002, 1003
-])
+@pytest.mark.parametrize("N", [4, 5, 6, 7, 8, 9, 1000, 1001, 1002, 1003])
 def test_coordinates(N):
     """Unit tests for the coordinates function"""
     low, high = coordinateBounds(N)
@@ -25,9 +23,7 @@ def test_coordinates(N):
     assert c[N // 2] == 0
 
 
-@pytest.mark.parametrize("N", [
-    4, 5, 6, 7, 8, 9, 1000, 1001, 1002, 1003
-])
+@pytest.mark.parametrize("N", [4, 5, 6, 7, 8, 9, 1000, 1001, 1002, 1003])
 def test_coordinates2(N):
     """Unit tests for the coordinates2 function"""
     low, high = coordinateBounds(N)
@@ -40,9 +36,7 @@ def test_coordinates2(N):
     assert (cy[:, N // 2] == 0).all()
 
 
-@pytest.mark.parametrize("N", [
-    4, 5, 6, 7, 8, 9, 1000, 1001, 1002, 1003
-])
+@pytest.mark.parametrize("N", [4, 5, 6, 7, 8, 9, 1000, 1001, 1002, 1003])
 def test_coordinates2offset(N):
     """Unit tests for the coordinates2_offset function"""
     low, high = coordinateBounds(N)

@@ -17,9 +17,7 @@ def _pattern(npixel):
     return coordinates2(npixel)[0] + coordinates2(npixel)[1] * 1j
 
 
-@pytest.mark.parametrize("npixel, N2", [
-    (100, 128), (128, 256), (126, 128)
-])
+@pytest.mark.parametrize("npixel, N2", [(100, 128), (128, 256), (126, 128)])
 def test_pad_extract(npixel, N2):
     """Unit tests for the pad_mid function"""
     # Make a 2D complex image of size (npixel, npixel)
@@ -38,13 +36,16 @@ def test_pad_extract(npixel, N2):
     assert_allclose(extract_mid(cs_pad, npixel), cs)
 
 
-@pytest.mark.parametrize("npixel, kernel_oversampling", [
-    (1, 2),
-    (2, 3),
-    (3, 2),
-    (4, 2),
-    (5, 3),
-])
+@pytest.mark.parametrize(
+    "npixel, kernel_oversampling",
+    [
+        (1, 2),
+        (2, 3),
+        (3, 2),
+        (4, 2),
+        (5, 3),
+    ],
+)
 def test_extract_oversampled(npixel, kernel_oversampling):
     """Unit tests for the extract_oversampled function"""
     a = 1 + _pattern(npixel * kernel_oversampling)
