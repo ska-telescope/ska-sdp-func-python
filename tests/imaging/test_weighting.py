@@ -1,9 +1,6 @@
 """
 Unit tests for visibility weighting
 """
-
-import logging
-
 import numpy
 import pytest
 from astropy import units as u
@@ -22,10 +19,6 @@ from ska_sdp_func_python.imaging.weighting import (
     taper_visibility_tukey,
     weight_visibility,
 )
-
-log = logging.getLogger("func-python-logger")
-
-log.setLevel(logging.WARNING)
 
 
 @pytest.fixture(scope="module", name="input_params")

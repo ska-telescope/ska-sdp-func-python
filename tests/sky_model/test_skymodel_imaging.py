@@ -1,8 +1,6 @@
 """
 Test for SkyModel predict and invert functions
 """
-import logging
-import sys
 from pathlib import Path
 
 import numpy
@@ -17,20 +15,15 @@ from ska_sdp_func_python.visibility.visibility_geometry import (
     calculate_visibility_parallactic_angles,
 )
 
-log = logging.getLogger("func-python-logger")
-
-log.setLevel(logging.WARNING)
-log.addHandler(logging.StreamHandler(sys.stdout))
-
 
 @pytest.fixture(scope="module", name="low_test_sky_model_from_gleam")
 def sky_model_data():
     """
-    Sky model loaded from file (see tests/test_data/README.md)
+    Sky model loaded from file (see tests/testing_data/README.md)
     """
     sky_model = import_skymodel_from_hdf5(
         str(Path(__file__).parent.absolute())
-        + "/../test_data/low_test_skymodel_from_gleam.hdf"
+        + "/../testing_data/low_test_skymodel_from_gleam.hdf"
     )
     return sky_model
 

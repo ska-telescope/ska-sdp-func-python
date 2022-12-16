@@ -1,8 +1,6 @@
 """
 Unit tests for image Taylor terms
 """
-import logging
-
 import numpy
 import pytest
 from astropy import units
@@ -17,10 +15,6 @@ from ska_sdp_func_python.image.taylor_terms import (
     calculate_image_list_frequency_moments,
     calculate_image_list_from_frequency_taylor_terms,
 )
-
-log = logging.getLogger("func-python-logger")
-
-log.setLevel(logging.WARNING)
 
 
 @pytest.fixture(scope="module", name="input_params")

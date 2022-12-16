@@ -1,8 +1,6 @@
 """
 Unit processing_components for image deconvolution via MSClean
 """
-import logging
-
 import numpy
 import pytest
 
@@ -12,10 +10,6 @@ from ska_sdp_func_python.image.cleaners import (
     convolve_scalestack,
     create_scalestack,
 )
-
-log = logging.getLogger("func-python-logger")
-
-log.setLevel(logging.WARNING)
 
 
 @pytest.fixture(scope="module", name="msclean_params")

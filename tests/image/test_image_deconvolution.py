@@ -1,8 +1,6 @@
 """
 Unit tests for image deconvolution
 """
-import logging
-
 import astropy.units as u
 import numpy
 import pytest
@@ -28,10 +26,6 @@ from ska_sdp_func_python.imaging.imaging import (
     predict_visibility,
 )
 from ska_sdp_func_python.sky_component.operations import restore_skycomponent
-
-log = logging.getLogger("func-python-logger")
-
-log.setLevel(logging.INFO)
 
 
 @pytest.fixture(scope="module", name="predicted_vis")

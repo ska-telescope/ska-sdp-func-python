@@ -1,9 +1,6 @@
 """
 Unit tests for base imaging functions
 """
-
-import logging
-
 import numpy
 import pytest
 from astropy import units
@@ -27,8 +24,6 @@ from ska_sdp_func_python.imaging.base import (
     shift_vis_to_image,
     visibility_recentre,
 )
-
-log = logging.getLogger("func-python-logger")
 
 
 @pytest.fixture(scope="module", name="input_params")

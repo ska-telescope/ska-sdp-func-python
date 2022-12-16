@@ -1,8 +1,6 @@
 """
 Unit tests for image operations
 """
-import logging
-
 import numpy
 import pytest
 from astropy import units
@@ -16,8 +14,6 @@ from ska_sdp_func_python.image.operations import (
     convert_polimage_to_stokes,
     convert_stokes_to_polimage,
 )
-
-log = logging.getLogger("func-python-logger")
 
 
 @pytest.fixture(scope="module", name="operations_image")

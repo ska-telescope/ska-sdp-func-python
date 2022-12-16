@@ -1,9 +1,6 @@
 """
 Unit tests for imaging using nifty gridder
 """
-import logging
-import sys
-
 import numpy
 import pytest
 from astropy import units as u
@@ -18,11 +15,6 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 from ska_sdp_datamodels.visibility.vis_create import create_visibility
 
 from ska_sdp_func_python.imaging.ng import invert_ng, predict_ng
-
-log = logging.getLogger("func-python-logger")
-
-log.setLevel(logging.WARNING)
-log.addHandler(logging.StreamHandler(sys.stdout))
 
 
 @pytest.fixture(scope="module", name="input_params")
