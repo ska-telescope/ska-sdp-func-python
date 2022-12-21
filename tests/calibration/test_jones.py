@@ -1,9 +1,6 @@
 """
 Unit tests for Jones matrix application
 """
-
-import logging
-
 import numpy
 import pytest
 from numpy.testing import assert_array_almost_equal
@@ -15,10 +12,6 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 )
 
 from ska_sdp_func_python.calibration.jones import apply_jones
-
-log = logging.getLogger("func-python-logger")
-
-log.setLevel(logging.WARNING)
 
 DIAGONAL = numpy.array([[1.0 + 0.0j, 0.0 + 0.0j], [0.0 + 0.0j, 1.0 + 0.0]])
 SKEW = numpy.array([[0.0 + 0.0j, 1.0 + 0.0j], [1.0 + 0.0j, 0.0 + 0.0]])

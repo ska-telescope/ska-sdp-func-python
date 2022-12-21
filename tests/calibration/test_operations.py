@@ -1,8 +1,6 @@
 """
 Unit tests for calibration operations
 """
-import logging
-
 import numpy
 import pytest
 from astropy import units
@@ -23,8 +21,6 @@ from ska_sdp_func_python.calibration.operations import (
     concatenate_gaintables,
     multiply_gaintables,
 )
-
-log = logging.getLogger("func-python-logger")
 
 
 @pytest.fixture(scope="module", name="input_params")

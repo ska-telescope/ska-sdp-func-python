@@ -10,7 +10,7 @@ from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 @pytest.mark.parametrize(
     "compute_kernel", ["cpu_looped", "gpu_cupy_raw", "proc_func"]
 )
-def test_dft_stokesiquv_visibility(compute_kernel, vis_dft, comp_dft):
+def test_dft_stokesiquv_visibility(compute_kernel, visibility, comp_dft):
     """
     The various DFT kernels return the same results
     """
@@ -21,7 +21,7 @@ def test_dft_stokesiquv_visibility(compute_kernel, vis_dft, comp_dft):
         except ModuleNotFoundError:
             return
 
-    new_vis = vis_dft.copy(deep=True)
+    new_vis = visibility.copy(deep=True)
     result = dft_skycomponent_visibility(
         new_vis,
         comp_dft,

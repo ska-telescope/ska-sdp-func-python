@@ -1,8 +1,6 @@
 """
 Unit tests for image Taylor terms
 """
-import logging
-
 import astropy.units as u
 import numpy
 import pytest
@@ -20,10 +18,6 @@ from ska_sdp_func_python.sky_component.taylor_terms import (
     interpolate_skycomponents_frequency,
     transpose_skycomponents_to_channels,
 )
-
-log = logging.getLogger("func-python-logger")
-
-log.setLevel(logging.WARNING)
 
 
 @pytest.fixture(scope="module", name="input_params")

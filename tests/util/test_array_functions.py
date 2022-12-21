@@ -1,18 +1,12 @@
 """
-Unit processing_components for Array functions
+Unit tests for Array functions
 """
-import logging
-
 import numpy
 
 from ska_sdp_func_python.util.array_functions import (
     average_chunks,
     average_chunks2,
 )
-
-log = logging.getLogger("func-python-logger")
-
-log.setLevel(logging.WARNING)
 
 
 def test_average_chunks():

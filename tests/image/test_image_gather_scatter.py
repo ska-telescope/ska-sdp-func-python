@@ -1,8 +1,6 @@
 """
 Unit tests for image iteration
 """
-import logging
-
 import numpy
 import pytest
 from astropy import units
@@ -15,10 +13,6 @@ from src.ska_sdp_func_python.image.gather_scatter import (
     image_scatter_channels,
     image_scatter_facets,
 )
-
-log = logging.getLogger("func-python-logger")
-
-log.setLevel(logging.WARNING)
 
 
 @pytest.fixture(scope="module", name="phase_centre")

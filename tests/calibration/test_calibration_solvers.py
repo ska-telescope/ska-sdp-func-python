@@ -1,8 +1,6 @@
 """
 Unit tests for calibration solution
 """
-import logging
-
 import pytest
 from ska_sdp_datamodels.calibration.calibration_create import (
     create_gaintable_from_visibility,
@@ -11,10 +9,6 @@ from ska_sdp_datamodels.calibration.calibration_create import (
 from ska_sdp_func_python.calibration.operations import apply_gaintable
 from ska_sdp_func_python.calibration.solvers import solve_gaintable
 from tests.testing_utils import simulate_gaintable, vis_with_component_data
-
-log = logging.getLogger("func-python-logger")
-
-log.setLevel(logging.WARNING)
 
 
 @pytest.mark.parametrize(

@@ -1,8 +1,6 @@
 """
 Unit tests for skycomponent operations
 """
-import logging
-
 import astropy.units as u
 import numpy
 import pytest
@@ -30,10 +28,6 @@ from ska_sdp_func_python.sky_component.operations import (
     select_neighbouring_components,
     voronoi_decomposition,
 )
-
-log = logging.getLogger("func-python-logger")
-
-log.setLevel(logging.WARNING)
 
 
 @pytest.fixture(scope="module", name="input_params")
