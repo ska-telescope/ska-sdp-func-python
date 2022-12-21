@@ -1,16 +1,11 @@
 """
-Unit tests for visibility operations
+Unit tests for DFT-related functions
 """
-
-import unittest
-
 import astropy.units as u
 import numpy
-from astropy.coordinates import SkyCoord
+import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
-from ska_sdp_datamodels.configuration.config_create import (
-    create_named_configuration,
-)
+
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
@@ -24,212 +19,161 @@ from ska_sdp_func_python.imaging.dft import (
 )
 from ska_sdp_func_python.visibility.base import phaserotate_visibility
 
-# TODO: convert to pytest
+# length: nchan of visibility fixture
+ONED_FLUX = [100.0, 0.9 * 100.0, 0.8 * 100.0, 0.7 * 100.0, 0.6 * 100.0, 0.5 * 100.0]
+# times for visibility fixture on HA
+VIS_TIMES_HA = (numpy.pi / 43200.0) * numpy.linspace(0.0, 300.0, 2)
 
 
-# TODO: These pylint ignores will be gone once tests are in pytest
-# pylint: disable=attribute-defined-outside-init,missing-class-docstring
-# pylint: disable=too-many-instance-attributes
-class TestVisibilityDFTOperations(unittest.TestCase):
-    def setUp(self):
-        self.lowcore = create_named_configuration("LOWBD2", rmax=300.0)
-        self.times = (numpy.pi / 43200.0) * numpy.arange(0.0, 300.0, 100.0)
-        self.frequency = numpy.linspace(1.0e8, 1.1e8, 3)
-        self.channel_bandwidth = numpy.array([1e7, 1e7, 1e7])
-        # Define the component and give it some spectral behaviour
-        f = numpy.array([100.0, 20.0, -10.0, 1.0])
-        self.flux = numpy.array([f, 0.8 * f, 0.6 * f])
+def _generate_sky_component(pol_frame, vis, comp_dir):
+    # Define the component and give it some spectral behaviour
+    flux = numpy.array([ONED_FLUX] * len(pol_frame.names)).transpose()
 
-        # The phase centre is absolute and the component
-        # is specified relative (for now).
-        # This means that the component should end up at
-        # the position phasecentre+compredirection
-        self.phasecentre = SkyCoord(
-            ra=+180.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
-        )
-        self.compabsdirection = SkyCoord(
-            ra=+181.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
-        )
-        pcof = self.phasecentre.skyoffset_frame()
-        self.compreldirection = self.compabsdirection.transform_to(pcof)
-        self.comp = SkyComponent(
-            direction=self.compreldirection,
-            frequency=self.frequency,
-            flux=self.flux,
-        )
+    phase_centre = vis.attrs["phasecentre"]
+    phase_centre_offset = phase_centre.skyoffset_frame()
 
-    def test_phase_rotation_stokesi(self):
-        """
-        Test phase-rotating visibility: stokesI
-        """
-        # Define the component and give it some spectral behaviour
-        f = numpy.array([100.0])
-        self.flux = numpy.array([f, 0.8 * f, 0.6 * f])
-
-        # The phase centre is absolute and the component is
-        # specified relative (for now).
-        # This means that the component should end up at
-        # the position phasecentre+compredirection
-        self.phasecentre = SkyCoord(
-            ra=+180.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
-        )
-        self.compabsdirection = SkyCoord(
-            ra=+181.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
-        )
-        pcof = self.phasecentre.skyoffset_frame()
-        self.compreldirection = self.compabsdirection.transform_to(pcof)
-        self.comp = SkyComponent(
-            direction=self.compreldirection,
-            frequency=self.frequency,
-            flux=self.flux,
-            polarisation_frame=PolarisationFrame("stokesI"),
-        )
-
-        self.vis = create_visibility(
-            self.lowcore,
-            self.times,
-            self.frequency,
-            channel_bandwidth=self.channel_bandwidth,
-            phasecentre=self.phasecentre,
-            weight=1.0,
-            polarisation_frame=PolarisationFrame("stokesI"),
-        )
-        self.vismodel = dft_skycomponent_visibility(self.vis, self.comp)
-        # Predict visibilities with new phase centre independently
-        ha_diff = (
-            -(self.compabsdirection.ra - self.phasecentre.ra).to(u.rad).value
-        )
-        vispred = create_visibility(
-            self.lowcore,
-            self.times + ha_diff,
-            self.frequency,
-            channel_bandwidth=self.channel_bandwidth,
-            phasecentre=self.compabsdirection,
-            weight=1.0,
-            polarisation_frame=PolarisationFrame("stokesI"),
-        )
-        vismodel2 = dft_skycomponent_visibility(vispred, self.comp)
-
-        # Should yield the same results as rotation
-        rotatedvis = phaserotate_visibility(
-            self.vismodel, newphasecentre=self.compabsdirection, tangent=False
-        )
-        assert_allclose(rotatedvis.vis, vismodel2.vis, rtol=3e-6)
-        assert_allclose(rotatedvis.uvw, vismodel2.uvw, rtol=3e-6)
-
-    def test_phase_rotation_stokesiquv(self):
-        """
-        Test phase-rotating visibility: stokesIQUV
-        """
-        self.vis = create_visibility(
-            self.lowcore,
-            self.times,
-            self.frequency,
-            channel_bandwidth=self.channel_bandwidth,
-            phasecentre=self.phasecentre,
-            weight=1.0,
-            polarisation_frame=PolarisationFrame("stokesIQUV"),
-        )
-        self.vismodel = dft_skycomponent_visibility(self.vis, self.comp)
-        # Predict visibilities with new phase centre independently
-        ha_diff = (
-            -(self.compabsdirection.ra - self.phasecentre.ra).to(u.rad).value
-        )
-        vispred = create_visibility(
-            self.lowcore,
-            self.times + ha_diff,
-            self.frequency,
-            channel_bandwidth=self.channel_bandwidth,
-            phasecentre=self.compabsdirection,
-            weight=1.0,
-            polarisation_frame=PolarisationFrame("stokesIQUV"),
-        )
-        vismodel2 = dft_skycomponent_visibility(vispred, self.comp)
-
-        # Should yield the same results as rotation
-        rotatedvis = phaserotate_visibility(
-            self.vismodel, newphasecentre=self.compabsdirection, tangent=False
-        )
-        assert_allclose(rotatedvis.vis, vismodel2.vis, rtol=3e-6)
-        assert_allclose(rotatedvis.uvw, vismodel2.uvw, rtol=3e-6)
-
-    def test_dft_idft_stokesiquv_visibility(self):
-        """
-        Test iDFT, stokesIQUV
-        """
-        for vpol in [
-            PolarisationFrame("linear"),
-            PolarisationFrame("circular"),
-        ]:
-            self.vis = create_visibility(
-                self.lowcore,
-                self.times,
-                self.frequency,
-                channel_bandwidth=self.channel_bandwidth,
-                phasecentre=self.phasecentre,
-                weight=1.0,
-                polarisation_frame=vpol,
-            )
-            self.vismodel = dft_skycomponent_visibility(self.vis, self.comp)
-            rcomp, _ = idft_visibility_skycomponent(self.vismodel, self.comp)
-            assert_allclose(
-                self.comp.flux, numpy.real(rcomp[0].flux), rtol=1e-10
-            )
-
-    def test_extract_direction_and_flux(self):
-        """
-        vis and comp frequency and polarisation are the same
-        --> expected flux is same as comp flux (except complex)
-        """
-        vis = create_visibility(
-            self.lowcore,
-            self.times,
-            self.frequency,
-            channel_bandwidth=self.channel_bandwidth,
-            phasecentre=self.phasecentre,
-            weight=1.0,
-            polarisation_frame=PolarisationFrame("stokesIQUV"),
-        )
-
-        expected_direction = numpy.array(
-            [[1.42961744e-02, -7.15598688e-05, -1.02198084e-04]]
-        )
-        result_direction, result_flux = extract_direction_and_flux(
-            self.comp, vis
-        )
-
-        assert_array_almost_equal(result_direction, expected_direction)
-        assert (result_flux == self.comp.flux.astype(complex)).all()
-
-    def test_extract_direction_and_flux_diff_pol(self):
-        """
-        vis and comp frequency match, but polarisation frame is
-        different (vis = stokesI, comp = stokesIQUV).
-        Expected flux contains the data for the polarisation of visibility.
-        """
-        vis = create_visibility(
-            self.lowcore,
-            self.times,
-            self.frequency,
-            channel_bandwidth=self.channel_bandwidth,
-            phasecentre=self.phasecentre,
-            weight=1.0,
-            polarisation_frame=PolarisationFrame("stokesI"),
-        )
-
-        expected_direction = numpy.array(
-            [[1.42961744e-02, -7.15598688e-05, -1.02198084e-04]]
-        )
-        expected_flux = (
-            self.flux[:, 0].astype(complex).reshape((self.flux.shape[0], 1))
-        )
-        result_direction, result_flux = extract_direction_and_flux(
-            self.comp, vis
-        )
-
-        assert_array_almost_equal(result_direction, expected_direction)
-        assert (result_flux == expected_flux).all()
+    comp_rel_direction = comp_dir.transform_to(phase_centre_offset)
+    comp = SkyComponent(
+        direction=comp_rel_direction,
+        frequency=vis.frequency.data,
+        flux=flux,
+        polarisation_frame=pol_frame,
+    )
+    return comp
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.fixture(scope="module")
+def component(visibility, comp_direction):
+    """
+    SkyComponent for visibility fixture
+    """
+    comp = _generate_sky_component(
+        PolarisationFrame("linear"),  # visibility is linear
+        visibility,
+        comp_direction,
+    )
+
+    return comp
+
+
+@pytest.mark.parametrize(
+    "polarisation_frame",
+    [
+        PolarisationFrame("linear"),
+        PolarisationFrame("stokesI"),
+        PolarisationFrame("stokesIQUV"),
+    ],
+)
+def test_phaserotate_visibility(polarisation_frame, visibility, comp_direction):
+    """
+    Test phase-rotating visibility with different polarisation frames
+    """
+    phase_centre = visibility.attrs["phasecentre"]
+
+    comp = _generate_sky_component(polarisation_frame, visibility, comp_direction)
+
+    vis = create_visibility(
+        visibility.configuration,
+        VIS_TIMES_HA,
+        visibility.frequency.data,
+        channel_bandwidth=visibility.channel_bandwidth.data,
+        phasecentre=phase_centre,
+        weight=1.0,
+        polarisation_frame=polarisation_frame,
+    )
+    vis_model = dft_skycomponent_visibility(vis, comp)
+
+    # Predict visibilities with new phase centre independently
+    ha_diff = -(comp_direction.ra - phase_centre.ra).to(u.rad).value
+    vis_new_phase = create_visibility(
+        vis.configuration,
+        VIS_TIMES_HA + ha_diff,
+        vis.frequency.data,
+        channel_bandwidth=vis.channel_bandwidth.data,
+        phasecentre=comp_direction,
+        weight=1.0,
+        polarisation_frame=polarisation_frame,
+    )
+    vis_new_phase_model = dft_skycomponent_visibility(vis_new_phase, comp)
+
+    # Should yield the same results as rotation
+    # Tested function
+    rotated_vis = phaserotate_visibility(
+        vis_model, newphasecentre=comp_direction, tangent=False
+    )
+    assert_allclose(rotated_vis.vis, vis_new_phase_model.vis, rtol=3e-6)
+    assert_allclose(rotated_vis.uvw, vis_new_phase_model.uvw, rtol=3e-6)
+
+
+@pytest.mark.parametrize(
+    "polarisation_frame",
+    [
+        PolarisationFrame("linear"),
+        PolarisationFrame("circular"),
+        PolarisationFrame("stokesIQUV"),
+    ],
+)
+def test_idft_visibility_skycomponent(polarisation_frame, visibility, comp_direction):
+    """
+    Test iDFT returns component
+    """
+    phase_centre = visibility.attrs["phasecentre"]
+
+    comp = _generate_sky_component(polarisation_frame, visibility, comp_direction)
+
+    vis = create_visibility(
+        visibility.configuration,
+        VIS_TIMES_HA,
+        visibility.frequency.data,
+        channel_bandwidth=visibility.channel_bandwidth.data,
+        phasecentre=phase_centre,
+        weight=1.0,
+        polarisation_frame=polarisation_frame,
+    )
+    # run DFT on visibility first
+    vis_model = dft_skycomponent_visibility(vis, comp)
+
+    # then run iDFT to get the component back
+    result_component, _ = idft_visibility_skycomponent(vis_model, comp)
+    assert_allclose(comp.flux, numpy.real(result_component[0].flux), rtol=1e-10)
+
+
+def test_extract_direction_and_flux(visibility, component):
+    """
+    vis and comp frequency and polarisation are the same
+    --> expected flux is same as comp flux (except complex)
+    """
+    expected_direction = numpy.array(
+        [[1.42961744e-02, -7.15598688e-05, -1.02198084e-04]]
+    )
+    result_direction, result_flux = extract_direction_and_flux(component, visibility)
+
+    assert_array_almost_equal(result_direction, expected_direction)
+    assert (result_flux == component.flux.astype(complex)).all()
+
+
+def test_extract_direction_and_flux_diff_pol(visibility, component):
+    """
+    vis and comp frequency match, but polarisation frame is
+    different (vis = stokesI, comp = linear).
+    Expected flux contains the data for the polarisation of visibility.
+    """
+    vis = create_visibility(
+        visibility.configuration,
+        VIS_TIMES_HA,
+        visibility.frequency.data,
+        channel_bandwidth=visibility.channel_bandwidth.data,
+        phasecentre=visibility.attrs["phasecentre"],
+        weight=1.0,
+        polarisation_frame=PolarisationFrame("stokesI"),
+    )
+
+    expected_direction = numpy.array(
+        [[1.42961744e-02, -7.15598688e-05, -1.02198084e-04]]
+    )
+    flux = numpy.array([ONED_FLUX] * 4).transpose()
+    expected_flux = flux[:, 0].astype(complex).reshape((flux.shape[0], 1))
+    result_direction, result_flux = extract_direction_and_flux(component, vis)
+
+    assert_array_almost_equal(result_direction, expected_direction)
+    assert (result_flux == expected_flux).all()
