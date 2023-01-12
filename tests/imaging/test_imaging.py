@@ -1,10 +1,6 @@
 """
 Unit tests for imaging functions
 """
-# import functools
-import logging
-import sys
-
 import numpy
 import pytest
 from astropy import units as u
@@ -30,19 +26,13 @@ from ska_sdp_func_python.sky_component.operations import (
     insert_skycomponent,
 )
 
-# # fix the below imports
-# from src.ska_sdp_func_python.griddata.kernels import (
-#     create_awterm_convolutionfunction,
-# )
-# from src.ska_sdp_func_python.imaging.primary_beams import create_pb_generic
 # FIXME!
+#   a lot of these tests depend on code in
+#   rascil/processing_components/griddata/kernels.py
+#   code in rascil/processing_components/griddata
+#   should probably be migrated first
 # pylint: disable=missing-function-docstring
 pytest.skip(allow_module_level=True, reason="FixMe")
-
-log = logging.getLogger("func-python-logger")
-
-log.setLevel(logging.WARNING)
-log.addHandler(logging.StreamHandler(sys.stdout))
 
 
 @pytest.fixture(scope="module", name="result_imaging")

@@ -2,6 +2,7 @@
 Unit tests for imaging functions
 """
 import numpy
+
 from ska_sdp_func_python.imaging.imaging_helpers import (
     remove_sumwt,
     sum_invert_results,
@@ -25,13 +26,17 @@ def test_sum_invert_results_single_list(image):
 def test_sum_invert_results_multiple_list(image):
     """Sum invert results of multiple images"""
     # image.pixels is all 0.0
-    img_copy = image.copy(deep=True, data={'pixels': image.data_vars['pixels']+2.0})
+    img_copy = image.copy(
+        deep=True, data={"pixels": image.data_vars["pixels"] + 2.0}
+    )
     nchan = image.image_acc.nchan
     npol = image.image_acc.npol
     sumwt = numpy.ones((nchan, npol)) * 2.0
 
     # expected pixels is the sum of pixels of all input images
-    expected_image = image.copy(deep=True,  data={'pixels': image.data_vars['pixels']+6.0})
+    expected_image = image.copy(
+        deep=True, data={"pixels": image.data_vars["pixels"] + 6.0}
+    )
 
     img_list = [
         (img_copy, sumwt),
@@ -41,7 +46,7 @@ def test_sum_invert_results_multiple_list(image):
     result_img, result_sumwt = sum_invert_results(img_list)
 
     assert result_img == expected_image
-    assert (result_sumwt == 3*sumwt).all()
+    assert (result_sumwt == 3 * sumwt).all()
 
 
 def test_remove_sumwt(image):
@@ -62,10 +67,7 @@ def test_sum_predict_results(visibility):
     """Test summing predict results"""
     sum_results = sum_predict_results([visibility, visibility, visibility])
 
-    assert (
-        sum_results["vis"].data
-        == 3 * visibility["vis"].data
-    ).all()
+    assert (sum_results["vis"].data == 3 * visibility["vis"].data).all()
 
 
 def test_threshold_list(image):

@@ -75,14 +75,14 @@ def vis_fixture(phase_centre):
     low_core = create_named_configuration("LOW")
     times = (numpy.pi / 43200.0) * numpy.linspace(0.0, 300.0, n_times)
     frequency = numpy.linspace(1.0e8, 1.1e8, N_CHAN)
-    channel_bandwidth = numpy.array(N_CHAN * [1e7 / N_CHAN])
+    channel_bandwidth = numpy.array([frequency[1] - frequency[0]] * N_CHAN)
 
     vis = create_visibility(
         low_core,
         times,
         frequency,
-        channel_bandwidth=channel_bandwidth,
         phasecentre=phase_centre,
+        channel_bandwidth=channel_bandwidth,
         weight=1.0,
         polarisation_frame=PolarisationFrame("linear"),
     )
