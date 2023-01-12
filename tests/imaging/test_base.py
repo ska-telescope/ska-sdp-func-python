@@ -9,7 +9,6 @@ from ska_sdp_func_python.imaging.base import (
     create_image_from_visibility,
     fill_vis_for_psf,
     invert_awprojection,
-    normalise_sumwt,
     predict_awprojection,
     shift_vis_to_image,
     visibility_recentre,
@@ -68,19 +67,6 @@ def test_create_image_from_visibility(visibility, image, image_phase_centre):
     )
 
     assert (new_image == image).all()
-
-
-def test_normalise_sumwt(image):
-    """
-    Unit tests for normalise_sumwt function:
-    check image created here is the same as image in result_base
-    TODO: review this docstring
-    """
-    sumwt = image.copy(deep=True)
-    test_img = image.copy(deep=True)
-    norm_image = normalise_sumwt(test_img, sumwt)
-
-    assert test_img != norm_image
 
 
 @pytest.mark.skip(reason="Need more info on gcfcf values")
