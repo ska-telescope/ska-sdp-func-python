@@ -26,6 +26,8 @@ def sum_invert_results(image_list):
     """Sum a set of invert results with appropriate weighting.
 
     :param image_list: List of [image, sum weights] pairs
+                image: type Image
+                sumwt: ndarray; [nchan, npol]
     :return: Image, sum of weights
     """
     if len(image_list) == 1:
@@ -60,6 +62,8 @@ def remove_sumwt(results):
     """Remove sumwt term in list of (image, sumwt) tuples.
 
     :param results: List of tuples (image, sumwt)
+                image: type Image
+                sumwt: ndarray; [nchan, npol]
     :return: A list of just the dirty images
     """
     try:
