@@ -77,9 +77,10 @@ def test_normalise_sumwt(image):
     TODO: review this docstring
     """
     sumwt = image.copy(deep=True)
-    norm_image = normalise_sumwt(image, sumwt)
+    test_img = image.copy(deep=True)
+    norm_image = normalise_sumwt(test_img, sumwt)
 
-    assert image != norm_image
+    assert test_img != norm_image
 
 
 @pytest.mark.skip(reason="Need more info on gcfcf values")
