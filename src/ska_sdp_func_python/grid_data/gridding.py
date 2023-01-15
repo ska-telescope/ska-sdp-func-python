@@ -1,3 +1,5 @@
+# pylint: disable=too-many-boolean-expression
+
 """
 Gridding functions
 """
