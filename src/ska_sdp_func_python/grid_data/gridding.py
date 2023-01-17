@@ -150,12 +150,11 @@ def spatial_mapping(griddata, u, v, w, cf=None):
     pu_grid, pv_grid = numpy.round(
         grid_wcs.sub([1, 2]).wcs_world2pix(u, v, 0)
     ).astype("int")
-
-    pu_grid_cj, pv_grid_cj = numpy.round(
+    # Conjugate visibilities (u,v)->(-u, -v)
+    pu_grid_conjugate, pv_grid_conjugate = numpy.round(
         grid_wcs.sub([1, 2]).wcs_world2pix(-u, -v, 0)
     ).astype("int")
-
-    return pu_grid, pv_grid, pu_grid_cj, pv_grid_cj
+    return pu_grid, pv_grid, pu_grid_conjugate, pv_grid_conjugate
 
 
 def grid_visibility_to_griddata(vis, griddata, cf):
@@ -295,8 +294,8 @@ def grid_visibility_weight_to_griddata(vis, griddata: GridData):
         (
             pu_grid,
             pv_grid,
-            pu_grid_cj,
-            pv_grid_cj,
+            pu_grid_conjugate,
+            pv_grid_conjugate,
         ) = convolution_mapping_visibility(vis, griddata, vchan)
         num_skipped = 0
         for pol in range(nvpol):
@@ -307,10 +306,10 @@ def grid_visibility_weight_to_griddata(vis, griddata: GridData):
                     or pv_grid[row] >= real_gd.shape[2]
                     or pu_grid[row] < 0
                     or pu_grid[row] >= real_gd.shape[3]
-                    or pv_grid_cj[row] < 0
-                    or pv_grid_cj[row] >= real_gd.shape[2]
-                    or pu_grid_cj[row] < 0
-                    or pu_grid_cj[row] >= real_gd.shape[3]
+                    or pv_grid_conjugate[row] < 0
+                    or pv_grid_conjugate[row] >= real_gd.shape[2]
+                    or pu_grid_conjugate[row] < 0
+                    or pu_grid_conjugate[row] >= real_gd.shape[3]
                 ):
                     num_skipped += 1
                     continue
@@ -318,9 +317,9 @@ def grid_visibility_weight_to_griddata(vis, griddata: GridData):
                 real_gd[imchan, pol, pv_grid[row], pu_grid[row]] += fwtt[
                     pol, vchan, row
                 ]
-                real_gd[imchan, pol, pv_grid_cj[row], pu_grid_cj[row]] += fwtt[
-                    pol, vchan, row
-                ]
+                real_gd[
+                    imchan, pol, pv_grid_conjugate[row], pu_grid_conjugate[row]
+                ] += fwtt[pol, vchan, row]
 
                 sumwt[imchan, pol] += fwtt[pol, vchan, row]
             if num_skipped > 0:
@@ -422,20 +421,20 @@ def griddata_visibility_reweight(
         (
             pu_grid,
             pv_grid,
-            pu_grid_cj,
-            pv_grid_cj,
+            pu_grid_conjugate,
+            pv_grid_conjugate,
         ) = convolution_mapping_visibility(vis, griddata, vchan)
         for pol in range(nvpol):
             # drop underflows
             v_overflows_mask = numpy.logical_or(
                 pv_grid >= real_gd.shape[2], pv_grid < 0
             ) | numpy.logical_or(
-                pv_grid_cj >= real_gd.shape[2], pv_grid_cj < 0
+                pv_grid_conjugate >= real_gd.shape[2], pv_grid_conjugate < 0
             )
             u_overflows_mask = numpy.logical_or(
                 pu_grid >= real_gd.shape[3], pu_grid < 0
             ) | numpy.logical_or(
-                pu_grid_cj >= real_gd.shape[3], pu_grid_cj < 0
+                pu_grid_conjugate >= real_gd.shape[3], pu_grid_conjugate < 0
             )
             uv_ingrid_mask = ~numpy.logical_or(
                 u_overflows_mask, v_overflows_mask

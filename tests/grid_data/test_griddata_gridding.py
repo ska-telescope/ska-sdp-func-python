@@ -114,7 +114,9 @@ def test_grid_visibility_weight_to_griddata(input_params):
     result_gd, _ = grid_visibility_weight_to_griddata(vis, grid_data)
     assert numpy.max(result_gd["pixels"].data.real) == 67.0
     assert numpy.min(result_gd["pixels"].data.real) == 0.0
-    assert numpy.isclose(numpy.mean(result_gd["pixels"].data.real), 2.53875732421875)
+    assert numpy.isclose(
+        numpy.mean(result_gd["pixels"].data.real), 2.53875732421875
+    )
 
 
 def test_griddata_merge_weights(input_params):
@@ -138,25 +140,33 @@ def test_griddata_visibility_reweight(input_params):
 
     griddata, _ = grid_visibility_weight_to_griddata(vis, grid_data)
     result = griddata_visibility_reweight(vis, griddata, weighting="uniform")
-    assert numpy.isclose(numpy.max(result.visibility_acc.flagged_imaging_weight), 1.0)
     assert numpy.isclose(
-        numpy.mean(result.visibility_acc.flagged_imaging_weight), 0.09850056020405729
+        numpy.max(result.visibility_acc.flagged_imaging_weight), 1.0
+    )
+    assert numpy.isclose(
+        numpy.mean(result.visibility_acc.flagged_imaging_weight),
+        0.09850056020405729,
     )
 
     griddata, _ = grid_visibility_weight_to_griddata(vis, grid_data)
     result = griddata_visibility_reweight(vis, griddata, weighting="robust")
     assert numpy.isclose(
-        numpy.max(result.visibility_acc.flagged_imaging_weight), 0.007884450440256508
+        numpy.max(result.visibility_acc.flagged_imaging_weight),
+        0.007884450440256508,
     )
     assert numpy.isclose(
-        numpy.mean(result.visibility_acc.flagged_imaging_weight), 0.007817914993503273
+        numpy.mean(result.visibility_acc.flagged_imaging_weight),
+        0.007817914993503273,
     )
 
     griddata, _ = grid_visibility_weight_to_griddata(vis, grid_data)
     result = griddata_visibility_reweight(vis, griddata, weighting="natural")
-    assert numpy.isclose(numpy.max(result.visibility_acc.flagged_imaging_weight), 1.0)
     assert numpy.isclose(
-        numpy.mean(result.visibility_acc.flagged_imaging_weight), 0.9915611814345991
+        numpy.max(result.visibility_acc.flagged_imaging_weight), 1.0
+    )
+    assert numpy.isclose(
+        numpy.mean(result.visibility_acc.flagged_imaging_weight),
+        0.9915611814345991,
     )
 
 
