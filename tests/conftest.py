@@ -6,6 +6,7 @@ import pytest
 from astropy import units
 from astropy.coordinates import SkyCoord
 from ska_sdp_datamodels.configuration import create_named_configuration
+from ska_sdp_datamodels.image import create_image
 from ska_sdp_datamodels.science_data_model import PolarisationFrame
 from ska_sdp_datamodels.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility import create_visibility
@@ -87,6 +88,26 @@ def vis_fixture(phase_centre):
         polarisation_frame=PolarisationFrame("linear"),
     )
     return vis
+
+
+@pytest.fixture(scope="package", name="image")
+def image_fixt(visibility, comp_direction):
+    """
+    Image fixture
+    """
+    n_pixels = 512
+    cell_size = 0.00015
+    im = create_image(
+        n_pixels,
+        cell_size,
+        comp_direction,
+        # pylint: disable=protected-access
+        polarisation_frame=PolarisationFrame(visibility._polarisation_frame),
+        frequency=visibility.frequency.data[0],
+        channel_bandwidth=visibility.channel_bandwidth.data[0],
+        nchan=visibility.visibility_acc.nchan,
+    )
+    return im
 
 
 # ----------------------- Deconv ------------------------

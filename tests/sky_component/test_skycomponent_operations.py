@@ -1,11 +1,10 @@
 """
-Unit tests for skycomponent operations
+Unit tests for SkyComponent operations
 """
 import astropy.units as u
 import numpy
 import pytest
 from astropy.coordinates import SkyCoord
-from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
@@ -29,259 +28,376 @@ from ska_sdp_func_python.sky_component.operations import (
     voronoi_decomposition,
 )
 
+HOME = SkyCoord(
+    ra=+179.0 * u.deg, dec=-40.0 * u.deg, frame="icrs", equinox="J2000"
+)
 
-@pytest.fixture(scope="module", name="input_params")
-def operations_fixture():
-    """Fixture for operations.py unit tests"""
-    home_coords = SkyCoord(
-        ra=+10.0 * u.deg, dec=-40.0 * u.deg, frame="icrs", equinox="J2000"
-    )
+FREQ = numpy.array([1e8])
+FLUX = numpy.ones((1, 1))
+POL_FRAME = PolarisationFrame("stokesI")
+
+
+@pytest.fixture(scope="module", name="sky_comp_one")
+def sky_comp_one_fixt():
+    """
+    SkyComponent fixture at RA=181, DEC=-33
+    """
     phase_centre = SkyCoord(
-        ra=+180.0 * u.deg, dec=-40.0 * u.deg, frame="icrs", equinox="J2000"
+        ra=+181.0 * u.deg, dec=-33.0 * u.deg, frame="icrs", equinox="J2000"
     )
-    frequency = numpy.array([1e8])
-    name = "test_sc"
-    flux = numpy.ones((1, 1))
-    shape = "Point"
-    polarisation_frame = PolarisationFrame("stokesI")
-
-    sky_component1 = SkyComponent(
-        phase_centre,
-        frequency,
-        name,
-        flux,
-        shape,
-        polarisation_frame,
+    return SkyComponent(
+        direction=phase_centre,
+        frequency=FREQ,
+        flux=FLUX,
+        polarisation_frame=POL_FRAME,
     )
 
-    sky_component2 = SkyComponent(
-        home_coords,
-        frequency,
-        name,
-        flux=numpy.array([[10]]),
-        shape=shape,
-        polarisation_frame=polarisation_frame,
+
+@pytest.fixture(scope="module", name="sky_comp_two")
+def sky_comp_two_fixt():
+    """
+    SkyComponent fixture at RA=181, DEC=-35
+    """
+    phase_centre = SkyCoord(
+        ra=+181.0 * u.deg, dec=-35.0 * u.deg, frame="icrs", equinox="J2000"
+    )
+    return SkyComponent(
+        direction=phase_centre,
+        frequency=FREQ,
+        flux=FLUX,
+        polarisation_frame=POL_FRAME,
     )
 
-    ref_sky_component1 = SkyComponent(
-        home_coords,
-        frequency,
-        name,
-        flux,
-        shape,
-        polarisation_frame,
+
+@pytest.fixture(scope="module", name="sky_comp_three")
+def sky_comp_three_fixt():
+    """
+    SkyComponent fixture at RA=182, DEC=-36
+    """
+    phase_centre = SkyCoord(
+        ra=+182.0 * u.deg, dec=-36.0 * u.deg, frame="icrs", equinox="J2000"
+    )
+    return SkyComponent(
+        direction=phase_centre,
+        frequency=FREQ,
+        flux=FLUX,
+        polarisation_frame=POL_FRAME,
     )
 
-    ref_sky_component2 = SkyComponent(
-        SkyCoord(
-            ra=+100.0 * u.deg, dec=-40.0 * u.deg, frame="icrs", equinox="J2000"
-        ),
-        frequency,
-        name,
-        flux,
-        shape,
-        polarisation_frame,
+
+@pytest.fixture(scope="module", name="sky_comp_four")
+def sky_comp_four_fixt():
+    """
+    SkyComponent fixture at RA=179, DEC=-40
+    """
+    return SkyComponent(
+        direction=HOME, frequency=FREQ, flux=FLUX, polarisation_frame=POL_FRAME
     )
-    params = {
-        "home": home_coords,
-        "ref_skycomponents_list": [
-            ref_sky_component1,
-            ref_sky_component2,
-        ],
-        "skycomponents_list": [
-            sky_component1,
-            sky_component2,
-        ],
-    }
-    return params
 
 
-def test_find_nearest_skycomponent_index(input_params):
-    """Check the index is 1"""
-    home = input_params["home"]
-    components = input_params["skycomponents_list"]
-
-    index = find_nearest_skycomponent_index(home, components)
-
-    assert index == 1
-
-
-def test_find_nearest_skycomponent(input_params):
-    """Check the matching component is at index 1 and the seperation is 0"""
-    home = input_params["home"]
-    components = input_params["skycomponents_list"]
-
-    best_sc, best_sc_seperation = find_nearest_skycomponent(home, components)
-
-    assert best_sc == components[1]
-    assert best_sc_seperation == 0
+@pytest.fixture(scope="module", name="sky_comp_five")
+def sky_comp_five_fixt():
+    """
+    SkyComponent fixture at RA=179, DEC=-39
+    """
+    phase_centre = SkyCoord(
+        ra=+179.0 * u.deg, dec=-39.0 * u.deg, frame="icrs", equinox="J2000"
+    )
+    return SkyComponent(
+        direction=phase_centre,
+        frequency=FREQ,
+        flux=FLUX,
+        polarisation_frame=POL_FRAME,
+    )
 
 
-def test_find_separation_skycomponents(input_params):
-    """Check the seperation"""
-    components = input_params["skycomponents_list"]
-    seperations = find_separation_skycomponents(components, components)
-    expected_seperations = numpy.array([[0, 1.73628363], [1.73628363, 0]])
+def test_find_nearest_skycomponent_index(
+    sky_comp_one, sky_comp_two, sky_comp_five
+):
+    """
+    The index of the SkyComponent nearest to a given direction
+    (HOME) is found.
+    """
+    components = [sky_comp_one, sky_comp_two, sky_comp_five]
+    result_index = find_nearest_skycomponent_index(HOME, components)
+    assert result_index == 2
 
-    assert seperations == pytest.approx(expected_seperations, 1e-7)
+
+def test_find_nearest_skycomponent_zero_sep(
+    sky_comp_one, sky_comp_two, sky_comp_four
+):
+    """
+    Nearest SkyComponent is at the same direction as "home"
+    -> separation is 0.
+    """
+    components = [sky_comp_one, sky_comp_two, sky_comp_four]
+    result_sc, result_separation = find_nearest_skycomponent(HOME, components)
+
+    assert result_sc == sky_comp_four
+    assert result_separation == 0
 
 
-def test_find_skycomponent_matches_atomic(input_params):
+def test_find_nearest_skycomponent_smallest_sep(sky_comp_one, sky_comp_five):
+    """
+    Nearest SkyComponent is not exactly at "home",
+    so there is a small separation
+    """
+    components = [sky_comp_one, sky_comp_five]
+    result_sc, result_separation = find_nearest_skycomponent(HOME, components)
+
+    assert result_sc == sky_comp_five
+    assert result_separation.round(3) == 0.017
+
+
+def test_find_separation_skycomponents(
+    sky_comp_one, sky_comp_two, sky_comp_three
+):
+    """
+    Check separation of list of components compared to reference comps.
+
+    test_comp1  test_comp2  test_comp3
+    x           x           x           ref_comp1
+    x           x           x           ref_comp2
+    """
+    comps_to_test = [sky_comp_one, sky_comp_two, sky_comp_three]
+    ref_comps = [sky_comp_two, sky_comp_three]
+    separations = find_separation_skycomponents(comps_to_test, ref_comps)
+
+    expected_separations = numpy.array(
+        [[0.03490659, 0.0, 0.02250552], [0.05429855, 0.02250552, 0.0]]
+    )
+
+    numpy.testing.assert_allclose(separations, expected_separations, atol=1e-7)
+
+
+def test_find_skycomponent_matches_atomic(
+    sky_comp_one, sky_comp_two, sky_comp_three
+):
     """Check the matches"""
-    components = input_params["skycomponents_list"]
-    ref_components = input_params["ref_skycomponents_list"]
+    components = [sky_comp_one, sky_comp_two, sky_comp_three]
+    ref_components = [sky_comp_one, sky_comp_three]
     matches = find_skycomponent_matches_atomic(components, ref_components)
 
-    assert len(matches) == 1
+    assert len(matches) == 2
 
 
-def test_find_skycomponent_matches(input_params):
+def test_find_skycomponent_matches(sky_comp_one, sky_comp_two, sky_comp_three):
     """Check matches"""
-    components = input_params["skycomponents_list"]
-    ref_components = input_params["ref_skycomponents_list"]
+    components = [sky_comp_one, sky_comp_one, sky_comp_two, sky_comp_three]
+    ref_components = [sky_comp_one, sky_comp_three]
     matches = find_skycomponent_matches(components, ref_components)
 
-    assert len(matches) == 1
+    assert len(matches) == 3
 
 
-def test_select_components_by_separation(input_params):
+def test_select_components_by_separation(
+    sky_comp_one, sky_comp_four, sky_comp_five
+):
     """Check correct component is selected"""
-    home = input_params["home"]
-    ref_components = input_params["ref_skycomponents_list"]
-    selected = select_components_by_separation(home, ref_components, rmax=1)
+    comps = [sky_comp_one, sky_comp_five, sky_comp_four]
+    selected = select_components_by_separation(HOME, comps, rmax=0.1)
 
-    assert selected == [ref_components[0]]
-
-
-def test_select_neighbouring_components(input_params):
-    """Check correct component is selected"""
-    components = input_params["skycomponents_list"]
-    target = input_params["ref_skycomponents_list"]
-    target_index, target_sep = select_neighbouring_components(
-        components, target
-    )
-
-    assert (target_index == [1, 0]).all()
-    assert (target_sep.deg == [pytest.approx(58.99740846, 1e-7), 0.0]).all()
+    assert selected == [sky_comp_five, sky_comp_four]
 
 
-def test_remove_neighbouring_components(input_params):
-    """Check correct component is compressed (only index 1 should remain)"""
-    components = input_params["skycomponents_list"]
+def test_select_neighbouring_components(sky_comp_one, sky_comp_three):
+    """
+    Check correct component is selected for each object
+    in "components" list from the "target" list
+    """
+    components = [sky_comp_one]
+    target = [sky_comp_three, sky_comp_one]
+    result_idx, result_sep = select_neighbouring_components(components, target)
+
+    assert (result_idx == [1]).all()
+    assert (result_sep.deg == [0.0]).all()
+
+
+def test_select_neighbouring_components_multi(
+    sky_comp_one, sky_comp_two, sky_comp_three
+):
+    """
+    Check correct component is selected for each object
+    in "components" list from the "target" list
+    """
+    components = [sky_comp_one, sky_comp_three]
+    target = [sky_comp_three, sky_comp_two, sky_comp_one]
+    result_idx, result_sep = select_neighbouring_components(components, target)
+
+    assert (result_idx == [2, 0]).all()
+    assert (result_sep.deg == [0.0, 0.0]).all()
+
+
+def test_remove_neighbouring_components(sky_comp_two):
+    """
+    From multiple components within a given distance,
+    remove the faintest one.
+    """
+    new_comp = sky_comp_two.copy()
+    new_comp.flux = sky_comp_two.flux + 10.0
+    new_comp_2 = sky_comp_two.copy()
+    new_comp_2.flux = sky_comp_two.flux + 5.0
+    components = [new_comp_2, sky_comp_two, new_comp]
     distance = 1  # in radians
 
-    compressed_targets = remove_neighbouring_components(components, distance)
+    result_idx, result_kept_comp = remove_neighbouring_components(
+        components, distance
+    )
 
-    assert compressed_targets[0] == [0, 1]
-
-
-def test_filter_skycomponents_by_flux(input_params):
-    """Check a skycomponent is filtered out"""
-
-    components = input_params["skycomponents_list"]
-    new_components = filter_skycomponents_by_flux(components, flux_min=5)
-
-    assert len(components) == 2
-    assert len(new_components) == 1
+    assert result_idx == [0, 2]
+    assert result_kept_comp == [new_comp_2, new_comp]
 
 
-def test_insert_skycomponent(input_params):
+def test_filter_skycomponents_by_flux(sky_comp_one):
+    """
+    SkyComponents with flux >= flux_min are kept
+    """
+    new_comp = sky_comp_one.copy()
+    new_comp.flux = sky_comp_one.flux + 10.0
+    new_comp_2 = sky_comp_one.copy()
+    new_comp_2.flux = sky_comp_one.flux + 5.0
+    components = [sky_comp_one, new_comp, new_comp_2]
+    result_components = filter_skycomponents_by_flux(components, flux_min=6)
+
+    assert result_components == [new_comp]
+
+
+def test_insert_skycomponent(image, sky_comp_one):
     """Check a skycomponent is inserted to the image"""
-    image = create_image(512, 0.0001, input_params["home"])
-    component = input_params["skycomponents_list"][0]
-
-    new_image = insert_skycomponent(image, component)
-
-    assert new_image != image
+    img = image.copy(deep=True)
+    new_image = insert_skycomponent(img, sky_comp_one)
+    assert new_image != img
 
 
-def test_restore_skycomponent(input_params):
-    """Check a skycomponent is restored to the image"""
-    image = create_image(512, 0.0001, input_params["home"])
-    component = input_params["skycomponents_list"][0]
+def test_restore_skycomponent(image, sky_comp_two):
+    """Check a skycomponent is restored into the image
+    FIXME: what is the difference between restore_skycomponent
+     and insert_skycomponent?
+    """
+    img = image.copy(deep=True)
     clean_beam = {"bmaj": 0.1, "bmin": 0.05, "bpa": -60.0}
-    new_image = restore_skycomponent(image, component, clean_beam=clean_beam)
+    new_image = restore_skycomponent(img, sky_comp_two, clean_beam=clean_beam)
 
     assert new_image != image
 
 
-# FIXME
-# pylint: disable=unused-variable
-# TODO: fix test, it's missing the assert
-@pytest.mark.skip(
-    reason="Better understanding of Vornoi needed to make a useful unit test"
-)
-def test_voronoi_decomposition(input_params):
-    """Check Vornoi decompostion"""
-    image = create_image(512, 0.0001, input_params["home"])
-    image_component = input_params["ref_skycomponents_list"][1]
-    # Get an image that isn't empty (insert skycomonent)
-    image = insert_skycomponent(image, image_component)
-    components = input_params["ref_skycomponents_list"]
-    v_structure, v_image = voronoi_decomposition(image, components)
+def test_voronoi_decomposition(
+    image, sky_comp_one, sky_comp_two, sky_comp_three
+):
+    """
+    Check Voronoi decomposition
+
+    - all components have to fit within the image coordinates
+            if a component doesn't, its pixel coordinates
+            are nan and that breaks the Voronoi object
+            (scipy.spatial._qhull.Voronoi)
+
+    Asserted values:
+    - vor_structure.points: pixel coordinates of sky components on image
+        e.g. sky_comp_two has the same direction as the
+        phase_centre of the image, so its coordinates are
+        in the centre (257, 257)
+    - vor_structure.point_region: which Voronoi region
+        each components falls within
+        this gives the index of the regions
+    - vor_structure.vertices: coordinates of Voronoi vertices
+        which fall within the image
+
+    # TODO: need to understand what vor_image is and add asserts for that
+    """
+    # pylint: disable=unused-variable
+    # TODO: remove pylint disable once test for vor_image is in place
+
+    # all three components fit within the image
+    components = [sky_comp_one, sky_comp_two, sky_comp_three]
+    vor_structure, vor_image = voronoi_decomposition(image, components)
+
+    assert (
+        vor_structure.points.round(6)
+        == numpy.array(
+            [[257.0, 489.663311], [257.0, 257.0], [162.871377, 140.179461]]
+        )
+    ).all()
+    assert (vor_structure.point_region == numpy.array([1, 2, 3])).all()
+    assert (
+        vor_structure.vertices.round(6)
+        == numpy.array([[-6.931885, 373.331656]])
+    ).all()
 
 
-@pytest.mark.skip(
-    reason="Better understanding of Vornoi needed to make a useful unit test"
-)
-def test_image_voronoi_iter(input_params):
+def test_image_voronoi_iter(image, sky_comp_one, sky_comp_two, sky_comp_three):
     """
-    Unit test for image_voronoi_iter
+    Unit test for image_voronoi_iter.
+
+    The yielded images will have 1s where the points belong to a
+    certain voronoi region and zeroes everywhere else.
     """
-    bright_components = input_params["skycomponents_list"]
-    phase_centre = SkyCoord(
-        ra=+180.0 * u.deg, dec=-40.0 * u.deg, frame="icrs", equinox="J2000"
-    )
-    model = create_image(
-        512,
-        0.001,
-        phase_centre,
-        nchan=1,
-    )
+    model = image.copy(deep=True)
     model["pixels"].data[...] = 1.0
 
-    bright_components = filter_skycomponents_by_flux(
-        bright_components, flux_min=2.0
-    )
-    for im in image_voronoi_iter(model, bright_components):
-        assert numpy.sum(im["pixels"].data) > 1
+    components = [sky_comp_one, sky_comp_two, sky_comp_three]
+
+    num_images = 0
+    for result_img in image_voronoi_iter(model, components):
+        # there are non-zero data points in voronoi image
+        assert numpy.sum(result_img["pixels"].data) > 1
+        # not all of the points in the voronoi image are non-zero
+        # only the ones that match the mask given by the decomposition
+        assert numpy.sum(result_img["pixels"].data) < numpy.sum(
+            model["pixels"].data
+        )
+        num_images += 1
+
+    # there are three images to yield
+    assert num_images == 3
 
 
-@pytest.mark.skip(
-    reason="Need better understanding of function to build meaningful test"
-)
-def test_partition_skycomponent_neighbours(input_params):
-    """Check skycompoentns are partitioned correctly"""
+def test_partition_skycomponent_neighbours(
+    sky_comp_one, sky_comp_two, sky_comp_three, sky_comp_four, sky_comp_five
+):
+    """
+    Check SkyComponents are partitioned correctly
 
-    components = input_params["ref_skycomponents_list"]
-    target = [input_params["ref_skycomponents_list"][0]]
+    Output is a list of lists:
+        len(outer-list) == num_targets
+        len(inner-list): this will vary depending on how many
+        components are closest to that specific target component
+        from the component list.
+    """
+    components = [sky_comp_one, sky_comp_three, sky_comp_five]
+    target = [sky_comp_two, sky_comp_four]
 
     partitioned_comps = partition_skycomponent_neighbours(components, target)
 
-    assert partitioned_comps == [components]
+    assert len(partitioned_comps) == 2  # two targets
+    # sky_comp_one and sky_comp_three are nearest
+    # to sky_comp_two from target list
+    assert partitioned_comps[0] == [sky_comp_one, sky_comp_three]
+    # sky_comp_five is nearest to sky_comp_four from target list
+    assert partitioned_comps[1] == [sky_comp_five]
 
 
-@pytest.mark.skip(
-    reason="Unable to set frequency and flux correctly for "
-    "a multi-frequency skycomponent"
-)
-def test_fit_skycomponent_spectral_index(input_params):
-    """Check fits multi-frequency skycomponents"""
-    single_freq_comp = input_params["skycomponents_list"][0]
-    sf_spec_indx = fit_skycomponent_spectral_index(single_freq_comp)
+def test_fit_skycomponent_spectral_index_single_freq(sky_comp_one):
+    """
+    Spectral index of single frequency SkyComponent
+    """
+    result_spec_index = fit_skycomponent_spectral_index(sky_comp_one)
+    assert result_spec_index == 0.0
 
+
+def test_fit_skycomponent_spectral_index_multi_freq():
+    """
+    Spectral index of multi frequency SkyComponent
+    """
     frequency = numpy.linspace(0.9e8, 1.1e8, 3)
-    flux = numpy.ones(shape=(3, 1), dtype=float)
+    flux = numpy.power(frequency / 1e8, -0.7).reshape((3, 1))
     multi_freq_comp = SkyComponent(
-        direction=input_params["home"],
+        direction=HOME,
         frequency=frequency,
-        name="multi_freq_sc",
         flux=flux,
-        shape="Point",
         polarisation_frame=PolarisationFrame("stokesI"),
     )
 
-    mf_spec_indx = fit_skycomponent_spectral_index(multi_freq_comp)
+    result_spec_index = fit_skycomponent_spectral_index(multi_freq_comp)
 
-    assert sf_spec_indx == 0.0
-    assert mf_spec_indx == 1
+    numpy.testing.assert_almost_equal(result_spec_index, -0.7, decimal=7)

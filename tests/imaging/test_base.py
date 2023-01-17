@@ -15,7 +15,7 @@ from ska_sdp_func_python.imaging.base import (
 )
 
 
-def test_shift_vis_to_image(visibility, image, image_phase_centre):
+def test_shift_vis_to_image(visibility, image, comp_direction):
     """
     Unit tests for shift_vis_to_image function:
     check that the phasecentre does change
@@ -25,7 +25,7 @@ def test_shift_vis_to_image(visibility, image, image_phase_centre):
     shifted_vis = shift_vis_to_image(vis, image)
 
     assert old_pc != shifted_vis.attrs["phasecentre"]
-    assert shifted_vis.attrs["phasecentre"] == image_phase_centre
+    assert shifted_vis.attrs["phasecentre"] == comp_direction
 
 
 @pytest.mark.skip(reason="gcfcf examples needed for predict_awprojection")
@@ -56,14 +56,17 @@ def test_fill_vis_for_psf(visibility):
     assert (result["vis"].data[..., 3] == 1.0 + 0.0j).all()
 
 
-def test_create_image_from_visibility(visibility, image, image_phase_centre):
+def test_create_image_from_visibility(visibility, image, comp_direction):
     """
-    Unit tests for create_image_from_visibility function:
-    check image created here is the same as image in result_base
+    Unit tests for create_image_from_visibility function
+
+    The inputs to creating the image fixture come from the
+    visibility fixture with the difference in the phase_centre
+    which for the image is the "comp_direction" fixture
     """
     new_image = create_image_from_visibility(
         vis=visibility,
-        phasecentre=image_phase_centre,
+        phasecentre=comp_direction,
     )
 
     assert (new_image == image).all()
