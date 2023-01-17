@@ -131,7 +131,7 @@ def test_griddata_merge_weights(input_params):
     assert result_sumwt == 3
 
 
-def test_griddata_visibility_reweight(input_params):
+def test_griddata_visibility_reweight_uniform(input_params):
     """Unit tests for griddata_visibility_reweight function:
     check that vis is updated
     """
@@ -148,6 +148,14 @@ def test_griddata_visibility_reweight(input_params):
         0.09850056020405729,
     )
 
+
+def test_griddata_visibility_reweight_robust(input_params):
+    """Unit tests for griddata_visibility_reweight function:
+    check that vis is updated
+    """
+    grid_data = input_params["grid_data"]
+    vis = input_params["visibility"]
+
     griddata, _ = grid_visibility_weight_to_griddata(vis, grid_data)
     result = griddata_visibility_reweight(vis, griddata, weighting="robust")
     assert numpy.isclose(
@@ -159,6 +167,13 @@ def test_griddata_visibility_reweight(input_params):
         0.007817914993503273,
     )
 
+
+def test_griddata_visibility_reweight_natural(input_params):
+    """Unit tests for griddata_visibility_reweight function:
+    check that vis is updated
+    """
+    grid_data = input_params["grid_data"]
+    vis = input_params["visibility"]
     griddata, _ = grid_visibility_weight_to_griddata(vis, grid_data)
     result = griddata_visibility_reweight(vis, griddata, weighting="natural")
     assert numpy.isclose(
