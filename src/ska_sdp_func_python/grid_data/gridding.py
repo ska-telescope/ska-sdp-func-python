@@ -386,7 +386,7 @@ def griddata_visibility_reweight(
     ], f"Weighting {weighting} not supported"
 
     if weighting == "natural":
-        vis["imaging_weight"].data[...] = vis["weight"].data[...]
+        vis.imaging_weight.data[...] = vis.weight.data[...]
         return vis
 
     real_gd = numpy.real(griddata["pixels"].data)
@@ -404,9 +404,6 @@ def griddata_visibility_reweight(
     fwtt = vis.visibility_acc.flagged_weight.reshape(
         [nrows * nbaselines, nvchan, nvpol]
     ).T
-    if weighting == "natural":
-        vis.imaging_weight.data[...] = vis.weight.data[...]
-        return vis
 
     # All cases preserve the scaling such that a signal point in a grid cell
     # is unaffected. This means that the sensitivity may be calculated from
