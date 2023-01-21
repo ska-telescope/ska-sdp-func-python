@@ -360,7 +360,7 @@ def griddata_merge_weights(gd_list):
 
 
 def griddata_visibility_reweight(
-    vis, griddata, weighting="uniform", robustness=0.0
+    vis, griddata=None, weighting="uniform", robustness=0.0
 ):
     """
     Reweight visibility weight using the weights in griddata.
@@ -373,16 +373,21 @@ def griddata_visibility_reweight(
     :param robustness: Robustness parameter
     :return: Visibility with imaging_weights corrected
     """
-    assert (
-        vis.visibility_acc.polarisation_frame
-        == griddata.griddata_acc.polarisation_frame
-    )
+    if griddata is not None:
+        assert (
+            vis.visibility_acc.polarisation_frame
+            == griddata.griddata_acc.polarisation_frame
+        )
 
     assert weighting in [
         "natural",
         "uniform",
         "robust",
     ], f"Weighting {weighting} not supported"
+
+    if weighting == "natural":
+        vis["imaging_weight"].data[...] = vis["weight"].data[...]
+        return vis
 
     real_gd = numpy.real(griddata["pixels"].data)
 
@@ -407,12 +412,13 @@ def griddata_visibility_reweight(
     # is unaffected. This means that the sensitivity may be calculated from
     # the sum of gridded weights
 
-    sumlocwt = numpy.sum(real_gd**2)
-    sumwt = numpy.sum(vis.visibility_acc.flagged_weight)
-
     if weighting == "robust":
         # Larger +ve robustness tends to natural weighting
         # Larger -ve robustness tends to uniform weighting
+        sumlocwt = numpy.sum(real_gd**2)
+        sumwt = (
+            numpy.sum(vis.visibility_acc.flagged_weight) * 2
+        )  # conjunction with 2 times
         f2 = (5.0 * numpy.power(10.0, -robustness)) ** 2 * sumwt / sumlocwt
 
     for vchan in range(nvchan):
