@@ -7,8 +7,8 @@ from ska_sdp_datamodels.visibility.vis_create import create_visibility
 from ska_sdp_func_python.visibility.operations import (
     concatenate_visibility,
     divide_visibility,
-    subtract_visibility,
     expand_polarizations,
+    subtract_visibility,
 )
 
 
@@ -83,7 +83,6 @@ def test_subtract(visibility):
     assert qa.data["maxabs"] == 9.0
 
 
-
 def test_expand_polarizations():
     """
     Check that visibilities are correclty expanded to 4 polarizations
@@ -95,4 +94,3 @@ def test_expand_polarizations():
         data_in = numpy.zeros([n_channels, n_baselines, n_polarizations])
         data_expanded = expand_polarizations(data_in)
         assert data_expanded.shape == (n_channels, n_baselines, 4)
-
