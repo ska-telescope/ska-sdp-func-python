@@ -52,7 +52,7 @@ def weight_visibility(vis, model, weighting="uniform", robustness=0.0):
     # If weighting is natural, doesn't need to calculate griddata
     if weighting == "natural":
         return griddata_visibility_reweight(
-            vis, weighting=weighting, robustness=robustness
+            vis, None, weighting=weighting, robustness=robustness
         )
 
     griddata = create_griddata_from_image(

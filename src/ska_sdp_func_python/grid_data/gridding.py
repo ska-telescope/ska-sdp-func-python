@@ -360,7 +360,7 @@ def griddata_merge_weights(gd_list):
 
 
 def griddata_visibility_reweight(
-    vis, griddata=None, weighting="uniform", robustness=0.0
+    vis, griddata, weighting="uniform", robustness=0.0
 ):
     """
     Reweight visibility weight using the weights in griddata.
