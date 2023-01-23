@@ -172,7 +172,6 @@ def test_griddata_visibility_reweight_natural(input_params):
     """Unit tests for griddata_visibility_reweight function:
     check that vis is updated
     """
-    grid_data = input_params["grid_data"]
     vis = input_params["visibility"]
     result = griddata_visibility_reweight(vis, None, weighting="natural")
     assert numpy.isclose(
