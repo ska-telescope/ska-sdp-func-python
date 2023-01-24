@@ -1,4 +1,5 @@
 # Changelog
+
 main
 ----
 * Bug fix for calculating weighing with conjugate visibilities ([MR20](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/20))
