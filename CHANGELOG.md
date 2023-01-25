@@ -1,5 +1,9 @@
 # Changelog
 
+main
+----
+* Bug fix for weight_visibility function modified input visibility ([MR23](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/23))
+
 0.1.3
 ----
 * Bug fix for calculating weighing with conjugate visibilities ([MR20](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/20))
