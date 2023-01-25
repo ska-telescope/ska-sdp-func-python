@@ -2,6 +2,7 @@
 
 0.1.3
 ----
+* Bug fix for weight_visibility function modified input visibility ([MR23](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/23))
 * Bug fix for calculating weighing with conjugate visibilities ([MR20](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/20))
 * Add function expand_polarizations, needed to add the option of calibration with DP3 in rascil ([MR22](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/22))
 
