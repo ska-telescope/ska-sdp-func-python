@@ -186,7 +186,7 @@ def grid_visibility_to_griddata(vis, griddata, cf):
             [nrows * nbaselines, nvchan, nvpol]
         ).T
     )
-    fwtt = numpy.nan_to_num(
+    fimwtt = numpy.nan_to_num(
         vis.visibility_acc.flagged_imaging_weight.reshape(
             [nrows * nbaselines, nvchan, nvpol]
         ).T
@@ -241,9 +241,9 @@ def grid_visibility_to_griddata(vis, griddata, cf):
                     (pv_grid[row] - dv) : (pv_grid[row] + dv),
                     (pu_grid[row] - du) : (pu_grid[row] + du),
                 ] += (
-                    subcf * fvist[pol, vchan, row] * fwtt[pol, vchan, row]
+                    subcf * fvist[pol, vchan, row] * fimwtt[pol, vchan, row]
                 )
-                sumwt[imchan, pol] += fwtt[pol, vchan, row]
+                sumwt[imchan, pol] += fimwtt[pol, vchan, row]
             if num_skipped > 0:
                 log.warning(
                     "warning visibility_to_griddata gridding: "
@@ -284,7 +284,7 @@ def grid_visibility_weight_to_griddata(vis, griddata: GridData):
 
     # Note that we are gridding with the imaging_weight, not the weight
     # Transpose to get row varying fastest
-    fwtt = vis.visibility_acc.flagged_imaging_weight.reshape(
+    fwtt = vis.visibility_acc.flagged_weight.reshape(
         [nrows * nbaselines, nvchan, nvpol]
     ).T
 
