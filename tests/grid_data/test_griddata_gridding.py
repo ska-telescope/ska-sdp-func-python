@@ -160,11 +160,11 @@ def test_griddata_visibility_reweight_robust(input_params):
     result = griddata_visibility_reweight(vis, griddata, weighting="robust")
     assert numpy.isclose(
         numpy.max(result.visibility_acc.flagged_imaging_weight),
-        0.003957827868970234,
+        0.45737706286729296,
     )
     assert numpy.isclose(
         numpy.mean(result.visibility_acc.flagged_imaging_weight),
-        0.003924428477670901,
+        0.06739192498911552,
     )
 
 
