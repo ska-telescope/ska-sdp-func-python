@@ -176,7 +176,7 @@ graph = ["objgraph (>=1.7.2)"]
 version = "5.4.0"
 description = "DP3"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [[package]]
@@ -684,7 +684,7 @@ radler = ["radler"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "edac0f5fef27d84c189eaf40e8950fbefcffd29fa6eb9c3de845e645fa220c3f"
+content-hash = "ecd02ad02144c2e45d0ebb1e8fbce32a715cc388b1187de2d4e7a46a564828b8"
 
 [metadata.files]
 astroid = [
