@@ -11,6 +11,7 @@ __all__ = [
 ]
 
 import logging
+import random
 
 import dp3
 import dp3.steps
@@ -308,7 +309,9 @@ def create_parset_from_context(vis, calibration_context, global_solution):
     controls = create_calibration_controls()
     for c in calibration_context:
         parset = dp3.parameterset.ParameterSet()
-        parset.add("gaincal.parmdb", "gaincal_solutions.h5")
+
+        num = random.random()
+        parset.add("gaincal.parmdb", "gaincal_solutions" + str(num) + ".h5")
         parset.add("gaincal.sourcedb", "test.skymodel")
         timeslice = controls[c]["timeslice"]
         if timeslice == "auto" or timeslice is None or timeslice <= 0.0:
