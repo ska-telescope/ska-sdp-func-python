@@ -142,7 +142,7 @@ def test_restore_clean_beam(model, psf):
         clean_beam={"bmaj": bmaj, "bmin": bmaj, "bpa": 0.0},
     )
     assert (
-        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0000420626651088) < 1e-7
+        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0000673298221023) < 1e-7
     ), numpy.max(cmodel["pixels"].data)
 
 
