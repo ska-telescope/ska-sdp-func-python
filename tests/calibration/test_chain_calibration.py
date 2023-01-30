@@ -223,75 +223,103 @@ class TestCalibrationChain(unittest.TestCase):
 
     def test_dp3_gaincal(self):
         """
-        Test that DP3 calibration runs without throwing exception
+        Test that DP3 calibration runs without throwing exception.
+        Only run this test if DP3 is available.
         """
-        self.actualSetup()
 
-        export_skymodel_to_text(
-            SkyModel(components=self.comp), "test.skymodel"
-        )
+        is_dp3_available = True
+        try:
+            import dp3  # pylint: disable=import-error
+        except ImportError:
+            log.info("DP3 module not available. Test is skipped.")
+            is_dp3_available = False
 
-        # Check that the call is successful
-        dp3_gaincal(self.vis, ["T"], True)
+        if is_dp3_available:
+
+            self.actualSetup()
+
+            export_skymodel_to_text(
+                SkyModel(components=self.comp), "test.skymodel"
+            )
+
+            # Check that the call is successful
+            dp3_gaincal(self.vis, ["T"], True)
 
     def test_create_parset_from_context(self):
         """
-        Test that the correct parset is created based on the calibration context
+        Test that the correct parset is created based on the calibration context.
+        Only run this test if DP3 is available.
         """
-        self.actualSetup()
 
-        calibration_context_list = []
-        calibration_context_list.append("T")
-        calibration_context_list.append("G")
-        calibration_context_list.append("B")
+        is_dp3_available = True
+        try:
+            import dp3  # pylint: disable=import-error
+        except ImportError:
+            log.info("DP3 module not available. Test is skipped.")
+            is_dp3_available = False
 
-        global_solution = True
+        if is_dp3_available:
 
-        parset_list = create_parset_from_context(
-            self.vis, calibration_context_list, global_solution
-        )
+            self.actualSetup()
 
-        assert len(parset_list) == len(calibration_context_list)
+            calibration_context_list = []
+            calibration_context_list.append("T")
+            calibration_context_list.append("G")
+            calibration_context_list.append("B")
 
-        for i in numpy.arange(len(calibration_context_list)):
+            global_solution = True
 
-            assert parset_list[i].get_string("gaincal.nchan") == "0"
-            if calibration_context_list[i] == "T":
-                assert (
-                    parset_list[i].get_string("gaincal.caltype")
-                    == "scalarphase"
-                )
-                assert parset_list[i].get_string("gaincal.solint") == "1"
-            elif calibration_context_list[i] == "G":
-                assert parset_list[i].get_string("gaincal.caltype") == "scalar"
-                nbins = max(
-                    1,
-                    numpy.ceil(
-                        (
-                            numpy.max(self.vis.time.data)
-                            - numpy.min(self.vis.time.data)
-                        )
-                        / 60.0
-                    ).astype("int"),
-                )
-                assert parset_list[i].get_string("gaincal.solint") == str(
-                    nbins
-                )
-            elif calibration_context_list[i] == "B":
-                assert parset_list[i].get_string("gaincal.caltype") == "scalar"
-                nbins = max(
-                    1,
-                    numpy.ceil(
-                        (
-                            numpy.max(self.vis.time.data)
-                            - numpy.min(self.vis.time.data)
-                        )
-                        / 1e5
-                    ).astype("int"),
-                )
-                assert parset_list[i].get_string("gaincal.solint") == str(
-                    nbins
-                )
+            parset_list = create_parset_from_context(
+                self.vis, calibration_context_list, global_solution
+            )
+
+            assert len(parset_list) == len(calibration_context_list)
+
+            for i in numpy.arange(len(calibration_context_list)):
+
+                assert parset_list[i].get_string("gaincal.nchan") == "0"
+                if calibration_context_list[i] == "T":
+                    assert (
+                        parset_list[i].get_string("gaincal.caltype")
+                        == "scalarphase"
+                    )
+                    assert parset_list[i].get_string("gaincal.solint") == "1"
+                elif calibration_context_list[i] == "G":
+                    assert (
+                        parset_list[i].get_string("gaincal.caltype")
+                        == "scalar"
+                    )
+                    nbins = max(
+                        1,
+                        numpy.ceil(
+                            (
+                                numpy.max(self.vis.time.data)
+                                - numpy.min(self.vis.time.data)
+                            )
+                            / 60.0
+                        ).astype("int"),
+                    )
+                    assert parset_list[i].get_string("gaincal.solint") == str(
+                        nbins
+                    )
+                elif calibration_context_list[i] == "B":
+                    assert (
+                        parset_list[i].get_string("gaincal.caltype")
+                        == "scalar"
+                    )
+                    nbins = max(
+                        1,
+                        numpy.ceil(
+                            (
+                                numpy.max(self.vis.time.data)
+                                - numpy.min(self.vis.time.data)
+                            )
+                            / 1e5
+                        ).astype("int"),
+                    )
+                    assert parset_list[i].get_string("gaincal.solint") == str(
+                        nbins
+                    )
 
 
 if __name__ == "__main__":
