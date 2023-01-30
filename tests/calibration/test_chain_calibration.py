@@ -25,6 +25,7 @@ from ska_sdp_datamodels.visibility import create_visibility
 from ska_sdp_func_python.calibration.chain_calibration import (
     calibrate_chain,
     create_calibration_controls,
+    create_parset_from_context,
     dp3_gaincal,
 )
 from ska_sdp_func_python.calibration.operations import apply_gaintable
@@ -222,8 +223,7 @@ class TestCalibrationChain(unittest.TestCase):
 
     def test_dp3_gaincal(self):
         """
-        Test solve_gaintable for phase solution only (with phase_errors),
-        for different polarisation frames.
+        Test that DP3 calibration runs without throwing exception
         """
         self.actualSetup()
 
@@ -233,6 +233,65 @@ class TestCalibrationChain(unittest.TestCase):
 
         # Check that the call is successful
         dp3_gaincal(self.vis, ["T"], True)
+
+    def test_create_parset_from_context(self):
+        """
+        Test that the correct parset is created based on the calibration context
+        """
+        self.actualSetup()
+
+        calibration_context_list = []
+        calibration_context_list.append("T")
+        calibration_context_list.append("G")
+        calibration_context_list.append("B")
+
+        global_solution = True
+
+        parset_list = create_parset_from_context(
+            self.vis, calibration_context_list, global_solution
+        )
+
+        assert len(parset_list) == len(calibration_context_list)
+
+        for i in numpy.arange(len(calibration_context_list)):
+
+            assert parset_list[i].get_string("gaincal.nchan") == "0"
+            if calibration_context_list[i] == "T":
+                assert (
+                    parset_list[i].get_string("gaincal.caltype")
+                    == "scalarphase"
+                )
+                assert parset_list[i].get_string("gaincal.solint") == "1"
+            elif calibration_context_list[i] == "G":
+                assert parset_list[i].get_string("gaincal.caltype") == "scalar"
+                nbins = max(
+                    1,
+                    numpy.ceil(
+                        (
+                            numpy.max(self.vis.time.data)
+                            - numpy.min(self.vis.time.data)
+                        )
+                        / 60.0
+                    ).astype("int"),
+                )
+                assert parset_list[i].get_string("gaincal.solint") == str(
+                    nbins
+                )
+            elif calibration_context_list[i] == "B":
+                assert parset_list[i].get_string("gaincal.caltype") == "scalar"
+                nbins = max(
+                    1,
+                    numpy.ceil(
+                        (
+                            numpy.max(self.vis.time.data)
+                            - numpy.min(self.vis.time.data)
+                        )
+                        / 1e5
+                    ).astype("int"),
+                )
+                assert parset_list[i].get_string("gaincal.solint") == str(
+                    nbins
+                )
 
 
 if __name__ == "__main__":
