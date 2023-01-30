@@ -7,6 +7,7 @@ __all__ = [
     "apply_calibration_chain",
     "calibrate_chain",
     "create_calibration_controls",
+    "dp3_gaincal",
     "solve_calibrate_chain",
 ]
 
@@ -295,7 +296,12 @@ def solve_calibrate_chain(
     return gaintables
 
 
-def create_parset_from_context(vis, calibration_context, global_solution):
+def create_parset_from_context(
+    vis,
+    calibration_context,
+    global_solution,
+    skymodel_filename="test.skymodel",
+):
     """Defines input parset for DP3 based on calibration context.
 
     :param calibration_context: String giving terms to be calibrated e.g. 'TGB'
@@ -312,7 +318,7 @@ def create_parset_from_context(vis, calibration_context, global_solution):
 
         num = random.random()
         parset.add("gaincal.parmdb", "gaincal_solutions" + str(num) + ".h5")
-        parset.add("gaincal.sourcedb", "test.skymodel")
+        parset.add("gaincal.sourcedb", skymodel_filename)
         timeslice = controls[c]["timeslice"]
         if timeslice == "auto" or timeslice is None or timeslice <= 0.0:
             parset.add("gaincal.solint", "1")
