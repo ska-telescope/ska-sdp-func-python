@@ -18,21 +18,22 @@ from ska_sdp_datamodels.configuration import create_named_configuration
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
+from ska_sdp_datamodels.sky_model.sky_functions import export_skymodel_to_text
+from ska_sdp_datamodels.sky_model.sky_model import SkyComponent, SkyModel
 from ska_sdp_datamodels.visibility import create_visibility
 
 from ska_sdp_func_python.calibration.chain_calibration import (
     calibrate_chain,
     create_calibration_controls,
+    dp3_gaincal,
 )
 from ska_sdp_func_python.calibration.operations import apply_gaintable
+from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 
-# from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
-
-pytestmark = pytest.skip(
-    allow_module_level=True,
-    reason="not able importing ska-sdp-func in dft_skycomponent_visibility",
-)
+# pytestmark = pytest.skip(
+#     allow_module_level=True,
+#     reason="not able importing ska-sdp-func in dft_skycomponent_visibility",
+# )
 log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
@@ -218,6 +219,20 @@ class TestCalibrationChain(unittest.TestCase):
         )
         residual = numpy.max(gaintables["B"].residual)
         assert residual < 1e-6, "Max B residual = %s" % residual
+
+    def test_dp3_gaincal(self):
+        """
+        Test solve_gaintable for phase solution only (with phase_errors),
+        for different polarisation frames.
+        """
+        self.actualSetup()
+
+        export_skymodel_to_text(
+            SkyModel(components=self.comp), "test.skymodel"
+        )
+
+        # Check that the call is successful
+        dp3_gaincal(self.vis, ["T"], True)
 
 
 if __name__ == "__main__":
