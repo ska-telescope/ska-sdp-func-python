@@ -173,6 +173,12 @@ python-versions = ">=3.7"
 [package.extras]
 graph = ["objgraph (>=1.7.2)"]
 
+version = "5.4.0"
+description = "DP3"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
 [[package]]
 name = "ducc0"
 version = "0.27.0"
