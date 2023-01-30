@@ -12,6 +12,8 @@ __all__ = [
 
 import logging
 
+import dp3
+import dp3.steps
 import numpy
 from ska_sdp_datamodels.calibration.calibration_create import (
     create_gaintable_from_visibility,
@@ -302,8 +304,6 @@ def create_parset_from_context(vis, calibration_context, global_solution):
     :return: list of parsets for the different calibrations to run
     """
 
-    import dp3
-
     parset_list = []
     controls = create_calibration_controls()
     for c in calibration_context:
@@ -351,8 +351,6 @@ def dp3_gaincal(vis, calibration_context, global_solution):
     :param global_solution: Solve for global gains
     :return: calibrated visibilities
     """
-
-    import dp3.steps
 
     calibrated_vis = vis.copy(deep=True)
 
