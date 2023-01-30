@@ -31,10 +31,10 @@ from ska_sdp_func_python.calibration.chain_calibration import (
 from ska_sdp_func_python.calibration.operations import apply_gaintable
 from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 
-# pytestmark = pytest.skip(
-#     allow_module_level=True,
-#     reason="not able importing ska-sdp-func in dft_skycomponent_visibility",
-# )
+pytestmark = pytest.skip(
+    allow_module_level=True,
+    reason="not able importing ska-sdp-func in dft_skycomponent_visibility",
+)
 log = logging.getLogger("func-python-logger")
 
 log.setLevel(logging.WARNING)
