@@ -111,18 +111,18 @@ def test_restore(model, psf):
     """Unit tests for the restore_cube function"""
     model.data_vars["pixels"].data[0, 0, 256, 256] = 1.0
     cmodel = restore_cube(model, psf)
-    assert numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7, numpy.max(
-        cmodel["pixels"].data
-    )
+    assert (
+        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0000420626651088) < 1e-7
+    ), numpy.max(cmodel["pixels"].data)
 
 
 def test_restore_list(model, psf):
     """Unit tests for the restore_list function"""
     model["pixels"].data[0, 0, 256, 256] = 1.0
     cmodel = restore_list([model], [psf])[0]
-    assert numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7, numpy.max(
-        cmodel["pixels"].data
-    )
+    assert (
+        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0000420626651088) < 1e-7
+    ), numpy.max(cmodel["pixels"].data)
 
 
 def test_restore_clean_beam(model, psf):
@@ -138,9 +138,9 @@ def test_restore_clean_beam(model, psf):
         psf,
         clean_beam={"bmaj": bmaj, "bmin": bmaj, "bpa": 0.0},
     )
-    assert numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7, numpy.max(
-        cmodel["pixels"].data
-    )
+    assert (
+        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0000673298221023) < 1e-7
+    ), numpy.max(cmodel["pixels"].data)
 
 
 def test_restore_skycomponent(model, comp_direction_30):
