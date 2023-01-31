@@ -107,9 +107,6 @@ def test_overlap():
     assert s2 == (0, 63, 0, 100)
 
 
-# astropy.convolution.Gaussian2DKernel was updated in astropy >5.2
-# (https://github.com/astropy/astropy/blob/main/CHANGES.rst#astropyconvolution-1)
-# So for all the restore image tests, there is a round-up change of results
 def test_restore(model, psf):
     """Unit tests for the restore_cube function"""
     model.data_vars["pixels"].data[0, 0, 256, 256] = 1.0
