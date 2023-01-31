@@ -39,12 +39,12 @@ def create_parset_from_context(
 
     parset_list = []
     controls = create_calibration_controls()
-    for c in calibration_context:
+    for calibration_control in calibration_context:
         parset = ParameterSet()
 
         parset.add("gaincal.parmdb", "gaincal_solutions")
         parset.add("gaincal.sourcedb", skymodel_filename)
-        timeslice = controls[c]["timeslice"]
+        timeslice = controls[calibration_control]["timeslice"]
         if timeslice == "auto" or timeslice is None or timeslice <= 0.0:
             parset.add("gaincal.solint", "1")
         else:
@@ -62,13 +62,13 @@ def create_parset_from_context(
             parset.add("gaincal.nchan", "1")
         parset.add("gaincal.applysolution", "true")
 
-        if controls[c]["phase_only"]:
-            if controls[c]["shape"] == "matrix":
+        if controls[calibration_control]["phase_only"]:
+            if controls[calibration_control]["shape"] == "matrix":
                 parset.add("gaincal.caltype", "diagonalphase")
             else:
                 parset.add("gaincal.caltype", "scalarphase")
         else:
-            if controls[c]["shape"] == "matrix":
+            if controls[calibration_control]["shape"] == "matrix":
                 parset.add("gaincal.caltype", "diagonal")
             else:
                 parset.add("gaincal.caltype", "scalar")
