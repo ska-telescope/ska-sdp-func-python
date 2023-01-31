@@ -32,7 +32,7 @@ def create_parset_from_context(
     :return: list of parsets for the different calibrations to run
     """
 
-    from dp3.parameterset import (  # pylint: disable=import-outside-toplevel
+    from dp3.parameterset import (  # noqa: E501 # pylint: disable=import-error,import-outside-toplevel
         ParameterSet,
     )
 
@@ -90,7 +90,7 @@ def dp3_gaincal(
     :return: calibrated visibilities
     """
 
-    from dp3 import (  # noqa: E501 # pylint:disable=no-name-in-module,import-outside-toplevel
+    from dp3 import (  # noqa: E501 # pylint:disable=no-name-in-module,import-error,import-outside-toplevel
         DPBuffer,
         DPInfo,
         MsType,
