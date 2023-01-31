@@ -1,6 +1,5 @@
 """
-Functions to solve for and apply chains of antenna/station gain tables.
-See documentation for further information.
+Functions to use DP3 for calibration purposes.
 """
 
 __all__ = [
@@ -27,8 +26,10 @@ def create_parset_from_context(
 ):
     """Defines input parset for DP3 based on calibration context.
 
+    :param vis: Visibility object
     :param calibration_context: String giving terms to be calibrated e.g. 'TGB'
-    :param global_solution: Solve for global gains
+    :param global_solution: Find a single solution over all frequency channels
+    :param skymodel_filename: Filename of the skymodel used by DP3
     :return: list of parsets for the different calibrations to run
     """
 
@@ -84,9 +85,10 @@ def dp3_gaincal(
 ):
     """Calibrates visibilities using the DP3 package.
 
-    :param vis: visibilities (or graph)
+    :param vis: Visibility object (or graph)
     :param calibration_context: String giving terms to be calibrated e.g. 'TGB'
     :param global_solution: Solve for global gains
+    :param skymodel_filename: Filename of the skymodel used by DP3
     :return: calibrated visibilities
     """
 

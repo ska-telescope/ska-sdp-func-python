@@ -24,12 +24,13 @@ log = logging.getLogger("func-python-logger")
 
 @pytest.fixture(autouse=True)
 def check_dp3_availability():
+    """Check if DP3 is available. If not, the tests in this file are skipped"""
     dp3_loader = importlib.util.find_spec("dp3")
     if dp3_loader is None:
         pytest.skip()
 
 
-@pytest.fixture
+@pytest.fixture(name="create_skycomponent")
 def skycomponent():
     """Create a skycomponent to use for testing"""
     sky_pol_frame = "stokesIQUV"
@@ -55,13 +56,15 @@ def skycomponent():
     return comp
 
 
-def test_dp3_gaincal(skycomponent, visibility):
+def test_dp3_gaincal(create_skycomponent, visibility):
     """
     Test that DP3 calibration runs without throwing exception.
     Only run this test if DP3 is available.
     """
 
-    export_skymodel_to_text(SkyModel(components=skycomponent), "test.skymodel")
+    export_skymodel_to_text(
+        SkyModel(components=create_skycomponent), "test.skymodel"
+    )
 
     # Check that the call is successful
     dp3_gaincal(visibility, ["T"], True)
