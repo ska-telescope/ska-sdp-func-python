@@ -8,7 +8,6 @@ __all__ = [
 ]
 
 import logging
-import random
 
 import numpy
 
@@ -24,7 +23,7 @@ def create_parset_from_context(
     vis,
     calibration_context,
     global_solution,
-    skymodel_filename="test.skymodel",
+    skymodel_filename,
 ):
     """Defines input parset for DP3 based on calibration context.
 
@@ -42,8 +41,7 @@ def create_parset_from_context(
     for c in calibration_context:
         parset = ParameterSet()
 
-        num = random.random()
-        parset.add("gaincal.parmdb", "gaincal_solutions" + str(num) + ".h5")
+        parset.add("gaincal.parmdb", "gaincal_solutions")
         parset.add("gaincal.sourcedb", skymodel_filename)
         timeslice = controls[c]["timeslice"]
         if timeslice == "auto" or timeslice is None or timeslice <= 0.0:
@@ -78,7 +76,12 @@ def create_parset_from_context(
     return parset_list
 
 
-def dp3_gaincal(vis, calibration_context, global_solution):
+def dp3_gaincal(
+    vis,
+    calibration_context,
+    global_solution,
+    skymodel_filename="test.skymodel",
+):
     """Calibrates visibilities using the DP3 package.
 
     :param vis: visibilities (or graph)
@@ -98,7 +101,7 @@ def dp3_gaincal(vis, calibration_context, global_solution):
     calibrated_vis = vis.copy(deep=True)
 
     parset_list = create_parset_from_context(
-        calibrated_vis, calibration_context, global_solution
+        calibrated_vis, calibration_context, global_solution, skymodel_filename
     )
 
     for parset in parset_list:
