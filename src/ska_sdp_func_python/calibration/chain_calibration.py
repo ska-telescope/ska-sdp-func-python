@@ -11,7 +11,6 @@ __all__ = [
 ]
 
 import logging
-import random
 
 import numpy
 from ska_sdp_datamodels.calibration.calibration_create import (
@@ -20,7 +19,6 @@ from ska_sdp_datamodels.calibration.calibration_create import (
 
 from ska_sdp_func_python.calibration.operations import apply_gaintable
 from ska_sdp_func_python.calibration.solvers import solve_gaintable
-from ska_sdp_func_python.visibility.operations import expand_polarizations
 
 log = logging.getLogger("func-python-logger")
 
