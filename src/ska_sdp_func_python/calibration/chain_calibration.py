@@ -309,12 +309,12 @@ def create_parset_from_context(
     :return: list of parsets for the different calibrations to run
     """
 
-    import dp3  # pylint: disable=import-error,import-outside-toplevel
+    from dp3.parameterset import ParameterSet
 
     parset_list = []
     controls = create_calibration_controls()
     for c in calibration_context:
-        parset = dp3.parameterset.ParameterSet()
+        parset = ParameterSet()
 
         num = random.random()
         parset.add("gaincal.parmdb", "gaincal_solutions" + str(num) + ".h5")
@@ -361,7 +361,13 @@ def dp3_gaincal(vis, calibration_context, global_solution):
     :return: calibrated visibilities
     """
 
-    import dp3.steps  # pylint: disable=import-error,import-outside-toplevel
+    from dp3 import (  # pylint: disable=no-name-in-module
+        DPBuffer,
+        DPInfo,
+        MsType,
+        make_step,
+        steps,
+    )
 
     calibrated_vis = vis.copy(deep=True)
 
@@ -370,18 +376,18 @@ def dp3_gaincal(vis, calibration_context, global_solution):
     )
 
     for parset in parset_list:
-        gaincal_step = dp3.make_step(  # pylint: disable=no-member
+        gaincal_step = make_step(
             "gaincal",
             parset,
             "gaincal.",
-            dp3.MsType.regular,  # pylint: disable=no-member
+            MsType.regular,
         )
-        queue_step = dp3.steps.QueueOutput(parset, "")
+        queue_step = steps.QueueOutput(parset, "")
         gaincal_step.set_next_step(queue_step)
 
         # DP3 GainCal step assumes 4 polarization are present in the visibility
         nr_correlations = 4
-        dpinfo = dp3.DPInfo(nr_correlations)  # pylint: disable=no-member
+        dpinfo = DPInfo(nr_correlations)
         dpinfo.set_channels(vis.frequency.data, vis.channel_bandwidth.data)
 
         antenna1 = vis.antenna1.data
@@ -405,7 +411,7 @@ def dp3_gaincal(vis, calibration_context, global_solution):
         queue_step.set_info(dpinfo)
         for time, vis_per_timeslot in calibrated_vis.groupby("time"):
             # Run DP3 GainCal step over each time step
-            dpbuffer = dp3.DPBuffer()  # pylint: disable=no-member
+            dpbuffer = DPBuffer()
             dpbuffer.set_time(time)
             dpbuffer.set_data(
                 expand_polarizations(
