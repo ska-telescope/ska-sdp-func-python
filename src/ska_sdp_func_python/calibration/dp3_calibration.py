@@ -33,8 +33,8 @@ def create_parset_from_context(
     :return: list of parsets for the different calibrations to run
     """
 
-    from dp3.parameterset import (
-        ParameterSet,  # pylint: disable=import-outside-toplevel
+    from dp3.parameterset import (  # pylint: disable=import-outside-toplevel
+        ParameterSet,
     )
 
     parset_list = []
