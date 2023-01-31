@@ -370,18 +370,18 @@ def dp3_gaincal(vis, calibration_context, global_solution):
     )
 
     for parset in parset_list:
-        gaincal_step = dp3.make_step(  # pylint: disable=E1101
+        gaincal_step = dp3.make_step(  # pylint: disable=no-member
             "gaincal",
             parset,
             "gaincal.",
-            dp3.MsType.regular,  # pylint: disable=E1101
+            dp3.MsType.regular,  # pylint: disable=no-member
         )
         queue_step = dp3.steps.QueueOutput(parset, "")
         gaincal_step.set_next_step(queue_step)
 
         # DP3 GainCal step assumes 4 polarization are present in the visibility
         nr_correlations = 4
-        dpinfo = dp3.DPInfo(nr_correlations)  # pylint: disable=E1101
+        dpinfo = dp3.DPInfo(nr_correlations)  # pylint: disable=no-member
         dpinfo.set_channels(vis.frequency.data, vis.channel_bandwidth.data)
 
         antenna1 = vis.antenna1.data
@@ -405,7 +405,7 @@ def dp3_gaincal(vis, calibration_context, global_solution):
         queue_step.set_info(dpinfo)
         for time, vis_per_timeslot in calibrated_vis.groupby("time"):
             # Run DP3 GainCal step over each time step
-            dpbuffer = dp3.DPBuffer()  # pylint: disable=E1101
+            dpbuffer = dp3.DPBuffer()  # pylint: disable=no-member
             dpbuffer.set_time(time)
             dpbuffer.set_data(
                 expand_polarizations(
