@@ -1,8 +1,7 @@
-# pylint: skip-file
-# flake8: noqa
 """
 Unit tests for dp3 calibration
 """
+import importlib
 import logging
 
 import astropy.units as u
@@ -21,6 +20,13 @@ from ska_sdp_func_python.calibration.dp3_calibration import (
 )
 
 log = logging.getLogger("func-python-logger")
+
+
+@pytest.fixture(autouse=True)
+def check_dp3_availability():
+    dp3_loader = importlib.util.find_spec("dp3")
+    if dp3_loader is None:
+        pytest.skip()
 
 
 @pytest.fixture
@@ -55,21 +61,10 @@ def test_dp3_gaincal(skycomponent, visibility):
     Only run this test if DP3 is available.
     """
 
-    is_dp3_available = True
-    try:
-        import dp3  # pylint: disable=import-error
-    except ImportError:
-        log.info("DP3 module not available. Test is skipped.")
-        is_dp3_available = False
+    export_skymodel_to_text(SkyModel(components=skycomponent), "test.skymodel")
 
-    if is_dp3_available:
-
-        export_skymodel_to_text(
-            SkyModel(components=skycomponent), "test.skymodel"
-        )
-
-        # Check that the call is successful
-        dp3_gaincal(visibility, ["T"], True)
+    # Check that the call is successful
+    dp3_gaincal(visibility, ["T"], True)
 
 
 def test_create_parset_from_context(visibility):
@@ -78,67 +73,53 @@ def test_create_parset_from_context(visibility):
     Only run this test if DP3 is available.
     """
 
-    is_dp3_available = True
-    try:
-        import dp3  # pylint: disable=import-error
-    except ImportError:
-        log.info("DP3 module not available. Test is skipped.")
-        is_dp3_available = False
+    calibration_context_list = []
+    calibration_context_list.append("T")
+    calibration_context_list.append("G")
+    calibration_context_list.append("B")
 
-    if is_dp3_available:
+    global_solution = True
 
-        calibration_context_list = []
-        calibration_context_list.append("T")
-        calibration_context_list.append("G")
-        calibration_context_list.append("B")
+    parset_list = create_parset_from_context(
+        visibility,
+        calibration_context_list,
+        global_solution,
+        "test.skymodel",
+    )
 
-        global_solution = True
+    assert len(parset_list) == len(calibration_context_list)
 
-        parset_list = create_parset_from_context(
-            visibility,
-            calibration_context_list,
-            global_solution,
-            "test.skymodel",
-        )
+    for i in numpy.arange(len(calibration_context_list)):
 
-        assert len(parset_list) == len(calibration_context_list)
-
-        for i in numpy.arange(len(calibration_context_list)):
-
-            assert parset_list[i].get_string("gaincal.nchan") == "0"
-            if calibration_context_list[i] == "T":
-                assert (
-                    parset_list[i].get_string("gaincal.caltype")
-                    == "scalarphase"
-                )
-                assert parset_list[i].get_string("gaincal.solint") == "1"
-            elif calibration_context_list[i] == "G":
-                assert parset_list[i].get_string("gaincal.caltype") == "scalar"
-                nbins = max(
-                    1,
-                    numpy.ceil(
-                        (
-                            numpy.max(visibility.time.data)
-                            - numpy.min(visibility.time.data)
-                        )
-                        / 60.0
-                    ).astype("int"),
-                )
-                assert parset_list[i].get_string("gaincal.solint") == str(
-                    nbins
-                )
-            elif calibration_context_list[i] == "B":
-                assert parset_list[i].get_string("gaincal.caltype") == "scalar"
-                nbins = max(
-                    1,
-                    numpy.ceil(
-                        (
-                            numpy.max(visibility.time.data)
-                            - numpy.min(visibility.time.data)
-                        )
-                        / 1e5
-                    ).astype("int"),
-                )
-                assert parset_list[i].get_string("gaincal.solint") == str(
-                    nbins
-                )
+        assert parset_list[i].get_string("gaincal.nchan") == "0"
+        if calibration_context_list[i] == "T":
+            assert (
+                parset_list[i].get_string("gaincal.caltype") == "scalarphase"
+            )
+            assert parset_list[i].get_string("gaincal.solint") == "1"
+        elif calibration_context_list[i] == "G":
+            assert parset_list[i].get_string("gaincal.caltype") == "scalar"
+            nbins = max(
+                1,
+                numpy.ceil(
+                    (
+                        numpy.max(visibility.time.data)
+                        - numpy.min(visibility.time.data)
+                    )
+                    / 60.0
+                ).astype("int"),
+            )
+            assert parset_list[i].get_string("gaincal.solint") == str(nbins)
+        elif calibration_context_list[i] == "B":
+            assert parset_list[i].get_string("gaincal.caltype") == "scalar"
+            nbins = max(
+                1,
+                numpy.ceil(
+                    (
+                        numpy.max(visibility.time.data)
+                        - numpy.min(visibility.time.data)
+                    )
+                    / 1e5
+                ).astype("int"),
+            )
+            assert parset_list[i].get_string("gaincal.solint") == str(nbins)
