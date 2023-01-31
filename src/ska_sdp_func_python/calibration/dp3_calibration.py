@@ -100,6 +100,7 @@ def dp3_gaincal(
         steps,
     )
 
+    log.info("Started computing dp3_gaincal")
     calibrated_vis = vis.copy(deep=True)
 
     parset_list = create_parset_from_context(
@@ -183,5 +184,6 @@ def dp3_gaincal(
                 ) / 2
 
         assert queue_step.queue.empty()
+        log.info("Finished computing dp3_gaincal")
 
     return calibrated_vis
