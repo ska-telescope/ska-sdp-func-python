@@ -76,7 +76,7 @@ For example::
 
 It is also possible to run  `DP3 Gaincal step <https://dp3.readthedocs.io/>` 
 with :py:func:`sks_sdp_func_python.calibration.dp3_calibration.dp3_gaincal`:
-The skymodel needs to be converted in a text foprmat prior to the calibration.
+The skymodel needs to be converted in a text format prior to the calibration.
 
 For example::
 
