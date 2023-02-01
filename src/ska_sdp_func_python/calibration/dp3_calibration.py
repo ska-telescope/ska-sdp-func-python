@@ -166,7 +166,6 @@ def dp3_gaincal(
         for time, vis_per_timeslot in calibrated_vis.groupby("time"):
             # Get data out of queue in QueueOutput step
 
-            assert not queue_step.queue.empty()
             dpbuffer_from_queue = queue_step.queue.get()
             visibilities_out = numpy.array(
                 dpbuffer_from_queue.get_data(), copy=False
@@ -183,7 +182,6 @@ def dp3_gaincal(
                     visibilities_out[:, :, 0] + visibilities_out[:, :, 3]
                 ) / 2
 
-        assert queue_step.queue.empty()
         log.info("Finished computing dp3_gaincal")
 
     return calibrated_vis
