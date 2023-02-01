@@ -1,6 +1,6 @@
 [[package]]
 name = "astroid"
-version = "2.13.3"
+version = "2.14.1"
 description = "An abstract syntax tree for Python with inference support."
 category = "dev"
 optional = false
@@ -437,14 +437,14 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "pylint"
-version = "2.15.10"
+version = "2.16.0"
 description = "python code static checker"
 category = "dev"
 optional = false
 python-versions = ">=3.7.2"
 
 [package.dependencies]
-astroid = ">=2.12.13,<=2.14.0-dev0"
+astroid = ">=2.14.1,<=2.16.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = [
     {version = ">=0.2", markers = "python_version < \"3.11\""},
@@ -666,6 +666,7 @@ parallel = ["dask"]
 viz = ["matplotlib", "seaborn", "nc-time-axis"]
 
 [extras]
+dp3 = ["dp3"]
 fft_support = ["pyfftw"]
 gpu = ["cupy"]
 radler = ["radler"]
@@ -673,7 +674,7 @@ radler = ["radler"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "ea7404fb6e76f35ca16dfbd87a2dedb74b7dc9c784d24ab20c0759487095c73b"
+content-hash = "5d47683be8d5be632e467742cbe60679099a1f6f4012d7234df79c7d40287611"
 
 [metadata.files]
 astroid = []
