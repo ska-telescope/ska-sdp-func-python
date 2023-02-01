@@ -2,7 +2,6 @@
 Unit tests for dp3 calibration
 """
 import importlib
-import logging
 
 import astropy.units as u
 import numpy
@@ -19,15 +18,13 @@ from ska_sdp_func_python.calibration.dp3_calibration import (
     dp3_gaincal,
 )
 
-log = logging.getLogger("func-python-logger")
-
 
 @pytest.fixture(autouse=True)
 def check_dp3_availability():
     """Check if DP3 is available. If not, the tests in this file are skipped"""
     dp3_loader = importlib.util.find_spec("dp3")
     if dp3_loader is None:
-        pytest.skip()
+        pytest.skip("DP3 not available")
 
 
 @pytest.fixture(name="create_skycomponent")
