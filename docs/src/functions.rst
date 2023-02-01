@@ -35,6 +35,8 @@ Calibration
 -----------
 
 * Calibrate using an algorithm: :py:func:`sks_sdp_func_python.calibration.chain_calibration.calibrate_chain`
+* Calibrate using `DP3 <https://git.astron.nl/RD/DP3>`_ gaincal with applycal set to true: 
+  :py:func:`sks_sdp_func_python.calibration.dp3_calibration.dp3_gaincal`
 * Apply a Jones matrix (or inverse): :py:func:`ska_sdp_func_python.calibration.jones.apply_jones`
 * Apply a GainTable to a Visibility: :py:func:`ska_sdp_func_python.calibration.operations.apply_gaintable`
 * Concatenate a list of GainTables: :py:func:`ska_sdp_func_python.calibration.operations.concatenate_gaintables`
