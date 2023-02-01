@@ -74,6 +74,15 @@ For example::
             phase_only=True, niter=niter, crosspol=False, tol=1e-6)
     vis = apply_gaintable(vis, gtsol, inverse=True)
 
+It is also possible to run  `DP3 Gaincal step <https://dp3.readthedocs.io/>` 
+with :py:func:`sks_sdp_func_python.calibration.dp3_calibration.dp3_gaincal`:
+The skymodel needs to be converted in a text foprmat prior to the calibration.
+
+For example::
+
+    export_skymodel_to_text(SkyModel(sky_components), "dp3.skymodel")
+    dp3_gaincal(visibility, ["T"], True, "dp3.skymodel")
+
 Fourier Transforms
 ------------------
 
