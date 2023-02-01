@@ -34,6 +34,7 @@ DP3 = {version = "^5.4.0", optional = true}
 fft_support = ["pyfftw"]
 gpu = ["cupy"]
 radler = ["radler"]
+dp3 = ["DP3"]
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
