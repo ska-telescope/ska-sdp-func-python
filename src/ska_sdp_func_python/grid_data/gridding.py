@@ -321,7 +321,7 @@ def grid_visibility_weight_to_griddata(vis, griddata: GridData):
                     imchan, pol, pv_grid_conjugate[row], pu_grid_conjugate[row]
                 ] += fwtt[pol, vchan, row]
 
-                sumwt[imchan, pol] += fwtt[pol, vchan, row]
+                sumwt[imchan, pol] += fwtt[pol, vchan, row] * 2
             if num_skipped > 0:
                 log.warning(
                     "warning visibility_weight_to_griddata gridding: "
@@ -360,7 +360,7 @@ def griddata_merge_weights(gd_list):
 
 
 def griddata_visibility_reweight(
-    vis, griddata, weighting="uniform", robustness=0.0
+    vis, griddata, weighting="uniform", robustness=0.0, sumwt=None
 ):
     """
     Reweight visibility weight using the weights in griddata.
@@ -413,9 +413,10 @@ def griddata_visibility_reweight(
         # Larger +ve robustness tends to natural weighting
         # Larger -ve robustness tends to uniform weighting
         sumlocwt = numpy.sum(real_gd**2)
-        sumwt = (
-            numpy.sum(vis.visibility_acc.flagged_weight) * 2
-        )  # conjunction with 2 times
+        if sumwt is None:
+            sumwt = (
+                numpy.sum(vis.visibility_acc.flagged_weight) * 2
+            )  # conjunction with 2 times
         f2 = (5.0 * numpy.power(10.0, -robustness)) ** 2 * sumwt / sumlocwt
 
     for vchan in range(nvchan):
