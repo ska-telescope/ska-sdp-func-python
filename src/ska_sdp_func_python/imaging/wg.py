@@ -1,12 +1,7 @@
 """
 Functions that implement prediction of and imaging from visibilities
-using the GPU-based gridder (WAGG version).
-https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
-
-Currently, the python wrapper of the GPU gridder is available in a branch.
-https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda/-/tree/sim-874-python-wrapper
-
-This performs all necessary w term corrections, to high precision.
+using the GPU-based w-stacking gridder from ska-sdp-func
+(which is compatible with the DUCC/nifty gridder).
 """
 
 __all__ = [
@@ -18,6 +13,12 @@ import copy
 import logging
 
 import numpy
+
+try:
+    import cupy
+except ImportError:
+    cupy = None
+
 from ska_sdp_datamodels.image.image_model import Image
 from ska_sdp_datamodels.science_data_model.polarisation_functions import (
     convert_pol_frame,
@@ -29,14 +30,16 @@ from ska_sdp_func_python.imaging.base import (
     shift_vis_to_image,
 )
 
+try:
+    from ska_sdp_func.grid_data import GridderUvwEsFft
+except ImportError:
+    GridderUvwEsFft = None
+
 log = logging.getLogger("func-python-logger")
 
 
 def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
-    """Predict using convolutional degridding.
-
-    Nifty-gridder WAGG GPU version.
-    https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
+    """Predict using GPU-based w-stacking degridder module.
 
     In the imaging and pipeline workflows, this may
     be invoked using context='wg'.
@@ -45,11 +48,12 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     :param model: Model Image
     :return: Resulting Visibility (in place works)
     """
+    if not GridderUvwEsFft:
+        log.warning("ska-sdp-func is not installed. Cannot run predict_wg")
+        return None
 
-    try:
-        import wagg as wg  # pylint: disable=import-outside-toplevel
-    except ImportError:
-        log.warning("WAGG is not installed. Cannot run predict_wg")
+    if not cupy:
+        log.warning("cupy is not installed. Cannot run predict_wg")
         return None
 
     if not model.image_acc.is_canonical():
@@ -62,10 +66,8 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     if model is None:
         return bvis
 
-    nthreads = kwargs.get("threads", 4)
     epsilon = kwargs.get("epsilon", 1e-12)
     do_wstacking = kwargs.get("do_wstacking", True)
-    verbosity = kwargs.get("verbosity", 0)
 
     newbvis = bvis.copy(deep=True, zero=True)
 
@@ -109,36 +111,60 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
         model.image_acc.wcs.sub([4]).wcs_world2pix(freq, 0)[0]
     ).astype("int")
 
+    # Copy uvw-coordinates to GPU and allocate scratch GPU memory.
+    uvw_gpu = cupy.asarray(flipped_uvw)
+    vis_gpu = cupy.zeros([nbaselines * nrows], dtype=vis_temp.dtype)
+    weight_gpu = cupy.ones(
+        vis_gpu.shape,
+        dtype=cupy.float32
+        if vis_gpu.dtype == cupy.complex64
+        else cupy.float64,
+    )  # FIXME Not sure if this should also be obtained from input bvis?
+
     if m_nchan == 1:
+        freq_gpu = cupy.asarray(freq)
         for vpol in range(vnpol):
-            vis_temp[vpol, :, :] = wg.dirty2ms(
-                flipped_uvw.astype(float),
-                bvis.frequency.data.astype(float),
-                model["pixels"].data[0, vpol, :, :].T.astype(float),
-                None,
+            image_gpu = cupy.asarray(model["pixels"].data[0, vpol, :, :].T)
+            vis_gpu.fill(0)
+            gridder = GridderUvwEsFft(
+                uvw_gpu,
+                freq_gpu,
+                vis_gpu,
+                weight_gpu,
+                image_gpu,
                 pixsize,
                 pixsize,
-                epsilon=epsilon,
-                do_wstaking=do_wstacking,
-                nthreads=nthreads,
-                verbosity=verbosity,
-            ).T
+                epsilon,
+                do_wstacking,
+            )
+            gridder.ifft_grid_uvw_es(
+                uvw_gpu, freq_gpu, vis_gpu, weight_gpu, image_gpu
+            )
+            vis_temp[vpol, 0, :] = cupy.asnumpy(vis_gpu)
     else:
         for vpol in range(vnpol):
             for vchan in range(vnchan):
                 imchan = vis_to_im[vchan]
-                vis_temp[vpol, vchan, :] = wg.dirty2ms(
-                    flipped_uvw.astype(float),
-                    numpy.array(freq[vchan : vchan + 1]).astype(float),
-                    model["pixels"].data[imchan, vpol, :, :].T.astype(float),
-                    None,
+                freq_gpu = cupy.array(freq[vchan : vchan + 1])
+                image_gpu = cupy.asarray(
+                    model["pixels"].data[imchan, vpol, :, :].T
+                )
+                vis_gpu.fill(0)
+                gridder = GridderUvwEsFft(
+                    uvw_gpu,
+                    freq_gpu,
+                    vis_gpu,
+                    weight_gpu,
+                    image_gpu,
                     pixsize,
                     pixsize,
-                    epsilon=epsilon,
-                    do_wstacking=do_wstacking,
-                    nthreads=nthreads,
-                    verbosity=verbosity,
-                )[:, 0]
+                    epsilon,
+                    do_wstacking,
+                )
+                gridder.ifft_grid_uvw_es(
+                    uvw_gpu, freq_gpu, vis_gpu, weight_gpu, image_gpu
+                )
+                vis_temp[vpol, vchan, :] = cupy.asnumpy(vis_gpu)
     vis = convert_pol_frame(
         vis_temp.T,
         model.image_acc.polarisation_frame,
@@ -162,10 +188,7 @@ def invert_wg(
     **kwargs
 ) -> (Image, numpy.ndarray):
     """
-    Invert using GPU-based WAGG nifty-gridder module.
-
-    Nifty-gridder WAGG GPU version.
-    https://gitlab.com/ska-telescope/sdp/ska-gridder-nifty-cuda
+    Invert using GPU-based w-stacking gridder module.
 
     Use the Image im as a template. Do PSF in a separate call.
 
@@ -179,10 +202,12 @@ def invert_wg(
     :return: (resulting Image, sum of the weights for
               each frequency and polarization)
     """
-    try:
-        import wagg as wg  # pylint: disable=import-outside-toplevel
-    except ImportError:
-        log.warning("WAGG is not installed. Cannot run invert_wg")
+    if not GridderUvwEsFft:
+        log.warning("ska-sdp-func is not installed. Cannot run invert_wg")
+        return None
+
+    if not cupy:
+        log.warning("cupy is not installed. Cannot run invert_wg")
         return None
 
     if not model.image_acc.is_canonical():
@@ -193,7 +218,6 @@ def invert_wg(
 
     im = model.copy(deep=True)
 
-    nthreads = kwargs.get("threads", 4)
     epsilon = kwargs.get("epsilon", 1e-12)
     do_wstacking = kwargs.get("do_wstacking", True)
 
@@ -247,32 +271,43 @@ def invert_wg(
         ms_temp[...] = 0.0
         ms_temp[0, ...] = 1.0
 
+    # Copy uvw-coordinates to GPU and allocate scratch GPU memory.
+    uvw_gpu = cupy.asarray(flipped_uvw)
+    image_gpu = cupy.zeros(
+        [npixdirty, npixdirty],
+        dtype=cupy.float32 if ms.dtype == numpy.complex64 else cupy.float64,
+    )
+
     # lms and lwt - the contiguous versions of ms_temp and weight_temp
     if mfs:
+        freq_gpu = cupy.asarray(freq)
         for pol in range(npol):
             lms = numpy.ascontiguousarray(ms_temp[pol, :, :].T)
             if numpy.max(numpy.abs(lms)) > 0.0:
                 lwt = numpy.ascontiguousarray(weight_temp[pol, :, :].T)
-                dirty = wg.ms2dirty(
-                    flipped_uvw,
-                    bvis.frequency.data,
-                    lms,
-                    lwt,
-                    npixdirty,
-                    npixdirty,
+                vis_gpu = cupy.asarray(lms)
+                weight_gpu = cupy.asarray(lwt)
+                image_gpu.fill(0)
+                gridder = GridderUvwEsFft(
+                    uvw_gpu,
+                    freq_gpu,
+                    vis_gpu,
+                    weight_gpu,
+                    image_gpu,
                     pixsize,
                     pixsize,
                     epsilon,
                     do_wstacking,
-                    nthreads=nthreads,
                 )
-                im["pixels"].data[0, pol] += dirty.T
+                gridder.grid_uvw_es_fft(
+                    uvw_gpu, freq_gpu, vis_gpu, weight_gpu, image_gpu
+                )
+                im["pixels"].data[0, pol] += cupy.asnumpy(image_gpu).T
             sum_weight[0, pol] += numpy.sum(weight_temp[pol, :, :].T)
     else:
         for pol in range(npol):
             for vchan in range(vnchan):
                 ichan = vis_to_im[vchan]
-                frequency = numpy.array(freq[vchan : vchan + 1]).astype(float)
                 lms = numpy.ascontiguousarray(
                     ms_temp[pol, vchan, :, numpy.newaxis]
                 )
@@ -280,19 +315,25 @@ def invert_wg(
                     lwt = numpy.ascontiguousarray(
                         weight_temp[pol, vchan, :, numpy.newaxis]
                     )
-                    dirty = wg.ms2dirty(
-                        flipped_uvw,
-                        frequency,
-                        lms,
-                        lwt,
-                        npixdirty,
-                        npixdirty,
+                    freq_gpu = cupy.array(freq[vchan : vchan + 1])
+                    vis_gpu = cupy.asarray(lms)
+                    weight_gpu = cupy.asarray(lwt)
+                    image_gpu.fill(0)
+                    gridder = GridderUvwEsFft(
+                        uvw_gpu,
+                        freq_gpu,
+                        vis_gpu,
+                        weight_gpu,
+                        image_gpu,
                         pixsize,
                         pixsize,
                         epsilon,
                         do_wstacking,
                     )
-                    im["pixels"].data[ichan, pol] += dirty.T
+                    gridder.grid_uvw_es_fft(
+                        uvw_gpu, freq_gpu, vis_gpu, weight_gpu, image_gpu
+                    )
+                    im["pixels"].data[ichan, pol] += cupy.asnumpy(image_gpu).T
                 sum_weight[ichan, pol] += numpy.sum(
                     weight_temp[pol, vchan, :].T, axis=0
                 )
