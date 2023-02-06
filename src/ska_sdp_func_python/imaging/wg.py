@@ -113,7 +113,7 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
 
     # Copy uvw-coordinates to GPU and allocate scratch GPU memory.
     uvw_gpu = cupy.asarray(flipped_uvw)
-    vis_gpu = cupy.zeros([nbaselines * nrows], dtype=vis_temp.dtype)
+    vis_gpu = cupy.zeros([nbaselines * nrows, 1], dtype=vis_temp.dtype)
     weight_gpu = cupy.ones(
         vis_gpu.shape,
         dtype=cupy.float32
@@ -124,7 +124,9 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
     if m_nchan == 1:
         freq_gpu = cupy.asarray(freq)
         for vpol in range(vnpol):
-            image_gpu = cupy.asarray(model["pixels"].data[0, vpol, :, :].T)
+            image_gpu = cupy.asarray(
+                numpy.ascontiguousarray(model["pixels"].data[0, vpol, :, :].T)
+            )
             vis_gpu.fill(0)
             gridder = GridderUvwEsFft(
                 uvw_gpu,
@@ -140,14 +142,16 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
             gridder.ifft_grid_uvw_es(
                 uvw_gpu, freq_gpu, vis_gpu, weight_gpu, image_gpu
             )
-            vis_temp[vpol, 0, :] = cupy.asnumpy(vis_gpu)
+            vis_temp[vpol, 0, :] = cupy.asnumpy(vis_gpu[:, 0])
     else:
         for vpol in range(vnpol):
             for vchan in range(vnchan):
                 imchan = vis_to_im[vchan]
                 freq_gpu = cupy.array(freq[vchan : vchan + 1])
                 image_gpu = cupy.asarray(
-                    model["pixels"].data[imchan, vpol, :, :].T
+                    numpy.ascontiguousarray(
+                        model["pixels"].data[imchan, vpol, :, :].T
+                    )
                 )
                 vis_gpu.fill(0)
                 gridder = GridderUvwEsFft(
@@ -164,7 +168,7 @@ def predict_wg(bvis: Visibility, model: Image, **kwargs) -> Visibility:
                 gridder.ifft_grid_uvw_es(
                     uvw_gpu, freq_gpu, vis_gpu, weight_gpu, image_gpu
                 )
-                vis_temp[vpol, vchan, :] = cupy.asnumpy(vis_gpu)
+                vis_temp[vpol, vchan, :] = cupy.asnumpy(vis_gpu[:, 0])
     vis = convert_pol_frame(
         vis_temp.T,
         model.image_acc.polarisation_frame,
