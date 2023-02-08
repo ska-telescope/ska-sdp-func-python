@@ -1,5 +1,5 @@
 """
-Unit processing_components for coordinate support
+Unit tests for coordinate support
 """
 import numpy
 import pytest
@@ -154,43 +154,43 @@ def test_skycoord_to_lmn():
     assert_allclose(skycoord_to_lmn(south, east), (0, -1, -1), atol=1e-14)
 
 
-def test_phase_rotate():
-    """TODO"""
+SKY_COORD_1 = SkyCoord(17, 35, unit=u.deg)
+
+
+@pytest.mark.parametrize("source_position, phase_center, new_phase_center", [
+    (SKY_COORD_1, SKY_COORD_1, SKY_COORD_1),
+    (SKY_COORD_1, SkyCoord(12, 30, unit=u.deg), SkyCoord(51, 35, unit=u.deg)),
+    (SkyCoord(11, 35, unit=u.deg), SKY_COORD_1, SKY_COORD_1)
+])
+def test_phase_rotate(source_position, phase_center, new_phase_center):
+    """
+    This test combines various functions previously tested to see that they
+    correctly work together to rotate phases.
+
+    They don't test an individual function.
+    I'm not sure this test is needed, but keeping it for refrence.
+    """
 
     uvw = numpy.array([(1, 0, 0), (0, 1, 0), (0, 0, 1)])
 
-    pos = [
-        SkyCoord(17, 35, unit=u.deg),
-        SkyCoord(17, 30, unit=u.deg),
-        SkyCoord(12, 30, unit=u.deg),
-        SkyCoord(11, 35, unit=u.deg),
-        SkyCoord(51, 35, unit=u.deg),
-        SkyCoord(15, 70, unit=u.deg),
-    ]
+    # Rotate UVW
+    xyz = uvw_to_xyz(uvw, -phase_center.ra.rad, phase_center.dec.rad)
+    uvw_rotated = xyz_to_uvw(
+        xyz, -new_phase_center.ra.rad, new_phase_center.dec.rad
+    )
 
-    # Sky coordinates to reproject to
-    for phasecentre in pos:
-        for newphasecentre in pos:
+    # Determine phasor
+    l_p, m_p, _ = skycoord_to_lmn(phase_center, new_phase_center)
+    phasor = simulate_point(uvw_rotated, l_p, m_p)
 
-            # Rotate UVW
-            xyz = uvw_to_xyz(uvw, -phasecentre.ra.rad, phasecentre.dec.rad)
-            uvw_rotated = xyz_to_uvw(
-                xyz, -newphasecentre.ra.rad, newphasecentre.dec.rad
-            )
+    # Simulate visibility at old and new phase centre
+    l, m, _ = skycoord_to_lmn(source_position, phase_center)
+    vis = simulate_point(uvw, l, m)
+    l_r, m_r, _ = skycoord_to_lmn(source_position, new_phase_center)
+    vis_rotated = simulate_point(uvw_rotated, l_r, m_r)
 
-            # Determine phasor
-            l_p, m_p, _ = skycoord_to_lmn(phasecentre, newphasecentre)
-            phasor = simulate_point(uvw_rotated, l_p, m_p)
-
-            for sourcepos in pos:
-                # Simulate visibility at old and new phase centre
-                l, m, _ = skycoord_to_lmn(sourcepos, phasecentre)
-                vis = simulate_point(uvw, l, m)
-                l_r, m_r, _ = skycoord_to_lmn(sourcepos, newphasecentre)
-                vis_rotated = simulate_point(uvw_rotated, l_r, m_r)
-
-                # Difference should be given by phasor
-                assert_allclose(vis * phasor, vis_rotated, atol=1e-10)
+    # Difference should be given by phasor
+    assert_allclose(vis * phasor, vis_rotated, atol=1e-10)
 
 
 @pytest.mark.parametrize(

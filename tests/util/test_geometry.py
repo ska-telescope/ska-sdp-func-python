@@ -1,5 +1,5 @@
 """
-Unit tests for coordinate calculations
+Unit tests for geometry calculations
 """
 import astropy.units as u
 import numpy
