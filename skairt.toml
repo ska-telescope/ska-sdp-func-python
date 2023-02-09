@@ -1,0 +1,6 @@
+[dep.ska-sdp-datamodels]
+dep_type = "gitlab:python"
+project = "ska-telescope/sdp/ska-sdp-datamodels"
+
+[dep.ska-sdp-datamodels.sink.poetry]
+sink_type = "python:poetry"
