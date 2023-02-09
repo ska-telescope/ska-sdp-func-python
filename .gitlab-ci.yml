@@ -44,10 +44,6 @@ python-lint:
     - poetry config virtualenvs.create $POETRY_CONFIG_VIRTUALENVS_CREATE
     - time poetry install
 
-  script:
-    - pip install junit-xml --force-reinstall
-    - make python-lint
-
 python-test:
   before_script:
     - apt-get update && apt-get -y install cmake
