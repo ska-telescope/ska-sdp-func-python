@@ -418,11 +418,9 @@ def griddata_visibility_reweight(
             sumwt = (
                 numpy.sum(vis.visibility_acc.flagged_weight) * 2
             )  # conjunction with 2 times
-        f2 = (
-            (5.0 * numpy.power(10.0, -robustness)) ** 2
-            * numpy.sum(sumwt)
-            / sumlocwt
-        )
+        else:
+            sumwt = numpy.sum(sumwt)
+        f2 = (5.0 * numpy.power(10.0, -robustness)) ** 2 * sumwt / sumlocwt
 
     for vchan in range(nvchan):
         imchan = vis_to_im[vchan]
