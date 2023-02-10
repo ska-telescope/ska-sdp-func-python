@@ -122,8 +122,19 @@ def dp3_gaincal(
         dpinfo = DPInfo(nr_correlations)
         dpinfo.set_channels(vis.frequency.data, vis.channel_bandwidth.data)
 
-        antenna1 = vis.antenna1.data
-        antenna2 = vis.antenna2.data
+        ant1 = []
+        ant2 = []
+
+        for k in numpy.arange(numpy.max(vis.antenna1.data) + 1):
+            for i in numpy.arange(k + 1):
+                ant1.append(i)
+                ant2.append(k)
+        baselines = list(zip(ant1, ant2))
+        bl_map = [list(vis.baselines.data).index(bl) for bl in baselines]
+        invert_bl_map = numpy.argsort(bl_map)
+
+        # antenna1 = vis.antenna1.data
+        # antenna2 = vis.antenna2.data
         antenna_names = vis.configuration.names.data
         antenna_positions = vis.configuration.xyz.data
         antenna_diameters = vis.configuration.diameter.data
@@ -131,8 +142,8 @@ def dp3_gaincal(
             antenna_names,
             antenna_diameters,
             antenna_positions,
-            antenna1,
-            antenna2,
+            ant1,
+            ant2,
         )
         first_time = vis.time.data[0]
         last_time = vis.time.data[-1]
@@ -147,16 +158,16 @@ def dp3_gaincal(
             dpbuffer.set_time(time)
             dpbuffer.set_data(
                 expand_polarizations(
-                    vis_per_timeslot.vis.data, numpy.complex64
+                    vis_per_timeslot.vis.data[bl_map], numpy.complex64
                 )
             )
             dpbuffer.set_uvw(-vis_per_timeslot.uvw.data)
             dpbuffer.set_flags(
-                expand_polarizations(vis_per_timeslot.flags.data, bool)
+                expand_polarizations(vis_per_timeslot.flags.data[bl_map], bool)
             )
             dpbuffer.set_weights(
                 expand_polarizations(
-                    vis_per_timeslot.weight.data, numpy.float32
+                    vis_per_timeslot.weight.data[bl_map], numpy.float32
                 )
             )
             gaincal_step.process(dpbuffer)
@@ -169,7 +180,7 @@ def dp3_gaincal(
             dpbuffer_from_queue = queue_step.queue.get()
             visibilities_out = numpy.array(
                 dpbuffer_from_queue.get_data(), copy=False
-            )
+            )[invert_bl_map]
             nr_polarizations = vis_per_timeslot.vis.data.shape[-1]
             if nr_polarizations == 4:
                 vis_per_timeslot.vis.data[:] = visibilities_out
