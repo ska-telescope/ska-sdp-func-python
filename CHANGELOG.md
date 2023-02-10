@@ -1,10 +1,10 @@
 # Changelog
 
-* main
+main
 ----
 * Bug fix for calculating f2 of multi-channels ([MR26](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/26))
 
-* 0.1.4
+0.1.4
 ----
 * Migrate function to perform DP3 calibration from rascil-main ([MR24](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/24))
 * Bug fix for weight_visibility function modified input visibility ([MR23](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/23))

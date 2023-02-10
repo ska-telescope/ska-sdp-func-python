@@ -371,6 +371,7 @@ def griddata_visibility_reweight(
     :param vis: visibility to be reweighted
     :param weighting: Mode of weighting, e.g. natural, uniform or robust
     :param robustness: Robustness parameter
+    :param sumwt: Sum value of all weightings
     :return: Visibility with imaging_weights corrected
     """
     if griddata is not None:
