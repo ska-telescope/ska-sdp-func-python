@@ -1,5 +1,9 @@
 # Changelog
 
+main
+----
+* Bug fix for calculating f2 of multi-channels ([MR26](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/26))
+
 0.1.4
 ----
 * Migrate function to perform DP3 calibration from rascil-main ([MR24](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/24))
