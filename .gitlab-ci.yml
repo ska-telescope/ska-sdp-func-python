@@ -23,14 +23,17 @@ include:
 
 # SKAirt overrides
 skairt-update:
-  image: $SKA_PYTHON_PYTANGO_BUILDER_IMAGE
   stage: .pre
   tags:
     - k8srunner
   before_script:
-    - time pip3 install poetry git+https://gitlab.com/scpmw/skairt.git
+    - curl -sSL https://install.python-poetry.org | python3 -
+    - time pip3 install git+https://gitlab.com/scpmw/skairt.git
+    - poetry config virtualenvs.create false
   script:
     - time skairt update
+    - which poetry
+    - poetry --version
     - time poetry update --lock
   artifacts:
     paths:
