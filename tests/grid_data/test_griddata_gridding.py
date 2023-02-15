@@ -156,8 +156,10 @@ def test_griddata_visibility_reweight_robust(input_params):
     grid_data = input_params["grid_data"]
     vis = input_params["visibility"]
 
-    griddata, _ = grid_visibility_weight_to_griddata(vis, grid_data)
-    result = griddata_visibility_reweight(vis, griddata, weighting="robust")
+    griddata, sumwt = grid_visibility_weight_to_griddata(vis, grid_data)
+    result = griddata_visibility_reweight(
+        vis, griddata, weighting="robust", sumwt=sumwt
+    )
     assert numpy.isclose(
         numpy.max(result.visibility_acc.flagged_imaging_weight),
         0.45737706286729296,
