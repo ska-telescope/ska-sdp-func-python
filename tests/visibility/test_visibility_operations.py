@@ -5,9 +5,11 @@ import numpy
 from ska_sdp_datamodels.visibility.vis_create import create_visibility
 
 from ska_sdp_func_python.visibility.operations import (
+    average_visibility_by_channel,
     concatenate_visibility,
     divide_visibility,
     expand_polarizations,
+    integrate_visibility_by_channel,
     subtract_visibility,
 )
 
@@ -69,6 +71,37 @@ def test_divide_visibility_singular(visibility):
     assert numpy.max(numpy.abs(result.vis)) == 2.0, numpy.max(
         numpy.abs(result.vis)
     )
+
+
+def test_average_visibility_by_channel(visibility):
+    """
+    Unit test for average_visibility_by_channel
+    """
+    vis = visibility.copy(deep=True)
+    new_vis = average_visibility_by_channel(vis, channel_average=2)
+    assert len(new_vis) == 3
+    assert new_vis[0].vis.shape == (
+        vis.vis.shape[0],
+        vis.vis.shape[1],
+        1,
+        vis.vis.shape[3],
+    )
+
+
+def test_integrate_visibility_by_channel(visibility):
+    """
+    Unit test for integrate_visibility_by_channel
+    """
+    vis = visibility.copy(deep=True)
+    new_vis = integrate_visibility_by_channel(vis)
+    assert new_vis.vis.shape == (
+        vis.vis.shape[0],
+        vis.vis.shape[1],
+        1,
+        vis.vis.shape[3],
+    )
+    assert new_vis.frequency[0] == numpy.median(vis.frequency.data)
+    assert new_vis.channel_bandwidth == numpy.sum(vis.channel_bandwidth)
 
 
 def test_subtract(visibility):
