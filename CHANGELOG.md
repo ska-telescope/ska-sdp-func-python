@@ -1,6 +1,6 @@
 # Changelog
 
-main
+0.1.5
 ----
 * Bug fix for calculating f2 of multi-channels ([MR26](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/26))
 
