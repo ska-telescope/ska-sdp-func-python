@@ -1,6 +1,6 @@
 [[package]]
 name = "astroid"
-version = "2.14.1"
+version = "2.14.2"
 description = "An abstract syntax tree for Python with inference support."
 category = "dev"
 optional = false
@@ -612,14 +612,14 @@ reference = "ska-sdp-datamodels"
 
 [[package]]
 name = "pylint"
-version = "2.16.1"
+version = "2.16.2"
 description = "python code static checker"
 category = "dev"
 optional = false
 python-versions = ">=3.7.2"
 
 [package.dependencies]
-astroid = ">=2.14.1,<=2.16.0-dev0"
+astroid = ">=2.14.2,<=2.16.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = [
     {version = ">=0.2", markers = "python_version < \"3.11\""},
@@ -784,7 +784,7 @@ reference = "ska-sdp-datamodels"
 
 [[package]]
 name = "setuptools"
-version = "67.2.0"
+version = "67.3.2"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "main"
 optional = false
@@ -815,7 +815,7 @@ reference = "ska-sdp-datamodels"
 
 [[package]]
 name = "ska-sdp-datamodels"
-version = "0.1.3+dev.c6f36dcd3"
+version = "0.1.3+dev.cc284dd6e"
 description = "SKA SDP Python-based Data Models"
 category = "main"
 optional = false
@@ -853,7 +853,7 @@ numpy = "^1.7.0"
 type = "git"
 url = "https://gitlab.com/ska-telescope/sdp/ska-sdp-func.git"
 reference = "main"
-resolved_reference = "c7f7bb064083fdd83390f1204cf3a6ae167c1aaa"
+resolved_reference = "3983bf7cc285b1b4b9c7db9d8a636e78bb1900db"
 
 [[package]]
 name = "tomli"
@@ -883,7 +883,7 @@ reference = "ska-sdp-datamodels"
 
 [[package]]
 name = "typing-extensions"
-version = "4.4.0"
+version = "4.5.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
 category = "dev"
 optional = false
@@ -942,12 +942,12 @@ radler = ["radler"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "1b4f105097dd2231bc7cd43cd5f43b066b09214c80b5c87dab18542e2ec84192"
+content-hash = "d8f5d50d25b2e1dfd30475972346bbe0b0913901a93d1192166ad47dcf0fa5a7"
 
 [metadata.files]
 astroid = [
-    {file = "astroid-2.14.1-py3-none-any.whl", hash = "sha256:23c718921acab5f08cbbbe9293967f1f8fec40c336d19cd75dc12a9ea31d2eb2"},
-    {file = "astroid-2.14.1.tar.gz", hash = "sha256:bd1aa4f9915c98e8aaebcd4e71930154d4e8c9aaf05d35ac0a63d1956091ae3f"},
+    {file = "astroid-2.14.2-py3-none-any.whl", hash = "sha256:0e0e3709d64fbffd3037e4ff403580550f14471fd3eaae9fa11cc9a5c7901153"},
+    {file = "astroid-2.14.2.tar.gz", hash = "sha256:a3cf9f02c53dd259144a7e8f3ccd75d67c9a8c716ef183e0c1f291bc5d7bb3cf"},
 ]
 astroplan = [
     {file = "astroplan-0.8.tar.gz", hash = "sha256:0cc463474e034f5f58f7399ef830ff60e91d2fac32e89cf2224e1de50946bdc7"},
@@ -1432,8 +1432,8 @@ pyflakes = [
     {file = "pyflakes-2.4.0.tar.gz", hash = "sha256:05a85c2872edf37a4ed30b0cce2f6093e1d0581f8c19d7393122da7e25b2b24c"},
 ]
 pylint = [
-    {file = "pylint-2.16.1-py3-none-any.whl", hash = "sha256:bad9d7c36037f6043a1e848a43004dfd5ea5ceb05815d713ba56ca4503a9fe37"},
-    {file = "pylint-2.16.1.tar.gz", hash = "sha256:ffe7fa536bb38ba35006a7c8a6d2efbfdd3d95bbf21199cad31f76b1c50aaf30"},
+    {file = "pylint-2.16.2-py3-none-any.whl", hash = "sha256:ff22dde9c2128cd257c145cfd51adeff0be7df4d80d669055f24a962b351bbe4"},
+    {file = "pylint-2.16.2.tar.gz", hash = "sha256:13b2c805a404a9bf57d002cd5f054ca4d40b0b87542bdaba5e05321ae8262c84"},
 ]
 pylint-junit = [
     {file = "pylint_junit-0.3.2.tar.gz", hash = "sha256:c6dbe956e55bb9b365d86e2ec77b58df6b95262b5515d187ac54b8359507174b"},
@@ -1527,16 +1527,16 @@ scipy = [
     {file = "scipy-1.9.3.tar.gz", hash = "sha256:fbc5c05c85c1a02be77b1ff591087c83bc44579c6d2bd9fb798bb64ea5e1a027"},
 ]
 setuptools = [
-    {file = "setuptools-67.2.0-py3-none-any.whl", hash = "sha256:16ccf598aab3b506593c17378473978908a2734d7336755a8769b480906bec1c"},
-    {file = "setuptools-67.2.0.tar.gz", hash = "sha256:b440ee5f7e607bb8c9de15259dba2583dd41a38879a7abc1d43a71c59524da48"},
+    {file = "setuptools-67.3.2-py3-none-any.whl", hash = "sha256:bb6d8e508de562768f2027902929f8523932fcd1fb784e6d573d2cafac995a48"},
+    {file = "setuptools-67.3.2.tar.gz", hash = "sha256:95f00380ef2ffa41d9bba85d95b27689d923c93dfbafed4aecd7cf988a25e012"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 ska-sdp-datamodels = [
-    {file = "ska_sdp_datamodels-0.1.3+dev.c6f36dcd3-py3-none-any.whl", hash = "sha256:eeaf03d892f618a4ec865113fb264afd01dca8085c5d77841bcafd769cab8c88"},
-    {file = "ska_sdp_datamodels-0.1.3+dev.c6f36dcd3.tar.gz", hash = "sha256:f5dd595298c4095a9ac5f7d0b7da1ee299e1fc83be281f9648be401fad002b2f"},
+    {file = "ska_sdp_datamodels-0.1.3+dev.cc284dd6e-py3-none-any.whl", hash = "sha256:bad076a1aeb3372376e496eeb4e0a45371172963200cd23fe714f43ace65e11b"},
+    {file = "ska_sdp_datamodels-0.1.3+dev.cc284dd6e.tar.gz", hash = "sha256:8dc7de088e1ea04cd4d5f0fff86735d7d68fe8b6689edd33828111a079c46207"},
 ]
 ska-sdp-func = []
 tomli = [
@@ -1548,8 +1548,8 @@ tomlkit = [
     {file = "tomlkit-0.11.6.tar.gz", hash = "sha256:71b952e5721688937fb02cf9d354dbcf0785066149d2855e44531ebdd2b65d73"},
 ]
 typing-extensions = [
-    {file = "typing_extensions-4.4.0-py3-none-any.whl", hash = "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"},
-    {file = "typing_extensions-4.4.0.tar.gz", hash = "sha256:1511434bb92bf8dd198c12b1cc812e800d4181cfcb867674e0f8279cc93087aa"},
+    {file = "typing_extensions-4.5.0-py3-none-any.whl", hash = "sha256:fb33085c39dd998ac16d1431ebc293a8b3eedd00fd4a32de0ff79002c19511b4"},
+    {file = "typing_extensions-4.5.0.tar.gz", hash = "sha256:5cb5f4a79139d699607b3ef622a1dedafa84e115ab0024e0d9c044a9479ca7cb"},
 ]
 wrapt = [
     {file = "wrapt-1.14.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:1b376b3f4896e7930f1f772ac4b064ac12598d1c38d04907e696cc4d794b43d3"},
