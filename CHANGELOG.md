@@ -1,5 +1,9 @@
 # Changelog
 
+main
+----
+* Added utility functions to support rechannelisation of bandpass and delay solutions for CBF beamformer calibration
+
 0.1.5
 ----
 * Bug fix for calculating f2 of multi-channels ([MR26](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/26))
