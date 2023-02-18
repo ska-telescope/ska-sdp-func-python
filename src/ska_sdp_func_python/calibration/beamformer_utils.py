@@ -13,7 +13,7 @@ from scipy import interpolate
 log = logging.getLogger("func-python-logger")
 
 
-def set_beamformer_frequencies(gt):
+def set_beamformer_frequencies(gaintable):
     """Generate a list of output frequencies
 
     SKA-Low beamformer:
@@ -29,22 +29,22 @@ def set_beamformer_frequencies(gt):
      - Timing beam bandwidth : 200 MHz (channel width : 48.8281250 kHz?)
      - Search beam bandwidth : 300 MHz (channel width : 73.2421875 kHz?)
 
-    :param gt: GainTable
+    :param gaintable: GainTable
     :return: numpy array of shape [nfreq,]
     """
 
     # determine array
-    array_name = gt.configuration.name
+    array_name = gaintable.configuration.name
     # determine beamformer type
     # bf_mode = ? get from function argument?
-    log.info(f"Setting frequency for the {array_name} beamformer")
+    log.info("Setting frequency for the %s beamformer", array_name)
 
     # initial frequencies
-    f_in = gt["frequency"].data
+    f_in = gaintable["frequency"].data
     nf_in = len(f_in)
 
     if nf_in <= 1:
-        log.warning(f"Cannot rechannelise frequencies: {f_in}")
+        log.warning("Cannot rechannelise %d channel[s]", nf_in)
         return f_in
 
     if array_name.find("LOW") == 0:
@@ -56,13 +56,13 @@ def set_beamformer_frequencies(gt):
         df_out = 300e6 / 4096
         f0_out = numpy.amin(f_in)  # are there specific channel centres?
     else:
-        log.warning(f"Unknown array: {array_name}. Frequencies unchanged")
+        log.warning("Unknown array: %s. Frequencies unchanged", array_name)
         return f_in
 
     return numpy.arange(f0_out, numpy.amax(f_in), df_out)
 
 
-def resample_bandpass(f_out, gt, alg="polyfit", edges=[]):
+def resample_bandpass(f_out, gaintable, alg="polyfit", edges=None):
     """Re-channelise each spectrum of gain or leakage terms
 
     algorithms:
@@ -72,89 +72,123 @@ def resample_bandpass(f_out, gt, alg="polyfit", edges=[]):
      - cubicspl scipy.interpolate.CubicSpline
 
     :param f_out: numpy array of shape [nfreq_out,]
-    :param gt: GainTable
+    :param gaintable: GainTable
     :param alg: algorithm type [default polyfit]
-    :param edges: [default none]
+    :param edges: list of edges (polyfit only) [default none]
     :return: numpy array of shape [nfreq_out,]
     """
 
-    f_in = gt["frequency"].data
+    f_in = gaintable["frequency"].data
 
     if alg == "polyfit":
-        sel = polyfit()
-        if len(edges) > 0:
+        sel = PolynomialInterpolator()
+        if edges is not None:
             sel.set_edges(edges)
     elif alg == "interp":
-        sel = interp()
+        sel = NumpyLinearInterpolator()
     elif alg == "interp1d":
-        sel = interp1d()
+        sel = ScipyLinearInterpolator()
     elif alg == "cubicspl":
-        sel = cubicspl()
+        sel = ScipySplineInterpolator()
 
-    ntime = len(gt["time"])
-    nantenna = len(gt["antenna"])
-    nreceptor1 = len(gt["receptor1"])
-    nreceptor2 = len(gt["receptor2"])
-
-    gain = gt["gain"].data
-    gain_out = numpy.empty(
-        (ntime, nantenna, len(f_out), nreceptor1, nreceptor2), "complex128"
-    )
-    t0 = timer.perf_counter()
-    for t in range(0, ntime):
-        for ant in range(0, nantenna):
-            for r1 in range(0, nreceptor1):
-                for r2 in range(0, nreceptor2):
-                    gain_out[t, ant, :, r1, r2] = sel.interp(
-                        f_out, f_in, gain[t, ant, :, r1, r2]
+    gain = gaintable["gain"].data
+    shape_out = numpy.array(gain.shape)
+    shape_out[2] = len(f_out)
+    gain_out = numpy.empty(shape_out, "complex128")
+    timer0 = timer.perf_counter()
+    for time in range(0, shape_out[0]):
+        for ant in range(0, shape_out[1]):
+            for rec1 in range(0, shape_out[3]):
+                for rec2 in range(0, shape_out[4]):
+                    gain_out[time, ant, :, rec1, rec2] = sel.interp(
+                        f_out, f_in, gain[time, ant, :, rec1, rec2]
                     )
-    log.info(
-        "{:<11} took {:.1f} seconds".format(alg, timer.perf_counter() - t0)
-    )
+    log.warning("%11s took %.1f seconds", alg, timer.perf_counter() - timer0)
 
     return gain_out
 
 
-class polyfit:
-    """fit the data using polynomials
+class PolynomialInterpolator:
+    """fit the data using the numpy polynomial polyfit function
 
-    algorithms:
-     - polyfit  numpy.polynomial.polyval [default]
-     - interp   numpy.interp
-     - interp1d scipy.interpolate.interp1d, lind=linear
-     - cubicspl scipy.interpolate.CubicSpline
+    Attributes
+    ----------
+    edges : numpy array
+        A vector containing the starting channels of any band intervals
+        requiring separate fits. Defaults to the full band.
+        Internally, full-band edge channels are appended: [0, ..., nchan].
+    polydeg : int [default 3]
+        Order of the polynomial fit
 
-    :param f_out: numpy array of shape [nfreq_out,]
-    :param gt: GainTable
-    :param alg: algorithm type [default polyfit]
-    :param edges: [default none]
-    :return: numpy array of shape [nfreq_out,]
+    Methods
+    -------
+    set_edges(edges):
+        Provide the start channels of any sub-bands requiring separate fits
+
+    set_polydeg(polydeg):
+        Update the order of the polynomial fit
+
+    interp(self, f_out, f_in, gain):
+        Do the interpolation for the gain in "gain"
+
     """
 
     def __init__(self):
-        self.edges = []
+        self.edges = None
         self.polydeg = 3
 
     def set_edges(self, edges):
+        """Provide the start channels of any sub-bands requiring separate fits
+
+        :param edges: list of edges (starting channel indices)
+
+        """
         self.edges = edges
 
+    def set_polydeg(self, polydeg):
+        """Update the order of the polynomial fit
+
+        :param polydeg: Order of the polynomial fit
+
+        """
+        self.polydeg = polydeg
+
     def interp(self, f_out, f_in, gain):
-        if len(self.edges) == 0:
-            self.edges = numpy.array([-1, len(f_in) - 1])
-            log.debug(f"set edges to {self.edges}")
+        """Do the interpolation for the complex data in "gain"
+
+        :param f_out: numpy array of shape [len(f_out)]
+            final frequency values
+        :param f_in: numpy array of shape [len(f_in)]
+            initial frequency values
+        :param gain: numpy array of shape [len(f_in)]
+            complex sequence to interpolate
+        :return: numpy array of shape [len(f_out)]
+            interpolated complex sequence
+
+        """
+        if self.edges is None or self.edges == []:
+            self.edges = numpy.array([0, len(f_in)])
+            fstr = f"set edges to {self.edges}"
+            log.debug("set edges to %s", fstr)
+        # ensure that the channel before the first discontinuity are included
+        if self.edges[0] > 0:
+            self.edges = numpy.concatenate(([0], self.edges))
+        # ensure that the channel after the last discontinuity are included
+        if self.edges[-1] < len(f_in):
+            self.edges = numpy.concatenate((self.edges, [len(f_in)]))
 
         idx_out = numpy.arange(0, len(f_out)).astype("int")
         gain_out = numpy.empty(len(f_out), "complex128")
 
         df_in = f_in[1] - f_in[0]
-        for k in range(1, len(self.edges)):
-            ch_in = numpy.arange(
-                self.edges[k - 1] + 1, self.edges[k] + 1
-            ).astype("int")
+        edges = self.edges
+        for k in range(0, len(edges) - 1):
+            ch_in = numpy.arange(edges[k], edges[k + 1]).astype("int")
             ch_out = idx_out[
-                (f_out >= f_in[self.edges[k - 1] + 1] - df_in / 2)
-                * (f_out < f_in[self.edges[k]] + df_in / 2)
+                (f_out >= f_in[edges[k]] - df_in / 2)
+                * (f_out < f_in[edges[k + 1] - 1] + df_in / 2)
             ]
+
             # fit the data using polynomials
             coef_re = polynomial.polyfit(
                 f_in[ch_in], numpy.real(gain[ch_in]), self.polydeg
@@ -163,25 +197,113 @@ class polyfit:
                 f_in[ch_in], numpy.imag(gain[ch_in]), self.polydeg
             )
             # evaluated the fits at the output frequencies
-            fit_re = polynomial.polyval(f_out[ch_out], coef_re)
-            fit_im = polynomial.polyval(f_out[ch_out], coef_im)
-            gain_out[ch_out] = fit_re + 1j * fit_im
+            gain_out[ch_out] = (
+                polynomial.polyval(f_out[ch_out], coef_re)
+                + polynomial.polyval(f_out[ch_out], coef_im) * 1j
+            )
 
         return gain_out
 
 
-class interp:
+# could add the extrapolation options instead of disabling the pylint
+# error, or just remove this interpolator. It is pretty simple and fast.
+class NumpyLinearInterpolator:  # pylint: disable=too-few-public-methods
+    """fit the data using the numpy interp function
+
+    Methods
+    -------
+
+    interp(self, f_out, f_in, gain):
+        Do the interpolation for the gain in "gain"
+
+    """
+
     def interp(self, f_out, f_in, gain):
+        """Do the interpolation for the complex data in "gain"
+
+        :param f_out: numpy array of shape [len(f_out)]
+            final frequency values
+        :param f_in: numpy array of shape [len(f_in)]
+            initial frequency values
+        :param gain: numpy array of shape [len(f_in)]
+            complex sequence to interpolate
+        :return: numpy array of shape [len(f_out)]
+            interpolated complex sequence
+
+        """
         return numpy.interp(f_out, f_in, gain)
 
 
-class interp1d:
+class ScipyLinearInterpolator:
+    """fit the data using the scipy interpolate interp1d function
+
+    Attributes
+    ----------
+    kind : str [default "linear"]
+        The kind of interpolation. Any supported by interp1d.
+
+    Methods
+    -------
+    set_kind(kind):
+        Update the kind of interpolation
+
+    interp(self, f_out, f_in, gain):
+        Do the interpolation for the gain in "gain"
+
+    """
+
+    def __init__(self):
+        self.kind = "linear"
+
+    def set_kind(self, kind):
+        """Update the kind of interpolation
+
+        :param kind: str [default "linear"]
+            The kind of interpolation. Any supported by interp1d
+
+        """
+        self.kind = kind
+
     def interp(self, f_out, f_in, gain):
-        fn = interpolate.interp1d(f_in, gain, kind="linear")
-        return fn(f_out)
+        """Do the interpolation for the complex data in "gain"
+
+        :param f_out: numpy array of shape [len(f_out)]
+            final frequency values
+        :param f_in: numpy array of shape [len(f_in)]
+            initial frequency values
+        :param gain: numpy array of shape [len(f_in)]
+            complex sequence to interpolate
+        :return: numpy array of shape [len(f_out)]
+            interpolated complex sequence
+
+        """
+        func = interpolate.interp1d(f_in, gain, kind=self.kind)
+        return func(f_out)
 
 
-class cubicspl:
+# could add the extrapolation options instead of disabling the pylint
+class ScipySplineInterpolator:  # pylint: disable=too-few-public-methods
+    """fit the data using the scipy interpolate CubicSpline function
+
+    Methods
+    -------
+    interp(self, f_out, f_in, gain):
+        Do the interpolation for the gain in "gain"
+
+    """
+
     def interp(self, f_out, f_in, gain):
-        fn = interpolate.CubicSpline(f_in, gain)
-        return fn(f_out)
+        """Do the interpolation for the complex data in "gain"
+
+        :param f_out: numpy array of shape [len(f_out)]
+            final frequency values
+        :param f_in: numpy array of shape [len(f_in)]
+            initial frequency values
+        :param gain: numpy array of shape [len(f_in)]
+            complex sequence to interpolate
+        :return: numpy array of shape [len(f_out)]
+            interpolated complex sequence
+
+        """
+        func = interpolate.CubicSpline(f_in, gain)
+        return func(f_out)
