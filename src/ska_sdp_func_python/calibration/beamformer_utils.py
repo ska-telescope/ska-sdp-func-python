@@ -114,11 +114,12 @@ def expand_delay_phase(delaygaintable, frequency):
     )
 
 
-def _set_gaintable_product_shape(gaintable1, gaintable2):
+def _set_gaintable_product_shape(gaintable1, gaintable2, elementwise):
     """Determine the shape of the product of two GainTables
 
     :param gaintable1: GainTable containing left-hand side Jones matrices
     :param gaintable2: GainTable containing right-hand side Jones matrices
+    :param elementwise: Do elementwise multiplication of calibration terms
     :return: Shape of the combined GainTable
     """
     gain1 = gaintable1.gain.data
@@ -135,14 +136,16 @@ def _set_gaintable_product_shape(gaintable1, gaintable2):
         and gain1.shape[2] != 1
         and gain2.shape[2] != 1
     ):
-        raise ValueError("shape error {gain1.shape} != {gain2.shape}")
-    if gain1.shape[3] != gain2.shape[3]:
-        raise ValueError("shape error {gain1.shape[3]} != {gain2.shape[3]}")
-    if gain1.shape[4] != gain2.shape[4]:
-        raise ValueError("shape error {gain1.shape[4]} != {gain2.shape[4]}")
-    # Make sure that ncol of matrix 1 equals nrow of matrix 2
-    if gaintable1.receptor2.shape != gaintable2.receptor1.shape:
-        raise ValueError("Matrices not compatible for multiplication")
+        raise ValueError("frequency error {gain1.shape} != {gain2.shape}")
+    if elementwise:
+        if gain1.shape[3] != gain2.shape[3]:
+            raise ValueError("pol error {gain1.shape[3]} != {gain2.shape[3]}")
+        if gain1.shape[4] != gain2.shape[4]:
+            raise ValueError("pol error {gain1.shape[4]} != {gain2.shape[4]}")
+    else:
+        # Make sure that ncol of matrix 1 equals nrow of matrix 2
+        if gaintable1.receptor2.shape != gaintable2.receptor1.shape:
+            raise ValueError("Matrices not compatible for multiplication")
 
     return (
         gain1.shape[0],
@@ -153,42 +156,52 @@ def _set_gaintable_product_shape(gaintable1, gaintable2):
     )
 
 
-def multiply_gaintable_jones(gaintable1, gaintable2):
+def multiply_gaintable_jones(gaintable1, gaintable2, elementwise=False):
     """Multiply the Jones matrices for all times, antennas and frequencies
-    of two GainTables.
+    of two GainTables. This is intended for different calibration terms that
+    require matrix multiplication. multiply_gaintable_terms() should be used
+    for calibration terms that are similar and require element-wise
+    multiplication.
 
     :param gaintable1: GainTable containing left-hand side Jones matrices
     :param gaintable2: GainTable containing right-hand side Jones matrices
+    :param elementwise: Do elementwise multiplication of calibration terms.
+        This is needed for gain tables that contain different factors of the
+        same effect and need to be multiplied outside of the Jones formalism,
+        such as D leakage terms and K cross-pol delays. Default is False.
     :return: GainTable containing gaintable1 Jones * gaintable2 Jones
     """
     if gaintable1.jones_type == "K" or gaintable2.jones_type == "K":
         raise ValueError("Cannot multiply delays. Use expand_delay_phase")
 
-    shape = _set_gaintable_product_shape(gaintable1, gaintable2)
+    shape = _set_gaintable_product_shape(gaintable1, gaintable2, elementwise)
 
     gain = numpy.empty(shape, "complex128")
-
-    gain1 = gaintable1.gain.data
-    gain2 = gaintable2.gain.data
 
     # Map output channel indices to input channel indices
     chan1 = numpy.arange(shape[2]).astype("int")
     chan2 = numpy.arange(shape[2]).astype("int")
-    if gain1.shape[2] == 1:
+    if gaintable1.gain.shape[2] == 1:
         chan1 *= 0
-    if gain2.shape[2] == 1:
+    if gaintable2.gain.shape[2] == 1:
         chan2 *= 0
 
     for time in range(0, shape[0]):
         for ant in range(0, shape[1]):
             for chan in range(0, shape[2]):
-                gain[time, ant, chan] = (
-                    gain1[time, ant, chan1[chan]]
-                    @ gain2[time, ant, chan2[chan]]
-                )
+                if elementwise:
+                    gain[time, ant, chan] = (
+                        gaintable1.gain.data[time, ant, chan1[chan]]
+                        * gaintable2.gain.data[time, ant, chan2[chan]]
+                    )
+                else:
+                    gain[time, ant, chan] = (
+                        gaintable1.gain.data[time, ant, chan1[chan]]
+                        @ gaintable2.gain.data[time, ant, chan2[chan]]
+                    )
 
     # Get the frequencies, noting that one set may be of length 1
-    if gain1.shape[2] > 1:
+    if gaintable1.gain.shape[2] > 1:
         frequency = gaintable1.frequency.data
         weight = gaintable1.weight
         residual = gaintable1.residual
