@@ -59,7 +59,8 @@ def skycomponent():
 
 def test_dp3_gaincal(create_skycomponent, visibility):
     """
-    Test that DP3 calibration runs without throwing exception.
+    Test that DP3 calibration runs without throwing exception and provides 
+    the expected result.
     Only run this test if DP3 is available.
     """
 
