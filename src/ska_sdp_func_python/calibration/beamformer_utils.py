@@ -63,7 +63,7 @@ def set_beamformer_frequencies(gaintable):
     return numpy.arange(f0_out, numpy.amax(f_in), df_out)
 
 
-def expand_delay_phase(delaygaintable, frequency):
+def expand_delay_phase(delaygaintable, frequency, reference_to_centre=True):
     """CASA delay calibration tables with type K or Kcross are currently stored
     in GainTable Jones matrices as phase shifts at a single reference
     frequency. These are expanded to other frequencies assuming
@@ -74,6 +74,12 @@ def expand_delay_phase(delaygaintable, frequency):
 
     :param delaygaintable: GainTable with single phase values derived from
         delays. Must have jones_type "K".
+    :param frequency: list of frequencies in Hz to generate phase shifts for
+    :param reference_to_centre: if true (the default), shift the phases such
+        that the phase shift at the output reference frequency is zero. This
+        is done in CASA calibration tasks when delay solutions are given as
+        prior calibration terms, so also needs to be done when combining delay
+        with any subsequent calibration solutions.
     :return: GainTable array with len(frequency) phase values
     """
     if delaygaintable.jones_type != "K":
@@ -95,7 +101,10 @@ def expand_delay_phase(delaygaintable, frequency):
 
     # only works if the delay at ref freq is less than half a wavelength
     phase0 = numpy.angle(delaygaintable.gain.data)
+
     for chan, freq in enumerate(frequency):
+        if reference_to_centre:
+            freq -= frequency0
         gain[:, :, chan, :, :] = numpy.exp(
             1j * freq / frequency0 * phase0[:, :, 0, :, :]
         )
