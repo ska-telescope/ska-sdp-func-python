@@ -9,6 +9,7 @@ import time as timer
 import numpy
 from numpy.polynomial import polynomial
 from scipy import interpolate
+from ska_sdp_datamodels.calibration.calibration_model import GainTable
 
 log = logging.getLogger("func-python-logger")
 
@@ -40,7 +41,7 @@ def set_beamformer_frequencies(gaintable):
     log.info("Setting frequency for the %s beamformer", array_name)
 
     # initial frequencies
-    f_in = gaintable["frequency"].data
+    f_in = gaintable.frequency.data
     nf_in = len(f_in)
 
     if nf_in <= 1:
@@ -62,6 +63,99 @@ def set_beamformer_frequencies(gaintable):
     return numpy.arange(f0_out, numpy.amax(f_in), df_out)
 
 
+def expand_delay_phase(delaygaintable, frequency):
+    """CASA delay calibration tables with type K or Kcross are currently stored
+    in GainTable Jones matrices as phase shifts at a single reference
+    frequency. These are expanded to other frequencies assuming
+    phase = 2 * pi * t_delay * frequency.
+    Note that this only works if the delay is less than half a wavelength at
+    the reference frequency. In the future it is likely that the time delay
+    will be stored in such GainTables and used directly.
+
+    :param delaygaintable: GainTable with single phase values derived from
+        delays. Must have jones_type "K".
+    :return: GainTable array with len(frequency) phase values
+    """
+    if delaygaintable.jones_type != "K":
+        raise ValueError(f"Wrong Jones type: {delaygaintable.jones_type} != K")
+    # after extrapolating to other frequencies the Jones type will be set to B
+
+    if delaygaintable.frequency.shape[0] != 1:
+        raise ValueError("Expect a single frequency")
+    frequency0 = delaygaintable.frequency.data[0]
+
+    shape = numpy.array(delaygaintable.shape)
+    shape[2] = len(frequency)
+
+    gain = numpy.empty(shape, "complex128")
+
+    # Set the gain weight to one and residual to zero
+    weight = numpy.ones(shape)
+    residual = numpy.zeros((shape[0], shape[2], shape[3], shape[4]))
+
+    print((shape[0], shape[2], shape[3], shape[4]))
+    print(shape[:, 0, :, :, :])
+
+    # only works if the delay at ref freq is less than half a wavelength
+    phase0 = numpy.angle(delaygaintable.gain.data)
+    for chan, freq in enumerate(frequency):
+        gain[:, :, chan, :, :] = numpy.exp(
+            1j * freq / frequency0 * phase0[:, :, 0, :, :]
+        )
+
+    gaintable = GainTable.constructor(
+        gain=gain,
+        time=delaygaintable.time.data,
+        interval=delaygaintable.interval.data,
+        weight=weight,
+        residual=residual,
+        frequency=frequency,
+        receptor_frame=delaygaintable.receptor_frame1,
+        phasecentre=delaygaintable.phasecentre,
+        configuration=delaygaintable.configuration,
+        jones_type="B",
+    )
+
+    return gaintable
+
+
+def multiply_gaintable_jones(gaintable1, gaintable2):
+    """Multiply the 2x2 Jones matrices for all times, antennas and frequencies
+    of two GainTables.
+
+    :param gaintable1: GainTable containing left-hand side Jones matrices
+    :param gaintable2: GainTable containing right-hand side Jones matrices
+    :return: GainTable containing gaintable1 Jones * gaintable2 Jones
+    """
+    gain1 = gaintable1.gain.data
+    gain2 = gaintable2.gain.data
+
+    if gain1.shape != gain2.shape:
+        raise ValueError("shape error {gain1.shape} != {gain2.shape}")
+
+    # Assume that these are standard square Jones matrices
+    # Could have a more general version:
+    #  - set gaintable.receptor1 = gaintable1.receptor1
+    #  - set gaintable.receptor2 = gaintable2.receptor2
+    #  - check that len(gaintable1.receptor2) == len(gaintable2.receptor1)
+    if gaintable1.receptor2.shape != gaintable2.receptor1.shape:
+        raise ValueError("Matrices not compatible for multiplication")
+
+    gaintable = gaintable1.copy(deep=True)
+    gain = gaintable.gain.data
+
+    shape = numpy.array(gain1.shape)
+
+    for time in range(0, shape[0]):
+        for ant in range(0, shape[1]):
+            for chan in range(0, shape[2]):
+                gain[time, ant, chan] = (
+                    gain1[time, ant, chan] @ gain2[time, ant, chan]
+                )
+
+    return gaintable
+
+
 def resample_bandpass(f_out, gaintable, alg="polyfit", edges=None):
     """Re-channelise each spectrum of gain or leakage terms
 
@@ -78,7 +172,7 @@ def resample_bandpass(f_out, gaintable, alg="polyfit", edges=None):
     :return: numpy array of shape [nfreq_out,]
     """
 
-    f_in = gaintable["frequency"].data
+    f_in = gaintable.frequency.data
 
     if alg == "polyfit":
         sel = PolynomialInterpolator()
@@ -91,7 +185,7 @@ def resample_bandpass(f_out, gaintable, alg="polyfit", edges=None):
     elif alg == "cubicspl":
         sel = ScipySplineInterpolator()
 
-    gain = gaintable["gain"].data
+    gain = gaintable.gain.data
     shape_out = numpy.array(gain.shape)
     shape_out[2] = len(f_out)
     gain_out = numpy.empty(shape_out, "complex128")
