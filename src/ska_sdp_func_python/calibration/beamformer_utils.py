@@ -14,7 +14,7 @@ from ska_sdp_datamodels.calibration.calibration_model import GainTable
 log = logging.getLogger("func-python-logger")
 
 
-def set_beamformer_frequencies(gaintable):
+def set_beamformer_frequencies(gaintable, array=None):
     """Generate a list of output frequencies
 
     SKA-Low beamformer:
@@ -31,6 +31,9 @@ def set_beamformer_frequencies(gaintable):
      - Search beam bandwidth : 300 MHz (channel width : 73.2421875 kHz?)
 
     :param gaintable: GainTable
+    :param array: optional argument to explicitly set the array. Should be
+         "LOW" or "MID". By default the gaintable configuration name will be
+         used to set the array automatically.
     :return: numpy array of shape [nfreq,]
     """
 
@@ -48,11 +51,17 @@ def set_beamformer_frequencies(gaintable):
         log.warning("Cannot rechannelise %d channel[s]", nf_in)
         return f_in
 
-    if array_name.find("LOW") == 0:
+    if array is None:
+        if array_name.find("LOW") == 0:
+            array = "LOW"
+        elif array_name.find("MID") == 0:
+            array = "MID"
+
+    if array == "LOW":
         log.debug("Setting SKA-Low CBF beamformer frequencies")
         df_out = 781.25e3
         f0_out = df_out * numpy.round(numpy.amin(f_in) / df_out)
-    elif array_name.find("MID") == 0:
+    elif array == "MID":
         log.debug("Setting SKA-Mid CBF beamformer frequencies")
         df_out = 300e6 / 4096
         f0_out = numpy.amin(f_in)  # are there specific channel centres?
