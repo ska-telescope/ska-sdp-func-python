@@ -76,7 +76,7 @@ def expand_delay_phase(delaygaintable, frequency, reference_to_centre=True):
         delays. Must have jones_type "K".
     :param frequency: list of frequencies in Hz to generate phase shifts for
     :param reference_to_centre: if true (the default), shift the phases such
-        that the phase shift at the output reference frequency is zero. This
+        that the phase shift at the input reference frequency is zero. This
         is done in CASA calibration tasks when delay solutions are given as
         prior calibration terms, so also needs to be done when combining delay
         with any subsequent calibration solutions.
@@ -167,10 +167,7 @@ def _set_gaintable_product_shape(gaintable1, gaintable2, elementwise):
 
 def multiply_gaintable_jones(gaintable1, gaintable2, elementwise=False):
     """Multiply the Jones matrices for all times, antennas and frequencies
-    of two GainTables. This is intended for different calibration terms that
-    require matrix multiplication. multiply_gaintable_terms() should be used
-    for calibration terms that are similar and require element-wise
-    multiplication.
+    of two GainTables.
 
     :param gaintable1: GainTable containing left-hand side Jones matrices
     :param gaintable2: GainTable containing right-hand side Jones matrices
