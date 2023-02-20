@@ -84,7 +84,7 @@ def expand_delay_phase(delaygaintable, frequency):
         raise ValueError("Expect a single frequency")
     frequency0 = delaygaintable.frequency.data[0]
 
-    shape = numpy.array(delaygaintable.shape)
+    shape = numpy.array(delaygaintable.gain.shape)
     shape[2] = len(frequency)
 
     gain = numpy.empty(shape, "complex128")
@@ -92,9 +92,6 @@ def expand_delay_phase(delaygaintable, frequency):
     # Set the gain weight to one and residual to zero
     weight = numpy.ones(shape)
     residual = numpy.zeros((shape[0], shape[2], shape[3], shape[4]))
-
-    print((shape[0], shape[2], shape[3], shape[4]))
-    print(shape[:, 0, :, :, :])
 
     # only works if the delay at ref freq is less than half a wavelength
     phase0 = numpy.angle(delaygaintable.gain.data)
