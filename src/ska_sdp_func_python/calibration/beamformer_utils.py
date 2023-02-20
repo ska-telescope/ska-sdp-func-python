@@ -100,7 +100,7 @@ def expand_delay_phase(delaygaintable, frequency):
             1j * freq / frequency0 * phase0[:, :, 0, :, :]
         )
 
-    gaintable = GainTable.constructor(
+    return GainTable.constructor(
         gain=gain,
         time=delaygaintable.time,
         interval=delaygaintable.interval,
@@ -112,8 +112,6 @@ def expand_delay_phase(delaygaintable, frequency):
         configuration=delaygaintable.configuration,
         jones_type="B",
     )
-
-    return gaintable
 
 
 def _set_gaintable_product_shape(gaintable1, gaintable2):
@@ -192,8 +190,12 @@ def multiply_gaintable_jones(gaintable1, gaintable2):
     # Get the frequencies, noting that one set may be of length 1
     if gain1.shape[2] > 1:
         frequency = gaintable1.frequency.data
+        weight = gaintable1.weight
+        residual = gaintable1.residual
     else:
-        frequency = gaintable1.frequency.data
+        frequency = gaintable2.frequency.data
+        weight = gaintable2.weight
+        residual = gaintable2.residual
 
     # If the two tables have the same jones_type use that, otherwise use B.
     if gaintable1.jones_type == gaintable2.jones_type:
@@ -201,20 +203,18 @@ def multiply_gaintable_jones(gaintable1, gaintable2):
     else:
         jones_type = "B"
 
-    gaintable = GainTable.constructor(
+    return GainTable.constructor(
         gain=gain,
         time=gaintable1.time,
         interval=gaintable1.interval,
-        weight=gaintable1.weight,
-        residual=gaintable1.residual,
+        weight=weight,
+        residual=residual,
         frequency=frequency,
         receptor_frame=gaintable1.receptor_frame1,
         phasecentre=gaintable1.phasecentre,
         configuration=gaintable1.configuration,
         jones_type=jones_type,
     )
-
-    return gaintable
 
 
 def resample_bandpass(f_out, gaintable, alg="polyfit", edges=None):
