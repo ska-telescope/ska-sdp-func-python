@@ -23,6 +23,7 @@ def create_parset_from_context(
     calibration_context,
     global_solution,
     skymodel_filename,
+    solutions_filename,
 ):
     """Defines input parset for DP3 based on calibration context.
 
@@ -42,7 +43,7 @@ def create_parset_from_context(
     for calibration_control in calibration_context:
         parset = ParameterSet()
 
-        parset.add("gaincal.parmdb", "gaincal_solutions")
+        parset.add("gaincal.parmdb", solutions_filename)
         parset.add("gaincal.sourcedb", skymodel_filename)
         timeslice = controls[calibration_control]["timeslice"]
         if timeslice == "auto" or timeslice is None or timeslice <= 0.0:
@@ -63,15 +64,20 @@ def create_parset_from_context(
         parset.add("gaincal.applysolution", "true")
 
         if controls[calibration_control]["phase_only"]:
-            if controls[calibration_control]["shape"] == "matrix":
+            if controls[calibration_control]["shape"] == "vector":
                 parset.add("gaincal.caltype", "diagonalphase")
+            elif controls[calibration_control]["shape"] == "matrix":
+                parset.add("gaincal.caltype", "fulljones")
             else:
                 parset.add("gaincal.caltype", "scalarphase")
         else:
-            if controls[calibration_control]["shape"] == "matrix":
+            if controls[calibration_control]["shape"] == "vector":
                 parset.add("gaincal.caltype", "diagonal")
+            elif controls[calibration_control]["shape"] == "matrix":
+                parset.add("gaincal.caltype", "fulljones")
             else:
                 parset.add("gaincal.caltype", "scalar")
+
         parset_list.append(parset)
 
     return parset_list
@@ -82,6 +88,7 @@ def dp3_gaincal(
     calibration_context,
     global_solution,
     skymodel_filename="test.skymodel",
+    solutions_filename="gaincal.h5",
 ):
     """Calibrates visibilities using the DP3 package.
 
@@ -104,7 +111,11 @@ def dp3_gaincal(
     calibrated_vis = vis.copy(deep=True)
 
     parset_list = create_parset_from_context(
-        calibrated_vis, calibration_context, global_solution, skymodel_filename
+        calibrated_vis,
+        calibration_context,
+        global_solution,
+        skymodel_filename,
+        solutions_filename,
     )
 
     for parset in parset_list:
@@ -122,19 +133,8 @@ def dp3_gaincal(
         dpinfo = DPInfo(nr_correlations)
         dpinfo.set_channels(vis.frequency.data, vis.channel_bandwidth.data)
 
-        ant1 = []
-        ant2 = []
-
-        for k in numpy.arange(numpy.max(vis.antenna1.data) + 1):
-            for i in numpy.arange(k + 1):
-                ant1.append(i)
-                ant2.append(k)
-        baselines = list(zip(ant1, ant2))
-        bl_map = [list(vis.baselines.data).index(bl) for bl in baselines]
-        invert_bl_map = numpy.argsort(bl_map)
-
-        # antenna1 = vis.antenna1.data
-        # antenna2 = vis.antenna2.data
+        antenna1 = vis.antenna1.data
+        antenna2 = vis.antenna2.data
         antenna_names = vis.configuration.names.data
         antenna_positions = vis.configuration.xyz.data
         antenna_diameters = vis.configuration.diameter.data
@@ -142,8 +142,8 @@ def dp3_gaincal(
             antenna_names,
             antenna_diameters,
             antenna_positions,
-            ant1,
-            ant2,
+            antenna1,
+            antenna2,
         )
         first_time = vis.time.data[0]
         last_time = vis.time.data[-1]
@@ -158,16 +158,16 @@ def dp3_gaincal(
             dpbuffer.set_time(time)
             dpbuffer.set_data(
                 expand_polarizations(
-                    vis_per_timeslot.vis.data[bl_map], numpy.complex64
+                    vis_per_timeslot.vis.data, numpy.complex64
                 )
             )
             dpbuffer.set_uvw(-vis_per_timeslot.uvw.data)
             dpbuffer.set_flags(
-                expand_polarizations(vis_per_timeslot.flags.data[bl_map], bool)
+                expand_polarizations(vis_per_timeslot.flags.data, bool)
             )
             dpbuffer.set_weights(
                 expand_polarizations(
-                    vis_per_timeslot.weight.data[bl_map], numpy.float32
+                    vis_per_timeslot.weight.data, numpy.float32
                 )
             )
             gaincal_step.process(dpbuffer)
@@ -180,7 +180,7 @@ def dp3_gaincal(
             dpbuffer_from_queue = queue_step.queue.get()
             visibilities_out = numpy.array(
                 dpbuffer_from_queue.get_data(), copy=False
-            )[invert_bl_map]
+            )
             nr_polarizations = vis_per_timeslot.vis.data.shape[-1]
             if nr_polarizations == 4:
                 vis_per_timeslot.vis.data[:] = visibilities_out
