@@ -31,6 +31,8 @@ def create_parset_from_context(
     :param calibration_context: String giving terms to be calibrated e.g. 'TGB'
     :param global_solution: Find a single solution over all frequency channels
     :param skymodel_filename: Filename of the skymodel used by DP3
+    :param solutions_filename: Filename of the calibration solutions produced
+    by DP3. The easiest way to inspect the results is by using a .h5 extension.
     :return: list of parsets for the different calibrations to run
     """
 
