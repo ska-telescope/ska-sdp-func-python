@@ -20,7 +20,7 @@ ducc0 = "^0.27.0"
 numpy = "^1.23, <1.24"
 photutils = "^1.5.0"
 scipy = "^1.9.3"
-ska-sdp-datamodels = "^0.1.3"
+ska-sdp-datamodels = "^0.2.0"
 ska-sdp-func = { git = "https://gitlab.com/ska-telescope/sdp/ska-sdp-func.git", branch = "main"}
 xarray = "^2022.11.0"
 

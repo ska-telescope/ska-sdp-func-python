@@ -572,7 +572,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "ska-sdp-datamodels"
-version = "0.1.3"
+version = "0.2.0"
 description = "SKA SDP Python-based Data Models"
 category = "main"
 optional = false
@@ -675,7 +675,7 @@ radler = ["radler"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "7d65daa354e10da1c396ee215aa8791c5f0e534c2c223aaad20b445abf897714"
+content-hash = "d59e31c530802987ded55635d9b345d004ea93f1e90ec892e0bea715164fbc74"
 
 [metadata.files]
 astroid = []
@@ -756,8 +756,8 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 ska-sdp-datamodels = [
-    {file = "ska_sdp_datamodels-0.1.3-py3-none-any.whl", hash = "sha256:3a88b77822d97fa6bbe6797fa77e19c723fff366a91426ec2b49880db12994ce"},
-    {file = "ska_sdp_datamodels-0.1.3.tar.gz", hash = "sha256:21c86784d0f041cf8e733fe543ebd680eb966015d7c38e76d06516621f310e96"},
+    {file = "ska_sdp_datamodels-0.2.0-py3-none-any.whl", hash = "sha256:5dee47892beef065f107d5e3b75e7b18b8614b94583a8e321a5dfaec38abc05d"},
+    {file = "ska_sdp_datamodels-0.2.0.tar.gz", hash = "sha256:28e593f06f318f93fe49e28d7b1ac76279114b13a39b4684c781c31b5444ad21"},
 ]
 ska-sdp-func = []
 tomli = [
