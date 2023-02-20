@@ -1,7 +1,7 @@
 # Changelog
 
 
-main
+0.2.0
 ----
 * Fix mapping of calibration techniques between rascil and DP3, add more extensive tests ([MR30](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/30))
 
