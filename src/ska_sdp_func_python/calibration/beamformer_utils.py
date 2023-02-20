@@ -105,8 +105,8 @@ def expand_delay_phase(delaygaintable, frequency):
 
     gaintable = GainTable.constructor(
         gain=gain,
-        time=delaygaintable.time.data,
-        interval=delaygaintable.interval.data,
+        time=delaygaintable.time,
+        interval=delaygaintable.interval,
         weight=weight,
         residual=residual,
         frequency=frequency,
@@ -119,39 +119,103 @@ def expand_delay_phase(delaygaintable, frequency):
     return gaintable
 
 
+def _set_gaintable_product_shape(gaintable1, gaintable2):
+    """Determine the shape of the product of two GainTables
+
+    :param gaintable1: GainTable containing left-hand side Jones matrices
+    :param gaintable2: GainTable containing right-hand side Jones matrices
+    :return: Shape of the combined GainTable
+    """
+    gain1 = gaintable1.gain.data
+    gain2 = gaintable2.gain.data
+
+    if gain1.shape[0] != gain2.shape[0]:
+        raise ValueError("time error {gain1.shape[0]} != {gain2.shape[0]}")
+    if gain1.shape[1] != gain2.shape[1]:
+        raise ValueError("antenna error {gain1.shape[1]} != {gain2.shape[1]}")
+    # Tables must have the same number of channels, unless one set is constant
+    # with a single Jones matrix per time and antenna
+    if (
+        gain1.shape[2] != gain2.shape[2]
+        and gain1.shape[2] != 1
+        and gain2.shape[2] != 1
+    ):
+        raise ValueError("shape error {gain1.shape} != {gain2.shape}")
+    if gain1.shape[3] != gain2.shape[3]:
+        raise ValueError("shape error {gain1.shape[3]} != {gain2.shape[3]}")
+    if gain1.shape[4] != gain2.shape[4]:
+        raise ValueError("shape error {gain1.shape[4]} != {gain2.shape[4]}")
+    # Make sure that ncol of matrix 1 equals nrow of matrix 2
+    if gaintable1.receptor2.shape != gaintable2.receptor1.shape:
+        raise ValueError("Matrices not compatible for multiplication")
+
+    return (
+        gain1.shape[0],
+        gain1.shape[1],
+        max(gain1.shape[2], gain2.shape[2]),
+        gain1.shape[3],
+        gain2.shape[4],
+    )
+
+
 def multiply_gaintable_jones(gaintable1, gaintable2):
-    """Multiply the 2x2 Jones matrices for all times, antennas and frequencies
+    """Multiply the Jones matrices for all times, antennas and frequencies
     of two GainTables.
 
     :param gaintable1: GainTable containing left-hand side Jones matrices
     :param gaintable2: GainTable containing right-hand side Jones matrices
     :return: GainTable containing gaintable1 Jones * gaintable2 Jones
     """
+    if gaintable1.jones_type == "K" or gaintable2.jones_type == "K":
+        raise ValueError("Cannot multiply delays. Use expand_delay_phase")
+
+    shape = _set_gaintable_product_shape(gaintable1, gaintable2)
+
+    gain = numpy.empty(shape, "complex128")
+
     gain1 = gaintable1.gain.data
     gain2 = gaintable2.gain.data
 
-    if gain1.shape != gain2.shape:
-        raise ValueError("shape error {gain1.shape} != {gain2.shape}")
-
-    # Assume that these are standard square Jones matrices
-    # Could have a more general version:
-    #  - set gaintable.receptor1 = gaintable1.receptor1
-    #  - set gaintable.receptor2 = gaintable2.receptor2
-    #  - check that len(gaintable1.receptor2) == len(gaintable2.receptor1)
-    if gaintable1.receptor2.shape != gaintable2.receptor1.shape:
-        raise ValueError("Matrices not compatible for multiplication")
-
-    gaintable = gaintable1.copy(deep=True)
-    gain = gaintable.gain.data
-
-    shape = numpy.array(gain1.shape)
+    # Map output channel indices to input channel indices
+    chan1 = numpy.arange(shape[2]).astype("int")
+    chan2 = numpy.arange(shape[2]).astype("int")
+    if gain1.shape[2] == 1:
+        chan1 *= 0
+    if gain2.shape[2] == 1:
+        chan2 *= 0
 
     for time in range(0, shape[0]):
         for ant in range(0, shape[1]):
             for chan in range(0, shape[2]):
                 gain[time, ant, chan] = (
-                    gain1[time, ant, chan] @ gain2[time, ant, chan]
+                    gain1[time, ant, chan1[chan]]
+                    @ gain2[time, ant, chan2[chan]]
                 )
+
+    # Get the frequencies, noting that one set may be of length 1
+    if gain1.shape[2] > 1:
+        frequency = gaintable1.frequency.data
+    else:
+        frequency = gaintable1.frequency.data
+
+    # If the two tables have the same jones_type use that, otherwise use B.
+    if gaintable1.jones_type == gaintable2.jones_type:
+        jones_type = gaintable1.jones_type
+    else:
+        jones_type = "B"
+
+    gaintable = GainTable.constructor(
+        gain=gain,
+        time=gaintable1.time,
+        interval=gaintable1.interval,
+        weight=gaintable1.weight,
+        residual=gaintable1.residual,
+        frequency=frequency,
+        receptor_frame=gaintable1.receptor_frame1,
+        phasecentre=gaintable1.phasecentre,
+        configuration=gaintable1.configuration,
+        jones_type=jones_type,
+    )
 
     return gaintable
 
