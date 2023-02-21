@@ -251,7 +251,7 @@ def resample_bandpass(f_out, gaintable, alg="polyfit", edges=None):
     algorithms:
      - polyfit  numpy.polynomial.polyval [default]
      - interp   numpy.interp
-     - interp1d scipy.interpolate.interp1d, lind=linear
+     - interp1d scipy.interpolate.interp1d, kind=linear
      - cubicspl scipy.interpolate.CubicSpline
 
     :param f_out: numpy array of shape [nfreq_out,]
