@@ -4,7 +4,6 @@ beamformer calibration.
 """
 
 import logging
-import time as timer
 
 import numpy
 from numpy.polynomial import polynomial
@@ -69,7 +68,23 @@ def set_beamformer_frequencies(gaintable, array=None):
         log.warning("Unknown array: %s. Frequencies unchanged", array_name)
         return f_in
 
-    return numpy.arange(f0_out, numpy.amax(f_in), df_out)
+    f_out = numpy.arange(f0_out, numpy.amax(f_in), df_out)
+
+    log.info("Setting bandpass calibration frequencies for %s CBF", array)
+    log.info(" - %d input frequency channels", nf_in)
+    log.info(
+        " - input channel width: %.2f kHz, starting at %.2f MHz",
+        (f_in[1] - f_in[0]) / 1e3,
+        f_in[0] / 1e6,
+    )
+    log.info(" - %d output frequency channels", len(f_out))
+    log.info(
+        " - output channel width: %.2f kHz, starting at %.2f MHz",
+        df_out / 1e3,
+        f_out[0] / 1e6,
+    )
+
+    return f_out
 
 
 def expand_delay_phase(delaygaintable, frequency, reference_to_centre=True):
@@ -278,7 +293,6 @@ def resample_bandpass(f_out, gaintable, alg="polyfit", edges=None):
     shape_out = numpy.array(gain.shape)
     shape_out[2] = len(f_out)
     gain_out = numpy.empty(shape_out, "complex128")
-    timer0 = timer.perf_counter()
     for time in range(0, shape_out[0]):
         for ant in range(0, shape_out[1]):
             for rec1 in range(0, shape_out[3]):
@@ -286,8 +300,6 @@ def resample_bandpass(f_out, gaintable, alg="polyfit", edges=None):
                     gain_out[time, ant, :, rec1, rec2] = sel.interp(
                         f_out, f_in, gain[time, ant, :, rec1, rec2]
                     )
-    log.warning("%11s took %.1f seconds", alg, timer.perf_counter() - timer0)
-
     return gain_out
 
 
