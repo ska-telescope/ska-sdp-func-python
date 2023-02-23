@@ -23,6 +23,7 @@ def create_parset_from_context(
     calibration_context,
     global_solution,
     skymodel_filename,
+    solutions_filename,
 ):
     """Defines input parset for DP3 based on calibration context.
 
@@ -30,6 +31,8 @@ def create_parset_from_context(
     :param calibration_context: String giving terms to be calibrated e.g. 'TGB'
     :param global_solution: Find a single solution over all frequency channels
     :param skymodel_filename: Filename of the skymodel used by DP3
+    :param solutions_filename: Filename of the calibration solutions produced
+    by DP3. The easiest way to inspect the results is by using a .h5 extension.
     :return: list of parsets for the different calibrations to run
     """
 
@@ -42,7 +45,7 @@ def create_parset_from_context(
     for calibration_control in calibration_context:
         parset = ParameterSet()
 
-        parset.add("gaincal.parmdb", "gaincal_solutions")
+        parset.add("gaincal.parmdb", solutions_filename)
         parset.add("gaincal.sourcedb", skymodel_filename)
         timeslice = controls[calibration_control]["timeslice"]
         if timeslice == "auto" or timeslice is None or timeslice <= 0.0:
@@ -63,15 +66,20 @@ def create_parset_from_context(
         parset.add("gaincal.applysolution", "true")
 
         if controls[calibration_control]["phase_only"]:
-            if controls[calibration_control]["shape"] == "matrix":
+            if controls[calibration_control]["shape"] == "vector":
                 parset.add("gaincal.caltype", "diagonalphase")
+            elif controls[calibration_control]["shape"] == "matrix":
+                parset.add("gaincal.caltype", "fulljones")
             else:
                 parset.add("gaincal.caltype", "scalarphase")
         else:
-            if controls[calibration_control]["shape"] == "matrix":
+            if controls[calibration_control]["shape"] == "vector":
                 parset.add("gaincal.caltype", "diagonal")
+            elif controls[calibration_control]["shape"] == "matrix":
+                parset.add("gaincal.caltype", "fulljones")
             else:
                 parset.add("gaincal.caltype", "scalar")
+
         parset_list.append(parset)
 
     return parset_list
@@ -82,6 +90,7 @@ def dp3_gaincal(
     calibration_context,
     global_solution,
     skymodel_filename="test.skymodel",
+    solutions_filename="gaincal.h5",
 ):
     """Calibrates visibilities using the DP3 package.
 
@@ -104,7 +113,11 @@ def dp3_gaincal(
     calibrated_vis = vis.copy(deep=True)
 
     parset_list = create_parset_from_context(
-        calibrated_vis, calibration_context, global_solution, skymodel_filename
+        calibrated_vis,
+        calibration_context,
+        global_solution,
+        skymodel_filename,
+        solutions_filename,
     )
 
     for parset in parset_list:

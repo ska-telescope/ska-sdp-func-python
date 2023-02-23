@@ -4,6 +4,7 @@ Unit tests for dp3 calibration
 import importlib
 
 import astropy.units as u
+import h5py
 import numpy
 import pytest
 from astropy.coordinates import SkyCoord
@@ -16,6 +17,9 @@ from ska_sdp_datamodels.sky_model.sky_model import SkyComponent, SkyModel
 from ska_sdp_func_python.calibration.dp3_calibration import (
     create_parset_from_context,
     dp3_gaincal,
+)
+from ska_sdp_func_python.sky_model.skymodel_imaging import (
+    skymodel_predict_calibrate,
 )
 
 
@@ -55,7 +59,8 @@ def skycomponent():
 
 def test_dp3_gaincal(create_skycomponent, visibility):
     """
-    Test that DP3 calibration runs without throwing exception.
+    Test that DP3 calibration runs without throwing exception and provides
+    the expected result.
     Only run this test if DP3 is available.
     """
 
@@ -63,8 +68,27 @@ def test_dp3_gaincal(create_skycomponent, visibility):
         SkyModel(components=create_skycomponent), "test.skymodel"
     )
 
-    # Check that the call is successful
-    dp3_gaincal(visibility, ["T"], True)
+    skymodel_vis = skymodel_predict_calibrate(
+        visibility, SkyModel(components=create_skycomponent), context="ng"
+    )
+
+    dp3_gaincal(skymodel_vis, ["B"], True, solutions_filename="uncorrupted.h5")
+
+    h5_solutions = h5py.File("uncorrupted.h5", "r")
+    amplitude_uncorrupted = h5_solutions["sol000/amplitude000/val"][:]
+
+    corruption_factor = 16
+    skymodel_vis.vis.data = corruption_factor * skymodel_vis.vis.data
+    dp3_gaincal(skymodel_vis, ["B"], True, solutions_filename="corrupted.h5")
+
+    h5_solutions = h5py.File("corrupted.h5", "r")
+    amplitude_corrupted = h5_solutions["sol000/amplitude000/val"][:]
+
+    assert numpy.allclose(
+        amplitude_corrupted / amplitude_uncorrupted,
+        numpy.sqrt(corruption_factor),
+        atol=1e-08,
+    )
 
 
 def test_create_parset_from_context(visibility):
@@ -85,6 +109,7 @@ def test_create_parset_from_context(visibility):
         calibration_context_list,
         global_solution,
         "test.skymodel",
+        "solutions.h5",
     )
 
     assert len(parset_list) == len(calibration_context_list)
@@ -98,7 +123,7 @@ def test_create_parset_from_context(visibility):
             )
             assert parset_list[i].get_string("gaincal.solint") == "1"
         elif calibration_context_list[i] == "G":
-            assert parset_list[i].get_string("gaincal.caltype") == "scalar"
+            assert parset_list[i].get_string("gaincal.caltype") == "diagonal"
             nbins = max(
                 1,
                 numpy.ceil(
@@ -111,7 +136,7 @@ def test_create_parset_from_context(visibility):
             )
             assert parset_list[i].get_string("gaincal.solint") == str(nbins)
         elif calibration_context_list[i] == "B":
-            assert parset_list[i].get_string("gaincal.caltype") == "scalar"
+            assert parset_list[i].get_string("gaincal.caltype") == "diagonal"
             nbins = max(
                 1,
                 numpy.ceil(
