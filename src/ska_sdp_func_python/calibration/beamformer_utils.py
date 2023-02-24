@@ -260,19 +260,27 @@ def multiply_gaintable_jones(gaintable1, gaintable2, elementwise=False):
     )
 
 
-def resample_bandpass(f_out, gaintable, alg="polyfit", edges=None):
+def resample_bandpass(
+    f_out, gaintable, alg="polyfit", edges=None, polydeg=None
+):
     """Re-channelise each spectrum of gain or leakage terms
 
     algorithms:
      - polyfit  numpy.polynomial.polyval [default]
-     - interp   numpy.interp
-     - interp1d scipy.interpolate.interp1d, kind=linear
+           polynomial fit to the real and imaginary part of each calibration
+           parameter
      - cubicspl scipy.interpolate.CubicSpline
+           cubic spline fit to the real and imaginary part of each calibration
+           parameter
+     - interp   numpy.interp
+           binomial interpolation the real and imaginary part of each
+           calibration parameter
 
     :param f_out: numpy array of shape [nfreq_out,]
     :param gaintable: GainTable
     :param alg: algorithm type [default polyfit]
     :param edges: list of edges (polyfit only) [default none]
+    :param polydeg: degree of the fitting polynomial (polyfit only) [default 3]
     :return: numpy array of shape [nfreq_out,]
     """
 
@@ -282,12 +290,14 @@ def resample_bandpass(f_out, gaintable, alg="polyfit", edges=None):
         sel = PolynomialInterpolator()
         if edges is not None:
             sel.set_edges(edges)
+        if polydeg is not None:
+            sel.set_polydeg(polydeg)
     elif alg == "interp":
         sel = NumpyLinearInterpolator()
-    elif alg == "interp1d":
-        sel = ScipyLinearInterpolator()
     elif alg == "cubicspl":
         sel = ScipySplineInterpolator()
+    else:
+        raise ValueError(f"unknown resampler {alg}")
 
     gain = gaintable.gain.data
     shape_out = numpy.array(gain.shape)
@@ -321,7 +331,7 @@ class PolynomialInterpolator:
         Provide the start channels of any sub-bands requiring separate fits
 
     set_polydeg(polydeg):
-        Update the order of the polynomial fit
+        Update the degree of the fitting polynomial
 
     interp(self, f_out, f_in, gain):
         Do the interpolation for the gain in "gain"
@@ -427,53 +437,6 @@ class NumpyLinearInterpolator:  # pylint: disable=too-few-public-methods
 
         """
         return numpy.interp(f_out, f_in, gain)
-
-
-class ScipyLinearInterpolator:
-    """fit the data using the scipy interpolate interp1d function
-
-    Attributes
-    ----------
-    kind : str [default "linear"]
-        The kind of interpolation. Any supported by interp1d.
-
-    Methods
-    -------
-    set_kind(kind):
-        Update the kind of interpolation
-
-    interp(self, f_out, f_in, gain):
-        Do the interpolation for the gain in "gain"
-
-    """
-
-    def __init__(self):
-        self.kind = "linear"
-
-    def set_kind(self, kind):
-        """Update the kind of interpolation
-
-        :param kind: str [default "linear"]
-            The kind of interpolation. Any supported by interp1d
-
-        """
-        self.kind = kind
-
-    def interp(self, f_out, f_in, gain):
-        """Do the interpolation for the complex data in "gain"
-
-        :param f_out: numpy array of shape [len(f_out)]
-            final frequency values
-        :param f_in: numpy array of shape [len(f_in)]
-            initial frequency values
-        :param gain: numpy array of shape [len(f_in)]
-            complex sequence to interpolate
-        :return: numpy array of shape [len(f_out)]
-            interpolated complex sequence
-
-        """
-        func = interpolate.interp1d(f_in, gain, kind=self.kind)
-        return func(f_out)
 
 
 # could add the extrapolation options instead of disabling the pylint
