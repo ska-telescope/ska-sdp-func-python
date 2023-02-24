@@ -19,6 +19,14 @@ from tests.testing_utils import simulate_gaintable, vis_with_component_data
 def test_expand_delay_phase():
     """
     Test expand_delay_phase
+
+    CASA delay tables (gaintype="K" or "KCROSS") contain a single time delay
+    (in ns) for each time, antenna and polarisation. When read into GainTables,
+    these are converted to phase shifts at the table reference frequency so
+    that they can be stored as legitimate Jones matrices in the gain array.
+    Function expand_delay_phase() expands the phase shifts across a frequency
+    band. This test check that the phase shift expansion is linear with
+    frequency and is phase referenced at the reference frequency.
     """
 
     vis = vis_with_component_data(
@@ -62,6 +70,9 @@ def test_expand_delay_phase():
 def test_multiply_gaintable_jones():
     """
     Test multiply_gaintable_jones
+
+    Test 1: check the multiplication of full-band G with spectral B
+    Test 2: check the multiplication of spectral B with spectral Df
     """
 
     vis = vis_with_component_data(
@@ -142,6 +153,9 @@ def test_multiply_gaintable_jones():
 def test_set_beamformer_frequencies():
     """
     Test set_beamformer_frequencies (SKA-Low)
+
+    Check that SKA-Low frequencies have correct channel values
+    Also check the output band edges.
     """
 
     vis = vis_with_component_data(
@@ -158,9 +172,16 @@ def test_set_beamformer_frequencies():
     assert f_out[-1] <= set_beamformer_frequencies(gt)[-1]
 
 
+def _resample_func(freq):
+    return numpy.exp(1j * 2 * numpy.pi * 1e-8 * freq)
+
+
 def test_resample_bandpass():
     """
     Test resample_bandpass
+
+    Resample a low-resolution analytic function and check the values against
+    a high-resolution version of the analytic function.
     """
 
     vis = vis_with_component_data(
@@ -172,20 +193,16 @@ def test_resample_bandpass():
 
     f_out = set_beamformer_frequencies(gt)
 
-    # add a small gain change to one gain term and make sure the fits agree
+    # just change one gain term
     time = 2
     ant = 5
-    gt["gain"].data[time, ant, :, 0, 0] = numpy.exp(
-        1j * 2 * numpy.pi * 1e-8 * gt.frequency.data
-    )
+    gt["gain"].data[time, ant, :, 0, 0] = _resample_func(gt.frequency.data)
 
-    gaintrue = numpy.exp(1j * 2 * numpy.pi * 1e-8 * f_out)
+    gaintrue = _resample_func(f_out)
     gainfit1 = resample_bandpass(f_out, gt, alg="polyfit")
-    gainfit2 = resample_bandpass(f_out, gt, alg="interp")
-    gainfit3 = resample_bandpass(f_out, gt, alg="interp1d")
-    gainfit4 = resample_bandpass(f_out, gt, alg="cubicspl")
+    gainfit2 = resample_bandpass(f_out, gt, alg="cubicspl")
+    gainfit3 = resample_bandpass(f_out, gt, alg="interp")
 
     assert (numpy.abs(gainfit1[time, ant, :, 0, 0] - gaintrue) < 1e-4).all()
-    assert (numpy.abs(gainfit2[time, ant, :, 0, 0] - gaintrue) < 1e-2).all()
+    assert (numpy.abs(gainfit2[time, ant, :, 0, 0] - gaintrue) < 1e-4).all()
     assert (numpy.abs(gainfit3[time, ant, :, 0, 0] - gaintrue) < 1e-2).all()
-    assert (numpy.abs(gainfit4[time, ant, :, 0, 0] - gaintrue) < 1e-4).all()
