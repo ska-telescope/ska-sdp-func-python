@@ -14,7 +14,7 @@ log = logging.getLogger("func-python-logger")
 
 
 def set_beamformer_frequencies(gaintable, array=None):
-    """Generate a list of output frequencies
+    """Generate a list of CBF beamformer frequencies
 
     SKA-Low beamformer:
      - Need Jones matrices for 384, 304 or 152 channels, per antenna, per beam
@@ -28,6 +28,7 @@ def set_beamformer_frequencies(gaintable, array=None):
      - Need Jones matrices for 4096 channels, per antenna, per beam
      - Timing beam bandwidth : 200 MHz (channel width : 48.8281250 kHz?)
      - Search beam bandwidth : 300 MHz (channel width : 73.2421875 kHz?)
+     - Set first beamformer channel centre frequency to first input channel
 
     :param gaintable: GainTable
     :param array: optional argument to explicitly set the array. Should be
@@ -38,17 +39,14 @@ def set_beamformer_frequencies(gaintable, array=None):
 
     # determine array
     array_name = gaintable.configuration.name
-    # determine beamformer type
-    # bf_mode = ? get from function argument?
-    log.info("Setting frequency for the %s beamformer", array_name)
 
-    # initial frequencies
-    f_in = gaintable.frequency.data
-    nf_in = len(f_in)
+    # initial gaintable frequencies
+    frequency_gt = gaintable.frequency.data
+    nfrequency_gt = len(frequency_gt)
 
-    if nf_in <= 1:
-        log.warning("Cannot rechannelise %d channel[s]", nf_in)
-        return f_in
+    if nfrequency_gt <= 1:
+        log.warning("Cannot rechannelise %d channel[s]", nfrequency_gt)
+        return frequency_gt
 
     if array is None:
         if array_name.find("LOW") == 0:
@@ -58,33 +56,37 @@ def set_beamformer_frequencies(gaintable, array=None):
 
     if array == "LOW":
         log.debug("Setting SKA-Low CBF beamformer frequencies")
-        df_out = 781.25e3
-        f0_out = df_out * numpy.round(numpy.amin(f_in) / df_out)
+        dfrequency_bf = 781.25e3
+        starting_freq_bf = dfrequency_bf * numpy.round(
+            numpy.amin(frequency_gt) / dfrequency_bf
+        )
     elif array == "MID":
         log.debug("Setting SKA-Mid CBF beamformer frequencies")
-        df_out = 300e6 / 4096
-        f0_out = numpy.amin(f_in)  # are there specific channel centres?
+        dfrequency_bf = 300.0e6 / 4096
+        starting_freq_bf = numpy.amin(frequency_gt)
     else:
         log.warning("Unknown array: %s. Frequencies unchanged", array_name)
-        return f_in
+        return frequency_gt
 
-    f_out = numpy.arange(f0_out, numpy.amax(f_in), df_out)
+    frequency_bf = numpy.arange(
+        starting_freq_bf, numpy.amax(frequency_gt), dfrequency_bf
+    )
 
     log.info("Setting bandpass calibration frequencies for %s CBF", array)
-    log.info(" - %d input frequency channels", nf_in)
+    log.info(" - %d input frequency channels", nfrequency_gt)
     log.info(
         " - input channel width: %.2f kHz, starting at %.2f MHz",
-        (f_in[1] - f_in[0]) / 1e3,
-        f_in[0] / 1e6,
+        (frequency_gt[1] - frequency_gt[0]) / 1e3,
+        frequency_gt[0] / 1e6,
     )
-    log.info(" - %d output frequency channels", len(f_out))
+    log.info(" - %d output frequency channels", len(frequency_bf))
     log.info(
         " - output channel width: %.2f kHz, starting at %.2f MHz",
-        df_out / 1e3,
-        f_out[0] / 1e6,
+        dfrequency_bf / 1e3,
+        frequency_bf[0] / 1e6,
     )
 
-    return f_out
+    return frequency_bf
 
 
 def expand_delay_phase(delaygaintable, frequency, reference_to_centre=True):
