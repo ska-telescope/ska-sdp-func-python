@@ -1,5 +1,8 @@
 # Changelog
 
+main
+----
+* Fixing function inputs in chain_calibration.py ([MR31](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/31))
 
 0.2.0
 ----
