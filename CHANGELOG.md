@@ -2,7 +2,7 @@
 
 main
 ----
-* Added utility functions to support rechannelisation of bandpass and delay solutions for CBF beamformer calibration
+* Added utility functions to support rechannelisation of bandpass and delay solutions for CBF beamformer calibration ([MR29](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/29))
 
 0.2.0
 ----
