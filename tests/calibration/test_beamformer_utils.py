@@ -171,7 +171,7 @@ def test_multiply_gaintable_jones_BD():
     assert numpy.array_equal(J1 @ J2, J)
 
 
-def test_set_beamformer_frequencies():
+def test_set_beamformer_frequencies_low():
     """
     Test set_beamformer_frequencies (SKA-Low)
 
@@ -187,10 +187,36 @@ def test_set_beamformer_frequencies():
     gt = create_gaintable_from_visibility(vis, jones_type=jones_type)
     assert gt.frequency.shape[0] == 5
 
-    f_out = set_beamformer_frequencies(gt)
-    assert (set_beamformer_frequencies(gt) % 781.25e3 == 0).all()
-    assert f_out[0] >= set_beamformer_frequencies(gt)[0]
-    assert f_out[-1] <= set_beamformer_frequencies(gt)[-1]
+    frequency = set_beamformer_frequencies(gt)
+    assert (frequency % 781.25e3 == 0).all()
+    assert frequency[0] >= vis.frequency[0]
+    assert frequency[-1] <= vis.frequency[-1]
+
+
+def test_set_beamformer_frequencies_mid():
+    """
+    Test set_beamformer_frequencies (SKA-Mid)
+
+    Check that SKA-Mid frequencies have correct channel values
+    Also check the output band edges.
+    """
+
+    vis = vis_with_component_data(
+        "stokesIQUV", "linear", [1.0, 0.0, 0.0, 0.0], nchan=100, ntimes=4
+    )
+
+    # vis is created at LOW frequencies. Change to be a MID band
+    chan_width = 7.0e3
+    vis["frequency"] = 1.0e9 + chan_width * numpy.arange(0, 100)
+
+    jones_type = "B"
+    gt = create_gaintable_from_visibility(vis, jones_type=jones_type)
+    assert gt.frequency.shape[0] == 100
+
+    frequency = set_beamformer_frequencies(gt)
+    assert (numpy.abs(numpy.diff(frequency) - 300.0e6 / 4096) < 1e-9).all()
+    assert frequency[0] >= vis.frequency[0]
+    assert frequency[-1] <= vis.frequency[-1]
 
 
 def _resample_func(freq):
@@ -212,17 +238,17 @@ def test_resample_bandpass():
     jones_type = "B"
     gt = create_gaintable_from_visibility(vis, jones_type=jones_type)
 
-    f_out = set_beamformer_frequencies(gt)
+    frequency = set_beamformer_frequencies(gt)
 
     # just change one gain term
     time = 2
     ant = 5
     gt["gain"].data[time, ant, :, 0, 0] = _resample_func(gt.frequency.data)
 
-    gaintrue = _resample_func(f_out)
-    gainfit1 = resample_bandpass(f_out, gt, alg="polyfit")
-    gainfit2 = resample_bandpass(f_out, gt, alg="cubicspl")
-    gainfit3 = resample_bandpass(f_out, gt, alg="interp")
+    gaintrue = _resample_func(frequency)
+    gainfit1 = resample_bandpass(frequency, gt, alg="polyfit")
+    gainfit2 = resample_bandpass(frequency, gt, alg="cubicspl")
+    gainfit3 = resample_bandpass(frequency, gt, alg="interp")
 
     assert (numpy.abs(gainfit1[time, ant, :, 0, 0] - gaintrue) < 1e-4).all()
     assert (numpy.abs(gainfit2[time, ant, :, 0, 0] - gaintrue) < 1e-4).all()
