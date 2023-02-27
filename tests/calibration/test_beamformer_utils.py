@@ -67,12 +67,11 @@ def test_expand_delay_phase():
     ).all()
 
 
-def test_multiply_gaintable_jones():
+def test_multiply_gaintable_jones_GB():
     """
     Test multiply_gaintable_jones
 
-    Test 1: check the multiplication of full-band G with spectral B
-    Test 2: check the multiplication of spectral B with spectral Df
+    Check the multiplication of full-band G with spectral B
     """
 
     vis = vis_with_component_data(
@@ -112,6 +111,28 @@ def test_multiply_gaintable_jones():
     J2 = gt2.gain.data[time, ant, chan]
     J = gt.gain.data[time, ant, chan]
     assert numpy.array_equal(J1 @ J2, J)
+
+    jones_type = "B"
+    gt1 = create_gaintable_from_visibility(vis, jones_type=jones_type)
+    assert gt1.frequency.shape[0] == 5
+
+    jones_type = "B"
+    gt2 = create_gaintable_from_visibility(vis, jones_type=jones_type)
+    assert gt2.frequency.shape[0] == 5
+    # make the Jones type D
+    gt2["jones_type"] = "D"
+
+
+def test_multiply_gaintable_jones_BD():
+    """
+    Test multiply_gaintable_jones
+
+    Check the multiplication of spectral B with spectral Df
+    """
+
+    vis = vis_with_component_data(
+        "stokesIQUV", "linear", [1.0, 0.0, 0.0, 0.0], nchan=5, ntimes=4
+    )
 
     jones_type = "B"
     gt1 = create_gaintable_from_visibility(vis, jones_type=jones_type)
