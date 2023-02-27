@@ -289,15 +289,15 @@ def resample_bandpass(
     frequency_gt = gain_table.frequency.data
 
     if alg == "polyfit":
-        sel = PolynomialInterpolator()
+        interpolator = PolynomialInterpolator()
         if edges is not None:
-            sel.set_edges(edges)
+            interpolator.set_edges(edges)
         if polydeg is not None:
-            sel.set_polydeg(polydeg)
+            interpolator.set_polydeg(polydeg)
     elif alg == "interp":
-        sel = NumpyLinearInterpolator()
+        interpolator = NumpyLinearInterpolator()
     elif alg == "cubicspl":
-        sel = ScipySplineInterpolator()
+        interpolator = ScipySplineInterpolator()
     else:
         raise ValueError(f"unknown resampler {alg}")
 
@@ -309,7 +309,7 @@ def resample_bandpass(
         for ant in range(0, shape_out[1]):
             for rec1 in range(0, shape_out[3]):
                 for rec2 in range(0, shape_out[4]):
-                    gain_out[time, ant, :, rec1, rec2] = sel.interp(
+                    gain_out[time, ant, :, rec1, rec2] = interpolator.interp(
                         frequency_out,
                         frequency_gt,
                         gain[time, ant, :, rec1, rec2],
