@@ -23,7 +23,7 @@ log = logging.getLogger("func-python-logger")
 log.setLevel(logging.WARNING)
 
 
-@pytest.mark.parametrize("context", ["T", "TG", "B"])
+@pytest.mark.parametrize("context", ["T", "TG", "B", "GB"])
 def test_apply_calibration_chain(context):
     """
     Unit test for apply_calibration_chain
@@ -46,7 +46,7 @@ def test_apply_calibration_chain(context):
     )
 
     # Visibility is changed only when context is "T"
-    if context == "T":
+    if context in ["T", "TG"]:
         assert not numpy.array_equal(original["vis"].data, new_vis["vis"].data)
         err = numpy.max(
             numpy.abs(
