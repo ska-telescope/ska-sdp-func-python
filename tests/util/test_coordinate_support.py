@@ -157,11 +157,18 @@ def test_skycoord_to_lmn():
 SKY_COORD_1 = SkyCoord(17, 35, unit=u.deg)
 
 
-@pytest.mark.parametrize("source_position, phase_center, new_phase_center", [
-    (SKY_COORD_1, SKY_COORD_1, SKY_COORD_1),
-    (SKY_COORD_1, SkyCoord(12, 30, unit=u.deg), SkyCoord(51, 35, unit=u.deg)),
-    (SkyCoord(11, 35, unit=u.deg), SKY_COORD_1, SKY_COORD_1)
-])
+@pytest.mark.parametrize(
+    "source_position, phase_center, new_phase_center",
+    [
+        (SKY_COORD_1, SKY_COORD_1, SKY_COORD_1),
+        (
+            SKY_COORD_1,
+            SkyCoord(12, 30, unit=u.deg),
+            SkyCoord(51, 35, unit=u.deg),
+        ),
+        (SkyCoord(11, 35, unit=u.deg), SKY_COORD_1, SKY_COORD_1),
+    ],
+)
 def test_phase_rotate(source_position, phase_center, new_phase_center):
     """
     This test combines various functions previously tested to see that they
