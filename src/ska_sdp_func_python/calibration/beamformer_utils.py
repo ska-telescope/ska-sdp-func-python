@@ -149,12 +149,13 @@ def expand_delay_phase(gain_table, frequency, reference_to_centre=True):
     )
 
 
-def _set_gaintable_product_shape(gain_table1, gain_table2, elementwise):
+def _set_gaintable_product_shape(gain_table1, gain_table2, elementwise=False):
     """Determine the shape of the product of two GainTables
 
     :param gain_table1: GainTable containing left-hand side Jones matrices
     :param gain_table2: GainTable containing right-hand side Jones matrices
     :param elementwise: Do elementwise multiplication of calibration terms
+        Default is False.
     :return: Shape of the combined GainTable
     """
     gain1 = gain_table1.gain.data
