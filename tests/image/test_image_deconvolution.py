@@ -7,7 +7,6 @@ from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
 from ska_sdp_func_python.image.cleaners import overlapIndices
 from ska_sdp_func_python.image.deconvolution import (
@@ -23,7 +22,6 @@ from ska_sdp_func_python.imaging.imaging import (
     invert_visibility,
     predict_visibility,
 )
-from ska_sdp_func_python.sky_component.operations import restore_skycomponent
 
 
 @pytest.fixture(scope="module", name="predicted_vis")
