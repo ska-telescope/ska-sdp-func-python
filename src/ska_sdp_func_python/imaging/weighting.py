@@ -49,12 +49,20 @@ def weight_visibility(vis, model, weighting="uniform", robustness=0.0):
     assert isinstance(model, Image), model
     assert model.image_acc.is_canonical()
 
+    # If weighting is natural, doesn't need to calculate griddata
+    if weighting == "natural":
+        return griddata_visibility_reweight(vis, None, weighting=weighting)
+
     griddata = create_griddata_from_image(
         model, polarisation_frame=vis.visibility_acc.polarisation_frame
     )
-    griddata, _ = grid_visibility_weight_to_griddata(vis, griddata)
+    griddata, sumwt = grid_visibility_weight_to_griddata(vis, griddata)
     vis = griddata_visibility_reweight(
-        vis, griddata, weighting=weighting, robustness=robustness
+        vis,
+        griddata,
+        weighting=weighting,
+        robustness=robustness,
+        sumwt=sumwt,
     )
 
     return vis

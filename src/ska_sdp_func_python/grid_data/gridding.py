@@ -1,3 +1,5 @@
+# pylint: disable=too-many-boolean-expressions
+
 """
 Gridding functions
 """
@@ -148,8 +150,11 @@ def spatial_mapping(griddata, u, v, w, cf=None):
     pu_grid, pv_grid = numpy.round(
         grid_wcs.sub([1, 2]).wcs_world2pix(u, v, 0)
     ).astype("int")
-
-    return pu_grid, pv_grid
+    # Conjugate visibilities (u,v)->(-u, -v)
+    pu_grid_conjugate, pv_grid_conjugate = numpy.round(
+        grid_wcs.sub([1, 2]).wcs_world2pix(-u, -v, 0)
+    ).astype("int")
+    return pu_grid, pv_grid, pu_grid_conjugate, pv_grid_conjugate
 
 
 def grid_visibility_to_griddata(vis, griddata, cf):
@@ -181,7 +186,7 @@ def grid_visibility_to_griddata(vis, griddata, cf):
             [nrows * nbaselines, nvchan, nvpol]
         ).T
     )
-    fwtt = numpy.nan_to_num(
+    fimwtt = numpy.nan_to_num(
         vis.visibility_acc.flagged_imaging_weight.reshape(
             [nrows * nbaselines, nvchan, nvpol]
         ).T
@@ -236,9 +241,9 @@ def grid_visibility_to_griddata(vis, griddata, cf):
                     (pv_grid[row] - dv) : (pv_grid[row] + dv),
                     (pu_grid[row] - du) : (pu_grid[row] + du),
                 ] += (
-                    subcf * fvist[pol, vchan, row] * fwtt[pol, vchan, row]
+                    subcf * fvist[pol, vchan, row] * fimwtt[pol, vchan, row]
                 )
-                sumwt[imchan, pol] += fwtt[pol, vchan, row]
+                sumwt[imchan, pol] += fimwtt[pol, vchan, row]
             if num_skipped > 0:
                 log.warning(
                     "warning visibility_to_griddata gridding: "
@@ -279,14 +284,19 @@ def grid_visibility_weight_to_griddata(vis, griddata: GridData):
 
     # Note that we are gridding with the imaging_weight, not the weight
     # Transpose to get row varying fastest
-    fwtt = vis.visibility_acc.flagged_imaging_weight.reshape(
+    fwtt = vis.visibility_acc.flagged_weight.reshape(
         [nrows * nbaselines, nvchan, nvpol]
     ).T
 
     for vchan in range(nvchan):
         imchan = vis_to_im[vchan]
         # pylint: disable=unbalanced-tuple-unpacking
-        pu_grid, pv_grid = convolution_mapping_visibility(vis, griddata, vchan)
+        (
+            pu_grid,
+            pv_grid,
+            pu_grid_conjugate,
+            pv_grid_conjugate,
+        ) = convolution_mapping_visibility(vis, griddata, vchan)
         num_skipped = 0
         for pol in range(nvpol):
             for row in range(nrows * nbaselines):
@@ -296,6 +306,10 @@ def grid_visibility_weight_to_griddata(vis, griddata: GridData):
                     or pv_grid[row] >= real_gd.shape[2]
                     or pu_grid[row] < 0
                     or pu_grid[row] >= real_gd.shape[3]
+                    or pv_grid_conjugate[row] < 0
+                    or pv_grid_conjugate[row] >= real_gd.shape[2]
+                    or pu_grid_conjugate[row] < 0
+                    or pu_grid_conjugate[row] >= real_gd.shape[3]
                 ):
                     num_skipped += 1
                     continue
@@ -303,7 +317,11 @@ def grid_visibility_weight_to_griddata(vis, griddata: GridData):
                 real_gd[imchan, pol, pv_grid[row], pu_grid[row]] += fwtt[
                     pol, vchan, row
                 ]
-                sumwt[imchan, pol] += fwtt[pol, vchan, row]
+                real_gd[
+                    imchan, pol, pv_grid_conjugate[row], pu_grid_conjugate[row]
+                ] += fwtt[pol, vchan, row]
+
+                sumwt[imchan, pol] += fwtt[pol, vchan, row] * 2
             if num_skipped > 0:
                 log.warning(
                     "warning visibility_weight_to_griddata gridding: "
@@ -342,7 +360,7 @@ def griddata_merge_weights(gd_list):
 
 
 def griddata_visibility_reweight(
-    vis, griddata, weighting="uniform", robustness=0.0
+    vis, griddata, weighting="uniform", robustness=0.0, sumwt=None
 ):
     """
     Reweight visibility weight using the weights in griddata.
@@ -353,18 +371,24 @@ def griddata_visibility_reweight(
     :param vis: visibility to be reweighted
     :param weighting: Mode of weighting, e.g. natural, uniform or robust
     :param robustness: Robustness parameter
+    :param sumwt: Sum value of all weightings
     :return: Visibility with imaging_weights corrected
     """
-    assert (
-        vis.visibility_acc.polarisation_frame
-        == griddata.griddata_acc.polarisation_frame
-    )
+    if griddata is not None:
+        assert (
+            vis.visibility_acc.polarisation_frame
+            == griddata.griddata_acc.polarisation_frame
+        )
 
     assert weighting in [
         "natural",
         "uniform",
         "robust",
     ], f"Weighting {weighting} not supported"
+
+    if weighting == "natural":
+        vis.imaging_weight.data[...] = vis.weight.data[...]
+        return vis
 
     real_gd = numpy.real(griddata["pixels"].data)
 
@@ -378,38 +402,46 @@ def griddata_visibility_reweight(
     fimwtt = vis.visibility_acc.flagged_imaging_weight.reshape(
         [nrows * nbaselines, nvchan, nvpol]
     ).T
-
-    if weighting == "natural":
-        vis.imaging_weight.data[...] = vis.weight.data[...]
-        return vis
+    fwtt = vis.visibility_acc.flagged_weight.reshape(
+        [nrows * nbaselines, nvchan, nvpol]
+    ).T
 
     # All cases preserve the scaling such that a signal point in a grid cell
     # is unaffected. This means that the sensitivity may be calculated from
     # the sum of gridded weights
 
-    sumlocwt = numpy.sum(real_gd**2)
-    sumwt = numpy.sum(vis.visibility_acc.flagged_weight)
-
     if weighting == "robust":
         # Larger +ve robustness tends to natural weighting
         # Larger -ve robustness tends to uniform weighting
+        sumlocwt = numpy.sum(real_gd**2)
+        if sumwt is None:
+            sumwt = (
+                numpy.sum(vis.visibility_acc.flagged_weight) * 2
+            )  # conjunction with 2 times
+        else:
+            sumwt = numpy.sum(sumwt)
         f2 = (5.0 * numpy.power(10.0, -robustness)) ** 2 * sumwt / sumlocwt
 
-    for pol in range(nvpol):
-        for vchan in range(nvchan):
-            imchan = vis_to_im[vchan]
-            # pylint: disable=unbalanced-tuple-unpacking
-            (
-                pu_grid,
-                pv_grid,
-            ) = convolution_mapping_visibility(vis, griddata, vchan)
-
+    for vchan in range(nvchan):
+        imchan = vis_to_im[vchan]
+        # pylint: disable=unbalanced-tuple-unpacking
+        (
+            pu_grid,
+            pv_grid,
+            pu_grid_conjugate,
+            pv_grid_conjugate,
+        ) = convolution_mapping_visibility(vis, griddata, vchan)
+        for pol in range(nvpol):
             # drop underflows
             v_overflows_mask = numpy.logical_or(
                 pv_grid >= real_gd.shape[2], pv_grid < 0
+            ) | numpy.logical_or(
+                pv_grid_conjugate >= real_gd.shape[2], pv_grid_conjugate < 0
             )
             u_overflows_mask = numpy.logical_or(
                 pu_grid >= real_gd.shape[3], pu_grid < 0
+            ) | numpy.logical_or(
+                pu_grid_conjugate >= real_gd.shape[3], pu_grid_conjugate < 0
             )
             uv_ingrid_mask = ~numpy.logical_or(
                 u_overflows_mask, v_overflows_mask
@@ -436,8 +468,8 @@ def griddata_visibility_reweight(
                 # equation for infinite robustness
                 fimwtt[pol, vchan, :][
                     numpy.logical_and(uv_ingrid_mask, gdwt_all > 0.0)
-                ] *= (
-                    fimwtt[pol, vchan, :][
+                ] = (
+                    fwtt[pol, vchan, :][
                         numpy.logical_and(uv_ingrid_mask, gdwt_all > 0.0)
                     ]
                     / gdwt_all[gdwt_all > 0.0]
@@ -448,10 +480,8 @@ def griddata_visibility_reweight(
                 # http://www.aoc.nrao.edu/dissertations/dbriggs/
                 fimwtt[pol, vchan, :][
                     numpy.logical_and(uv_ingrid_mask, gdwt_all > 0.0)
-                ] *= (
-                    1
-                    + f2
-                    * fimwtt[pol, vchan, :][
+                ] = (
+                    fwtt[pol, vchan, :][
                         numpy.logical_and(uv_ingrid_mask, gdwt_all > 0.0)
                     ]
                 ) / (

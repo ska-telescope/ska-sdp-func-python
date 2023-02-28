@@ -13,6 +13,7 @@ __all__ = [
     "convert_visibility_to_stokes",
     "convert_visibility_to_stokesI",
     "convert_visibility_stokesI_to_polframe",
+    "expand_polarizations",
 ]
 
 import logging
@@ -125,7 +126,7 @@ def remove_continuum_visibility(
     x = (vis.frequency - vis.frequency[nchan // 2]) / (
         vis.frequency[0] - vis.frequency[nchan // 2]
     )
-    for row in range(vis.nvis):
+    for row in range(vis.visibility_acc.nvis):
         for ibaseline, _ in enumerate(vis.baselines):
             for pol in range(vis.visibility_acc.polarisation_frame.npol):
                 wt = numpy.sqrt(
@@ -319,7 +320,8 @@ def convert_visibility_to_stokes(vis):
         vis["flags"].data[...] = numpy.logical_or(
             vis.flags.data[..., 0], vis.flags.data[..., 3]
         )[..., numpy.newaxis]
-        vis.attrs["polarisation_frame"] = PolarisationFrame("stokesIQUV")
+        vis.attrs["_polarisation_frame"] = "stokesIQUV"
+
     elif poldef == PolarisationFrame("circular"):
         vis["vis"].data[...] = convert_circular_to_stokes(
             vis["vis"].data, polaxis=3
@@ -327,7 +329,7 @@ def convert_visibility_to_stokes(vis):
         vis["flags"].data[...] = numpy.logical_or(
             vis.flags.data[..., 0], vis.flags.data[..., 3]
         )[..., numpy.newaxis]
-        vis.attrs["polarisation_frame"] = PolarisationFrame("stokesIQUV")
+        vis.attrs["_polarisation_frame"] = "stokesIQUV"
     return vis
 
 
@@ -467,3 +469,35 @@ def convert_visibility_stokesI_to_polframe(vis, poldef=None):
     )
     new_vis.imaging_weight = vis_imaging_weight
     return new_vis
+
+
+def expand_polarizations(data, dtype=None):
+    """
+    Expand number of polarizations to four
+    Optionally change the data type
+
+    :param data: numpy array containing visibility data. It has dimensions
+                (frequency, baselines, polarizations)
+    :param dtype: optional data type
+    :return: numpy array containing the input visibility data, where the
+            polarizations dimension is fixed to 4 (data is copied)
+    """
+
+    if dtype is None:
+        dtype = data.dtype
+    nr_polarizations = data.shape[-1]
+    if (nr_polarizations == 4) and (dtype == data.dtype):
+        # Nothing to do
+        # Return unmodified input
+        return data
+    new_shape = data.shape[:-1] + (4,)
+    data_out = numpy.zeros(new_shape, dtype=dtype)
+    if nr_polarizations == 4:
+        data_out[:] = data
+    elif nr_polarizations == 2:
+        data_out[:, :, 0] = data[:, :, 0]
+        data_out[:, :, 3] = data[:, :, 1]
+    else:
+        data_out[:, :, 0] = data[:, :, 0]
+        data_out[:, :, 3] = data[:, :, 0]
+    return data_out

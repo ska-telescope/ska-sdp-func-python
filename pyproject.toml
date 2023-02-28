@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ska-sdp-func-python"
-version = "0.1.2"
+version = "0.2.0"
 description = "SKA SDP Python-Based Processing Functions"
 authors = ["SKA SDP Developers"]
 license = "Apache 2.0"
@@ -16,10 +16,11 @@ python = "^3.9"
 astroplan = "^0.8"
 astropy = "^5.1"
 ducc0 = "^0.27.0"
-numpy = "^1.23.4"
+# numpy version set to be compatible with RASCIL
+numpy = "^1.23, <1.24"
 photutils = "^1.5.0"
 scipy = "^1.9.3"
-ska-sdp-datamodels = "^0.1.2"
+ska-sdp-datamodels = "^0.2.0"
 ska-sdp-func = { git = "https://gitlab.com/ska-telescope/sdp/ska-sdp-func.git", branch = "main"}
 xarray = "^2022.11.0"
 
@@ -27,11 +28,14 @@ xarray = "^2022.11.0"
 cupy = {version = "^11.3.0", optional = true}
 pyfftw = {version = "^0.13.0", optional = true}
 radler = {version = "^0.0.1", optional = true}
+dp3 = {version = "^5.4.0", optional = true}
 
 [tool.poetry.extras]
 fft_support = ["pyfftw"]
 gpu = ["cupy"]
 radler = ["radler"]
+dp3 = ["dp3"]
+h5py = ["h5py"]
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"

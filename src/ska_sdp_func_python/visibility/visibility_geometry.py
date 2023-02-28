@@ -9,7 +9,7 @@ __all__ = [
     "calculate_visibility_transit_time",
 ]
 
-from astropy.coordinates import EarthLocation, SkyCoord
+from astropy.coordinates import EarthLocation
 from astropy.time import Time
 from astropy.units import Quantity
 
@@ -24,6 +24,7 @@ from ska_sdp_func_python.util.geometry import (
 def get_direction_time_location(bvis):
     """
     Get the direction, time and location from Visibility data.
+    This function is used by the other calculation functions.
 
     :param bvis: Visibility
     return: Location, UTC time, direction (SkyCoord)
@@ -38,10 +39,7 @@ def get_direction_time_location(bvis):
 
     utc_time = Time(bvis.time / 86400.0, format="mjd", scale="utc")
     direction = bvis.phasecentre
-    # assert isinstance(bvis, Visibility), bvis
-    assert isinstance(location, EarthLocation), location
-    assert isinstance(utc_time, Time), utc_time
-    assert isinstance(direction, SkyCoord), direction
+
     return location, utc_time, direction
 
 
