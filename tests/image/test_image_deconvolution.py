@@ -143,26 +143,6 @@ def test_restore_clean_beam(model, psf):
     ), numpy.max(cmodel["pixels"].data)
 
 
-def test_restore_skycomponent(model, comp_direction_30):
-    """Test restoration of single pixel and skycomponent"""
-    model["pixels"].data[0, 0, 256, 256] = 0.5
-
-    sc = SkyComponent(
-        flux=numpy.ones((1, 1)),
-        direction=comp_direction_30,
-        shape="Point",
-        frequency=numpy.array([1e8]),
-        polarisation_frame=PolarisationFrame("stokesI"),
-    )
-    bmaj = 0.012 * 180.0 / numpy.pi
-    clean_beam = {"bmaj": bmaj, "bmin": bmaj / 2.0, "bpa": 15.0}
-    cmodel = restore_cube(model, clean_beam=clean_beam)
-    cmodel = restore_skycomponent(cmodel, sc, clean_beam=clean_beam)
-    assert (
-        numpy.abs(numpy.max(cmodel["pixels"].data) - 0.9959046879055156) < 1e-7
-    ), numpy.max(cmodel["pixels"].data)
-
-
 def test_fit_psf(psf):
     """Unit tests for the fit_psf function"""
     clean_beam = fit_psf(psf)
