@@ -414,8 +414,6 @@ class PolynomialInterpolator:
         return gain_out
 
 
-# could add the extrapolation options instead of disabling the pylint
-# error, or just remove this interpolator. It is pretty simple and fast.
 class NumpyLinearInterpolator:  # pylint: disable=too-few-public-methods
     """fit the data using the numpy interp function
 
@@ -443,7 +441,6 @@ class NumpyLinearInterpolator:  # pylint: disable=too-few-public-methods
         return numpy.interp(freq_out, freq_in, gain)
 
 
-# could add the extrapolation options instead of disabling the pylint
 class ScipySplineInterpolator:  # pylint: disable=too-few-public-methods
     """fit the data using the scipy interpolate CubicSpline function
 
