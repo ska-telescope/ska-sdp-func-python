@@ -415,12 +415,14 @@ class PolynomialInterpolator:
         return gain_out
 
 
-class NumpyLinearInterpolator:  # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
+# this class is simple, but keep its form consistent with other interpolators
+# more interpolator-specific functionality may also need to be added
+class NumpyLinearInterpolator:
     """fit the data using the numpy interp function
 
     Methods
     -------
-
     interp(self, freq_out, freq_in, gain):
         Do the interpolation for the gain in "gain"
 
@@ -442,7 +444,10 @@ class NumpyLinearInterpolator:  # pylint: disable=too-few-public-methods
         return numpy.interp(freq_out, freq_in, gain)
 
 
-class ScipySplineInterpolator:  # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
+# this class is simple, but keep its form consistent with other interpolators
+# more interpolator-specific functionality may also need to be added
+class ScipySplineInterpolator:
     """fit the data using the scipy interpolate CubicSpline function
 
     Methods
