@@ -33,7 +33,8 @@ def create_calibration_controls():
         T: Atmospheric phase
         G: Electronic gains
         B: Bandpass
-        (Not supported)
+
+    Not supported:
         P: Polarisation
         I: Ionosphere
 
@@ -88,13 +89,15 @@ def apply_calibration_chain(
 
     :param vis: Visibility
     :param gaintables: Calibrated gaintables
-                       Can be a GainTable, a List or a Dict
+                       Can be a GainTable, a List or a Dict of GainTables
     :param calibration_context: calibration contexts in order
                     of correction e.g. 'TGB'
     :param controls: Controls dictionary, modified as necessary
     :param iteration: Iteration number to be compared
                     to the 'first_selfcal' field.
     :return: Visibility after calibration solution applied
+             Or return original visibility if the GainTables provided
+             don't match the calibration context.
     """
 
     if controls is None:
@@ -116,6 +119,9 @@ def apply_calibration_chain(
         gt = gaintables
 
     else:
+        log.warning(
+            "Invalid GainTable format supplied. Visibility not updated."
+        )
         return vis
 
     # Only apply if the context list is not empty
