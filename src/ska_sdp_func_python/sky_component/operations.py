@@ -127,7 +127,8 @@ def find_separation_skycomponents(comps_test, comps_ref=None):
 
 
 def find_skycomponent_matches_atomic(comps_test, comps_ref, tol=1e-7):
-    """Match a list of candidates to a reference set of SkyComponents.
+    """
+    Match a list of candidates to a reference set of SkyComponents.
 
     find_skycomponent_matches is faster since it
     uses the astropy catalog matching.
@@ -184,7 +185,8 @@ def find_skycomponent_matches(comps_test, comps_ref, tol=1e-7):
 def select_components_by_separation(
     home, comps, rmax=2 * numpy.pi, rmin=0.0
 ) -> [SkyComponent]:
-    """Select components with a range in separation.
+    """
+    Select components with a range in separation.
 
     :param home: Home direction
     :param comps: List of SkyComponents
@@ -194,18 +196,20 @@ def select_components_by_separation(
     """
     selected = []
     for comp in comps:
-        thissep = comp.direction.separation(home).rad
-        if rmin <= thissep <= rmax:
+        comp_sep = comp.direction.separation(home).rad
+        if rmin <= comp_sep <= rmax:
             selected.append(comp)
     return selected
 
 
 def select_neighbouring_components(comps, target_comps):
-    """Assign components to nearest in the target.
+    """
+    Assign components to nearest in the target.
 
     :param comps: List of SkyComponents
     :param target_comps: Target SkyComponents
     :return: Indices of components in target_comps
+             and the separations
     """
     target_catalog = SkyCoord(
         [c.direction.ra.rad for c in target_comps] * u.rad,
@@ -222,7 +226,8 @@ def select_neighbouring_components(comps, target_comps):
 
 
 def remove_neighbouring_components(comps, distance):
-    """Remove the faintest of a pair of components that
+    """
+    Remove the faintest of a pair of components that
     are within a specified distance.
 
     :param comps: List of SkyComponents
@@ -801,9 +806,7 @@ def image_voronoi_iter(
         nregions = numpy.max(vertex_array) + 1
         for region in range(nregions):
             mask = numpy.zeros(im["pixels"].data.shape)
-            mask[
-                (vertex_array == region)[numpy.newaxis, numpy.newaxis, ...]
-            ] = 1.0
+            mask[:, :, (vertex_array == region)] = 1.0
             yield Image.constructor(
                 data=mask,
                 polarisation_frame=im.image_acc.polarisation_frame,
