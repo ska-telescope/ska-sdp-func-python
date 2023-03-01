@@ -16,6 +16,7 @@ import numpy
 from ska_sdp_datamodels.calibration.calibration_create import (
     create_gaintable_from_visibility,
 )
+from ska_sdp_datamodels.calibration.calibration_model import GainTable
 
 from ska_sdp_func_python.calibration.operations import apply_gaintable
 from ska_sdp_func_python.calibration.solvers import solve_gaintable
@@ -31,8 +32,10 @@ def create_calibration_controls():
 
         T: Atmospheric phase
         G: Electronic gains
-        P: Polarisation
         B: Bandpass
+
+    Not supported:
+        P: Polarisation
         I: Ionosphere
 
     Therefore, first get this default dictionary and then
@@ -77,40 +80,56 @@ def apply_calibration_chain(
     iteration=0,
 ):
     """
-    Calibrate using algorithm specified by calibration_context
-    and the calibration controls.
+    Update the Visibility using the calibrated solutions
+    in the form of GainTables.
 
     The context string can denote a sequence of calibrations
-    e.g. TGB with different timescales.
+    e.g. TGB.
+    Currently, we do not support inputting different timescales.
 
     :param vis: Visibility
-    :param gaintables: GainTables to perform calibration
+    :param gaintables: Calibrated gaintables
+                       Can be a GainTable, a List or a Dict of GainTables
     :param calibration_context: calibration contexts in order
                     of correction e.g. 'TGB'
     :param controls: Controls dictionary, modified as necessary
     :param iteration: Iteration number to be compared
                     to the 'first_selfcal' field.
-    :return: Calibrated data_models, dict(gaintables)
+    :return: Visibility after calibration solution applied
+             Or return original visibility if the GainTables provided
+             don't match the calibration context.
     """
 
     if controls is None:
         controls = create_calibration_controls()
 
-    # Check to see if changes are required
-    changes = False
-    for c in calibration_context:
-        if (iteration >= controls[c]["first_selfcal"]) and (
-            c in gaintables.keys()
-        ):
-            changes = True
+    if isinstance(gaintables, GainTable):
+        gaintables = [gaintables]
 
-    if changes:
+    # Check if the calibration contexts
+    # match with the Jones types in the GainTables
+    contexts = []
+    gt = {}
+    if isinstance(gaintables, list):
+        for gaintable in gaintables:
+            if gaintable.attrs["jones_type"] in list(calibration_context):
+                contexts.append(gaintable.attrs["jones_type"])
+                gt[gaintable.attrs["jones_type"]] = gaintable
+    elif isinstance(gaintables, dict):
+        gt = gaintables
 
-        for c in calibration_context:
+    else:
+        log.warning(
+            "Invalid GainTable format supplied. Visibility not updated."
+        )
+        return vis
+
+    # Only apply if the context list is not empty
+    # else return the original Visibility
+    if contexts:
+        for c in contexts:
             if iteration >= controls[c]["first_selfcal"]:
-                avis = apply_gaintable(vis, gaintables[c])
-
-        return avis
+                vis = apply_gaintable(vis, gt[c])
 
     return vis
 
@@ -128,11 +147,12 @@ def calibrate_chain(
     Calibrate using algorithm specified by calibration_context.
 
     The context string can denote a sequence of calibrations
-    e.g. TGB with different timescales.
+    e.g. TGB.
+    Currently, we do not support inputting different timescales.
 
     :param vis: Visibility containing the observed data_models
     :param model_vis: Visibility containing the visibility predicted by a model
-    :param gaintables: Existing GainTables
+    :param gaintables: Existing GainTables (GainTable, list or dict)
     :param calibration_context: Calibration contexts in order
                 of correction e.g. 'TGB'
     :param controls: Controls dictionary, modified as necessary
@@ -145,62 +165,61 @@ def calibrate_chain(
     if controls is None:
         controls = create_calibration_controls()
 
-    # Check to see if changes are required
-    changes = False
-    for c in calibration_context:
+    avis = vis
+    amvis = model_vis
+
+    if isinstance(gaintables, GainTable):
+        gaintables = [gaintables]
+
+    gt = {}
+    # Use the existing gaintables if needed
+    if isinstance(gaintables, list):
+        for gaintable in gaintables:
+            if gaintable.attrs["jones_type"] in list(calibration_context):
+                gt[gaintable.attrs["jones_type"]] = gaintable
+    elif isinstance(gaintables, dict):
+        gt = gaintables
+
+    for c in list(calibration_context):
         if iteration >= controls[c]["first_selfcal"]:
-            changes = True
-
-    if changes:
-
-        avis = vis
-        amvis = model_vis
-
-        if gaintables is None:
-            gaintables = {}
-
-        for c in calibration_context:
-            if iteration >= controls[c]["first_selfcal"]:
-                if c not in gaintables.keys():
-                    log.info("Creating new %s gaintable", c)
-                    gaintables[c] = create_gaintable_from_visibility(
-                        avis, timeslice=controls[c]["timeslice"], jones_type=c
-                    )
-                gaintables[c] = solve_gaintable(
-                    avis,
-                    amvis,
-                    gain_table=gaintables[c],
-                    phase_only=controls[c]["phase_only"],
-                    crosspol=controls[c]["shape"] == "matrix",
-                    timeslice=controls[c]["timeslice"],
-                    tol=tol,
-                )
-                log.debug(
-                    "calibrate_chain: Jones matrix %s, iteration %s",
-                    c,
-                    iteration,
-                )
-                log.debug(
-                    gaintables[c].gaintable_acc.qa_gain_table(
-                        context=f"Jones matrix {c}, iteration {iteration}"
-                    )
-                )
-                avis = apply_gaintable(
-                    avis,
-                    gaintables[c],
-                    inverse=True,
-                )
-            else:
-                log.debug(
-                    "calibrate_chain: Jones matrix %s "
-                    "not solved, iteration %s",
-                    c,
-                    iteration,
+            if c not in gt.keys():
+                log.info("Creating new %s gaintable", c)
+                gt[c] = create_gaintable_from_visibility(
+                    avis, timeslice=controls[c]["timeslice"], jones_type=c
                 )
 
-        return avis, gaintables
+            gt[c] = solve_gaintable(
+                avis,
+                amvis,
+                gain_table=gt[c],
+                phase_only=controls[c]["phase_only"],
+                crosspol=controls[c]["shape"] == "matrix",
+                timeslice=controls[c]["timeslice"],
+                tol=tol,
+            )
+            log.debug(
+                "calibrate_chain: Jones matrix %s, iteration %s",
+                c,
+                iteration,
+            )
+            log.debug(
+                gt[c].gaintable_acc.qa_gain_table(
+                    context=f"Jones matrix {c}, iteration {iteration}"
+                )
+            )
+            avis = apply_gaintable(
+                avis,
+                gt[c],
+                inverse=True,
+            )
+        else:
+            log.debug(
+                "calibrate_chain: Jones matrix %s, iteration %s",
+                c,
+                iteration,
+            )
 
-    return vis, gaintables
+    return avis, gt
 
 
 def solve_calibrate_chain(
@@ -213,14 +232,16 @@ def solve_calibrate_chain(
     tol=1e-6,
 ):
     """
-    Calibrate using algorithm specified by calibration_context.
+    Solve GainTables by fitting an observed visibility
+    to a model visibility.
 
     The context string can denote a sequence of calibrations
-    e.g. TGB with different timescales.
+    e.g. TGB.
+    Currently, we do not support inputting different timescales.
 
     :param vis: Visibility containing the observed data_models
     :param model_vis: Visibility containing the visibility predicted by a model
-    :param gaintables: Existing GainTables
+    :param gaintables: Existing GainTables (GainTable, list or dict)
     :param calibration_context: calibration contexts in order
                     of correction e.g. 'TGB'
     :param controls: controls dictionary, modified as necessary
@@ -228,7 +249,7 @@ def solve_calibrate_chain(
                     the 'first_selfcal' field.
     :param tol: Iteration stops when the fractional change
                  in the gain solution is below this tolerance
-    :return: Calibrated data_models, dict(gaintables)
+    :return: dict(GainTables)
     """
     if controls is None:
         controls = create_calibration_controls()
@@ -236,27 +257,35 @@ def solve_calibrate_chain(
     avis = vis
     amvis = model_vis
 
-    # Always return a gain table, even if null
-    if gaintables is None:
-        gaintables = {}
+    if isinstance(gaintables, GainTable):
+        gaintables = [gaintables]
 
-    for c in calibration_context:
-        if c not in gaintables.keys():
-            gaintables[c] = create_gaintable_from_visibility(
+    gt = {}
+    # Use the existing gaintables if needed
+    if isinstance(gaintables, list):
+        for gaintable in gaintables:
+            if gaintable.attrs["jones_type"] in list(calibration_context):
+                gt[gaintable.attrs["jones_type"]] = gaintable
+    elif isinstance(gaintables, dict):
+        gt = gaintables
+
+    for c in list(calibration_context):
+        if c not in gt.keys():
+            gt[c] = create_gaintable_from_visibility(
                 avis, timeslice=controls[c]["timeslice"], jones_type=c
             )
-        fmin = gaintables[c].frequency.data[0]
-        fmax = gaintables[c].frequency.data[-1]
+        fmin = gt[c].frequency.data[0]
+        fmax = gt[c].frequency.data[-1]
         if iteration >= controls[c]["first_selfcal"]:
             if numpy.max(
                 numpy.abs(vis.visibility_acc.flagged_weight)
             ) > 0.0 and (
                 amvis is None or numpy.max(numpy.abs(amvis.vis)) > 0.0
             ):
-                gaintables[c] = solve_gaintable(
+                gt[c] = solve_gaintable(
                     avis,
                     amvis,
-                    gain_table=gaintables[c],
+                    gain_table=gt[c],
                     phase_only=controls[c]["phase_only"],
                     crosspol=controls[c]["shape"] == "matrix",
                     timeslice=controls[c]["timeslice"],
@@ -267,9 +296,7 @@ def solve_calibrate_chain(
                     f"iteration {iteration}, frequency "
                     f"{fmin:4g} - {fmax:4g} Hz"
                 )
-                qa = gaintables[c].gaintable_acc.qa_gain_table(
-                    context=context_message
-                )
+                qa = gt[c].gaintable_acc.qa_gain_table(context=context_message)
                 log.info("calibrate_chain: %s", qa)
             else:
                 log.info(
@@ -290,4 +317,4 @@ def solve_calibrate_chain(
                 fmax,
             )
 
-    return gaintables
+    return gt
