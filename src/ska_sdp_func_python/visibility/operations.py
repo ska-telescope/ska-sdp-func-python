@@ -126,7 +126,7 @@ def remove_continuum_visibility(
     x = (vis.frequency - vis.frequency[nchan // 2]) / (
         vis.frequency[0] - vis.frequency[nchan // 2]
     )
-    for row in range(vis.nvis):
+    for row in range(vis.visibility_acc.nvis):
         for ibaseline, _ in enumerate(vis.baselines):
             for pol in range(vis.visibility_acc.polarisation_frame.npol):
                 wt = numpy.sqrt(
@@ -320,7 +320,8 @@ def convert_visibility_to_stokes(vis):
         vis["flags"].data[...] = numpy.logical_or(
             vis.flags.data[..., 0], vis.flags.data[..., 3]
         )[..., numpy.newaxis]
-        vis.attrs["polarisation_frame"] = PolarisationFrame("stokesIQUV")
+        vis.attrs["_polarisation_frame"] = "stokesIQUV"
+
     elif poldef == PolarisationFrame("circular"):
         vis["vis"].data[...] = convert_circular_to_stokes(
             vis["vis"].data, polaxis=3
@@ -328,7 +329,7 @@ def convert_visibility_to_stokes(vis):
         vis["flags"].data[...] = numpy.logical_or(
             vis.flags.data[..., 0], vis.flags.data[..., 3]
         )[..., numpy.newaxis]
-        vis.attrs["polarisation_frame"] = PolarisationFrame("stokesIQUV")
+        vis.attrs["_polarisation_frame"] = "stokesIQUV"
     return vis
 
 

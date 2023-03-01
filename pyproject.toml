@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ska-sdp-func-python"
-version = "0.1.5"
+version = "0.2.0"
 description = "SKA SDP Python-Based Processing Functions"
 authors = ["SKA SDP Developers"]
 license = "Apache 2.0"
@@ -40,6 +40,7 @@ fft_support = ["pyfftw"]
 gpu = ["cupy"]
 radler = ["radler"]
 dp3 = ["dp3"]
+h5py = ["h5py"]
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"

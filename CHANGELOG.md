@@ -1,5 +1,14 @@
 # Changelog
 
+main
+----
+* Fixing function inputs in chain_calibration.py ([MR31](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/31))
+* Added utility functions to support rechannelisation of bandpass and delay solutions for CBF beamformer calibration ([MR29](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/29))
+
+0.2.0
+----
+* Fix mapping of calibration techniques between rascil and DP3, add more extensive tests ([MR30](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/30))
+
 0.1.5
 ----
 * Bug fix for calculating f2 of multi-channels ([MR26](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/26))

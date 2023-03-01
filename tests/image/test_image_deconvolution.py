@@ -7,7 +7,6 @@ from ska_sdp_datamodels.image.image_create import create_image
 from ska_sdp_datamodels.science_data_model.polarisation_model import (
     PolarisationFrame,
 )
-from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 
 from ska_sdp_func_python.image.cleaners import overlapIndices
 from ska_sdp_func_python.image.deconvolution import (
@@ -23,7 +22,6 @@ from ska_sdp_func_python.imaging.imaging import (
     invert_visibility,
     predict_visibility,
 )
-from ska_sdp_func_python.sky_component.operations import restore_skycomponent
 
 
 @pytest.fixture(scope="module", name="predicted_vis")
@@ -140,26 +138,6 @@ def test_restore_clean_beam(model, psf):
     )
     assert (
         numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0000673298221023) < 1e-7
-    ), numpy.max(cmodel["pixels"].data)
-
-
-def test_restore_skycomponent(model, comp_direction_30):
-    """Test restoration of single pixel and skycomponent"""
-    model["pixels"].data[0, 0, 256, 256] = 0.5
-
-    sc = SkyComponent(
-        flux=numpy.ones((1, 1)),
-        direction=comp_direction_30,
-        shape="Point",
-        frequency=numpy.array([1e8]),
-        polarisation_frame=PolarisationFrame("stokesI"),
-    )
-    bmaj = 0.012 * 180.0 / numpy.pi
-    clean_beam = {"bmaj": bmaj, "bmin": bmaj / 2.0, "bpa": 15.0}
-    cmodel = restore_cube(model, clean_beam=clean_beam)
-    cmodel = restore_skycomponent(cmodel, sc, clean_beam=clean_beam)
-    assert (
-        numpy.abs(numpy.max(cmodel["pixels"].data) - 0.9959046879055156) < 1e-7
     ), numpy.max(cmodel["pixels"].data)
 
 

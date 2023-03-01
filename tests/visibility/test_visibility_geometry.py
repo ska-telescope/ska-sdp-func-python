@@ -2,13 +2,36 @@
 Unit tests for coordinate calculations
 """
 import numpy
+from astropy import units
+from astropy.coordinates import EarthLocation, SkyCoord
+from astropy.time import Time
 
 from ska_sdp_func_python.visibility.visibility_geometry import (
     calculate_visibility_azel,
     calculate_visibility_hourangles,
     calculate_visibility_parallactic_angles,
     calculate_visibility_transit_time,
+    get_direction_time_location,
 )
+
+
+def test_get_direction_time_location(visibility):
+    """Unit test for get_direction_time_location"""
+
+    location, utc_time, direction = get_direction_time_location(visibility)
+
+    assert isinstance(utc_time, Time)
+    assert direction == SkyCoord(
+        ra=+180.0 * units.deg,
+        dec=-35.0 * units.deg,
+        frame="icrs",
+        equinox="J2000",
+    )
+    assert location == EarthLocation(
+        lon=116.76444824 * units.deg,
+        lat=-26.824722084 * units.deg,
+        height=300.0,
+    )
 
 
 def test_azel(visibility):
