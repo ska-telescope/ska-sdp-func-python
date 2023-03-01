@@ -293,7 +293,7 @@ def resample_bandpass(
     if alg == "polyfit":
         interpolator = PolynomialInterpolator()
         if edges is not None:
-            interpolator.set_edges(edges)
+            interpolator.set_edges(edges, len(frequency_gt))
         if polydeg is not None:
             interpolator.set_polydeg(polydeg)
     elif alg == "interp":
@@ -333,7 +333,7 @@ class PolynomialInterpolator:
 
     Methods
     -------
-    set_edges(edges):
+    set_edges(edges, nfrequency):
         Provide the start channels of any sub-bands requiring separate fits
 
     set_polydeg(polydeg):
@@ -348,12 +348,24 @@ class PolynomialInterpolator:
         self.edges = None
         self.polydeg = 3
 
-    def set_edges(self, edges):
+    def set_edges(self, edges, nfrequency):
         """Provide the start channels of any sub-bands requiring separate fits
 
-        :param edges: list of edges (starting channel indices)
+        :param edges: list of edges in input spectra (starting channel indices)
+        :param nfrequency: total number of channels in input spectra
 
         """
+        if edges is None or edges == []:
+            edges = numpy.array([0, nfrequency])
+            fstr = f"set edges to {edges}"
+            log.debug("set edges to %s", fstr)
+        # ensure that the channel before the first discontinuity are included
+        if edges[0] > 0:
+            edges = numpy.concatenate(([0], edges))
+        # ensure that the channel after the last discontinuity are included
+        if edges[-1] < nfrequency:
+            edges = numpy.concatenate((edges, [nfrequency]))
+
         self.edges = edges
 
     def set_polydeg(self, polydeg):
@@ -377,22 +389,16 @@ class PolynomialInterpolator:
             interpolated complex sequence
 
         """
-        if self.edges is None or self.edges == []:
-            self.edges = numpy.array([0, len(freq_in)])
-            fstr = f"set edges to {self.edges}"
-            log.debug("set edges to %s", fstr)
-        # ensure that the channel before the first discontinuity are included
-        if self.edges[0] > 0:
-            self.edges = numpy.concatenate(([0], self.edges))
-        # ensure that the channel after the last discontinuity are included
-        if self.edges[-1] < len(freq_in):
-            self.edges = numpy.concatenate((self.edges, [len(freq_in)]))
+
+        edges = self.edges
+        if edges is None or len(edges) < 2:
+            self.set_edges(edges, len(freq_in))
+            edges = self.edges
 
         idx_out = numpy.arange(0, len(freq_out)).astype("int")
         gain_out = numpy.empty(len(freq_out), "complex128")
 
         dfreq_in = freq_in[1] - freq_in[0]
-        edges = self.edges
         for k in range(0, len(edges) - 1):
             ch_in = numpy.arange(edges[k], edges[k + 1]).astype("int")
             ch_out = idx_out[
