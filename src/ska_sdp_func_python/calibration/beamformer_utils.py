@@ -243,7 +243,8 @@ def multiply_gaintable_jones(gain_table1, gain_table2, elementwise=False):
         weight = gain_table2.weight
         residual = gain_table2.residual
 
-    # If the two tables have the same jones_type use that, otherwise use B.
+    # If the two tables have the same jones_type use that
+    # Otherwise assume a general form and use B
     if gain_table1.jones_type == gain_table2.jones_type:
         jones_type = gain_table1.jones_type
     else:
