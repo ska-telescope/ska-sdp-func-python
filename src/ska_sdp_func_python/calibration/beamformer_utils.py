@@ -13,7 +13,7 @@ from ska_sdp_datamodels.calibration.calibration_model import GainTable
 log = logging.getLogger("func-python-logger")
 
 
-def set_beamformer_frequencies(gain_table, array=None):
+def set_beamformer_frequencies(gain_table: GainTable, array=None):
     """Generate a list of CBF beamformer frequencies
 
     SKA-Low beamformer:
@@ -89,7 +89,9 @@ def set_beamformer_frequencies(gain_table, array=None):
     return frequency_bf
 
 
-def expand_delay_phase(gain_table, frequency, reference_to_centre=True):
+def expand_delay_phase(
+    gain_table: GainTable, frequency, reference_to_centre=True
+) -> GainTable:
     """CASA delay calibration tables with type K or Kcross are currently stored
     in GainTable Jones matrices as phase shifts at a single reference
     frequency. These are expanded to other frequencies assuming
@@ -149,7 +151,9 @@ def expand_delay_phase(gain_table, frequency, reference_to_centre=True):
     )
 
 
-def _set_gaintable_product_shape(gain_table1, gain_table2, elementwise=False):
+def _set_gaintable_product_shape(
+    gain_table1: GainTable, gain_table2: GainTable, elementwise=False
+):
     """Determine the shape of the product of two GainTables
 
     :param gain_table1: GainTable containing left-hand side Jones matrices
@@ -192,7 +196,9 @@ def _set_gaintable_product_shape(gain_table1, gain_table2, elementwise=False):
     )
 
 
-def multiply_gaintable_jones(gain_table1, gain_table2, elementwise=False):
+def multiply_gaintable_jones(
+    gain_table1: GainTable, gain_table2: GainTable, elementwise=False
+) -> GainTable:
     """Multiply the Jones matrices for all times, antennas and frequencies
     of two GainTables.
 
@@ -265,7 +271,11 @@ def multiply_gaintable_jones(gain_table1, gain_table2, elementwise=False):
 
 
 def resample_bandpass(
-    frequency_out, gain_table, alg="polyfit", edges=None, polydeg=None
+    frequency_out,
+    gain_table: GainTable,
+    alg="polyfit",
+    edges=None,
+    polydeg=None,
 ):
     """Re-channelise each spectrum of gain or leakage terms
 
