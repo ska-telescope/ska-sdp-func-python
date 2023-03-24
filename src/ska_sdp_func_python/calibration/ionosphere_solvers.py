@@ -22,8 +22,6 @@ def solve_ionosphere(
     vis: Visibility,
     modelvis: Visibility,
     gain_table=None,
-    niter=20,
-    tol=1e-6,
 ) -> GainTable:
     """
     Solve a gain table by fitting for delta-TEC variations across the array
@@ -47,15 +45,19 @@ def solve_ionosphere(
         if not numpy.max(numpy.abs(modelvis.vis)) > 0.0:
             raise ValueError("solve_gaintable: Model visibility is zero")
 
+    point_vis = (
+        divide_visibility(vis, modelvis) if modelvis is not None else vis
+    )
+
     if gain_table is None:
         log.debug("solve_ionosphere: creating new gaintable")
         gain_table = create_gaintable_from_visibility(vis, jones_type="B")
     else:
         log.debug("solve_ionosphere: starting from existing gaintable")
 
-    nants = gain_table.gaintable_acc.nants
-    nchan = gain_table.gaintable_acc.nchan
-    npol = point_vis.visibility_acc.npol
+    # nants = gain_table.gaintable_acc.nants
+    # nchan = gain_table.gaintable_acc.nchan
+    # npol = point_vis.visibility_acc.npol
 
     for row, time in enumerate(gain_table.time):
         time_slice = {
