@@ -6,6 +6,3 @@ phase screens.
 import logging
 
 log = logging.getLogger("func-python-logger")
-
-
-

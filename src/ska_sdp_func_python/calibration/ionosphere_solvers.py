@@ -77,4 +77,3 @@ def solve_ionosphere(
         gain_table["residual"].data[row, ...] = 0.0
 
     return gain_table
-
