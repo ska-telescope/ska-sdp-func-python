@@ -113,7 +113,7 @@ def solve_ionosphere(
 
 def set_cluster_maps(cluster_id):
     """
-    ...
+    Return vectors to help convert between station and cluster indices
 
     :param: cluster_id
     :return n_cluster: total number of clusters
@@ -145,7 +145,8 @@ def set_cluster_maps(cluster_id):
 
 def get_param_count(param):
     """
-    ...
+    Return the total number of parameters across all clusters and the starting
+    index of each cluster in stacked parameter vectors
 
     :param param: [n_cluster] list of solution vectors, one for each cluster
     :return n_param: int, total number of parameters
@@ -235,7 +236,7 @@ def apply_phase_distortions(
     cluster_id,
 ):
     """
-    ...
+    Update visibility model with new fit solutions
 
     :param vis: Visibility containing the data_models to be distorted
     :param param: [n_cluster] list of solution vectors, one for each cluster
@@ -254,32 +255,39 @@ def apply_phase_distortions(
 
     T = numpy.dtype(coeff[0][0])
 
-    for chan in range(len(vis.frequency)):
-        pconst = 1j * 2.0 * numpy.pi * const.c.value / vis.frequency.data[chan]
-        # Loop over pairs of clusters and update the associated baselines
-        for cid1 in range(0, n_cluster):
-            for cid2 in range(0, n_cluster):
-                # A mask for all baselines in this cluster pair
-                # DAM could/should remove autos at this point as well
-                vismask = (stn2cid[ant1] == cid1) * (stn2cid[ant2] == cid2)
-                if numpy.sum(vismask) == 0:
-                    continue
-
-                vis_data[0, vismask, chan, 0] *= numpy.exp(
-                    pconst
-                    * (
+    # Use einsum calls to average over parameters for all combinations of
+    # baseline and frequency
+    # [n_freq] scaling constants
+    # Loop over pairs of clusters and update the associated baselines
+    for cid1 in range(0, n_cluster):
+        for cid2 in range(0, n_cluster):
+            # A mask for all baselines in this cluster pair
+            #     could/should remove autos at this point as well
+            vismask = (stn2cid[ant1] == cid1) * (stn2cid[ant2] == cid2)
+            if numpy.sum(vismask) == 0:
+                continue
+            vis_data[0, vismask, :, 0] *= numpy.exp(
+                # combine parmas for [n_baseline] then scale for [n_freq]
+                numpy.einsum(
+                    "b,f->bf",
+                    (
+                        # combine parmas for ant i in baselines
                         numpy.einsum(
-                            "j,ij->i",
+                            "p,bp->b",
                             param[cid1],
                             numpy.vstack(coeff[ant1[vismask]]).astype(T),
                         )
+                        # combine parmas for ant j in baselines
                         - numpy.einsum(
-                            "j,ij->i",
+                            "p,bp->b",
                             param[cid2],
                             numpy.vstack(coeff[ant2[vismask]]).astype(T),
                         )
-                    )
+                    ),
+                    # phase scaling with frequency
+                    1j * 2.0 * numpy.pi * const.c.value / vis.frequency.data,
                 )
+            )
 
 
 def build_normal_equation(
@@ -291,7 +299,8 @@ def build_normal_equation(
 ):
     # pylint: disable=too-many-locals
     """
-    ...
+    Build normal equations for the chosen parameters and the current model
+    visibilties
 
     :param vis: Visibility containing the observed data_models
     :param modelvis: Visibility containing the predicted data_models
@@ -449,7 +458,8 @@ def update_gain_table(
     cluster_id,
 ):
     """
-    ...
+    Expand solutions for all stations and frequency channels and insert in the
+    gain table
 
     :param gain_table: GainTable to be updated
     :param param: [n_cluster] list of solution vectors, one for each cluster
