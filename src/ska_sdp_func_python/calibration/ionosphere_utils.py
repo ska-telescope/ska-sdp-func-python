@@ -73,7 +73,6 @@ def zern_array(nm, x, y, noll_order=False):
     #             for m in range(-n, n + 1, 2):
     #                 coeff[stn].append(zern(m, n, rho[stn], phi[stn]))
     #                 count += 1
-    # 
     #     else:
     #         for n in range(nm + 1):
     #             for m in range(-n, n + 1, 2):
@@ -81,7 +80,6 @@ def zern_array(nm, x, y, noll_order=False):
     #                     continue
     #                 coeff[stn].append(zern(m, n, rho[stn], phi[stn]))
     #                 count += 1
-    # 
     # return numpy.array(coeff)
 
     coeff = numpy.array([])
