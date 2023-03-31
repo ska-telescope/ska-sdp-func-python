@@ -201,8 +201,6 @@ def set_coeffs_and_params(
         6, xyz[cid2stn[cid], 0], xyz[cid2stn[cid], 1], noll_order=False
     )
 
-    # note: This isn't the most efficient approach, but get it working first
-    print(zern_params.shape)
     for idx, stn in enumerate(cid2stn[cid]):
         coeff[stn] = zern_params[idx]
 
@@ -327,8 +325,8 @@ def build_normal_equation(
     T = numpy.dtype(coeff[0][0])
 
     # Loop over frequency and accumulate normal equations
-    #     note: Can probably handly frequency within an einsum
-    #           Get it working in a loop first
+    # Could probably handly frequency within an einsum as well.
+    # It is also a natural axis for parallel calculation of AA and Ab.
 
     AA = numpy.zeros((n_param, n_param))
     Ab = numpy.zeros(n_param)

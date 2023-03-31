@@ -64,23 +64,40 @@ def zern_array(nm, x, y, noll_order=False):
     rho = numpy.sqrt(x * x + y * y)
     rho /= numpy.amax(rho)
 
-    coeff = [None] * len(x)
+    # coeff = [None] * len(x)
+    # for stn in range(len(x)):
+    #     coeff[stn] = []
+    #     count = 0
+    #     if noll_order is True:
+    #         for n in range(nm + 1):
+    #             for m in range(-n, n + 1, 2):
+    #                 coeff[stn].append(zern(m, n, rho[stn], phi[stn]))
+    #                 count += 1
+    # 
+    #     else:
+    #         for n in range(nm + 1):
+    #             for m in range(-n, n + 1, 2):
+    #                 if n + numpy.abs(m) > nm:
+    #                     continue
+    #                 coeff[stn].append(zern(m, n, rho[stn], phi[stn]))
+    #                 count += 1
+    # 
+    # return numpy.array(coeff)
 
-    for stn in range(len(x)):
-        coeff[stn] = []
-        count = 0
-        if noll_order is True:
-            for n in range(nm + 1):
-                for m in range(-n, n + 1, 2):
-                    coeff[stn].append(zern(m, n, rho[stn], phi[stn]))
-                    count += 1
+    coeff = numpy.array([])
+    count = 0
+    if noll_order is True:
+        for n in range(nm + 1):
+            for m in range(-n, n + 1, 2):
+                coeff = numpy.append(coeff, zern(m, n, rho, phi))
+                count += 1
 
-        else:
-            for n in range(nm + 1):
-                for m in range(-n, n + 1, 2):
-                    if n + numpy.abs(m) > nm:
-                        continue
-                    coeff[stn].append(zern(m, n, rho[stn], phi[stn]))
-                    count += 1
+    else:
+        for n in range(nm + 1):
+            for m in range(-n, n + 1, 2):
+                if n + numpy.abs(m) > nm:
+                    continue
+                coeff = numpy.append(coeff, zern(m, n, rho, phi))
+                count += 1
 
-    return numpy.array(coeff)
+    return numpy.reshape(coeff, (count, len(x))).T
