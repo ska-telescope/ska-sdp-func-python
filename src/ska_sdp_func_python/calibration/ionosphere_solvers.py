@@ -15,6 +15,7 @@ from ska_sdp_datamodels.calibration.calibration_create import (
 )
 from ska_sdp_datamodels.calibration.calibration_model import GainTable
 from ska_sdp_datamodels.visibility.vis_model import Visibility
+
 from ska_sdp_func_python.calibration.ionosphere_utils import zern_array
 
 log = logging.getLogger("func-python-logger")
@@ -87,7 +88,7 @@ def solve_ionosphere(
             n_param,
             len(param[0]),
             len(param[1]),
-            len(param)-1,
+            len(param) - 1,
         )
 
     for it in range(niter):
