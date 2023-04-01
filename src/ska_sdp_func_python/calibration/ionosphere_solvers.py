@@ -27,6 +27,7 @@ def solve_ionosphere(
     xyz,
     cluster_id=None,
     niter=15,
+    tol=1e-6,
 ) -> GainTable:
     """
     Solve a gain table by fitting for delta-TEC variations across the array
@@ -36,7 +37,6 @@ def solve_ionosphere(
     Fits are performed within user-defined station clusters
 
     TODO: user (and/or auto) control of num param per cluster
-    TODO: tolerance stopping
     TODO: phase referencing to reference antenna
 
     :param vis: Visibility containing the observed data_model
@@ -91,6 +91,8 @@ def solve_ionosphere(
             len(param) - 1,
         )
 
+    T = numpy.dtype(coeff[0][0])
+
     for it in range(niter):
         [AA, Ab] = build_normal_equation(
             vis, modelvis, param, coeff, cluster_id
@@ -102,8 +104,15 @@ def solve_ionosphere(
         # Update the model
         apply_phase_distortions(modelvis, param_update, coeff, cluster_id)
 
-        # test something against tol here
-        #  - max or rms of the relative update of gain or vis
+        # test against tol
+        # change = numpy.max(numpy.abs(numpy.hstack(param_update).astype(T)))
+        mask = numpy.abs(numpy.hstack(param).astype(T)) > 0.0
+        change = numpy.max(
+            numpy.abs(numpy.hstack(param_update)[mask].astype(T))
+            / numpy.abs(numpy.hstack(param)[mask].astype(T))
+        )
+        if change < tol:
+            break
 
     # Update and return the gain table
     update_gain_table(gain_table, param, coeff, cluster_id)
@@ -438,7 +447,8 @@ def solve_normal_equation(
     for cid in range(n_cluster):
         param_update.append(numpy.zeros(len(param[cid])))
 
-    nu = 1.0 - 0.5 * (it % 2)
+    # nu = 1.0 - 0.5 * (it % 2)
+    nu = 1.0
     for cid in range(n_cluster):
         param_update[cid] = (
             nu
