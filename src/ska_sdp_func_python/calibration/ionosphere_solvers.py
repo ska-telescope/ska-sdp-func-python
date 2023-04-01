@@ -382,7 +382,7 @@ def build_normal_equation(
                 # all masked antennas have the same number of coeffs so can
                 # form a coeff matrix and multiply
                 A[ii, jj] += numpy.einsum(
-                    "i,ij->ji",
+                    "b,bp->pb",
                     A0[vismask],
                     numpy.vstack(coeff[ant1[vismask]]).astype(T),
                 )
@@ -391,14 +391,15 @@ def build_normal_equation(
                 ii = numpy.tile(pidx2[:, numpy.newaxis], (1, len(blidx)))
                 jj = numpy.tile(blidx[numpy.newaxis, :], (len(pidx2), 1))
                 A[ii, jj] -= numpy.einsum(
-                    "i,ij->ji",
+                    "b,bp->pb",
                     A0[vismask],
                     numpy.vstack(coeff[ant2[vismask]]).astype(T),
                 )
 
-        AA += numpy.einsum("ij,kj->ik", A, A)
+        # Average over all baselines for each param pair
+        AA += numpy.einsum("pb,qb->pq", A, A)
         Ab += numpy.einsum(
-            "ij,j->i",
+            "pb,b->p",
             A,
             numpy.imag(
                 (vis_data[0, :, chan, 0] - mdl_data[0, :, chan, 0])
