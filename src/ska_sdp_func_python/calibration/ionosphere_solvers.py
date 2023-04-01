@@ -276,15 +276,15 @@ def apply_phase_distortions(
                     (
                         # combine parmas for ant i in baselines
                         numpy.einsum(
-                            "p,bp->b",
-                            param[cid1],
+                            "bp,p->b",
                             numpy.vstack(coeff[ant1[vismask]]).astype(T),
+                            param[cid1],
                         )
                         # combine parmas for ant j in baselines
                         - numpy.einsum(
-                            "p,bp->b",
-                            param[cid2],
+                            "bp,p->b",
                             numpy.vstack(coeff[ant2[vismask]]).astype(T),
+                            param[cid2],
                         )
                     ),
                     # phase scaling with frequency
@@ -491,9 +491,9 @@ def update_gain_table(
             numpy.einsum(
                 "s,f->sf",
                 numpy.einsum(
-                    "p,sp->s",
-                    param[cid],
+                    "sp,p->s",
                     numpy.vstack(coeff[cid2stn[cid]]).astype(T),
+                    param[cid],
                 ),
                 1j * 2.0 * numpy.pi * wl,
             )
