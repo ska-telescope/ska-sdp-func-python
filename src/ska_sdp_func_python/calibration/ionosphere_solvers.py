@@ -29,6 +29,7 @@ def solve_ionosphere(
     niter=15,
     tol=1e-6,
 ) -> GainTable:
+    # pylint: disable=too-many-locals
     """
     Solve a gain table by fitting for delta-TEC variations across the array
     The resulting delta-TEC variations will be converted to antenna-dependent
@@ -36,8 +37,9 @@ def solve_ionosphere(
 
     Fits are performed within user-defined station clusters
 
-    TODO: user (and/or auto) control of num param per cluster
     TODO: phase referencing to reference antenna
+    TODO: user (and/or auto) control of num param per cluster?
+    TODO: check convergence WRT adaptation factor nu (~ 1-damping in solver.py)
 
     :param vis: Visibility containing the observed data_model
     :param modelvis: Visibility containing the predicted data_model
@@ -47,9 +49,7 @@ def solve_ionosphere(
         antenna. Defaults to a single cluster comprising all stations
     :param niter: Number of iterations (default 15)
     :param tol: Iteration stops when the fractional change in the gain solution
-        is below this tolerance. [Not yet implemented]
-    :param ref_ant: integer index of reference antenna. No phase referencing if
-        unset. [Not yet implemented]
+        is below this tolerance.
     :return: GainTable containing solutions
 
     """
@@ -126,16 +126,12 @@ def set_cluster_maps(cluster_id):
 
     :param: cluster_id
     :return n_cluster: total number of clusters
-    :return mask: station index mask for each cluster
     :return cid2stn: mapping from station index to cluster index
     :return stn2cid: mapping from cluster index to a list of station indices
 
     """
     n_station = len(cluster_id)
     n_cluster = numpy.amax(cluster_id) + 1
-
-    # Mask for each cluster to flag which stations are present
-    mask = numpy.empty((n_cluster, n_station), "bool")
 
     # Mapping from station index to cluster index
     stn2cid = numpy.empty(n_station, "int")
@@ -145,11 +141,11 @@ def set_cluster_maps(cluster_id):
 
     stations = numpy.arange(n_station).astype("int")
     for cid in range(n_cluster):
-        mask[cid, :] = cluster_id == cid
-        cid2stn.append(stations[mask[cid, :]])
-        stn2cid[mask[cid, :]] = cid
+        mask = cluster_id == cid
+        cid2stn.append(stations[mask])
+        stn2cid[mask] = cid
 
-    return n_cluster, mask, cid2stn, stn2cid
+    return n_cluster, cid2stn, stn2cid
 
 
 def get_param_count(param):
@@ -195,7 +191,7 @@ def set_coeffs_and_params(
 
     """
     # Get common mapping vectors between stations and clusters
-    [n_cluster, _, cid2stn, _] = set_cluster_maps(cluster_id)
+    [n_cluster, cid2stn, _] = set_cluster_maps(cluster_id)
 
     n_station = len(cluster_id)
     coeff = [None] * n_station
@@ -253,7 +249,7 @@ def apply_phase_distortions(
 
     """
     # Get common mapping vectors between stations and clusters
-    [n_cluster, _, _, stn2cid] = set_cluster_maps(cluster_id)
+    [n_cluster, _, stn2cid] = set_cluster_maps(cluster_id)
 
     # set up a few references and constants
     ant1 = vis.antenna1.data
@@ -318,7 +314,7 @@ def build_normal_equation(
 
     """
     # Get common mapping vectors between stations and clusters
-    [n_cluster, _, _, stn2cid] = set_cluster_maps(cluster_id)
+    [n_cluster, _, stn2cid] = set_cluster_maps(cluster_id)
     [n_param, pidx0] = get_param_count(param)
 
     # set up a few references and constants
@@ -417,7 +413,7 @@ def solve_normal_equation(
     AA,
     Ab,
     param,
-    it=0,
+    it=0,  # pylint: disable=unused-argument
 ):
     """
     Solve the normal equations and update parameters
@@ -447,8 +443,11 @@ def solve_normal_equation(
     for cid in range(n_cluster):
         param_update.append(numpy.zeros(len(param[cid])))
 
+    # Update factor
+    nu = 0.5
+    # StefCal-like algorithms work well with an alternating factor like this
+    # Some early tests of this algorithm did as well. Come back to this
     # nu = 1.0 - 0.5 * (it % 2)
-    nu = 1.0
     for cid in range(n_cluster):
         param_update[cid] = (
             nu
@@ -476,9 +475,8 @@ def update_gain_table(
     :param cluster_id:
 
     """
-    # set up a few references and constants
-    n_cluster = numpy.amax(cluster_id) + 1
-    n_station = len(cluster_id)
+    # Get common mapping vectors between stations and clusters
+    [n_cluster, cid2stn, _] = set_cluster_maps(cluster_id)
 
     wl = const.c.value / gain_table.frequency.data
 
@@ -486,28 +484,16 @@ def update_gain_table(
 
     T = numpy.dtype(coeff[0][0])
 
-    # Total number of parameters across all clusters
-    n_param = 0
-    # Starting parameter for each cluster
-    pidx0 = numpy.zeros(n_cluster, "int")
-    # Mask for each cluster to flag which stations are present
-    mask = numpy.empty((n_cluster, n_station), "bool")
-    for cid in range(n_cluster):
-        mask[cid, :] = cluster_id == cid
-        pidx0[cid] = n_param
-        n_param += len(param[cid])
-
     for cid in range(0, n_cluster):
-        phase_term = (
-            2.0
-            * numpy.pi
-            * numpy.einsum(
-                "j,ij->i",
-                param[cid],
-                numpy.vstack(coeff[mask[cid, :]]).astype(T),
+        # combine parmas for [n_station] phase terms then scale for [n_freq]
+        table_data[0, cid2stn[cid], :, 0, 0] = numpy.exp(
+            numpy.einsum(
+                "s,f->sf",
+                numpy.einsum(
+                    "p,sp->s",
+                    param[cid],
+                    numpy.vstack(coeff[cid2stn[cid]]).astype(T),
+                ),
+                1j * 2.0 * numpy.pi * wl,
             )
         )
-        for chan in range(len(gain_table.frequency)):
-            table_data[0, mask[cid, :], chan, 0, 0] = numpy.exp(
-                1j * wl[chan] * phase_term
-            )
