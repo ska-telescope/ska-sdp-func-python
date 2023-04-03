@@ -76,11 +76,11 @@ def solve_ionosphere(
     n_param = get_param_count(param)[0]
 
     log.info(
-        "Setting up iono solver for %d stations in %d clusters",
+        "Setting up iono solver for %d stations in %d cluster",
         len(gain_table.antenna),
         n_cluster,
     )
-    if n_cluster == 0:
+    if n_cluster == 1:
         log.info("There are %d total parameters in a single cluster", n_param)
     else:
         log.info(
@@ -90,8 +90,6 @@ def solve_ionosphere(
             len(param[1]),
             len(param) - 1,
         )
-
-    T = numpy.dtype(coeff[0][0])
 
     for it in range(niter):
         [AA, Ab] = build_normal_equation(
@@ -104,12 +102,12 @@ def solve_ionosphere(
         # Update the model
         apply_phase_distortions(modelvis, param_update, coeff, cluster_id)
 
-        # test against tol
-        # change = numpy.max(numpy.abs(numpy.hstack(param_update).astype(T)))
-        mask = numpy.abs(numpy.hstack(param).astype(T)) > 0.0
+        # test absolute relative change against tol
+        # flag for non-zero parameters to test relative change against
+        mask = numpy.abs(numpy.hstack(param).astype("float_")) > 0.0
         change = numpy.max(
-            numpy.abs(numpy.hstack(param_update)[mask].astype(T))
-            / numpy.abs(numpy.hstack(param)[mask].astype(T))
+            numpy.abs(numpy.hstack(param_update)[mask].astype("float_"))
+            / numpy.abs(numpy.hstack(param)[mask].astype("float_"))
         )
         if change < tol:
             break
@@ -256,8 +254,6 @@ def apply_phase_distortions(
     ant2 = vis.antenna2.data
     vis_data = vis.vis.data
 
-    T = numpy.dtype(coeff[0][0])
-
     # Use einsum calls to average over parameters for all combinations of
     # baseline and frequency
     # [n_freq] scaling constants
@@ -266,10 +262,10 @@ def apply_phase_distortions(
         for cid2 in range(0, n_cluster):
             # A mask for all baselines in this cluster pair
             #     could/should remove autos at this point as well
-            vismask = (stn2cid[ant1] == cid1) * (stn2cid[ant2] == cid2)
-            if numpy.sum(vismask) == 0:
+            mask = (stn2cid[ant1] == cid1) * (stn2cid[ant2] == cid2)
+            if numpy.sum(mask) == 0:
                 continue
-            vis_data[0, vismask, :, 0] *= numpy.exp(
+            vis_data[0, mask, :, 0] *= numpy.exp(
                 # combine parmas for [n_baseline] then scale for [n_freq]
                 numpy.einsum(
                     "b,f->bf",
@@ -277,13 +273,13 @@ def apply_phase_distortions(
                         # combine parmas for ant i in baselines
                         numpy.einsum(
                             "bp,p->b",
-                            numpy.vstack(coeff[ant1[vismask]]).astype(T),
+                            numpy.vstack(coeff[ant1[mask]]).astype("float_"),
                             param[cid1],
                         )
                         # combine parmas for ant j in baselines
                         - numpy.einsum(
                             "bp,p->b",
-                            numpy.vstack(coeff[ant2[vismask]]).astype(T),
+                            numpy.vstack(coeff[ant2[mask]]).astype("float_"),
                             param[cid2],
                         )
                     ),
@@ -327,8 +323,6 @@ def build_normal_equation(
 
     n_baselines = len(vis.baselines)
 
-    T = numpy.dtype(coeff[0][0])
-
     # Loop over frequency and accumulate normal equations
     # Could probably handly frequency within an einsum as well.
     # It is also a natural axis for parallel calculation of AA and Ab.
@@ -367,13 +361,13 @@ def build_normal_equation(
 
                 # A mask for all baselines in this cluster pair
                 # DAM could/should remove autos at this point as well
-                vismask = (stn2cid[ant1] == cid1) * (stn2cid[ant2] == cid2)
+                mask = (stn2cid[ant1] == cid1) * (stn2cid[ant2] == cid2)
 
-                if numpy.sum(vismask) == 0:
+                if numpy.sum(mask) == 0:
                     continue
 
                 # indices of baselines in this cluster pair
-                blidx = numpy.arange(n_baselines)[vismask]
+                blidx = numpy.arange(n_baselines)[mask]
 
                 # [nvis] A0 terms x [nvis,nparam] coeffs (1st antenna)
                 # need to replicate 1D index vectors across the 2D output
@@ -383,8 +377,8 @@ def build_normal_equation(
                 # form a coeff matrix and multiply
                 A[ii, jj] += numpy.einsum(
                     "b,bp->pb",
-                    A0[vismask],
-                    numpy.vstack(coeff[ant1[vismask]]).astype(T),
+                    A0[mask],
+                    numpy.vstack(coeff[ant1[mask]]).astype("float_"),
                 )
 
                 # [nvis] A0 terms x [nvis,nparam] coeffs 2nd antenna)
@@ -392,8 +386,8 @@ def build_normal_equation(
                 jj = numpy.tile(blidx[numpy.newaxis, :], (len(pidx2), 1))
                 A[ii, jj] -= numpy.einsum(
                     "b,bp->pb",
-                    A0[vismask],
-                    numpy.vstack(coeff[ant2[vismask]]).astype(T),
+                    A0[mask],
+                    numpy.vstack(coeff[ant2[mask]]).astype("float_"),
                 )
 
         # Average over all baselines for each param pair
@@ -483,8 +477,6 @@ def update_gain_table(
 
     table_data = gain_table.gain.data
 
-    T = numpy.dtype(coeff[0][0])
-
     for cid in range(0, n_cluster):
         # combine parmas for [n_station] phase terms then scale for [n_freq]
         table_data[0, cid2stn[cid], :, 0, 0] = numpy.exp(
@@ -492,7 +484,7 @@ def update_gain_table(
                 "s,f->sf",
                 numpy.einsum(
                     "sp,p->s",
-                    numpy.vstack(coeff[cid2stn[cid]]).astype(T),
+                    numpy.vstack(coeff[cid2stn[cid]]).astype("float_"),
                     param[cid],
                 ),
                 1j * 2.0 * numpy.pi * wl,
