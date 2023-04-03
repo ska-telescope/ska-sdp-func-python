@@ -12,6 +12,57 @@ import numpy
 log = logging.getLogger("func-python-logger")
 
 
+
+# [2] "Simulation of a Kolmogorov phase screen,"
+#     Lane, Glindemann & Dainty (1992) Waves in Random Media, 2, 209--224
+
+def decompose_phasescreen(x, y, r0, beta=5.0/3.0):
+    """
+    Generation and eigen-decomposition of pierce-point covariance matrix with
+    Kolmogorov statistics. Used for generation of turbulent phase shifts and
+    phase screens. Based on the the algorithm from "Fast simulation of a
+    kolmogorov phase screen," Harding, Johnston & Lane (1999) Applied Optics,
+    38 (11).
+
+    :param x: coordinates of 1st pierce-point dimension
+    :param y: coordinates of 2nd pierce-point dimension
+    :param r0: diffractive scale [m]
+    :param beta: exponent of the power spectrum (defaults to 5/3)
+    :return: eigenvector matrix
+    :return: sqrt(eigenvalues) vector
+
+    """
+
+    print("generating phase screen eigenvectors and eigenvalues")
+
+    # stack 2D array into a vector
+    N = numpy.size(x)
+    x = numpy.reshape(x,N)
+    y = numpy.reshape(y,N)
+
+    # calculate pierce-point offsets
+    u = (
+        numpy.tile(x[:, numpy.newaxis], (1, N)) \
+        - numpy.tile(x[numpy.newaxis, :], (N, 1))
+        )
+    v = (
+        numpy.tile(y[:, numpy.newaxis], (1, N)) \
+        - numpy.tile(y[numpy.newaxis, :], (N, 1))
+        )
+    D = (numpy.sqrt(u * u + v * v) / r0) ** beta
+    Dint = numpy.mean(D, axis=0)
+    Dsum = numpy.tile(Dint[:, numpy.newaxis], (1, N)) \
+           + numpy.tile(Dint[numpy.newaxis, :], (N, 1))
+    # and the final covariance matrix
+    C = -0.5 * D + 0.5 * Dsum
+
+    # eigen decomposition
+    S, U = numpy.linalg.eigh(C, UPLO='U')
+    S[0] = 0.0
+
+    return U, numpy.sqrt(S)
+
+
 def zern(m, n, rho, phi):
     """
     Generate Zernike polynomial values
