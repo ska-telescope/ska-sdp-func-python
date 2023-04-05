@@ -305,7 +305,7 @@ def test_build_normal_equation(input_params):
         param_true.append(0.01 * numpy.random.randn(len(param[cid])))
 
     vis = modelvis.copy(deep=True)
-    apply_phase_distortions(vis, param, coeff, cluster_id)
+    apply_phase_distortions(vis, param_true, coeff, cluster_id)
 
     [AA, Ab] = build_normal_equation(vis, modelvis, param, coeff, cluster_id)
     assert AA.shape[0] == n_param
