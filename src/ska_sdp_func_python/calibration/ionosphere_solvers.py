@@ -370,20 +370,17 @@ def build_normal_equation(
                 blidx = numpy.arange(n_baselines)[mask]
 
                 # [nvis] A0 terms x [nvis,nparam] coeffs (1st antenna)
-                # need to replicate 1D index vectors across the 2D output
-                ii = numpy.tile(pidx1[:, numpy.newaxis], (1, len(blidx)))
-                jj = numpy.tile(blidx[numpy.newaxis, :], (len(pidx1), 1))
                 # all masked antennas have the same number of coeffs so can
                 # form a coeff matrix and multiply
+                ii, jj = numpy.meshgrid(pidx1, blidx, indexing='ij')
                 A[ii, jj] += numpy.einsum(
                     "b,bp->pb",
                     A0[mask],
                     numpy.vstack(coeff[ant1[mask]]).astype("float_"),
                 )
 
-                # [nvis] A0 terms x [nvis,nparam] coeffs 2nd antenna)
-                ii = numpy.tile(pidx2[:, numpy.newaxis], (1, len(blidx)))
-                jj = numpy.tile(blidx[numpy.newaxis, :], (len(pidx2), 1))
+                # [nvis] A0 terms x [nvis,nparam] coeffs (2nd antenna)
+                ii, jj = numpy.meshgrid(pidx2, blidx, indexing='ij')
                 A[ii, jj] -= numpy.einsum(
                     "b,bp->pb",
                     A0[mask],
