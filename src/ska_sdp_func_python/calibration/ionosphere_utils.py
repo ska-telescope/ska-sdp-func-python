@@ -77,8 +77,6 @@ def interpolate_phasescreen(input_screen):
     of a kolmogorov phase screen," Harding, Johnston & Lane (1999) Applied
     Optics, 38 (11).
 
-    TODO: check what happens if the NxN screen has even N
-
     :param input_screen: input phase screen. The NxN screen should have odd N
     :return: interpolated phase screen
 
@@ -167,10 +165,7 @@ def displace_phasescreen(interpolated_screen, res, r_0, beta):
     :return: displaced phase screen
 
     """
-
     displaced_screen = interpolated_screen.copy()
-
-    screen2 = numpy.copy(interpolated_screen)
 
     Nside = displaced_screen.shape[0]
 
@@ -203,13 +198,13 @@ def displace_phasescreen(interpolated_screen, res, r_0, beta):
     # on input columns and between input rows:
     displaced_screen[1:Nside:2, 2:Nsub2:2] += numpy.random.normal(
         0,
-        numpy.sqrt(0.0885 * (res / numpy.sqrt(2) / r_0)**beta),
+        numpy.sqrt(0.0885 * (res / numpy.sqrt(2) / r_0) ** beta),
         displaced_screen[1:Nside:2, 2:Nsub2:2].shape,
     )
     # on input rows and between input columns:
     displaced_screen[2:Nsub2:2, 1:Nside:2] += numpy.random.normal(
         0,
-        numpy.sqrt(0.0885 * (res / numpy.sqrt(2) / r_0)**beta),
+        numpy.sqrt(0.0885 * (res / numpy.sqrt(2) / r_0) ** beta),
         displaced_screen[2:Nsub2:2, 1:Nside:2].shape,
     )
 

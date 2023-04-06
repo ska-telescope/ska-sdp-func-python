@@ -372,7 +372,7 @@ def build_normal_equation(
                 # [nvis] A0 terms x [nvis,nparam] coeffs (1st antenna)
                 # all masked antennas have the same number of coeffs so can
                 # form a coeff matrix and multiply
-                ii, jj = numpy.meshgrid(pidx1, blidx, indexing='ij')
+                ii, jj = numpy.meshgrid(pidx1, blidx, indexing="ij")
                 A[ii, jj] += numpy.einsum(
                     "b,bp->pb",
                     A0[mask],
@@ -380,7 +380,7 @@ def build_normal_equation(
                 )
 
                 # [nvis] A0 terms x [nvis,nparam] coeffs (2nd antenna)
-                ii, jj = numpy.meshgrid(pidx2, blidx, indexing='ij')
+                ii, jj = numpy.meshgrid(pidx2, blidx, indexing="ij")
                 A[ii, jj] -= numpy.einsum(
                     "b,bp->pb",
                     A0[mask],
