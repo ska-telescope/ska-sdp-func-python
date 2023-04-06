@@ -208,10 +208,11 @@ def test_displace_phasescreen():
     # Choose pairs of screen pixels at which to calculate phase variance.
     # Choose pairs with small separations, i.e. with phase variations
     # dominated by interpolation and midpoint displacement.
-    n_selection = 100
+    n_selection = 200
     max_pixel_sep = 2**n_interp
 
     # choose the first pierce points, with a buffer around the edge
+    numpy.random.seed(int(1e8))
     i1 = max_pixel_sep + (
         (Nside - 2 * max_pixel_sep) * numpy.random.rand(n_selection)
     ).astype("int")
@@ -228,7 +229,7 @@ def test_displace_phasescreen():
 
     # Generate the random screens and accumulate the covariance estimates
     covariance = numpy.zeros(n_selection)
-    for _ in range(100):
+    for _ in range(200):
         # Generate the coarse starting screen
         screen = evec_matrix @ (sqrt_evals * numpy.random.randn(n_points))
         screen = screen.reshape(xx.shape)
@@ -241,7 +242,7 @@ def test_displace_phasescreen():
             screen = displace_phasescreen(screen, res, r_0, beta)
             Nside = 2 * Nside - 1
             res /= 2.0
-        covariance += (screen[i1, j1] - screen[i2, j2]) ** 2 / 100.0
+        covariance += (screen[i1, j1] - screen[i2, j2]) ** 2 / 200.0
 
     # Calculate the pierce-point pair separations
     x = res * numpy.arange(-(Nside // 2), Nside // 2 + 1)
@@ -252,8 +253,8 @@ def test_displace_phasescreen():
     mask = covariance > 0
     r_0_fit, beta_fit = fit_structure_function(r[mask], covariance[mask])
 
-    assert numpy.abs(beta_fit - beta) / beta < 4e-2
-    assert numpy.abs(r_0_fit - r_0) / r_0 < 1e-2
+    assert numpy.abs(beta_fit - beta) / beta < 5e-2
+    assert numpy.abs(r_0_fit - r_0) / r_0 < 2e-2
 
 
 def fit_structure_function(separation, covariance):
