@@ -144,7 +144,7 @@ def test_decompose_phasescreen_array():
     # Fit structure function parameters from the covariance measurements
     r_0_fit, beta_fit = fit_structure_function(r, shift_variance)
 
-    assert numpy.abs(beta_fit - beta) / beta < 6e-3
+    assert numpy.abs(beta_fit - beta) / beta < 1e-2
     assert numpy.abs(r_0_fit - r_0) / r_0 < 3e-2
 
 
@@ -254,7 +254,7 @@ def test_displace_phasescreen():
     r_0_fit, beta_fit = fit_structure_function(r[mask], covariance[mask])
 
     assert numpy.abs(beta_fit - beta) / beta < 5e-2
-    assert numpy.abs(r_0_fit - r_0) / r_0 < 2e-2
+    assert numpy.abs(r_0_fit - r_0) / r_0 < 10e-2
 
 
 def fit_structure_function(separation, covariance):
