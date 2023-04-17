@@ -334,20 +334,15 @@ def build_normal_equation(
         # Could accumulate AA and Ab directly, but go via a
         # design matrix for clarity. Update later if need be.
 
-        A = numpy.zeros((n_param, n_baselines))
+        A = numpy.zeros((n_param, n_baselines), "complex_")
 
-        # Just use simple point-source phasing for now
-        phase_model = mdl_data[0, :, chan, 0] / numpy.abs(
-            mdl_data[0, :, chan, 0]
-        )
+        # V = M * exp(i * 2*pi * wl * fit)
+        # imag(V*conj(M)) = imag(|M|^2 * exp(i * 2*pi * wl * fit))
+        #                 ~ |M|^2 * 2*pi * wl * fit
+        # real(M*conj(M)) = |M|^2
 
         # Precalculate some constants
-        A0 = (
-            2.0
-            * numpy.pi
-            * wl[chan]
-            * numpy.real(mdl_data[0, :, chan, 0] * numpy.conj(phase_model))
-        )
+        A0 = 2.0 * numpy.pi * wl[chan] * mdl_data[0, :, chan, 0]
 
         # Loop over pairs of clusters and update the design matrix for the
         # associated baselines
@@ -388,14 +383,13 @@ def build_normal_equation(
                 )
 
         # Average over all baselines for each param pair
-        AA += numpy.einsum("pb,qb->pq", A, A)
-        Ab += numpy.einsum(
-            "pb,b->p",
-            A,
-            numpy.imag(
-                (vis_data[0, :, chan, 0] - mdl_data[0, :, chan, 0])
-                * numpy.conj(phase_model)
-            ),
+        AA += numpy.real(numpy.einsum("pb,qb->pq", numpy.conj(A), A))
+        Ab += numpy.imag(
+            numpy.einsum(
+                "pb,b->p",
+                numpy.conj(A),
+                vis_data[0, :, chan, 0] - mdl_data[0, :, chan, 0],
+            )
         )
 
     return AA, Ab
