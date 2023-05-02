@@ -22,7 +22,6 @@ from ska_sdp_datamodels.science_data_model.polarisation_functions import (
 )
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility.vis_model import Visibility
-from ska_sdp_func.visibility import dft_point_v00
 
 from ska_sdp_func_python.util.coordinate_support import skycoord_to_lmn
 from ska_sdp_func_python.visibility.base import calculate_visibility_phasor
@@ -130,6 +129,9 @@ def dft_kernel(
     :param dft_compute_kernel: string: cpu_looped, gpu_cupy_raw or proc_func
     :return: Vis array, dims: [ntimes, nbaselines, nchan, npol]
     """
+    from ska_sdp_func.visibility import (
+        dft_point_v00,  # pylint: disable=import-error,import-outside-toplevel
+    )
 
     if dft_compute_kernel is None:
         dft_compute_kernel = "cpu_looped"

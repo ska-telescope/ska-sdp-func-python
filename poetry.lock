@@ -1347,8 +1347,9 @@ fft-support = ["pyfftw"]
 gpu = ["cupy"]
 h5py = []
 radler = ["radler"]
+ska-sdp-func = ["ska-sdp-func"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "1c60ee81b0e31bfd01eeeaa50a30bc2900e8be6658f6cf0c27d9e54daea2dca8"
+content-hash = "e35f564dda89ea2d4ed7072fc2033266692627531eacc69cc99829016bd34185"

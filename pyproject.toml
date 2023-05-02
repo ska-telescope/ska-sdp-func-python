@@ -36,6 +36,7 @@ gpu = ["cupy"]
 radler = ["radler"]
 dp3 = ["dp3"]
 h5py = ["h5py"]
+ska-sdp-func = ["ska-sdp-func"]
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
