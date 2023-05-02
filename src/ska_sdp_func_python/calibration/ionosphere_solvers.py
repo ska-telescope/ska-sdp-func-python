@@ -254,6 +254,9 @@ def apply_phase_distortions(
     ant2 = vis.antenna2.data
     vis_data = vis.vis.data
 
+    # exclude auto-correlations from the mask
+    mask0 = ant1 != ant2
+
     # Use einsum calls to average over parameters for all combinations of
     # baseline and frequency
     # [n_freq] scaling constants
@@ -261,8 +264,7 @@ def apply_phase_distortions(
     for cid1 in range(0, n_cluster):
         for cid2 in range(0, n_cluster):
             # A mask for all baselines in this cluster pair
-            #     could/should remove autos at this point as well
-            mask = (stn2cid[ant1] == cid1) * (stn2cid[ant2] == cid2)
+            mask = mask0 * (stn2cid[ant1] == cid1) * (stn2cid[ant2] == cid2)
             if numpy.sum(mask) == 0:
                 continue
             vis_data[0, mask, :, 0] *= numpy.exp(
@@ -323,6 +325,9 @@ def build_normal_equation(
 
     n_baselines = len(vis.baselines)
 
+    # exclude auto-correlations from the mask
+    mask0 = ant1 != ant2
+
     # Loop over frequency and accumulate normal equations
     # Could probably handly frequency within an einsum as well.
     # It is also a natural axis for parallel calculation of AA and Ab.
@@ -355,8 +360,7 @@ def build_normal_equation(
                 )
 
                 # A mask for all baselines in this cluster pair
-                # DAM could/should remove autos at this point as well
-                mask = (stn2cid[ant1] == cid1) * (stn2cid[ant2] == cid2)
+                mask = mask0 * (stn2cid[ant1] == cid1) * (stn2cid[ant2] == cid2)
 
                 if numpy.sum(mask) == 0:
                     continue
