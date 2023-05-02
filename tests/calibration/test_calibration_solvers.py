@@ -6,6 +6,9 @@ from ska_sdp_datamodels.calibration.calibration_create import (
     create_gaintable_from_visibility,
 )
 
+pytest.importorskip(
+    modname="ska_sdp_func", reason="ska-sdp-func is an optional dependency"
+)
 from ska_sdp_func_python.calibration.operations import apply_gaintable
 from ska_sdp_func_python.calibration.solvers import solve_gaintable
 from tests.testing_utils import simulate_gaintable, vis_with_component_data

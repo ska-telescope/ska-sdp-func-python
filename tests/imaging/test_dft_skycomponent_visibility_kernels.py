@@ -4,6 +4,9 @@ Unit tests for DFT kernels
 import numpy
 import pytest
 
+pytest.importorskip(
+    modname="ska_sdp_func", reason="ska-sdp-func is an optional dependency"
+)
 from ska_sdp_func_python.imaging.dft import dft_skycomponent_visibility
 
 
