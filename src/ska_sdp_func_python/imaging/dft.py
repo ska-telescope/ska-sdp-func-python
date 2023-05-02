@@ -133,8 +133,8 @@ def dft_kernel(
         from ska_sdp_func.visibility import (
             dft_point_v00,  # pylint: disable=import-outside-toplevel
         )
-    except ModuleNotFoundError:
-        raise ModuleNotFoundError("ska_sdp_func is not installed!")
+    except ModuleNotFoundError as err:
+        raise ModuleNotFoundError("ska_sdp_func is not installed!") from err
 
     if dft_compute_kernel is None:
         dft_compute_kernel = "cpu_looped"
