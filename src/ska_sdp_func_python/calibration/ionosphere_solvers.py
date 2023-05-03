@@ -360,7 +360,9 @@ def build_normal_equation(
                 )
 
                 # A mask for all baselines in this cluster pair
-                mask = mask0 * (stn2cid[ant1] == cid1) * (stn2cid[ant2] == cid2)
+                mask = (
+                    mask0 * (stn2cid[ant1] == cid1) * (stn2cid[ant2] == cid2)
+                )
 
                 if numpy.sum(mask) == 0:
                     continue
