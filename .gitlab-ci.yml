@@ -27,7 +27,7 @@ python-lint:
     - apt-get update && apt-get -y install cmake
     - poetry config virtualenvs.in-project true
     - poetry config virtualenvs.create $POETRY_CONFIG_VIRTUALENVS_CREATE
-    - time poetry install --all-extras
+    - time poetry install
 
 python-test:
   before_script:
