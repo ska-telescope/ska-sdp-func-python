@@ -7,6 +7,9 @@ import numpy
 import pytest
 from ska_sdp_datamodels.sky_model import import_skymodel_from_hdf5
 
+pytest.importorskip(
+    modname="ska_sdp_func", reason="ska-sdp-func is an optional dependency"
+)
 from ska_sdp_func_python.sky_model.skymodel_imaging import (
     skymodel_calibrate_invert,
     skymodel_predict_calibrate,

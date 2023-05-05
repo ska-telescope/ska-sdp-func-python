@@ -11,6 +11,9 @@ from ska_sdp_datamodels.science_data_model.polarisation_model import (
 from ska_sdp_datamodels.sky_model.sky_model import SkyComponent
 from ska_sdp_datamodels.visibility import create_visibility
 
+pytest.importorskip(
+    modname="ska_sdp_func", reason="ska-sdp-func is an optional dependency"
+)
 from ska_sdp_func_python.imaging.dft import (
     dft_skycomponent_visibility,
     extract_direction_and_flux,

@@ -9,6 +9,9 @@ from ska_sdp_datamodels.calibration.calibration_create import (
     create_gaintable_from_visibility,
 )
 
+pytest.importorskip(
+    modname="ska_sdp_func", reason="ska-sdp-func is an optional dependency"
+)
 from ska_sdp_func_python.calibration.chain_calibration import (
     apply_calibration_chain,
     calibrate_chain,
