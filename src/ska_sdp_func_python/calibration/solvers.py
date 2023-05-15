@@ -26,7 +26,7 @@ def solve_gaintable(
     niter=200,
     tol=1e-6,
     crosspol=False,
-    normalise_gains=True,
+    normalise_gains="median",
     jones_type="T",
     timeslice=None,
 ) -> GainTable:
@@ -45,7 +45,7 @@ def solve_gaintable(
                  in the gain solution is below this tolerance
     :param crosspol: Do solutions including cross polarisations
                      i.e. XY, YX or RL, LR
-    :param normalise_gains: Normalises the gains (default True)
+    :param normalise_gains: Normalises the gains (default median, mean)
     :param jones_type: Type of calibration matrix T or G or B
     :param timeslice: Time interval between solutions (s)
     :return: GainTable containing solution
@@ -106,9 +106,9 @@ def solve_gaintable(
         x = numpy.zeros([nants, nants, nchan, npol], dtype="complex")
         xwt = numpy.zeros([nants, nants, nchan, npol])
         for ibaseline, (a1, a2) in enumerate(point_vis.baselines.data):
-            x[a1, a2, ...] = x_b[ibaseline, ...]
+            x[a1, a2, ...] = numpy.conjugate(x_b[ibaseline, ...])
             xwt[a1, a2, ...] = xwt_b[ibaseline, ...]
-            x[a2, a1, ...] = numpy.conjugate(x_b[ibaseline, ...])
+            x[a2, a1, ...] = x_b[ibaseline, ...]
             xwt[a2, a1, ...] = xwt_b[ibaseline, ...]
 
         mask = numpy.abs(xwt) > 0.0
@@ -118,7 +118,6 @@ def solve_gaintable(
                 gain_table,
                 mask,
                 niter,
-                normalise_gains,
                 phase_only,
                 row,
                 tol,
@@ -131,6 +130,13 @@ def solve_gaintable(
             gain_table["weight"].data[row, ...] = 0.0
             gain_table["residual"].data[row, ...] = 0.0
 
+    if normalise_gains.lower() == "median" and not phase_only:
+        gabs = numpy.median(numpy.abs(gain_table["gain"].data[:]))
+        gain_table["gain"].data[:] /= gabs
+    elif normalise_gains.lower() == "mean" and not phase_only:
+        gabs = numpy.mean(numpy.abs(gain_table["gain"].data[:]))
+        gain_table["gain"].data[:] /= gabs
+
     return gain_table
 
 
@@ -139,7 +145,6 @@ def _solve_with_mask(
     gain_table,
     mask,
     niter,
-    normalise_gains,
     phase_only,
     row,
     tol,
@@ -202,9 +207,6 @@ def _solve_with_mask(
             niter=niter,
             tol=tol,
         )
-    if normalise_gains and not phase_only:
-        gabs = numpy.average(numpy.abs(gain_table["gain"].data[row]))
-        gain_table["gain"].data[row] /= gabs
 
 
 def _solve_antenna_gains_itsubs_scalar(

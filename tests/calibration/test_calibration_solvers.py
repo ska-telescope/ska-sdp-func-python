@@ -294,14 +294,14 @@ def test_solve_gaintable_normalise():
         niter=200,
         crosspol=False,
         tol=1e-6,
-        normalise_gains=True,
+        normalise_gains="mean",
         jones_type=jones_type,
     )
 
     assert (
-        result_gain_table["gain"].data.sum().real.round(10) == 372.3325412643
+        result_gain_table["gain"].data.sum().real.round(10) == 372.3183602181
     )
-    assert result_gain_table["gain"].data.sum().imag.round(10) == 23.7294030164
+    assert result_gain_table["gain"].data.sum().imag.round(10) == 23.8923785376
 
 
 @pytest.mark.parametrize(
@@ -314,7 +314,7 @@ def test_solve_gaintable_normalise():
             [100.0, 0.0, 0.0, 0.0],
             False,
             32,
-            (11920.058493360062, 2.8005384554731485),
+            (11920.084395988404, 2.887045666355),
         ),
         (
             "stokesIQUV",
@@ -322,7 +322,7 @@ def test_solve_gaintable_normalise():
             [100.0, 0.0, 0.0, 50.0],
             True,
             4,
-            (5986.719933148706, 0.04801930767159601),
+            (5986.724197075842, 0.04796985620607441),
         ),
         (
             "stokesIQUV",
@@ -330,7 +330,7 @@ def test_solve_gaintable_normalise():
             [100.0, 50.0, 0.0, 0.0],
             False,
             32,
-            (47888.57884046984, 0.026622457006181932),
+            (47888.58029678579, 0.026605800133365776),
         ),
     ],
 )
@@ -369,7 +369,7 @@ def test_solve_gaintable_bandpass(
         niter=200,
         crosspol=crosspol,
         tol=1e-6,
-        normalise_gains=True,
+        normalise_gains="mean",
         jones_type=jones_type,
     )
 
