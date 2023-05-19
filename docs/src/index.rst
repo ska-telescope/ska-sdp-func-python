@@ -34,6 +34,7 @@ Refer to their page for instructions.
    :caption: Sections
 
    fourier_processing
+   ionospheric_calibration
    functions
    usage
    api

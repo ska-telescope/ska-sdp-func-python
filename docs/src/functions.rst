@@ -42,4 +42,5 @@ Calibration
 * Concatenate a list of GainTables: :py:func:`ska_sdp_func_python.calibration.operations.concatenate_gaintables`
 * Multiply two GainTables: :py:func:`ska_sdp_func_python.calibration.operations.multiply_gaintable`
 * Solve for complex gains: :py:func:`ska_sdp_func_python.calibration.solvers.solve_gaintable`
+* Solve for complex gains via ionospheric aperture functions: :py:func:`ska_sdp_func_python.calibration.solvers.solve_ionosphere`
 
