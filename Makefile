@@ -7,7 +7,8 @@ PROJECT_NAME = ska-sdp-func-python
 # flake8 switches
 # W503: line break before binary operator
 # E203: whitespace before ':'
-PYTHON_SWITCHES_FOR_FLAKE8 = --ignore=W503,E203
+# E402: module level import not at top of file
+PYTHON_SWITCHES_FOR_FLAKE8 = --ignore=W503,E203,E402
 
 # W0511: fixme (don't report TODOs)
 # TODO: The following ones should be reviewed and fixed
@@ -20,6 +21,7 @@ PYTHON_SWITCHES_FOR_FLAKE8 = --ignore=W503,E203
 # R0912: too-many-branches
 # R0915: too-many-statements
 # R1702: too-many-nested-blocks
-PYTHON_SWITCHES_FOR_PYLINT = --disable=W0511,R0801,C0103,R0914,R0913,R0912,R0915,R1702
-
+# C0413: wrong-import-position
+# C0415: import outside toplevel
+PYTHON_SWITCHES_FOR_PYLINT = --disable=W0511,R0801,C0103,R0914,R0913,R0912,R0915,R1702,C0413,C0415
 

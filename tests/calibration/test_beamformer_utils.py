@@ -2,7 +2,13 @@
 """
 Unit tests for beamformer utils
 """
+
 import numpy
+import pytest
+
+pytest.importorskip(
+    modname="ska_sdp_func", reason="ska-sdp-func is an optional dependency"
+)
 from ska_sdp_datamodels.calibration.calibration_create import (
     create_gaintable_from_visibility,
 )
@@ -28,7 +34,6 @@ def test_expand_delay_phase():
     band. This test check that the phase shift expansion is linear with
     frequency and is phase referenced at the reference frequency.
     """
-
     vis = vis_with_component_data(
         "stokesIQUV", "linear", [1.0, 0.0, 0.0, 0.0], nchan=5, ntimes=4
     )
