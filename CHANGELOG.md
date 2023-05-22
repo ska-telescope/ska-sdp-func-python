@@ -2,6 +2,7 @@
 
 0.2.1
 ----
+* Fixing partial gain solver errors ([MR34](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/34)) 
 * Fixing function inputs in chain_calibration.py ([MR31](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/31))
 * Added utility functions to support rechannelisation of bandpass and delay solutions for CBF beamformer calibration ([MR29](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/29))
 
