@@ -109,12 +109,16 @@ def deconvolve_list(
     """
 
     window_shape = kwargs.get("window_shape", None)
-    window_list = find_window_list(dirty_list, prefix, window_shape=window_shape)
+    window_list = find_window_list(
+        dirty_list, prefix, window_shape=window_shape
+    )
 
     check_psf_peak(psf_list)
 
     psf_support = kwargs.get("psf_support", None)
-    psf_list = bound_psf_list(dirty_list, prefix, psf_list, psf_support=psf_support)
+    psf_list = bound_psf_list(
+        dirty_list, prefix, psf_list, psf_support=psf_support
+    )
 
     check_psf_peak(psf_list)
 
@@ -147,7 +151,9 @@ def deconvolve_list(
             dirty_list, psf_list, window_list, **kwargs
         )
     else:
-        raise ValueError(f"deconvolve_cube {prefix}: Unknown algorithm {algorithm}")
+        raise ValueError(
+            f"deconvolve_cube {prefix}: Unknown algorithm {algorithm}"
+        )
 
     log.info("deconvolve_cube %s: Deconvolution finished", prefix)
 
@@ -224,7 +230,9 @@ def radler_deconvolve_list(
 
     comp_image_list = []
     for i, dirty in enumerate(dirty_list):
-        psf_radler = psf_list[i].pixels.to_numpy().astype(numpy.float32).squeeze()
+        psf_radler = (
+            psf_list[i].pixels.to_numpy().astype(numpy.float32).squeeze()
+        )
         dirty_radler = dirty.pixels.to_numpy().astype(numpy.float32).squeeze()
         restored_radler = numpy.zeros_like(dirty_radler)
 
@@ -265,7 +273,8 @@ def check_psf_peak(psf_list):
         numpy.testing.assert_approx_equal(
             pmax,
             1.0,
-            err_msg=f"check_psf_peak: PSF {ipsf} " f"does not have unit peak {pmax}",
+            err_msg=f"check_psf_peak: PSF {ipsf} "
+            f"does not have unit peak {pmax}",
             significant=6,
         )
 
@@ -306,9 +315,12 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
             nx = dirty["pixels"].shape[3]
             ny = dirty["pixels"].shape[2]
             window_array = numpy.zeros_like(dirty["pixels"].data)
-            window_array[..., (edge + 1) : (ny - edge), (edge + 1) : (nx - edge)] = 1.0
+            window_array[
+                ..., (edge + 1) : (ny - edge), (edge + 1) : (nx - edge)
+            ] = 1.0
             log.info(
-                "deconvolve_cube %s: Window omits " "%d-pixel edge of each sky plane",
+                "deconvolve_cube %s: Window omits "
+                "%d-pixel edge of each sky plane",
                 prefix,
                 edge,
             )
@@ -319,7 +331,8 @@ def find_window_list(dirty_list, prefix, window_shape=None, **kwargs):
         if isinstance(mask, Image):
             if window_array is not None:
                 log.warning(
-                    "deconvolve_cube %s: Overriding " "window_shape with mask image",
+                    "deconvolve_cube %s: Overriding "
+                    "window_shape with mask image",
                     prefix,
                 )
                 window_array = mask["pixels"].data
@@ -417,7 +430,8 @@ def complex_hogbom_kernel_list(
             if pol in (0, 3):
                 if psf["pixels"].data[0, pol, :, :].max():
                     log.info(
-                        "complex_hogbom_kernel_list: " "Processing pol %d, channel %d",
+                        "complex_hogbom_kernel_list: "
+                        "Processing pol %d, channel %d",
                         pol,
                         channel,
                     )
@@ -440,7 +454,8 @@ def complex_hogbom_kernel_list(
                     )
                 else:
                     log.info(
-                        "complex_hogbom_kernel_list: " "Skipping pol %d, channel %d",
+                        "complex_hogbom_kernel_list: "
+                        "Skipping pol %d, channel %d",
                         pol,
                         channel,
                     )
@@ -577,7 +592,10 @@ def hogbom_kernel_list(
                     channel,
                 )
                 if window_list is None or window_list[channel] is None:
-                    (comp_array[0, pol, :, :], residual_array[0, pol, :, :],) = hogbom(
+                    (
+                        comp_array[0, pol, :, :],
+                        residual_array[0, pol, :, :],
+                    ) = hogbom(
                         dirty["pixels"].data[0, pol, :, :],
                         psf["pixels"].data[0, pol, :, :],
                         None,
@@ -588,7 +606,10 @@ def hogbom_kernel_list(
                         prefix,
                     )
                 else:
-                    (comp_array[0, pol, :, :], residual_array[0, pol, :, :],) = hogbom(
+                    (
+                        comp_array[0, pol, :, :],
+                        residual_array[0, pol, :, :],
+                    ) = hogbom(
                         dirty["pixels"].data[0, pol, :, :],
                         psf["pixels"].data[0, pol, :, :],
                         window_list[channel]["pixels"].data[0, pol, :, :],
@@ -682,9 +703,12 @@ def mmclean_kernel_list(
     nchan = len(dirty_list)
     if not nchan > 2 * (nmoment - 1):
         raise ValueError(
-            f"Requires `nchan > 2 * (nmoment - 1)` " f"({nchan} > {2 * (nmoment - 1)})"
+            f"Requires `nchan > 2 * (nmoment - 1)` "
+            f"({nchan} > {2 * (nmoment - 1)})"
         )
-    dirty_taylor = calculate_image_list_frequency_moments(dirty_list, nmoment=nmoment)
+    dirty_taylor = calculate_image_list_frequency_moments(
+        dirty_list, nmoment=nmoment
+    )
 
     if sensitivity_list is not None:
         sensitivity_taylor = calculate_image_list_frequency_moments(
@@ -736,7 +760,10 @@ def mmclean_kernel_list(
         if psf_taylor["pixels"].data[0, 0, :, :].max():
             log.info("mmclean_kernel_list %s: Processing pol %d", prefix, pol)
             if window_taylor is None:
-                (comp_array[:, pol, :, :], residual_array[:, pol, :, :],) = msmfsclean(
+                (
+                    comp_array[:, pol, :, :],
+                    residual_array[:, pol, :, :],
+                ) = msmfsclean(
                     dirty_taylor["pixels"].data[:, pol, :, :],
                     psf_taylor["pixels"].data[:, 0, :, :],
                     None,
@@ -755,7 +782,10 @@ def mmclean_kernel_list(
                     prefix,
                     int(numpy.sum(window_taylor["pixels"].data[0, pol])),
                 )
-                (comp_array[:, pol, :, :], residual_array[:, pol, :, :],) = msmfsclean(
+                (
+                    comp_array[:, pol, :, :],
+                    residual_array[:, pol, :, :],
+                ) = msmfsclean(
                     dirty_taylor["pixels"].data[:, pol, :, :],
                     psf_taylor["pixels"].data[:, 0, :, :],
                     window_taylor["pixels"].data[0, pol, :, :],
@@ -847,7 +877,10 @@ def msclean_kernel_list(
         residual_array = numpy.zeros_like(dirty["pixels"].data)
 
         for pol in range(dirty["pixels"].data.shape[1]):
-            if sensitivity_list is not None and sensitivity_list[channel] is not None:
+            if (
+                sensitivity_list is not None
+                and sensitivity_list[channel] is not None
+            ):
                 sens = sensitivity_list[channel]["pixels"].data[0, pol, :, :]
             else:
                 sens = None
@@ -859,7 +892,10 @@ def msclean_kernel_list(
                     channel,
                 )
                 if window_list is None or window_list[channel] is None:
-                    (comp_array[0, pol, :, :], residual_array[0, pol, :, :],) = msclean(
+                    (
+                        comp_array[0, pol, :, :],
+                        residual_array[0, pol, :, :],
+                    ) = msclean(
                         dirty["pixels"].data[0, pol, :, :],
                         psf["pixels"].data[0, pol, :, :],
                         None,
@@ -872,7 +908,10 @@ def msclean_kernel_list(
                         prefix,
                     )
                 else:
-                    (comp_array[0, pol, :, :], residual_array[0, pol, :, :],) = msclean(
+                    (
+                        comp_array[0, pol, :, :],
+                        residual_array[0, pol, :, :],
+                    ) = msclean(
                         dirty["pixels"].data[0, pol, :, :],
                         psf["pixels"].data[0, pol, :, :],
                         window_list[channel]["pixels"].data[0, pol, :, :],
@@ -947,7 +986,8 @@ def restore_list(
             if psf is not None:
                 clean_beam = fit_psf(psf)
                 log.info(
-                    "restore_list: Using fitted clean beam " "(deg, deg, deg) = %s",
+                    "restore_list: Using fitted clean beam "
+                    "(deg, deg, deg) = %s",
                     clean_beam,
                 )
             else:
@@ -1098,7 +1138,9 @@ def fit_psf(psf: Image):
             warnings.simplefilter("ignore")
             fit = fit_p(p_init, x, y, z)
         if fit.x_stddev <= 0.0 or fit.y_stddev <= 0.0:
-            log.warning("fit_psf: error in fitting to psf, using 1 pixel stddev")
+            log.warning(
+                "fit_psf: error in fitting to psf, using 1 pixel stddev"
+            )
             beam_pixels = (1.0, 1.0, 0.0)
         else:
             # Note that the order here is minor, major, pa
@@ -1117,7 +1159,9 @@ def fit_psf(psf: Image):
     return convert_clean_beam_to_degrees(psf, beam_pixels)
 
 
-def restore_cube(model: Image, psf=None, residual=None, clean_beam=None) -> Image:
+def restore_cube(
+    model: Image, psf=None, residual=None, clean_beam=None
+) -> Image:
     """Restore the model image to the residuals.
 
     The clean beam can be specified as a dictionary with

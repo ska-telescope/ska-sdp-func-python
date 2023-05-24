@@ -45,7 +45,8 @@ def solve_gaintable(
                  in the gain solution is below this tolerance
     :param crosspol: Do solutions including cross polarisations
                      i.e. XY, YX or RL, LR
-    :param normalise_gains: Normalises the gains (default "mean")
+    :param normalise_gains: Normalises the gains (default True)
+                            True means mean, mean, median
     :param jones_type: Type of calibration matrix T or G or B
     :param timeslice: Time interval between solutions (s)
     :return: GainTable containing solution
@@ -56,7 +57,9 @@ def solve_gaintable(
         if not numpy.max(numpy.abs(modelvis.vis)) > 0.0:
             raise ValueError("solve_gaintable: Model visibility is zero")
 
-    point_vis = divide_visibility(vis, modelvis) if modelvis is not None else vis
+    point_vis = (
+        divide_visibility(vis, modelvis) if modelvis is not None else vis
+    )
 
     if phase_only:
         log.debug("solve_gaintable: Solving for phase only")
@@ -87,7 +90,9 @@ def solve_gaintable(
         pointvis_sel = point_vis.sel(time_slice)
         # pylint: disable=unneeded-not
         if not pointvis_sel.visibility_acc.ntimes > 0:
-            log.warning("Gaintable %s, vis time mismatch %s", gain_table.time, vis.time)
+            log.warning(
+                "Gaintable %s, vis time mismatch %s", gain_table.time, vis.time
+            )
             continue
 
         x_b = numpy.sum(
@@ -127,8 +132,14 @@ def solve_gaintable(
             gain_table["residual"].data[row, ...] = 0.0
 
     if normalise_gains in ["median", "mean", True] and not phase_only:
-        normaliser = {"median": numpy.median, "mean": numpy.mean, True: numpy.mean}
-        gabs = normaliser[normalise_gains](numpy.abs(gain_table["gain"].data[:]))
+        normaliser = {
+            "median": numpy.median,
+            "mean": numpy.mean,
+            True: numpy.mean,
+        }
+        gabs = normaliser[normalise_gains](
+            numpy.abs(gain_table["gain"].data[:])
+        )
         gain_table["gain"].data[:] /= gabs
 
     return gain_table
@@ -156,7 +167,9 @@ def _solve_with_mask(
     xwt[mask] = xwt[mask] / numpy.max(xwt[mask])
     xwt[~mask] = 0.0
     x = x.reshape(x_shape)
-    if vis.visibility_acc.npol == 2 or (vis.visibility_acc.npol == 4 and not crosspol):
+    if vis.visibility_acc.npol == 2 or (
+        vis.visibility_acc.npol == 4 and not crosspol
+    ):
         (
             gain_table["gain"].data[row, ...],
             gain_table["weight"].data[row, ...],
@@ -495,7 +508,9 @@ def _solution_residual_scalar(gain, x, xwt):
         ).real
         sumwt[chan] += numpy.sum(xwt[:, :, chan, 0, 0])
 
-    residual[sumwt > 0.0] = numpy.sqrt(residual[sumwt > 0.0] / sumwt[sumwt > 0.0])
+    residual[sumwt > 0.0] = numpy.sqrt(
+        residual[sumwt > 0.0] / sumwt[sumwt > 0.0]
+    )
     residual[sumwt <= 0.0] = 0.0
 
     return residual
