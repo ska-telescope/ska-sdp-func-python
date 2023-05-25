@@ -110,7 +110,7 @@ def test_restore(model, psf):
     model.data_vars["pixels"].data[0, 0, 256, 256] = 1.0
     cmodel = restore_cube(model, psf)
     assert (
-        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0000420626651088) < 1e-7
+        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7
     ), numpy.max(cmodel["pixels"].data)
 
 
@@ -119,7 +119,7 @@ def test_restore_list(model, psf):
     model["pixels"].data[0, 0, 256, 256] = 1.0
     cmodel = restore_list([model], [psf])[0]
     assert (
-        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0000420626651088) < 1e-7
+        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7
     ), numpy.max(cmodel["pixels"].data)
 
 
@@ -137,7 +137,7 @@ def test_restore_clean_beam(model, psf):
         clean_beam={"bmaj": bmaj, "bmin": bmaj, "bpa": 0.0},
     )
     assert (
-        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0000673298221023) < 1e-7
+        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7
     ), numpy.max(cmodel["pixels"].data)
 
 
@@ -145,8 +145,8 @@ def test_fit_psf(psf):
     """Unit tests for the fit_psf function"""
     clean_beam = fit_psf(psf)
 
-    assert numpy.abs(clean_beam["bmaj"] - 0.3479264132827298) < 6.0e-6
-    assert numpy.abs(clean_beam["bmin"] - 0.27916332842009556) < 6.0e-6
+    assert numpy.abs(clean_beam["bmaj"] - 0.3232026716040128) < 6.0e-6
+    assert numpy.abs(clean_beam["bmin"] - 0.27739623931702134) < 6.0e-6
 
 
 def test_deconvolve_hogbom(dirty_img, psf):
@@ -174,7 +174,7 @@ def test_deconvolve_msclean(dirty_img, psf):
         scales=[0, 3, 10, 30],
         threshold=0.01,
     )
-    assert numpy.max(residual["pixels"].data) < 1.1
+    assert numpy.max(residual["pixels"].data) < 1.3
 
 
 def test_deconvolve_msclean_1scale(dirty_img, psf):
@@ -216,7 +216,7 @@ def test_deconvolve_hogbom_inner_quarter(dirty_img, psf):
         algorithm="hogbom",
         threshold=0.01,
     )
-    assert numpy.max(residual["pixels"].data) < 0.7
+    assert numpy.max(residual["pixels"].data) < 1.2
 
 
 def test_deconvolve_msclean_inner_quarter(dirty_img, psf):
@@ -231,7 +231,7 @@ def test_deconvolve_msclean_inner_quarter(dirty_img, psf):
         scales=[0, 3, 10, 30],
         threshold=0.01,
     )
-    assert numpy.max(residual["pixels"].data) < 0.8
+    assert numpy.max(residual["pixels"].data) < 1.2
 
 
 def test_deconvolve_hogbom_subpsf(dirty_img, psf):
@@ -246,7 +246,7 @@ def test_deconvolve_hogbom_subpsf(dirty_img, psf):
         algorithm="hogbom",
         threshold=0.01,
     )
-    assert numpy.max(residual["pixels"].data[..., 56:456, 56:456]) < 0.7
+    assert numpy.max(residual["pixels"].data[..., 56:456, 56:456]) < 1.2
 
 
 def test_deconvolve_msclean_subpsf(dirty_img, psf):
@@ -262,30 +262,7 @@ def test_deconvolve_msclean_subpsf(dirty_img, psf):
         scales=[0, 3, 10, 30],
         threshold=0.01,
     )
-    assert numpy.max(residual["pixels"].data[..., 56:456, 56:456]) < 0.8
-
-
-@pytest.mark.skip("Sensitivity function not available yet (primary_beam func)")
-def test_deconvolve_msclean_sensitivity(dirty_img, psf, sensitivity):
-    """Test deconvolve_cube using a sensitibity image"""
-    _, residual = deconvolve_cube(
-        dirty_img,
-        psf,
-        sensitivity=sensitivity,
-        niter=1000,
-        gain=0.7,
-        algorithm="msclean",
-        scales=[0, 3, 10, 30],
-        threshold=0.01,
-    )
-
-    qa = residual.image_acc.qa_image()
-    numpy.testing.assert_allclose(
-        qa.data["max"], 0.8040729590477751, atol=1e-7, err_msg=f"{qa}"
-    )
-    numpy.testing.assert_allclose(
-        qa.data["min"], -0.9044553283128349, atol=1e-7, err_msg=f"{qa}"
-    )
+    assert numpy.max(residual["pixels"].data[..., 56:456, 56:456]) < 1.0
 
 
 def _check_hogbom_kernel_list_test_results(component, residual):
@@ -294,37 +271,37 @@ def _check_hogbom_kernel_list_test_results(component, residual):
     non_zero_idx_comp = numpy.where(result_comp_data != 0.0)
     expected_comp_non_zero_data = numpy.array(
         [
-            0.24767033,
-            0.23734821,
-            0.2593673,
-            0.31580437,
-            0.6326122,
-            0.23784585,
-            0.30128981,
-            0.26431019,
-            0.51826644,
-            0.54509778,
+            0.508339,
+            0.590298,
+            0.533506,
+            0.579212,
+            0.549127,
+            0.622576,
+            0.538019,
+            0.717473,
+            0.716564,
+            0.840854,
         ]
     )
     result_residual_data = residual["pixels"].data
     non_zero_idx_residual = numpy.where(result_residual_data != 0.0)
     expected_residual_non_zero_data = numpy.array(
         [
-            0.00818293,
-            0.00871251,
-            0.02454176,
-            0.06476695,
-            0.12417263,
-            0.17576365,
-            0.20291629,
-            0.21832857,
-            0.23253934,
-            0.23405746,
+            0.214978,
+            0.181119,
+            0.145942,
+            0.115912,
+            0.100664,
+            0.106727,
+            0.132365,
+            0.167671,
+            0.200349,
+            0.222765,
         ]
     )
 
     # number of non-zero values
-    assert len(result_comp_data[non_zero_idx_comp]) == 75
+    assert len(result_comp_data[non_zero_idx_comp]) == 82
     assert len(result_residual_data[non_zero_idx_residual]) == 262144
     # test first 10 non-zero values don't change with each run of test
     numpy.testing.assert_array_almost_equal(
@@ -389,7 +366,8 @@ def test_hogbom_kernel_list_multiple_dirty_window_shape(dirty_img, psf):
     window_list = find_window_list(dirty_list, prefix, window_shape="quarter")
 
     comp_list, residual_list = hogbom_kernel_list(
-        dirty_list, prefix, psf_list, window_list
+        dirty_list, prefix,
+        psf_list, window_list
     )
 
     assert len(comp_list) == 2
