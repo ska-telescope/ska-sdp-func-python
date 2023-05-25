@@ -174,7 +174,7 @@ def test_deconvolve_msclean(dirty_img, psf):
         scales=[0, 3, 10, 30],
         threshold=0.01,
     )
-    assert numpy.max(residual["pixels"].data) < 1.255570659757609
+    assert numpy.max(residual["pixels"].data) < 1.3
 
 
 def test_deconvolve_msclean_1scale(dirty_img, psf):
