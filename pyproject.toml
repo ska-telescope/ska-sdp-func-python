@@ -14,7 +14,7 @@ url = "https://artefact.skao.int/repository/pypi-internal/simple"
 [tool.poetry.dependencies]
 python = "^3.9"
 astroplan = "^0.8"
-astropy = "^5.1"
+astropy = "^5.1, < 5.3"
 ducc0 = "^0.27.0"
 # numpy version set to be compatible with RASCIL
 numpy = "^1.23, <1.24"
