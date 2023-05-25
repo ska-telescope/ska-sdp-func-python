@@ -45,8 +45,8 @@ def solve_gaintable(
                  in the gain solution is below this tolerance
     :param crosspol: Do solutions including cross polarisations
                      i.e. XY, YX or RL, LR
-    :param normalise_gains: Normalises the gains (default None)
-                     options: None, "mean", "median"
+    :param normalise_gains: Normalises the gains (default=None)
+                     options are None, "mean", "median"
     :param jones_type: Type of calibration matrix T or G or B
     :param timeslice: Time interval between solutions (s)
     :return: GainTable containing solution
