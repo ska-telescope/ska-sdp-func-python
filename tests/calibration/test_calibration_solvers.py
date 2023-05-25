@@ -260,7 +260,7 @@ def test_solve_gaintable_timeslice():
         niter=200,
         crosspol=False,
         tol=1e-6,
-        normalise_gains="mean",
+        normalise_gains=None,
         jones_type=jones_type,
         timeslice=120.0,
     )
@@ -271,7 +271,7 @@ def test_solve_gaintable_timeslice():
 
 def test_solve_gaintable_normalise():
     """
-    Test solve_gaintable with normalise_gains=True.
+    Test solve_gaintable with normalise_gains="mean".
     """
     jones_type = "G"
 
@@ -411,13 +411,13 @@ def test_solve_gaintable_few_antennas_many_times():
         niter=200,
         crosspol=False,
         tol=1e-6,
-        normalise_gains="median",
+        normalise_gains=None,
         jones_type=jones_type,
     )
 
     assert (
-        result_gain_table["gain"].data.sum().real.round(10) == 2403.7376828555
+        result_gain_table["gain"].data.sum().real.round(10) == 2393.9044551139
     )
     assert (
-        result_gain_table["gain"].data.sum().imag.round(10) == -24.3580463864
+        result_gain_table["gain"].data.sum().imag.round(10) == -24.2584023116
     )
