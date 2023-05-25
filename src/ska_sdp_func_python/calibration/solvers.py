@@ -26,7 +26,7 @@ def solve_gaintable(
     niter=200,
     tol=1e-6,
     crosspol=False,
-    normalise_gains=True,
+    normalise_gains="mean",
     jones_type="T",
     timeslice=None,
 ) -> GainTable:
@@ -45,8 +45,8 @@ def solve_gaintable(
                  in the gain solution is below this tolerance
     :param crosspol: Do solutions including cross polarisations
                      i.e. XY, YX or RL, LR
-    :param normalise_gains: Normalises the gains (default True)
-                            True means mean, mean, median
+    :param normalise_gains: Normalises the gains (default None)
+                     options: None, "mean", "median"
     :param jones_type: Type of calibration matrix T or G or B
     :param timeslice: Time interval between solutions (s)
     :return: GainTable containing solution
@@ -131,11 +131,10 @@ def solve_gaintable(
             gain_table["weight"].data[row, ...] = 0.0
             gain_table["residual"].data[row, ...] = 0.0
 
-    if normalise_gains in ["median", "mean", True] and not phase_only:
+    if normalise_gains in ["median", "mean"] and not phase_only:
         normaliser = {
             "median": numpy.median,
             "mean": numpy.mean,
-            True: numpy.mean,
         }
         gabs = normaliser[normalise_gains](
             numpy.abs(gain_table["gain"].data[:])

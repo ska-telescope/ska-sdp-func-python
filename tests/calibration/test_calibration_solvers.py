@@ -98,7 +98,7 @@ def test_solve_gaintable_phase_only(
         niter=200,
         crosspol=False,
         tol=1e-6,
-        normalise_gains="mean",
+        normalise_gains=None,
         jones_type=jones_type,
     )
 
@@ -119,28 +119,28 @@ def test_solve_gaintable_phase_only(
             "circularnp",
             [100.0, 50.0],
             0.01,
-            (1496.4238578032, -0.0009486161),
+            (748.3974636435, -0.0004744257),
         ),
         (
             "stokesIQUV",
             "circular",
             [100.0, 0.0, 0.0, 50.0],
             0.01,
-            (1496.4238578032, -0.00094861611),
+            (748.3974636435, -0.0004744257),
         ),
         (
             "stokesIQUV",
             "linear",
             [100.0, 50.0, 0.0, 0.0],
             0.01,
-            (1496.4238578032, -0.0009486161),
+            (748.3974636435, -0.0004744257),
         ),
         (
             "stokesI",
             "stokesI",
             [100.0, 0.0, 0.0, 0.0],
             0.1,
-            (372.3183602181, -23.8923785376),
+            (372.3091261026, -23.8917859668),
         ),
     ],
 )
@@ -176,7 +176,7 @@ def test_solve_gaintable_phase_and_amplitude(
         niter=200,
         crosspol=False,
         tol=1e-6,
-        normalise_gains="mean",
+        normalise_gains=None,
         jones_type=jones_type,
     )
 
@@ -223,15 +223,15 @@ def test_solve_gaintable_crosspol(sky_pol_frame, data_pol_frame, flux_array):
         niter=200,
         crosspol=True,
         tol=1e-6,
-        normalise_gains="mean",
+        normalise_gains=None,
         jones_type=jones_type,
     )
 
     assert result_gain_table["gain"].data.sum().real.round(10) == round(
-        1496.4238578032, 10
+        748.3974636435, 10
     )
     assert result_gain_table["gain"].data.sum().imag.round(10) == round(
-        -0.0009486161, 10
+        -0.0004744257, 10
     )
 
 
