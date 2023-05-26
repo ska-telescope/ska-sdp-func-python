@@ -383,6 +383,83 @@ def test_solve_gaintable_bandpass(
     )
 
 
+@pytest.mark.parametrize(
+    "sky_pol_frame, data_pol_frame, flux_array, "
+    "crosspol, nchan, expected_gain_sum",
+    [
+        (
+            "stokesI",
+            "stokesI",
+            [100.0, 0.0, 0.0, 0.0],
+            False,
+            32,
+            (11982.513165958, 2.9021659209),
+        ),
+        (
+            "stokesIQUV",
+            "circular",
+            [100.0, 0.0, 0.0, 50.0],
+            True,
+            4,
+            (8595.7168462227, 0.0688749452),
+        ),
+        (
+            "stokesIQUV",
+            "linear",
+            [100.0, 50.0, 0.0, 0.0],
+            False,
+            32,
+            (74575.1328544933, 0.0414322385),
+        ),
+    ],
+)
+def test_solve_gaintable_bandpass_with_median(
+    sky_pol_frame,
+    data_pol_frame,
+    flux_array,
+    crosspol,
+    nchan,
+    expected_gain_sum,
+):
+    """
+    Test solve_gaintable for bandpass solution of multiple channels,
+    for different polarisation frames.
+    """
+    jones_type = "B"
+
+    vis = vis_with_component_data(
+        sky_pol_frame, data_pol_frame, flux_array, nchan=nchan
+    )
+
+    gt = create_gaintable_from_visibility(vis, jones_type=jones_type)
+    gt = simulate_gaintable(
+        gt,
+        phase_error=0.1,
+        amplitude_error=0.1,
+        leakage=0.0,
+    )
+    original = vis.copy(deep=True)
+    vis = apply_gaintable(vis, gt)
+
+    result_gain_table = solve_gaintable(
+        vis,
+        original,
+        phase_only=False,
+        niter=200,
+        crosspol=crosspol,
+        tol=1e-6,
+        normalise_gains="median",
+        jones_type=jones_type,
+    )
+
+    assert result_gain_table["gain"].data.sum().real.round(10) == round(
+        expected_gain_sum[0], 10
+    )
+    assert result_gain_table["gain"].data.sum().imag.round(10) == -round(
+        expected_gain_sum[1], 10
+    )
+
+
 def test_solve_gaintable_few_antennas_many_times():
     """
     Test solve_gaintable for different array size and time samples.

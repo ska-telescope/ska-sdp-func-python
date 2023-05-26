@@ -26,7 +26,7 @@ def solve_gaintable(
     niter=200,
     tol=1e-6,
     crosspol=False,
-    normalise_gains=None,
+    normalise_gains="mean",
     jones_type="T",
     timeslice=None,
 ) -> GainTable:
@@ -45,8 +45,9 @@ def solve_gaintable(
                  in the gain solution is below this tolerance
     :param crosspol: Do solutions including cross polarisations
                      i.e. XY, YX or RL, LR
-    :param normalise_gains: Normalises the gains (default=None)
-                     options are None, "mean", "median"
+    :param normalise_gains: Normalises the gains (default="mean")
+                     options are None, "mean", "median".
+                     None means no normalization.
     :param jones_type: Type of calibration matrix T or G or B
     :param timeslice: Time interval between solutions (s)
     :return: GainTable containing solution
