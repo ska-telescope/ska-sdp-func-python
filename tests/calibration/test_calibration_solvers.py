@@ -98,14 +98,14 @@ def test_solve_gaintable_phase_only(
         niter=200,
         crosspol=False,
         tol=1e-6,
-        normalise_gains=False,
+        normalise_gains=None,
         jones_type=jones_type,
     )
 
     assert result_gain_table["gain"].data.sum().real.round(10) == round(
         expected_gain_sum[0], 10
     )
-    assert result_gain_table["gain"].data.sum().imag.round(10) == round(
+    assert result_gain_table["gain"].data.sum().imag.round(10) == -round(
         expected_gain_sum[1], 10
     )
 
@@ -119,28 +119,28 @@ def test_solve_gaintable_phase_only(
             "circularnp",
             [100.0, 50.0],
             0.01,
-            (748.3974636434654, 0.0004744256818732251),
+            (748.3974636435, -0.0004744257),
         ),
         (
             "stokesIQUV",
             "circular",
             [100.0, 0.0, 0.0, 50.0],
             0.01,
-            (748.3974636434654, 0.0004744256818732251),
+            (748.3974636435, -0.0004744257),
         ),
         (
             "stokesIQUV",
             "linear",
             [100.0, 50.0, 0.0, 0.0],
             0.01,
-            (748.3974636434654, 0.0004744256818732251),
+            (748.3974636435, -0.0004744257),
         ),
         (
             "stokesI",
             "stokesI",
             [100.0, 0.0, 0.0, 0.0],
             0.1,
-            (372.3091261026126, 23.89178596680593),
+            (372.3091261026, -23.8917859668),
         ),
     ],
 )
@@ -176,7 +176,7 @@ def test_solve_gaintable_phase_and_amplitude(
         niter=200,
         crosspol=False,
         tol=1e-6,
-        normalise_gains=False,
+        normalise_gains=None,
         jones_type=jones_type,
     )
 
@@ -223,15 +223,15 @@ def test_solve_gaintable_crosspol(sky_pol_frame, data_pol_frame, flux_array):
         niter=200,
         crosspol=True,
         tol=1e-6,
-        normalise_gains=False,
+        normalise_gains=None,
         jones_type=jones_type,
     )
 
     assert result_gain_table["gain"].data.sum().real.round(10) == round(
-        748.3974636434654, 10
+        748.3974636435, 10
     )
     assert result_gain_table["gain"].data.sum().imag.round(10) == round(
-        0.0004744256818732251, 10
+        -0.0004744257, 10
     )
 
 
@@ -260,7 +260,7 @@ def test_solve_gaintable_timeslice():
         niter=200,
         crosspol=False,
         tol=1e-6,
-        normalise_gains=False,
+        normalise_gains=None,
         jones_type=jones_type,
         timeslice=120.0,
     )
@@ -271,7 +271,7 @@ def test_solve_gaintable_timeslice():
 
 def test_solve_gaintable_normalise():
     """
-    Test solve_gaintable with normalise_gains=True.
+    Test solve_gaintable with normalise_gains="mean".
     """
     jones_type = "G"
 
@@ -294,14 +294,16 @@ def test_solve_gaintable_normalise():
         niter=200,
         crosspol=False,
         tol=1e-6,
-        normalise_gains=True,
+        normalise_gains="mean",
         jones_type=jones_type,
     )
 
     assert (
-        result_gain_table["gain"].data.sum().real.round(10) == 372.3325412643
+        result_gain_table["gain"].data.sum().real.round(10) == 372.3183602181
     )
-    assert result_gain_table["gain"].data.sum().imag.round(10) == 23.7294030164
+    assert (
+        result_gain_table["gain"].data.sum().imag.round(10) == -23.8923785376
+    )
 
 
 @pytest.mark.parametrize(
@@ -314,7 +316,7 @@ def test_solve_gaintable_normalise():
             [100.0, 0.0, 0.0, 0.0],
             False,
             32,
-            (11920.058493360062, 2.8005384554731485),
+            (11920.084395988404, 2.887045666355),
         ),
         (
             "stokesIQUV",
@@ -322,7 +324,7 @@ def test_solve_gaintable_normalise():
             [100.0, 0.0, 0.0, 50.0],
             True,
             4,
-            (5986.719933148706, 0.04801930767159601),
+            (5986.724197075842, 0.04796985620607441),
         ),
         (
             "stokesIQUV",
@@ -330,7 +332,7 @@ def test_solve_gaintable_normalise():
             [100.0, 50.0, 0.0, 0.0],
             False,
             32,
-            (47888.57884046984, 0.026622457006181932),
+            (47888.58029678579, 0.026605800133365776),
         ),
     ],
 )
@@ -369,14 +371,91 @@ def test_solve_gaintable_bandpass(
         niter=200,
         crosspol=crosspol,
         tol=1e-6,
-        normalise_gains=True,
+        normalise_gains="mean",
         jones_type=jones_type,
     )
 
     assert result_gain_table["gain"].data.sum().real.round(10) == round(
         expected_gain_sum[0], 10
     )
-    assert result_gain_table["gain"].data.sum().imag.round(10) == round(
+    assert result_gain_table["gain"].data.sum().imag.round(10) == -round(
+        expected_gain_sum[1], 10
+    )
+
+
+@pytest.mark.parametrize(
+    "sky_pol_frame, data_pol_frame, flux_array, "
+    "crosspol, nchan, expected_gain_sum",
+    [
+        (
+            "stokesI",
+            "stokesI",
+            [100.0, 0.0, 0.0, 0.0],
+            False,
+            32,
+            (11982.513165958, 2.9021659209),
+        ),
+        (
+            "stokesIQUV",
+            "circular",
+            [100.0, 0.0, 0.0, 50.0],
+            True,
+            4,
+            (8595.7168462227, 0.0688749452),
+        ),
+        (
+            "stokesIQUV",
+            "linear",
+            [100.0, 50.0, 0.0, 0.0],
+            False,
+            32,
+            (74575.1328544933, 0.0414322385),
+        ),
+    ],
+)
+def test_solve_gaintable_bandpass_with_median(
+    sky_pol_frame,
+    data_pol_frame,
+    flux_array,
+    crosspol,
+    nchan,
+    expected_gain_sum,
+):
+    """
+    Test solve_gaintable for bandpass solution of multiple channels,
+    for different polarisation frames.
+    """
+    jones_type = "B"
+
+    vis = vis_with_component_data(
+        sky_pol_frame, data_pol_frame, flux_array, nchan=nchan
+    )
+
+    gt = create_gaintable_from_visibility(vis, jones_type=jones_type)
+    gt = simulate_gaintable(
+        gt,
+        phase_error=0.1,
+        amplitude_error=0.1,
+        leakage=0.0,
+    )
+    original = vis.copy(deep=True)
+    vis = apply_gaintable(vis, gt)
+
+    result_gain_table = solve_gaintable(
+        vis,
+        original,
+        phase_only=False,
+        niter=200,
+        crosspol=crosspol,
+        tol=1e-6,
+        normalise_gains="median",
+        jones_type=jones_type,
+    )
+
+    assert result_gain_table["gain"].data.sum().real.round(10) == round(
+        expected_gain_sum[0], 10
+    )
+    assert result_gain_table["gain"].data.sum().imag.round(10) == -round(
         expected_gain_sum[1], 10
     )
 
@@ -409,11 +488,13 @@ def test_solve_gaintable_few_antennas_many_times():
         niter=200,
         crosspol=False,
         tol=1e-6,
-        normalise_gains=False,
+        normalise_gains=None,
         jones_type=jones_type,
     )
 
     assert (
         result_gain_table["gain"].data.sum().real.round(10) == 2393.9044551139
     )
-    assert result_gain_table["gain"].data.sum().imag.round(10) == 24.2584023116
+    assert (
+        result_gain_table["gain"].data.sum().imag.round(10) == -24.2584023116
+    )

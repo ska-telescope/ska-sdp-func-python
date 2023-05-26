@@ -37,6 +37,6 @@ def test_dft_stokesiquv_visibility(compute_kernel, visibility, comp_dft):
 
     numpy.testing.assert_almost_equal(
         result.vis.data.sum(),
-        16396270.264258286 - 219031.4899462515j,
+        15767919.209378432 + 777296.8338094898j,
         decimal=4,
     )

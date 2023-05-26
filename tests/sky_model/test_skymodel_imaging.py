@@ -102,13 +102,13 @@ def test_calibrate_invert_no_pb(
 
     numpy.testing.assert_allclose(
         qa.data["max"],
-        4.185789848138097,
+        4.196352244614598,
         atol=1e-7,
         err_msg=f"{qa}",
     )
     numpy.testing.assert_allclose(
         qa.data["min"],
-        -0.33245808599881227,
+        -0.3160421749599381,
         atol=1e-7,
         err_msg=f"{qa}",
     )
