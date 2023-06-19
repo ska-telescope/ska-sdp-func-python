@@ -1,5 +1,9 @@
 # Changelog
 
+0.2.2
+----
+* Fixing partial gain solver errors ([MR34](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/34)) 
+
 0.2.1
 ----
 * Fixing function inputs in chain_calibration.py ([MR31](https://gitlab.com/ska-telescope/sdp/ska-sdp-func-python/-/merge_requests/31))

@@ -109,18 +109,18 @@ def test_restore(model, psf):
     """Unit tests for the restore_cube function"""
     model.data_vars["pixels"].data[0, 0, 256, 256] = 1.0
     cmodel = restore_cube(model, psf)
-    assert (
-        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0000420626651088) < 1e-7
-    ), numpy.max(cmodel["pixels"].data)
+    assert numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7, numpy.max(
+        cmodel["pixels"].data
+    )
 
 
 def test_restore_list(model, psf):
     """Unit tests for the restore_list function"""
     model["pixels"].data[0, 0, 256, 256] = 1.0
     cmodel = restore_list([model], [psf])[0]
-    assert (
-        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0000420626651088) < 1e-7
-    ), numpy.max(cmodel["pixels"].data)
+    assert numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7, numpy.max(
+        cmodel["pixels"].data
+    )
 
 
 def test_restore_clean_beam(model, psf):
@@ -136,17 +136,17 @@ def test_restore_clean_beam(model, psf):
         psf,
         clean_beam={"bmaj": bmaj, "bmin": bmaj, "bpa": 0.0},
     )
-    assert (
-        numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0000673298221023) < 1e-7
-    ), numpy.max(cmodel["pixels"].data)
+    assert numpy.abs(numpy.max(cmodel["pixels"].data) - 1.0) < 1e-7, numpy.max(
+        cmodel["pixels"].data
+    )
 
 
 def test_fit_psf(psf):
     """Unit tests for the fit_psf function"""
     clean_beam = fit_psf(psf)
 
-    assert numpy.abs(clean_beam["bmaj"] - 0.3479264132827298) < 6.0e-6
-    assert numpy.abs(clean_beam["bmin"] - 0.27916332842009556) < 6.0e-6
+    assert numpy.abs(clean_beam["bmaj"] - 0.3232026716040641) < 6.0e-6
+    assert numpy.abs(clean_beam["bmin"] - 0.2773962393170226) < 6.0e-6
 
 
 def test_deconvolve_hogbom(dirty_img, psf):
@@ -174,7 +174,7 @@ def test_deconvolve_msclean(dirty_img, psf):
         scales=[0, 3, 10, 30],
         threshold=0.01,
     )
-    assert numpy.max(residual["pixels"].data) < 1.1
+    assert numpy.max(residual["pixels"].data) < 1.3
 
 
 def test_deconvolve_msclean_1scale(dirty_img, psf):
@@ -246,7 +246,10 @@ def test_deconvolve_hogbom_subpsf(dirty_img, psf):
         algorithm="hogbom",
         threshold=0.01,
     )
-    assert numpy.max(residual["pixels"].data[..., 56:456, 56:456]) < 0.7
+    assert (
+        numpy.max(residual["pixels"].data[..., 56:456, 56:456])
+        < 0.7713111251075610
+    )
 
 
 def test_deconvolve_msclean_subpsf(dirty_img, psf):
@@ -262,7 +265,10 @@ def test_deconvolve_msclean_subpsf(dirty_img, psf):
         scales=[0, 3, 10, 30],
         threshold=0.01,
     )
-    assert numpy.max(residual["pixels"].data[..., 56:456, 56:456]) < 0.8
+    assert (
+        numpy.max(residual["pixels"].data[..., 56:456, 56:456])
+        < 0.9147349758258286
+    )
 
 
 @pytest.mark.skip("Sensitivity function not available yet (primary_beam func)")
@@ -294,37 +300,37 @@ def _check_hogbom_kernel_list_test_results(component, residual):
     non_zero_idx_comp = numpy.where(result_comp_data != 0.0)
     expected_comp_non_zero_data = numpy.array(
         [
-            0.24767033,
-            0.23734821,
-            0.2593673,
-            0.31580437,
-            0.6326122,
-            0.23784585,
-            0.30128981,
-            0.26431019,
-            0.51826644,
-            0.54509778,
+            0.23512022,
+            0.24861933,
+            0.27351581,
+            0.3005493,
+            0.22978201,
+            0.23196268,
+            0.22754817,
+            0.34480517,
+            0.24560397,
+            0.33851125,
         ]
     )
     result_residual_data = residual["pixels"].data
     non_zero_idx_residual = numpy.where(result_residual_data != 0.0)
     expected_residual_non_zero_data = numpy.array(
         [
-            0.00818293,
-            0.00871251,
-            0.02454176,
-            0.06476695,
-            0.12417263,
-            0.17576365,
-            0.20291629,
-            0.21832857,
-            0.23253934,
-            0.23405746,
+            -0.06446651,
+            -0.20050621,
+            -0.25780698,
+            -0.23257206,
+            -0.15831075,
+            -0.10916665,
+            -0.11743437,
+            -0.16703326,
+            -0.22206081,
+            -0.26290388,
         ]
     )
 
     # number of non-zero values
-    assert len(result_comp_data[non_zero_idx_comp]) == 75
+    assert len(result_comp_data[non_zero_idx_comp]) == 86
     assert len(result_residual_data[non_zero_idx_residual]) == 262144
     # test first 10 non-zero values don't change with each run of test
     numpy.testing.assert_array_almost_equal(

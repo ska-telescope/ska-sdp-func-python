@@ -32,7 +32,7 @@ from typing import List, Union
 
 import astropy.units as u
 import numpy
-from astropy.convolution import Gaussian2DKernel
+from astropy.convolution import Gaussian2DKernel, convolve
 from astropy.coordinates import SkyCoord, match_coordinates_sky
 from astropy.modeling import fitting, models
 from astropy.stats import gaussian_fwhm_to_sigma
@@ -287,8 +287,9 @@ def find_skycomponents(
     image_sum = numpy.sum(im["pixels"].data, axis=0)[0, ...] / float(
         im["pixels"].data.shape[0]
     )
+    image_sum = convolve(image_sum, kernel)
     segments = segmentation.detect_sources(
-        image_sum, threshold, npixels=npixels, kernel=kernel
+        image_sum, threshold, npixels=npixels
     )
     if segments is None:
         raise ValueError("find_skycomponents: Failed to find any components")

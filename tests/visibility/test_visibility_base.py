@@ -87,8 +87,8 @@ def test_phase_rotation(visibility, comp_direction):
 def test_calculate_visibility_phasor(visibility):
     """Check calculate_visibility_phasor gives the correct phasor"""
     phasor = calculate_visibility_phasor(visibility.phasecentre, visibility)
-
-    assert (phasor == 1).all()
+    print(phasor)
+    assert numpy.allclose(phasor, 1.0)
 
 
 def test_calculate_visibility_uvw_lambda(visibility):

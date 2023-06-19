@@ -1020,13 +1020,12 @@ def restore_list(
             y_stddev=beam_pixels[1],
             theta=beam_pixels[2],
         )
-        # By convention, we normalise the peak not the integral
-        # so this is the volume of the Gaussian
-        norm = 2.0 * numpy.pi * beam_pixels[0] * beam_pixels[1]
-        # gk = Gaussian2DKernel(size)
+        # After the bug fix of astropy>=5.22, needs to normalize 'peak'
+        gk.normalize(mode="peak")
+
         for chan in range(model["pixels"].shape[0]):
             for pol in range(model["pixels"].shape[1]):
-                restored["pixels"].data[chan, pol, :, :] = norm * convolve_fft(
+                restored["pixels"].data[chan, pol, :, :] = convolve_fft(
                     model["pixels"].data[chan, pol, :, :],
                     gk,
                     normalize_kernel=False,
