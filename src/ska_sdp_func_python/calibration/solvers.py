@@ -339,7 +339,7 @@ def _solve_antenna_gains_itsubs_scalar(
     bad_ant = []
     for iant in range(nants):
         thismask = gainmask[iant, 0]
-        if (thismask is True).all():
+        if numpy.all(thismask) is True:
             bad_ant.append(iant)
 
     if refant in bad_ant:
@@ -559,8 +559,8 @@ def _solve_antenna_gains_itsubs_matrix(
     cross_mask = gainmask.copy()
     cross_mask[..., 0, 0] = False
     cross_mask[..., 1, 1] = False
-    cross_mask[..., 0, 1] = gainmask[..., 0, 1] is True
-    cross_mask[..., 1, 0] = gainmask[..., 1, 0] is True
+    cross_mask[..., 0, 1] = gainmask[..., 0, 1]
+    cross_mask[..., 1, 0] = gainmask[..., 1, 0]
 
     bad_ant = []
     for iant in range(nants):
@@ -568,7 +568,7 @@ def _solve_antenna_gains_itsubs_matrix(
         # If all polarizations of this channel are marked,
         # the antenna is considered bad
         thismask = gainmask[iant, 0]
-        if (thismask is True).all():
+        if numpy.all(thismask) is True:
             bad_ant.append(iant)
 
     if refant in bad_ant:
