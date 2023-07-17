@@ -523,4 +523,4 @@ def test_best_refant_from_vis_single_channel():
         "stokesI", "stokesI", [100.0, 0.0, 0.0, 0.0], nchan=1
     )
     refant_sort = best_refant_from_vis(vis)
-    assert (refant_sort[:5] == numpy.array([31, 24,  9, 60, 85])).all()
+    assert (refant_sort[:5] == numpy.array([31, 24, 9, 60, 85])).all()
