@@ -18,6 +18,63 @@ from ska_sdp_func_python.visibility.operations import divide_visibility
 log = logging.getLogger("func-python-logger")
 
 
+def best_refant_from_vis(vis):
+    """
+    This method comes from katsdpcal.
+    (https://github.com/ska-sa/katsdpcal/blob/
+    200c2f6e60b2540f0a89e7b655b26a2b04a8f360/katsdpcal/calprocs.py#L332)
+    Determine antenna whose FFT has the maximum peak to noise ratio (PNR) by
+    taking the median PNR of the FFT over all baselines to each antenna.
+
+    When the input vis has only one channel, this uses all the vis of the
+    same antenna for the operations peak, mean and std.
+
+    :param vis: Visibility containing the observed data_models
+    :return: sorted refant array
+
+    """
+
+    import scipy
+
+    visdata = vis.visibility_acc.flagged_vis
+    _, _, nchan, _ = visdata.shape
+    baselines = numpy.array(vis.baselines.data.tolist())
+    nants = vis.visibility_acc.nants
+    med_pnr_ants = numpy.zeros((nants))
+    if nchan == 1:
+        weightdata = vis.visibility_acc.flagged_weight
+        for a in range(nants):
+            mask = (baselines[:, 0] == a) ^ (baselines[:, 1] == a)
+            weightdata_ant = weightdata[:, mask]
+            mean_of_weight_ant = numpy.sum(weightdata_ant)
+            med_pnr_ants[a] = mean_of_weight_ant
+        med_pnr_ants += numpy.linspace(1e-8, 1e-9, nants)
+    else:
+        ft_vis = scipy.fftpack.fft(visdata, axis=2)
+        k_arg = numpy.argmax(numpy.abs(ft_vis), axis=2)
+        index = numpy.array(
+            [numpy.roll(range(nchan), -n) for n in k_arg.ravel()]
+        )
+        index = index.reshape(list(k_arg.shape) + [nchan])
+        index = numpy.transpose(index, (0, 1, 3, 2))
+        ft_vis = numpy.take_along_axis(ft_vis, index, axis=2)
+
+        peak = numpy.max(numpy.abs(ft_vis), axis=2)
+
+        chan_slice = numpy.s_[
+            nchan // 2 - nchan // 4 : nchan // 2 + nchan // 4 + 1
+        ]
+        mean = numpy.mean(numpy.abs(ft_vis[:, :, chan_slice]), axis=2)
+        std = numpy.std(numpy.abs(ft_vis[:, :, chan_slice]), axis=2) + 1e-9
+        for a in range(nants):
+            mask = (baselines[:, 0] == a) ^ (baselines[:, 1] == a)
+
+            pnr = (peak[:, mask] - mean[:, mask]) / std[:, mask]
+            med_pnr = numpy.median(pnr)
+            med_pnr_ants[a] = med_pnr
+    return numpy.argsort(med_pnr_ants)[::-1]
+
+
 def solve_gaintable(
     vis: Visibility,
     modelvis: Visibility = None,
@@ -149,63 +206,6 @@ def solve_gaintable(
     return gain_table
 
 
-def best_refant_from_vis(vis):
-    """
-    This method comes from katsdpcal.
-    (https://github.com/ska-sa/katsdpcal/blob/
-    200c2f6e60b2540f0a89e7b655b26a2b04a8f360/katsdpcal/calprocs.py#L332)
-    Determine antenna whose FFT has the maximum peak to noise ratio (PNR) by
-    taking the median PNR of the FFT over all baselines to each antenna.
-
-    When the input vis has only one channel, this uses all the vis of the
-    same antenna for the operations peak, mean and std.
-
-    :param vis: Visibility containing the observed data_models
-    :return: sorted refant array
-
-    """
-
-    import scipy
-
-    visdata = vis.visibility_acc.flagged_vis
-    _, _, nchan, _ = visdata.shape
-    baselines = numpy.array(vis.baselines.data.tolist())
-    nants = vis.visibility_acc.nants
-    med_pnr_ants = numpy.zeros((nants))
-    if nchan == 1:
-        weightdata = vis.visibility_acc.flagged_weight
-        for a in range(nants):
-            mask = (baselines[:, 0] == a) ^ (baselines[:, 1] == a)
-            weightdata_ant = weightdata[:, mask]
-            mean_of_weight_ant = numpy.sum(weightdata_ant)
-            med_pnr_ants[a] = mean_of_weight_ant
-        med_pnr_ants += numpy.linspace(1e-8, 1e-9, nants)
-    else:
-        ft_vis = scipy.fftpack.fft(visdata, axis=2)
-        k_arg = numpy.argmax(numpy.abs(ft_vis), axis=2)
-        index = numpy.array(
-            [numpy.roll(range(nchan), -n) for n in k_arg.ravel()]
-        )
-        index = index.reshape(list(k_arg.shape) + [nchan])
-        index = numpy.transpose(index, (0, 1, 3, 2))
-        ft_vis = numpy.take_along_axis(ft_vis, index, axis=2)
-
-        peak = numpy.max(numpy.abs(ft_vis), axis=2)
-
-        chan_slice = numpy.s_[
-            nchan // 2 - nchan // 4 : nchan // 2 + nchan // 4 + 1
-        ]
-        mean = numpy.mean(numpy.abs(ft_vis[:, :, chan_slice]), axis=2)
-        std = numpy.std(numpy.abs(ft_vis[:, :, chan_slice]), axis=2) + 1e-9
-        for a in range(nants):
-            mask = (baselines[:, 0] == a) ^ (baselines[:, 1] == a)
-
-            pnr = (peak[:, mask] - mean[:, mask]) / std[:, mask]
-            med_pnr = numpy.median(pnr)
-            med_pnr_ants[a] = med_pnr
-    return numpy.argsort(med_pnr_ants)[::-1]
-
-
 def _solve_with_mask(
     crosspol,
     gain_table,
@@ -311,6 +311,7 @@ def _solve_antenna_gains_itsubs_scalar(
     :param tol: tolerance on solution change
     :param phase_only: Do solution for only the phase? (default True)
     :param refant: Reference antenna for phase (default=0)
+    :param refant_sort: Sorted list of reference antenna
     :param damping: Damping parameter
     :return: gain [nants, ...], weight [nants, ...]
 
@@ -456,6 +457,8 @@ def _solve_antenna_gains_itsubs_nocrossdata(
     :param niter: Number of iterations
     :param tol: tolerance on solution change
     :param phase_only: Do solution for only the phase? (default True)
+    :param refant: Reference antenna for phase (default=0)
+    :param refant_sort: Sorted list of reference antenna
     :return: gain [nants, nchan, nrec, nrec], weight [nants, nchan, nrec, nrec]
     """
 
@@ -523,6 +526,8 @@ def _solve_antenna_gains_itsubs_matrix(
     :param niter: Number of iterations
     :param tol: tolerance on solution change
     :param phase_only: Do solution for only the phase? (default True)
+    :param refant: Reference antenna for phase (default=0)
+    :param refant_sort: Sorted list of reference antenna
     :return: gain [nants, nchan, nrec, nrec], weight [nants, nchan, nrec, nrec]
     """
 
