@@ -171,28 +171,23 @@ def best_refant_from_vis(vis):
     _, _, nchan, _ = visdata.shape
     baselines = numpy.array(vis.baselines.data.tolist())
     nants = vis.visibility_acc.nants
-
     med_pnr_ants = numpy.zeros((nants))
     if nchan == 1:
+        weightdata = vis.visibility_acc.flagged_weight
         for a in range(nants):
             mask = (baselines[:, 0] == a) ^ (baselines[:, 1] == a)
-
-            visdata_ant = visdata[:, mask]
-
-            peak = numpy.max(numpy.abs(visdata_ant), axis=(0, 1, 2))
-            mean = numpy.mean(numpy.abs(visdata_ant), axis=(0, 1, 2))
-            std = numpy.std(numpy.abs(visdata_ant), axis=(0, 1, 2)) + 1e-9
-
-            pnr = (peak - mean) / std
-            pnr = numpy.median(pnr)
-            med_pnr_ants[a] = pnr
+            weightdata_ant = weightdata[:, mask]
+            mean_of_weight_ant = numpy.sum(weightdata_ant)
+            med_pnr_ants[a] = mean_of_weight_ant
+        med_pnr_ants += numpy.linspace(1e-8, 1e-9, nants)
     else:
         ft_vis = scipy.fftpack.fft(visdata, axis=2)
         k_arg = numpy.argmax(numpy.abs(ft_vis), axis=2)
         index = numpy.array(
             [numpy.roll(range(nchan), -n) for n in k_arg.ravel()]
         )
-        index = index.T.reshape(ft_vis.shape)
+        index = index.reshape(list(k_arg.shape) + [nchan])
+        index = numpy.transpose(index, (0, 1, 3, 2))
         ft_vis = numpy.take_along_axis(ft_vis, index, axis=2)
 
         peak = numpy.max(numpy.abs(ft_vis), axis=2)
@@ -208,7 +203,6 @@ def best_refant_from_vis(vis):
             pnr = (peak[:, mask] - mean[:, mask]) / std[:, mask]
             med_pnr = numpy.median(pnr)
             med_pnr_ants[a] = med_pnr
-
     return numpy.argsort(med_pnr_ants)[::-1]
 
 
